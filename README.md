@@ -1,13 +1,12 @@
+<div align=center>
+	
+# Sun-Panel
+	
+<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a>
 
-<div style="text-align: center;margin-bottom:10px">
-<div style="font-size:50px;font-weight:700">Sun-Panel</div>
-<div>
-<a href="https://github.com/hslr-s/sun-panel.git">Github</a> |
-<a href="https://gitee.com/hslr/sun-panel.git">Gitee</a>
-</div>
-<span style="font-size:25px">一个NAS导航面板、Homepage、浏览器首页。</span>
-</div>
+一个服务器、NAS导航面板、Homepage、浏览器首页。
 
+</div>
 
 ![](./doc/images/icon-info.jpg)
 
