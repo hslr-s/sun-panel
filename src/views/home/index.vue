@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { NButton, NButtonGroup, NDropdown, NEllipsis, NGrid, NGridItem, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
+import { NButton, NButtonGroup, NDropdown, NEllipsis, NGrid, NGridItem, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref } from 'vue'
 import { EditItem, Setting } from './components'
 import { Clock } from '@/components/deskModule'
 import { ItemIcon, SvgIcon } from '@/components/common'
-import { getListByGroupId } from '@/api/panel/itemIcon'
+import { deletes, getListByGroupId } from '@/api/panel/itemIcon'
 import { getInfo } from '@/api/system/user'
 import { usePanelState, useUserStore } from '@/store'
 import { PanelStateNetworkModeEnum } from '@/enum'
 import { setTitle } from '@/utils/cmn'
 
 const ms = useMessage()
+const dialog = useDialog()
 const panelState = usePanelState()
 const userStore = useUserStore()
 
@@ -38,6 +39,10 @@ const dropdownMenuOptions = [
   {
     label: '编辑',
     key: 'edit',
+  },
+  {
+    label: '删除',
+    key: 'delete',
   },
 ]
 const items = ref<Panel.ItemInfo[]>()
@@ -100,7 +105,24 @@ function handleSelect(key: string | number) {
       editItemInfoData.value = { ...currentRightSelectItem.value } as Panel.ItemInfo
       editItemInfoShow.value = true
       break
-    case 'del':
+    case 'delete':
+      dialog.warning({
+        title: '警告',
+        content: `你确定要删除图标 ${currentRightSelectItem.value?.title} ？`,
+        positiveText: '确定',
+        negativeText: '取消',
+        onPositiveClick: () => {
+          deletes([currentRightSelectItem.value?.id as number]).then(({ code, msg }) => {
+            if (code === 0) {
+              ms.success('已删除')
+              getList()
+            }
+            else {
+              ms.error(`删除失败：${msg}`)
+            }
+          })
+        },
+      })
 
       break
     default:

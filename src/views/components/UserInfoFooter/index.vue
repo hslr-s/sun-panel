@@ -12,6 +12,8 @@ const show = ref(false)
     <div class="flex-1 flex-shrink-0 overflow-hidden">
       <!-- <UserAvatar /> -->
     </div>
+    <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a>
+    <a href="https://github.com/hslr-s/sun-panel.git">Github</a>
 
     <HoverButton @click="show = true">
       <span class="text-xl text-[#4f555e] dark:text-white">

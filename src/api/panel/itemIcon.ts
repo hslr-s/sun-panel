@@ -1,13 +1,5 @@
 import { post } from '@/utils/request'
 
-// // 获取绘图的列表
-// export function getMyDrawList<T>(req: Common.ListRequest) {
-//   return post<T>({
-//     url: '/aiDraw/getMyDrawList',
-//     data: req,
-//   })
-// }
-
 export function edit<T>(req: Panel.ItemInfo) {
   return post<T>({
     url: '/panel/itemIcon/edit',
@@ -28,9 +20,9 @@ export function getListByGroupId<T>() {
   })
 }
 
-export function getSystemList<T>(data: Common.ListRequest) {
+export function deletes<T>(ids: number[]) {
   return post<T>({
-    url: '/aiApplet/getSystemList',
-    data,
+    url: '/panel/itemIcon/deletes',
+    data: { ids },
   })
 }

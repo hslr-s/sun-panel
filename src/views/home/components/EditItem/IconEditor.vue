@@ -118,7 +118,7 @@ const handleUploadFinish = ({
         <div v-if="checkedValueRef === 3">
           <div>
             <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入图标名字" @input="handleChange" />
-            <a target="_blank" href="https://icon-sets.iconify.design/" class="text-[blue]">图标列表</a>
+            <a target="_blank" href="https://icon-sets.iconify.design/" class="text-[blue]">图标库</a>
           </div>
           <NColorPicker
             v-model:value="itemIconInfo.bgColor"
