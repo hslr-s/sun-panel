@@ -98,3 +98,20 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 
 	apiReturn.SuccessListData(c, itemIcons, 0)
 }
+
+func (a *ItemIcon) Deletes(c *gin.Context) {
+	req := commonApiStructs.RequestDeleteIds[uint]{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	if err := global.Db.Debug().Delete(&models.ItemIcon{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
+	}
+
+	apiReturn.Success(c)
+}

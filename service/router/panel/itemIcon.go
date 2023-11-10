@@ -13,6 +13,6 @@ func InitItemIcon(router *gin.RouterGroup) {
 	{
 		r.POST("/panel/itemIcon/edit", itemIcon.Edit)
 		r.POST("/panel/itemIcon/getListByGroupId", itemIcon.GetListByGroupId)
-
+		r.POST("/panel/itemIcon/deletes", itemIcon.Deletes)
 	}
 }
