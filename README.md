@@ -1,8 +1,8 @@
 <div align=center>
 	
 # Sun-Panel
-	
-<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a>
+
+<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">B站视频</a>
 
 一个服务器、NAS导航面板、Homepage、浏览器首页。
 
@@ -124,3 +124,15 @@ docker build -t sun-panel .
 // 运行 D:\docker\data\sun-panel 为本地运行的路径
 docker run --rm -d -p 3003:3002 -v  D:\docker\data\sun-panel\conf:/app/conf -v  D:\docker\data\sun-panel\runtime:/app/runtime -v D:\docker\data\sun-panel\uploads:/app/uploads -v D:\docker\data\sun-panel\database:/app/database --name sun-panel sun-panel
 ```
+
+## 🎉 图标、壁纸网站推荐
+
+图标：
+- [阿里巴巴矢量图标](https://www.iconfont.cn/)
+- [Icons8](https://icons8.com/)
+- [Vectorjunky](https://www.iconfinder.com/)
+
+壁纸：
+- [Wallhaven](https://wallhaven.cc/)
+- [Wallpaperscraft](https://wallpaperscraft.com/)
+- [Wallpaper Abyss](https://wall.alphacoders.com/)
