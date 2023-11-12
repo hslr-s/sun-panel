@@ -7,7 +7,7 @@ import { ItemIcon, SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId } from '@/api/panel/itemIcon'
 import { getInfo } from '@/api/system/user'
 import { usePanelState, useUserStore } from '@/store'
-import { PanelStateNetworkModeEnum } from '@/enum'
+import { PanelStateNetworkModeEnum } from '@/enums'
 import { setTitle } from '@/utils/cmn'
 
 const ms = useMessage()
