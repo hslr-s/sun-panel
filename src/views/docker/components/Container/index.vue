@@ -59,14 +59,16 @@ const createColumns = ({
             tagArg.type = 'warning'
             break
           case DockerContainerInfoState.paused:
+            tagArg.name = '已暂停'
             tagArg.type = 'warning'
             break
 
           case DockerContainerInfoState.exited:
-            tagArg.name = '停止'
+            tagArg.name = '已停止'
+            // tagArg.type = 'error' // 默认样式
             break
           case DockerContainerInfoState.dead:
-            tagArg.name = '终止'
+            tagArg.name = '已终止'
             tagArg.type = 'error'
             break
 
