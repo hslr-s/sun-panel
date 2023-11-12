@@ -1,5 +1,5 @@
 import { ss } from '@/utils/storage'
-import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enum'
+import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import defaultBackground from '@/assets/defaultBackground.webp'
 const LOCAL_NAME = 'panelStorage'
 
