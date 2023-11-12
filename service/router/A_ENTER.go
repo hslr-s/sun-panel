@@ -3,6 +3,7 @@ package router
 import (
 	"sun-panel/global"
 	// "sun-panel/router/admin"
+	"sun-panel/router/docker"
 	"sun-panel/router/openness"
 	"sun-panel/router/panel"
 	"sun-panel/router/system"
@@ -22,6 +23,7 @@ func InitRouters(addr string) error {
 	system.Init(routerGroup)
 	// admin.Init(routerGroup)
 	panel.Init(routerGroup)
+	docker.Init(routerGroup)
 	openness.Init(routerGroup)
 
 	// WEB文件服务
