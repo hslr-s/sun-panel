@@ -23,4 +23,5 @@ type ContainerInfoResp struct {
 	CreateTime string          `json:"createTime"`
 	Ports      []ContainerPort `json:"ports"`
 	State      string          `json:"state"`
+	Status     string          `json:"status"`
 }

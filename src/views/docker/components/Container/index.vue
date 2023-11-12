@@ -3,8 +3,9 @@ import { h, onMounted, ref } from 'vue'
 import { NButton, NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
+import { RowName } from './table'
 import { getList } from '@/api/docker/container'
-import { DockerContainerInfoState } from '@/enum'
+import { DockerContainerInfoState } from '@/enums/docker'
 
 const ms = useMessage()
 const dockerState = useDockerStore()
@@ -20,30 +21,74 @@ const createColumns = ({
 }): DataTableColumns<Docker.Container.Info> => {
   return [
     {
-      title: '容器名称',
+      title: '名称',
       key: 'name',
+      render(row) {
+        return h(
+          RowName,
+          {
+            value: row,
+          },
+        )
+      },
     },
     {
       title: '状态',
       key: 'state',
       render(row) {
-        if (row.state === DockerContainerInfoState.created)
-          console.log('sss')
+        const tagArg: {
+          type: 'default' | 'success' | 'error' | 'warning' | 'primary' | 'info' | undefined
+          name: string
+        } = {
+          type: undefined,
+          name: '未知',
+        }
+
+        switch (row.state) {
+          case DockerContainerInfoState.created:
+            tagArg.name = '已创建'
+            tagArg.type = 'info'
+            break
+
+          case DockerContainerInfoState.restarting:
+            tagArg.name = '重启中'
+            tagArg.type = 'warning'
+            break
+          case DockerContainerInfoState.removing:
+            tagArg.name = '迁移中'
+            tagArg.type = 'warning'
+            break
+          case DockerContainerInfoState.paused:
+            tagArg.type = 'warning'
+            break
+
+          case DockerContainerInfoState.exited:
+            tagArg.name = '停止'
+            break
+          case DockerContainerInfoState.dead:
+            tagArg.name = '终止'
+            tagArg.type = 'error'
+            break
+
+          case DockerContainerInfoState.running:
+            tagArg.name = '运行中'
+            tagArg.type = 'success'
+            break
+        }
 
         return h(
           NTag,
           {
-            style: {
-              marginRight: '6px',
-            },
-            type: 'info',
+            type: tagArg.type,
             bordered: false,
+            round: true,
+            size: 'small',
+            title: row.status,
           },
           {
-            default: () => '未知',
+            default: () => tagArg.name,
           },
         )
-        return tags
       },
     },
     {

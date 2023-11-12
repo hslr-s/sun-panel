@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/exception/test/index.vue'),
   },
 
-  ...dockerRouter,
+  dockerRouter,
 
   // adminRouter,
 ]

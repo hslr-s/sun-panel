@@ -47,6 +47,7 @@ func (a *Container) GetList(c *gin.Context) {
 				Name:       v.Names[0][1:],
 				Image:      v.Image,
 				State:      v.State,
+				Status:     v.Status,
 				CreateTime: time.Unix(v.Created, 0).Format(cmn.TimeFormatMode1),
 			})
 		}

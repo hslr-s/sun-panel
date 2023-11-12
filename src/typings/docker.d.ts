@@ -26,6 +26,7 @@ declare namespace Docker.Container {
         createTime: string;
         ports: Port[];
         state: string;
+        status: string;
     }
     
 
