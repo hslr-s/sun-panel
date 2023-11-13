@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { NLayout, NLayoutSider, NMenu, NSpace } from 'naive-ui'
-import { useRoute, useRouter } from 'vue-router'
 import { Container } from './components'
+import { useDockerStore } from './store/docker'
 // import Header from './layout/Header/index.vue'
 const inverted = ref(false)
-const router = useRouter()
-const route = useRoute()
+
+const dockerStore = useDockerStore()
 
 const menuOptions = [
   {
     label: '容器',
-    key: 'DockerContainer',
+    key: 'container',
   },
   //   {
   //     label: "",
@@ -27,15 +27,6 @@ const menuOptions = [
   },
 
 ]
-
-//   export default defineComponent({
-//     setup () {
-//       return {
-//         inverted: ref(false),
-//         menuOptions
-//       }
-//     }
-//   })
 </script>
 
 <template>
@@ -47,35 +38,35 @@ const menuOptions = [
           bordered
           collapse-mode="width"
           :collapsed-width="0"
-          :width="240"
+          :width="150"
           :native-scrollbar="false"
           show-trigger
           :inverted="inverted"
-          class="h-[calc(100vh-60px)]"
+          class="h-[100vh]"
         >
           <NMenu
-            :value="route.name as string"
+            :value="dockerStore.actionMenuBar"
             :inverted="inverted"
             :collapsed-width="0"
+            :default-value="dockerStore.actionMenuBar"
             :collapsed-icon-size="0"
             :options="menuOptions"
-            :default-expanded-keys="['user-manage', 'system-manage']"
-            @update:value="(key: string) => router.push({ name: key })"
+            class="docker-menu"
+            @update:value="(key: string) => dockerStore.actionMenuBar = key"
           />
         </NLayoutSider>
         <NLayout class="h-[calc(100vh-60px)] dark:bg-slate-900 bg-slate-100 ">
-          <div class="p-[20px]">
+          <div v-if="dockerStore.actionMenuBar === 'container'" class="p-[20px]">
             <Container />
           </div>
-          <!-- <router-view class=" h-[calc(100vh-60px)] p-[20px] bg-slate-100 dark:bg-slate-900" /> -->
-          <!-- <RouterView v-slot="{ Component, route }">
-            <component :is="Component" :key="route.fullPath" />
-          </RouterView> -->
         </NLayout>
       </NLayout>
-      <!-- <NLayoutFooter :inverted="inverted" bordered>
-        Footer Footer Footer
-      </NLayoutFooter> -->
     </NLayout>
   </NSpace>
 </template>
+
+<style scoped>
+.docker-menu /deep/  .n-menu-item-content::before {
+  border-radius: 8px;
+}
+</style>

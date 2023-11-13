@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { NSwitch, useMessage } from 'naive-ui'
 import { computed, ref } from 'vue'
+import { useDockerStore } from '../../../store/docker'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { execSwitchAction } from '@/api/docker/container'
 
@@ -8,6 +9,7 @@ const props = defineProps<{
   value: Docker.Container.Info
 }>()
 
+const dockerState = useDockerStore()
 const data = ref(props.value)
 const ms = useMessage()
 const switchLoading = ref(false)
@@ -47,6 +49,7 @@ const switchValue = computed({
         data.value.state = acticonStatus ? DockerContainerInfoState.running : DockerContainerInfoState.exited
 
       switchLoading.value = false
+      dockerState.refreshContainerList()
     })
   },
 })

@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted } from 'vue'
 import { NButton, NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
-import { getList } from '@/api/docker/container'
 import { DockerContainerInfoState } from '@/enums/docker'
 
 const ms = useMessage()
@@ -12,7 +11,6 @@ const dockerState = useDockerStore()
 const pagination = {
   pageSize: 10,
 }
-const data = ref<Docker.Container.Info[]>()
 
 const createColumns = ({
   sendMail,
@@ -133,35 +131,8 @@ const columns = createColumns({
   },
 })
 
-// const data: RowData[] = [
-//   {
-//     key: 0,
-//     name: 'John Brown',
-//     age: 32,
-//     address: 'New York No. 1 Lake Park',
-//     tags: ['nice', 'developer'],
-//   },
-//   {
-//     key: 1,
-//     name: 'Jim Green',
-//     age: 42,
-//     address: 'London No. 1 Lake Park',
-//     tags: ['wow'],
-//   },
-//   {
-//     key: 2,
-//     name: 'Joe Black',
-//     age: 32,
-//     address: 'Sidney No. 1 Lake Park',
-//     tags: ['cool', 'teacher'],
-//   },
-// ]
-
 onMounted(() => {
-  getList<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
-    if (res.code === 0)
-      data.value = res.data.list
-  })
+  dockerState.refreshContainerList()
 })
 </script>
 
@@ -170,7 +141,7 @@ onMounted(() => {
     <NDataTable
       :bordered="false"
       size="large"
-      :data="data"
+      :data="dockerState.containerList"
       :columns="columns"
       :pagination="pagination"
     />

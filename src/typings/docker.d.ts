@@ -3,6 +3,7 @@ declare namespace Docker {
 
     interface State {
         actionMenuBar: string | 'container'
+        containerList:Info[]
     }
 
     
