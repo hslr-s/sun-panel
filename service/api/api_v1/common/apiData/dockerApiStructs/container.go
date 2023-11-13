@@ -10,12 +10,13 @@ const (
 
 type ContainerPort struct {
 	IP          string   `json:"ip"`
-	PrivatePort int      `json:"privatePort"`
-	PublicPort  int      `json:"publicPort"`
+	PrivatePort uint16   `json:"privatePort"`
+	PublicPort  uint16   `json:"publicPort"`
 	Type        PostType `json:"type"`
 }
 
 type ContainerInfoResp struct {
+	ID         string          `json:"id"`
 	Name       string          `json:"name"`
 	Image      string          `json:"image"`
 	ImageID    string          `json:"imageID,omitempty"`
@@ -24,4 +25,9 @@ type ContainerInfoResp struct {
 	Ports      []ContainerPort `json:"ports"`
 	State      string          `json:"state"`
 	Status     string          `json:"status"`
+}
+
+type ExecSwitchActionByContainerIDReq struct {
+	ID     string `json:"id"`
+	Action bool   `json:"action"`
 }

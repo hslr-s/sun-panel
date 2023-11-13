@@ -9,11 +9,13 @@ import (
 
 func InitContainer(router *gin.RouterGroup) {
 	apiDocker := api_v1.ApiGroupApp.ApiDocker
-	// r := router.Group("", middleware.LoginInterceptorDev)
+	r := router.Group("", middleware.LoginInterceptorDebug)
 
-	r := router.Group("", middleware.LoginInterceptor)
+	// r := router.Group("", middleware.LoginInterceptor)
 	{
 		r.POST("/docker/container/getList", apiDocker.Container.GetList)
+		r.POST("/docker/container/execSwitchActionByContainerID", apiDocker.Container.ExecSwitchActionByContainerID)
+
 		// r.POST("/docker/itemIcon/getListByGroupId", itemIcon.GetListByGroupId)
 		// r.POST("/docker/itemIcon/deletes", itemIcon.Deletes)
 	}

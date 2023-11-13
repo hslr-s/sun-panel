@@ -5,3 +5,10 @@ export function getList<T>() {
     url: '/docker/container/getList',
   })
 }
+
+export function execSwitchAction<T>(param: Docker.Container.ExecSwitchActionReq) {
+  return post<T>({
+    url: '/docker/container/execSwitchActionByContainerID',
+    data: param,
+  })
+}

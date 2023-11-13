@@ -1,2 +1,3 @@
 import RowName from './RowName.vue'
-export { RowName }
+import RowAction from './RowAction.vue'
+export { RowName, RowAction }

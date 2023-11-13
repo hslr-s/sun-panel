@@ -19,6 +19,7 @@ declare namespace Docker.Container {
     }
     
     interface Info {
+        id :string
         name: string;
         image: string;
         imageID?: string;
@@ -27,6 +28,11 @@ declare namespace Docker.Container {
         ports: Port[];
         state: string;
         status: string;
+    }
+
+    interface ExecSwitchActionReq {
+        id :string
+        action:boolean
     }
     
 

@@ -3,7 +3,7 @@ import { h, onMounted, ref } from 'vue'
 import { NButton, NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
-import { RowName } from './table'
+import { RowAction, RowName } from './table'
 import { getList } from '@/api/docker/container'
 import { DockerContainerInfoState } from '@/enums/docker'
 
@@ -98,13 +98,21 @@ const createColumns = ({
       key: 'resource',
     },
     {
-      title: 'Tags',
-      key: 'tags',
-
-    },
-    {
       title: 'Action',
-      key: 'actions',
+      key: 'action',
+      render(row) {
+        return h(
+          RowAction,
+          {
+            value: row,
+          },
+        )
+      },
+    },
+
+    {
+      title: '更多',
+      key: 'option',
       render(row) {
         return h(
           NButton,
@@ -112,18 +120,18 @@ const createColumns = ({
             size: 'small',
             onClick: () => sendMail(row),
           },
-          { default: () => 'Send Email' },
+          { default: () => '...' },
         )
       },
     },
   ]
 }
 
-const columns = ref(createColumns({
+const columns = createColumns({
   sendMail(rowData) {
     ms.info(`send mail to ${rowData.name}`)
   },
-}))
+})
 
 // const data: RowData[] = [
 //   {
