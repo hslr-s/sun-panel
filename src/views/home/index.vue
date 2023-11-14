@@ -212,6 +212,11 @@ onMounted(() => {
 
         <!-- 图标 -->
         <div class="mt-[50px]">
+          <!-- 分组标题 -->
+          <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px]">
+            应用列表
+          </div>
+
           <!-- 详情图标 -->
           <div v-if="panelState.panelConfig.iconStyle === 0">
             <NGrid :x-gap="15" :y-gap="15" item-responsive cols="1 200:1 400:2 600:3 800:4 1000:5 1200:6">
@@ -268,7 +273,7 @@ onMounted(() => {
 
           <!-- APP图标宫型盒子 -->
           <div v-if="panelState.panelConfig.iconStyle === 1">
-            <NGrid :x-gap="12" :y-gap="8" item-responsive cols="3 300:4 600:6 900:8">
+            <NGrid :x-gap="12" :y-gap="8" item-responsive cols="3 400:4 600:6 800:8 900:10 1200:12">
               <NGridItem v-for="(item, index) in items" :key="index">
                 <div @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
@@ -336,7 +341,7 @@ onMounted(() => {
 
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" @done="handleEditSuccess" />
 
-    <!-- 新窗口 -->
+    <!-- 弹窗 -->
     <NModal
       v-model:show="windowShow"
       :mask-closable="false"
