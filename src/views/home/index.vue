@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { NButton, NButtonGroup, NDropdown, NEllipsis, NGrid, NGridItem, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { VueDraggable } from 'vue-draggable-plus'
+import { NButton, NButtonGroup, NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref } from 'vue'
 import { EditItem, Setting } from './components'
 import { Clock } from '@/components/deskModule'
@@ -45,7 +46,7 @@ const dropdownMenuOptions = [
     key: 'delete',
   },
 ]
-const items = ref<Panel.ItemInfo[]>()
+const items = ref<Panel.ItemInfo[]>([])
 
 function handleAddAppClick() {
   editItemInfoData.value = null
@@ -159,6 +160,11 @@ function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
     ms.success('已经切换成互联网模式(此配置仅保存在本地)')
 }
 
+// 结束拖拽
+function handleEndDrag() {
+  console.log(items.value)
+}
+
 onMounted(() => {
   getList()
 
@@ -219,7 +225,37 @@ onMounted(() => {
 
           <!-- 详情图标 -->
           <div v-if="panelState.panelConfig.iconStyle === 0">
-            <NGrid :x-gap="15" :y-gap="15" item-responsive cols="1 200:1 400:2 600:3 800:4 1000:5 1200:6">
+            <VueDraggable
+              v-model="items"
+              item-key="sort"
+              :animation="300"
+              class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
+              @end="handleEndDrag"
+            >
+              <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
+                <div
+                  class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                  @click="handleItemClick(item)"
+                >
+                  <div class="w-[70px]">
+                    <ItemIcon :item-icon="item.icon" />
+                  </div>
+                  <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
+                    <div>
+                      <NEllipsis>
+                        {{ item.title }}
+                      </NEllipsis>
+                    </div>
+                    <div>
+                      <NEllipsis :line-clamp="2" class="text-xs">
+                        {{ item.description }}
+                      </NEllipsis>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </vuedraggable>
+            <!-- <NGrid :x-gap="15" :y-gap="15" item-responsive cols="1 200:1 400:2 600:3 800:4 1000:5 1200:6">
               <NGridItem v-for="(item, index) in items" :key="index">
                 <div @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
@@ -268,37 +304,29 @@ onMounted(() => {
                   </div>
                 </div>
               </NGridItem>
-            </NGrid>
+            </NGrid> -->
           </div>
 
           <!-- APP图标宫型盒子 -->
           <div v-if="panelState.panelConfig.iconStyle === 1">
-            <NGrid :x-gap="12" :y-gap="8" item-responsive cols="3 400:4 600:6 800:8 900:10 1200:12">
-              <NGridItem v-for="(item, index) in items" :key="index">
-                <div @contextmenu="(e) => handleContextMenu(e, item)">
-                  <div
-                    class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
-                    @click="handleItemClick(item)"
-                  >
-                    <ItemIcon :item-icon="item.icon" />
-                  </div>
-                  <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)">
-                    <span>{{ item.title }}</span>
-                  </div>
+            <VueDraggable
+              v-model="items"
+              item-key="id"
+              :animation="300"
+              class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+            >
+              <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
+                <div
+                  class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                  @click="handleItemClick(item)"
+                >
+                  <ItemIcon :item-icon="item.icon" />
                 </div>
-              </NGridItem>
-
-              <NGridItem>
-                <div>
-                  <div class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]" @click="handleAddAppClick">
-                    <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
-                  </div>
-                  <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick">
-                    添加图标
-                  </div>
+                <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)">
+                  <span>{{ item.title }}</span>
                 </div>
-              </NGridItem>
-            </NGrid>
+              </div>
+            </vuedraggable>
           </div>
         </div>
       </div>
