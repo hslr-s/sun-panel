@@ -25,8 +25,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	}
 
 	req.UserId = userInfo.ID
-	req.GroupId = 1
-	req.Sort = 1
+	req.Sort = 9999
 
 	// json转字符串
 	if j, err := json.Marshal(req.Icon); err == nil {
@@ -87,7 +86,7 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	itemIcons := []models.ItemIcon{}
 
-	if err := global.Db.Order("sort ,created_at DESC").Where("user_id=?", userInfo.ID).Find(&itemIcons, "group_id = ? AND user_id=?", 1, userInfo.ID).Error; err != nil {
+	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&itemIcons, "group_id = ? AND user_id=?", 1, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
@@ -108,7 +107,7 @@ func (a *ItemIcon) Deletes(c *gin.Context) {
 	}
 
 	userInfo, _ := base.GetCurrentUserInfo(c)
-	if err := global.Db.Debug().Delete(&models.ItemIcon{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
+	if err := global.Db.Delete(&models.ItemIcon{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}

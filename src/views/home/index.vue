@@ -231,6 +231,7 @@ onMounted(() => {
               :animation="300"
               class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
               @end="handleEndDrag"
+              filter=".not-drag"
             >
               <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                 <div
@@ -253,6 +254,28 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div class="not-drag">
+                  <div
+                    class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                    @click="handleAddAppClick"
+                  >
+                    <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#00000000' }" />
+                    <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
+                      <div>
+                        <NEllipsis>
+                          添加图标
+                        </NEllipsis>
+                      </div>
+
+                      <div class="text text-xs">
+                        <NEllipsis>
+                          新增一个新的图标
+                        </NEllipsis>
+                      </div>
+                    </div>
+                  </div>
               </div>
             </vuedraggable>
             <!-- <NGrid :x-gap="15" :y-gap="15" item-responsive cols="1 200:1 400:2 600:3 800:4 1000:5 1200:6">
@@ -314,6 +337,7 @@ onMounted(() => {
               item-key="id"
               :animation="300"
               class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+              filter=".not-drag"
             >
               <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                 <div
@@ -326,6 +350,16 @@ onMounted(() => {
                   <span>{{ item.title }}</span>
                 </div>
               </div>
+
+              <div class="not-drag">
+                <div class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]" @click="handleAddAppClick">
+                  <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
+                </div>
+                <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick">
+                  添加图标
+                </div>
+              </div>
+
             </vuedraggable>
           </div>
         </div>
