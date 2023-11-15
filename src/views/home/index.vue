@@ -185,15 +185,12 @@ onMounted(() => {
 
 <template>
   <div class="w-full h-full sun-main ">
-    <div
-      class="cover"
-      :style="{
-        filter: `blur(${panelState.panelConfig.backgroundBlur}px)`,
-        background: `url(${panelState.panelConfig.backgroundImageSrc}) no-repeat`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }"
-    />
+    <div class="cover" :style="{
+      filter: `blur(${panelState.panelConfig.backgroundBlur}px)`,
+      background: `url(${panelState.panelConfig.backgroundImageSrc}) no-repeat`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }" />
     <div class="absolute w-full h-full overflow-auto">
       <div class="p-2.5 max-w-[1200px] mx-auto mt-[10%]">
         <!-- 头 -->
@@ -211,80 +208,28 @@ onMounted(() => {
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
-        <!-- <div class="flex mt-[20px] mx-auto w-[80%]">
+          <!-- <div class="flex mt-[20px] mx-auto w-[80%]">
           <SearchBox />
         </div> -->
         </div>
 
-        <!-- 图标 -->
+        <!-- 应用盒子 -->
         <div class="mt-[50px]">
-          <!-- 分组标题 -->
-          <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px]">
-            应用列表
-          </div>
+          <div class="mt-[50px]">
+            <!-- 分组标题 -->
+            <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px]">
+              应用列表
+            </div>
 
-          <!-- 详情图标 -->
-          <div v-if="panelState.panelConfig.iconStyle === 0">
-            <VueDraggable
-              v-model="items"
-              item-key="sort"
-              :animation="300"
-              class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
-              @end="handleEndDrag"
-              filter=".not-drag"
-            >
-              <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
-                <div
-                  class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
-                  @click="handleItemClick(item)"
-                >
-                  <div class="w-[70px]">
-                    <ItemIcon :item-icon="item.icon" />
-                  </div>
-                  <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                    <div>
-                      <NEllipsis>
-                        {{ item.title }}
-                      </NEllipsis>
-                    </div>
-                    <div>
-                      <NEllipsis :line-clamp="2" class="text-xs">
-                        {{ item.description }}
-                      </NEllipsis>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="not-drag">
+            <!-- 详情图标 -->
+            <div v-if="panelState.panelConfig.iconStyle === 0">
+              <VueDraggable v-model="items" item-key="sort" :animation="300"
+                class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
+                @end="handleEndDrag" filter=".not-drag">
+                <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
                     class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
-                    @click="handleAddAppClick"
-                  >
-                    <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#00000000' }" />
-                    <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                      <div>
-                        <NEllipsis>
-                          添加图标
-                        </NEllipsis>
-                      </div>
-
-                      <div class="text text-xs">
-                        <NEllipsis>
-                          新增一个新的图标
-                        </NEllipsis>
-                      </div>
-                    </div>
-                  </div>
-              </div>
-            </vuedraggable>
-            <!-- <NGrid :x-gap="15" :y-gap="15" item-responsive cols="1 200:1 400:2 600:3 800:4 1000:5 1200:6">
-              <NGridItem v-for="(item, index) in items" :key="index">
-                <div @contextmenu="(e) => handleContextMenu(e, item)">
-                  <div
-                    class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
-                    @click="handleItemClick(item)"
-                  >
+                    @click="handleItemClick(item)">
                     <div class="w-[70px]">
                       <ItemIcon :item-icon="item.icon" />
                     </div>
@@ -302,14 +247,11 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-              </NGridItem>
 
-              <NGridItem>
-                <div>
+                <div class="not-drag">
                   <div
                     class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
-                    @click="handleAddAppClick"
-                  >
+                    @click="handleAddAppClick">
                     <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#00000000' }" />
                     <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
                       <div>
@@ -326,67 +268,62 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-              </NGridItem>
-            </NGrid> -->
+              </vuedraggable>
+            </div>
+
+            <!-- APP图标宫型盒子 -->
+            <div v-if="panelState.panelConfig.iconStyle === 1">
+              <VueDraggable v-model="items" item-key="id" :animation="300"
+                class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+                filter=".not-drag">
+                <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
+                  <div
+                    class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                    @click="handleItemClick(item)">
+                    <ItemIcon :item-icon="item.icon" />
+                  </div>
+                  <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+                    :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)">
+                    <span>{{ item.title }}</span>
+                  </div>
+                </div>
+
+                <div class="not-drag">
+                  <div
+                    class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+                    @click="handleAddAppClick">
+                    <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
+                  </div>
+                  <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+                    :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick">
+                    添加图标
+                  </div>
+                </div>
+
+              </vuedraggable>
+            </div>
           </div>
 
-          <!-- APP图标宫型盒子 -->
-          <div v-if="panelState.panelConfig.iconStyle === 1">
-            <VueDraggable
-              v-model="items"
-              item-key="id"
-              :animation="300"
-              class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
-              filter=".not-drag"
-            >
-              <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
-                <div
-                  class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
-                  @click="handleItemClick(item)"
-                >
-                  <ItemIcon :item-icon="item.icon" />
-                </div>
-                <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)">
-                  <span>{{ item.title }}</span>
-                </div>
-              </div>
 
-              <div class="not-drag">
-                <div class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]" @click="handleAddAppClick">
-                  <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
-                </div>
-                <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick">
-                  添加图标
-                </div>
-              </div>
-
-            </vuedraggable>
-          </div>
         </div>
       </div>
     </div>
 
     <!-- 右键菜单 -->
-    <NDropdown
-      placement="bottom-start"
-      trigger="manual"
-      :x="dropdownMenuX"
-      :y="dropdownMenuY"
-      :options="dropdownMenuOptions"
-      :show="dropdownShow"
-      :on-clickoutside="onClickoutside"
-      @select="handleSelect"
-    />
+    <NDropdown placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
+      :options="dropdownMenuOptions" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleSelect" />
 
     <!-- 悬浮按钮 -->
     <div class="fixed-element  shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
       <NButtonGroup vertical>
-        <NButton v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b" title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)">
+        <NButton v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
+          title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline" />
           </template>
         </NButton>
-        <NButton v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b" title="当前:互联网模式，点击切换成局域网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)">
+        <NButton v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b"
+          title="当前:互联网模式，点击切换成局域网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="mdi:wan" />
           </template>
@@ -404,16 +341,9 @@ onMounted(() => {
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" @done="handleEditSuccess" />
 
     <!-- 弹窗 -->
-    <NModal
-      v-model:show="windowShow"
-      :mask-closable="false"
-      preset="card"
-      style="max-width: 1000px;height: 600px;border-radius: 1rem;"
-      :bordered="false"
-      size="small"
-      role="dialog"
-      aria-modal="true"
-    >
+    <NModal v-model:show="windowShow" :mask-closable="false" preset="card"
+      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="false" size="small" role="dialog"
+      aria-modal="true">
       <template #header>
         <div class="flex items-center">
           <span class="mr-[20px]">
@@ -425,45 +355,50 @@ onMounted(() => {
       </template>
       <div class="w-full h-full rounded-2xl overflow-hidden border">
         <NSkeleton v-if="windowIframeIsLoad" height="100%" width="100%" />
-        <iframe v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc" class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad" />
+        <iframe v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc"
+          class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad" />
       </div>
     </NModal>
   </div>
 </template>
 
 <style>
-body,html{
+body,
+html {
   overflow: hidden;
   background-color: rgb(54, 54, 54);
 }
 </style>
 
 <style scoped>
-.sun-main{
+.sun-main {
   user-select: none;
 }
 
-.cover{
-  position:absolute;
-  width:100%;
-  height:100%;
+.cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   /* background: url(@/assets/start_sky.jpg) no-repeat; */
 
   transform: scale(1.05);
 }
 
-.text-shadow{
+.text-shadow {
   text-shadow: 2px 2px 50px rgb(0, 0, 0);
 }
 
-.app-icon-text-shadow{
+.app-icon-text-shadow {
   text-shadow: 2px 2px 5px rgb(0, 0, 0);
 }
 
 .fixed-element {
-  position: fixed; /* 将元素固定在屏幕上 */
-  right: 30px; /* 距离屏幕顶部的距离 */
-  bottom: 50px; /* 距离屏幕左侧的距离 */
+  position: fixed;
+  /* 将元素固定在屏幕上 */
+  right: 30px;
+  /* 距离屏幕顶部的距离 */
+  bottom: 50px;
+  /* 距离屏幕左侧的距离 */
 }
 </style>
