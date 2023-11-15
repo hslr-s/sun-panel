@@ -160,6 +160,11 @@ function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
     ms.success('已经切换成互联网模式(此配置仅保存在本地)')
 }
 
+// 结束拖拽
+function handleEndDrag() {
+  console.log(items.value)
+}
+
 onMounted(() => {
   getList()
 
@@ -222,9 +227,10 @@ onMounted(() => {
           <div v-if="panelState.panelConfig.iconStyle === 0">
             <VueDraggable
               v-model="items"
-              item-key="id"
+              item-key="sort"
               :animation="300"
               class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
+              @end="handleEndDrag"
             >
               <div v-for="item, index in items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                 <div
