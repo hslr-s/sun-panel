@@ -21,6 +21,28 @@
 - 支持网页内置小窗口打开（部分网站屏蔽此功能）
 - 占用资源小
 
+## 🎨 演示（demo）
+
+演示站说明：
+1. 服务器资源有限请不要上传特大图片文件
+2. 方便他人访问，请不要修改主账号密码
+3. 数据不定期清理，请不要作为主力导航页使用
+4. 请不要放违规内容
+
+演示地址：[点此跳转](http://sunpaneldemo.enianteam.com/#/)
+
+账号密码： [默认账号密码](#默认账号密码)
+账号：admin@sun.cc 密码：12345678
+
+## 🐳 联系作者&交流群
+开发者：**[红烧猎人](https://blog.enianteam.com/u/sun/content/11)**
+
+新建的QQ交流群: **276594668**
+
+## 🍵 打赏
+
+开源不易，如果该项目对您有帮助，您可以选择对我打赏[[点此去打赏页面](./doc/donate.md)]，在寒冷的冬天让我喝上一杯热乎乎的奶茶❤️。
+
 ## 🫓 后面想做的事
 
 先画个饼
@@ -41,6 +63,8 @@
 ![](./doc/images/window-xunlei.png)
 
 ## 🍜 使用教程
+
+<div id="default-username"></div>
 
 ### 默认账号密码
 账号：admin@sun.cc
@@ -93,7 +117,7 @@ hslr/sun-panel
 
 ### 编译和运行
 
-前端
+#### 前端
 ```
 # 开发运行
 pnpm dev
@@ -102,10 +126,15 @@ pnpm dev
 pnpm build
 ```
 
-后端
-```
-# 开发运行
+#### 后端
 
+1.正式编译程序前先进入`service`
+
+2.按照[静态资源编译教程](./service/assets/readme.md)编译后端静态文件
+
+3.正式编译
+```
+# 进入后端项目
 cd service
 
 # 开发运行
@@ -115,7 +144,7 @@ go run main.go
 go build -o sun-panel main.go
 ```
 
-docker windows本地开发编译运行
+#### docker windows本地开发编译运行
 
 ```
 // 编译
