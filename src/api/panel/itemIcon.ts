@@ -14,9 +14,10 @@ export function edit<T>(req: Panel.ItemInfo) {
 //   })
 // }
 
-export function getListByGroupId<T>() {
+export function getListByGroupId<T>(itemIconGroupId: number | undefined) {
   return post<T>({
     url: '/panel/itemIcon/getListByGroupId',
+    data: { itemIconGroupId },
   })
 }
 

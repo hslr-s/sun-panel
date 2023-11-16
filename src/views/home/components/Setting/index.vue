@@ -5,6 +5,8 @@ import Style from './tabs/Style.vue'
 import About from './tabs/About.vue'
 import Users from './tabs/Users.vue'
 import UserInfo from './tabs/UserInfo.vue'
+import ItemGroupManage from './tabs/ItemGroupManage.vue'
+
 import { RoundCardModal } from '@/components/common'
 
 const props = defineProps<{
@@ -30,6 +32,9 @@ const show = computed({
         <NTabPane name="style" tab="样式">
           <Style />
         </NTabPane>
+        <NTabPane name="itemGroupManage" tab="分组管理">
+          <ItemGroupManage />
+        </NTabPane>
         <NTabPane name="userInfo" tab="登录信息">
           <UserInfo />
         </NTabPane>
@@ -45,7 +50,7 @@ const show = computed({
 </template>
 
 <style scoped>
-.text-shadow{
+.text-shadow {
   text-shadow: 0px 0px 5px gray;
 }
 </style>

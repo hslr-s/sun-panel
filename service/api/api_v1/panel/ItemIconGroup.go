@@ -1,6 +1,7 @@
 package panel
 
 import (
+	"math"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
@@ -53,7 +54,7 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 		defaultGroup := models.ItemIconGroup{
 			Title:  "APP",
 			UserId: userInfo.ID,
-			Icon:   "material-symbols:folder-outline"}
+			Icon:   "material-symbols:ad-group-outline"}
 		if err := global.Db.Create(&defaultGroup).Error; err != nil {
 			apiReturn.ErrorDatabase(c, err.Error())
 			return
@@ -78,8 +79,20 @@ func (a *ItemIconGroup) Deletes(c *gin.Context) {
 		apiReturn.ErrorParamFomat(c, err.Error())
 		return
 	}
-
 	userInfo, _ := base.GetCurrentUserInfo(c)
+
+	var count int64
+	if err := global.Db.Model(&models.ItemIconGroup{}).Where(" user_id=?", userInfo.ID).Count(&count).Error; err != nil {
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
+	} else {
+		if math.Abs(float64(len(req.Ids))-float64(count)) < 1 {
+			apiReturn.Error(c, "至少要保留一个")
+			return
+		}
+
+	}
+
 	if err := global.Db.Delete(&models.ItemIconGroup{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return

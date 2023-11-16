@@ -1,15 +1,15 @@
 import { post } from '@/utils/request'
 
-export function edit<T>(req: Panel.ItemInfo) {
+export function edit<T>(req: Panel.ItemIconGroup) {
   return post<T>({
     url: '/panel/itemIconGroup/edit',
     data: req,
   })
 }
 
-export function getListByGroupId<T>() {
+export function getList<T>() {
   return post<T>({
-    url: '/panel/itemIconGroup/getListByGroupId',
+    url: '/panel/itemIconGroup/getList',
   })
 }
 

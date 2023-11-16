@@ -76,7 +76,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 // }
 
 func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
-	req := commonApiStructs.RequestPage{}
+	req := models.ItemIcon{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
@@ -86,7 +86,7 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	itemIcons := []models.ItemIcon{}
 
-	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&itemIcons, "group_id = ? AND user_id=?", 1, userInfo.ID).Error; err != nil {
+	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&itemIcons, "group_id = ? AND user_id=?", req.ItemIconGroupId, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
