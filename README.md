@@ -165,3 +165,7 @@ docker run --rm -d -p 3003:3002 -v  D:\docker\data\sun-panel\conf:/app/conf -v  
 - [Wallhaven](https://wallhaven.cc/)
 - [Wallpaperscraft](https://wallpaperscraft.com/)
 - [Wallpaper Abyss](https://wall.alphacoders.com/)
+
+## ❤️ 感谢
+
+- [Roc](https://github.com/RocCheng)提供自动构建多平台docker镜像[方案](https://github.com/hslr-s/sun-panel/issues/9#issuecomment-1817433439)

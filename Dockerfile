@@ -1,5 +1,5 @@
 # build front-end
-FROM node:lts-alpine AS web_image
+FROM node AS web_image
 
 RUN npm install pnpm -g
 
