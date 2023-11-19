@@ -15,7 +15,7 @@ jobs:
 
       - name: Read version from file
         id: read_version
-        run: echo "APP_VERSION=$(cut -d '|' -f 2 ./assets/VERSION)" >> $GITHUB_ENV
+        run: echo "APP_VERSION=$(cut -d '|' -f 2 ./service/assets/VERSION)" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
