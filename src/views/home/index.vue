@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { NButton, NButtonGroup, NDropdown, NEllipsis, NGrid, NGridItem, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { VueDraggable } from 'vue-draggable-plus'
+import { NButton, NButtonGroup, NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref } from 'vue'
 import { EditItem, Setting } from './components'
 import { Clock } from '@/components/deskModule'
 import { ItemIcon, SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId } from '@/api/panel/itemIcon'
+import { getList as getGroupList } from '@/api/panel/itemIconGroup'
+
 import { getInfo } from '@/api/system/user'
 import { usePanelState, useUserStore } from '@/store'
 import { PanelStateNetworkModeEnum } from '@/enums'
@@ -45,7 +48,11 @@ const dropdownMenuOptions = [
     key: 'delete',
   },
 ]
-const items = ref<Panel.ItemInfo[]>()
+
+interface ItemGroup extends Panel.ItemIconGroup {
+  items?: Panel.ItemInfo[]
+}
+const items = ref<ItemGroup[]>([])
 
 function handleAddAppClick() {
   editItemInfoData.value = null
@@ -84,9 +91,18 @@ function handWindowIframeIdLoad(payload: Event) {
 }
 
 function getList() {
-  getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>().then((res) => {
-    if (res.code === 0)
-      items.value = res.data.list
+  // 获取组数据
+  getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ code, data, msg }) => {
+    if (code === 0)
+      items.value = data.list
+    for (let i = 0; i < data.list.length; i++) {
+      const element = data.list[i]
+      getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(element.id).then((res) => {
+        if (res.code === 0)
+          items.value[i].items = res.data.list
+      })
+    }
+    console.log(items)
   })
 }
 
@@ -159,6 +175,11 @@ function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
     ms.success('已经切换成互联网模式(此配置仅保存在本地)')
 }
 
+// 结束拖拽
+function handleEndDrag() {
+  console.log(items.value)
+}
+
 onMounted(() => {
   getList()
 
@@ -180,8 +201,7 @@ onMounted(() => {
 <template>
   <div class="w-full h-full sun-main ">
     <div
-      class="cover"
-      :style="{
+      class="cover" :style="{
         filter: `blur(${panelState.panelConfig.backgroundBlur}px)`,
         background: `url(${panelState.panelConfig.backgroundImageSrc}) no-repeat`,
         backgroundSize: 'cover',
@@ -205,18 +225,28 @@ onMounted(() => {
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
-        <!-- <div class="flex mt-[20px] mx-auto w-[80%]">
+          <!-- <div class="flex mt-[20px] mx-auto w-[80%]">
           <SearchBox />
         </div> -->
         </div>
 
-        <!-- 图标 -->
+        <!-- 应用盒子 -->
         <div class="mt-[50px]">
-          <!-- 详情图标 -->
-          <div v-if="panelState.panelConfig.iconStyle === 0">
-            <NGrid :x-gap="15" :y-gap="15" item-responsive cols="1 200:1 400:2 600:3 800:4 1000:5 1200:6">
-              <NGridItem v-for="(item, index) in items" :key="index">
-                <div @contextmenu="(e) => handleContextMenu(e, item)">
+          <!-- 组纵向排列 -->
+          <div v-for="(itemGroup, itemGroupIndex) in items" :key="itemGroupIndex" class="mt-[50px]">
+            <!-- 分组标题 -->
+            <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px]">
+              {{ itemGroup.title }}
+            </div>
+
+            <!-- 详情图标 -->
+            <div v-if="panelState.panelConfig.iconStyle === 0 && itemGroup.items ">
+              <VueDraggable
+                v-model="itemGroup.items" item-key="sort" :animation="300"
+                class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
+                filter=".not-drag" @end="handleEndDrag"
+              >
+                <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
                     class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
                     @click="handleItemClick(item)"
@@ -238,10 +268,8 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-              </NGridItem>
 
-              <NGridItem>
-                <div>
+                <div class="not-drag">
                   <div
                     class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
                     @click="handleAddAppClick"
@@ -262,38 +290,47 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-              </NGridItem>
-            </NGrid>
-          </div>
+              </vuedraggable>
+            </div>
 
-          <!-- APP图标宫型盒子 -->
-          <div v-if="panelState.panelConfig.iconStyle === 1">
-            <NGrid :x-gap="12" :y-gap="8" item-responsive cols="3 300:4 600:6 900:8">
-              <NGridItem v-for="(item, index) in items" :key="index">
-                <div @contextmenu="(e) => handleContextMenu(e, item)">
+            <!-- APP图标宫型盒子 -->
+            <div v-if="panelState.panelConfig.iconStyle === 1 && itemGroup.items">
+              <VueDraggable
+                v-model="itemGroup.items" item-key="id" :animation="300"
+                class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+                filter=".not-drag"
+              >
+                <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
-                    class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                    class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
                     @click="handleItemClick(item)"
                   >
                     <ItemIcon :item-icon="item.icon" />
                   </div>
-                  <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)">
+                  <div
+                    class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+                    :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)"
+                  >
                     <span>{{ item.title }}</span>
                   </div>
                 </div>
-              </NGridItem>
 
-              <NGridItem>
-                <div>
-                  <div class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]" @click="handleAddAppClick">
+                <div class="not-drag">
+                  <div
+                    class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+                    @click="handleAddAppClick"
+                  >
                     <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
                   </div>
-                  <div class="text-center app-icon-text-shadow cursor-pointer mt-[2px]" :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick">
+                  <div
+                    class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+                    :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick"
+                  >
                     添加图标
                   </div>
                 </div>
-              </NGridItem>
-            </NGrid>
+              </vuedraggable>
+            </div>
           </div>
         </div>
       </div>
@@ -301,25 +338,25 @@ onMounted(() => {
 
     <!-- 右键菜单 -->
     <NDropdown
-      placement="bottom-start"
-      trigger="manual"
-      :x="dropdownMenuX"
-      :y="dropdownMenuY"
-      :options="dropdownMenuOptions"
-      :show="dropdownShow"
-      :on-clickoutside="onClickoutside"
-      @select="handleSelect"
+      placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
+      :options="dropdownMenuOptions" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleSelect"
     />
 
     <!-- 悬浮按钮 -->
     <div class="fixed-element  shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
       <NButtonGroup vertical>
-        <NButton v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b" title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)">
+        <NButton
+          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
+          title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
+        >
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline" />
           </template>
         </NButton>
-        <NButton v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b" title="当前:互联网模式，点击切换成局域网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)">
+        <NButton
+          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b"
+          title="当前:互联网模式，点击切换成局域网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
+        >
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="mdi:wan" />
           </template>
@@ -336,15 +373,10 @@ onMounted(() => {
 
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" @done="handleEditSuccess" />
 
-    <!-- 新窗口 -->
+    <!-- 弹窗 -->
     <NModal
-      v-model:show="windowShow"
-      :mask-closable="false"
-      preset="card"
-      style="max-width: 1000px;height: 600px;border-radius: 1rem;"
-      :bordered="false"
-      size="small"
-      role="dialog"
+      v-model:show="windowShow" :mask-closable="false" preset="card"
+      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="false" size="small" role="dialog"
       aria-modal="true"
     >
       <template #header>
@@ -358,45 +390,52 @@ onMounted(() => {
       </template>
       <div class="w-full h-full rounded-2xl overflow-hidden border">
         <NSkeleton v-if="windowIframeIsLoad" height="100%" width="100%" />
-        <iframe v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc" class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad" />
+        <iframe
+          v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc"
+          class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
+        />
       </div>
     </NModal>
   </div>
 </template>
 
 <style>
-body,html{
+body,
+html {
   overflow: hidden;
   background-color: rgb(54, 54, 54);
 }
 </style>
 
 <style scoped>
-.sun-main{
+.sun-main {
   user-select: none;
 }
 
-.cover{
-  position:absolute;
-  width:100%;
-  height:100%;
+.cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   /* background: url(@/assets/start_sky.jpg) no-repeat; */
 
   transform: scale(1.05);
 }
 
-.text-shadow{
+.text-shadow {
   text-shadow: 2px 2px 50px rgb(0, 0, 0);
 }
 
-.app-icon-text-shadow{
+.app-icon-text-shadow {
   text-shadow: 2px 2px 5px rgb(0, 0, 0);
 }
 
 .fixed-element {
-  position: fixed; /* 将元素固定在屏幕上 */
-  right: 30px; /* 距离屏幕顶部的距离 */
-  bottom: 50px; /* 距离屏幕左侧的距离 */
+  position: fixed;
+  /* 将元素固定在屏幕上 */
+  right: 30px;
+  /* 距离屏幕顶部的距离 */
+  bottom: 50px;
+  /* 距离屏幕左侧的距离 */
 }
 </style>

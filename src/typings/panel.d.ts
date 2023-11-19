@@ -13,6 +13,12 @@ declare namespace Panel {
         openMethod: number
     }
 
+    interface ItemIconGroup extends Common.InfoBase {
+        icon?: string
+        title?: string
+        sort?:number
+    }
+
     interface ItemIcon {
         itemType: number
         src ?: string

@@ -1,5 +1,5 @@
 # build front-end
-FROM node:lts-alpine AS web_image
+FROM node AS web_image
 
 RUN npm install pnpm -g
 
@@ -16,7 +16,7 @@ COPY . /build
 RUN pnpm run build
 
 # build backend
-FROM golang:1.19 as server_image
+FROM golang:1.20 as server_image
 
 WORKDIR /build
 
