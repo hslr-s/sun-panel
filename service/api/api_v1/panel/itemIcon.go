@@ -35,7 +35,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	if req.ID != 0 {
 		// 修改
 		global.Db.Model(&models.ItemIcon{}).
-			Select("IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "Sort", "GroupId", "UserId").
+			Select("IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "Sort", "GroupId", "UserId", "ItemIconGroupId").
 			Where("id=?", req.ID).Updates(&req)
 	} else {
 		// 创建
@@ -86,7 +86,7 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	itemIcons := []models.ItemIcon{}
 
-	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&itemIcons, "group_id = ? AND user_id=?", req.ItemIconGroupId, userInfo.ID).Error; err != nil {
+	if err := global.Db.Debug().Order("sort ,created_at").Find(&itemIcons, "item_icon_group_id = ? AND user_id=?", req.ItemIconGroupId, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}

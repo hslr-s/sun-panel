@@ -11,6 +11,7 @@ declare namespace Panel {
         lanUrl?: string
         description?: string
         openMethod: number
+        itemIconGroupId ?:number
     }
 
     interface ItemIconGroup extends Common.InfoBase {
