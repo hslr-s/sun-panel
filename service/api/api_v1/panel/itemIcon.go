@@ -27,7 +27,6 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	}
 
 	req.UserId = userInfo.ID
-	req.Sort = 9999
 
 	// json转字符串
 	if j, err := json.Marshal(req.Icon); err == nil {
@@ -40,6 +39,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 			Select("IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "Sort", "GroupId", "UserId", "ItemIconGroupId").
 			Where("id=?", req.ID).Updates(&req)
 	} else {
+		req.Sort = 9999
 		// 创建
 		global.Db.Create(&req)
 	}
