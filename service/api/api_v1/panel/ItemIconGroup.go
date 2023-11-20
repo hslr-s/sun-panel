@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 )
 
 type ItemIconGroup struct {
@@ -95,6 +96,38 @@ func (a *ItemIconGroup) Deletes(c *gin.Context) {
 
 	if err := global.Db.Delete(&models.ItemIconGroup{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
+		return
+	}
+
+	apiReturn.Success(c)
+}
+
+// 保存排序
+func (a *ItemIconGroup) SaveSort(c *gin.Context) {
+	req := commonApiStructs.SortRequest{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	userInfo, _ := base.GetCurrentUserInfo(c)
+
+	transactionErr := global.Db.Transaction(func(tx *gorm.DB) error {
+		// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
+		for _, v := range req.SortItems {
+			if err := tx.Model(&models.ItemIconGroup{}).Where("user_id=? AND id=?", userInfo.ID, v.Id).Update("sort", v.Sort).Error; err != nil {
+				// 返回任何错误都会回滚事务
+				return err
+			}
+		}
+
+		// 返回 nil 提交事务
+		return nil
+	})
+
+	if transactionErr != nil {
+		apiReturn.ErrorDatabase(c, transactionErr.Error())
 		return
 	}
 

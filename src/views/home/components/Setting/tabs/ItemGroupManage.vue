@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import { NButton, NCard, NForm, NFormItem, NInput, useDialog, useMessage } from 'naive-ui'
 import { VueDraggable } from 'vue-draggable-plus'
-import { deletes, edit, getList } from '@/api/panel/itemIconGroup'
+import { deletes, edit, getList, saveSort } from '@/api/panel/itemIconGroup'
 import { RoundCardModal, SvgIcon } from '@/components/common'
 
 interface EditModalArg {
@@ -16,6 +16,7 @@ interface EditModalArg {
 const formRef = ref<FormInst | null>(null)
 const ms = useMessage()
 const dialog = useDialog()
+const sortStatus = ref(false)
 
 const defaultMNodal = {
   title: '',
@@ -47,6 +48,30 @@ function handleAddGroup() {
 function handleEditGroup(groupInfo: Panel.ItemIconGroup) {
   editModalArg.value.show = true
   editModalArg.value.model = groupInfo
+}
+
+function handleDragSort() {
+  sortStatus.value = true
+}
+
+function handleSaveSort() {
+  const saveItems: Common.SortItemRequest[] = []
+  for (let i = 0; i < groups.value.length; i++) {
+    const element = groups.value[i]
+    saveItems.push({
+      id: element.id as number,
+      sort: i + 1,
+    })
+  }
+  saveSort(saveItems).then(({ code, msg }) => {
+    if (code === 0) {
+      ms.success('保存成功')
+      sortStatus.value = false
+    }
+    else {
+      ms.error(`保存失败:${msg}`)
+    }
+  })
 }
 
 function handleDelete(groupInfo: Panel.ItemIconGroup) {
@@ -98,18 +123,29 @@ onMounted(() => {
 
 <template>
   <div class="h-[500px]">
-    <NButton type="success" size="small" @click="handleAddGroup">
-      新增分组
-    </NButton>
+    <div>
+      <NButton type="success" size="small" style="margin-right: 10px;" @click="handleAddGroup">
+        新增分组
+      </NButton>
+
+      <NButton v-if="!sortStatus" size="small" @click="handleDragSort">
+        排序
+      </NButton>
+
+      <NButton v-else type="warning" size="small" @click="handleSaveSort">
+        保存排序
+      </NButton>
+    </div>
 
     <VueDraggable
       v-model="groups"
       item-key="sort" :animation="300"
       class="mt-[20px] p-[20px] bg-slate-200 rounded-xl"
+      :disabled="!sortStatus"
     >
       <div v-for="(item, index) in groups" :key="index" class="w-[60%]">
         <NCard size="small" style="border-radius:10px;margin-bottom: 10px;">
-          <div class="flex">
+          <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
             <div class="flex items-center">
               <span class="mr-[10px]">
                 <SvgIcon class="text-[20px]" :icon="item.icon" />
