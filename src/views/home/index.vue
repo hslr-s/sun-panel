@@ -177,10 +177,10 @@ function handleEditSuccess(item: Panel.ItemInfo) {
 function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
   panelState.setNetworkMode(mode)
   if (mode === PanelStateNetworkModeEnum.lan)
-    ms.success('已经切换成局域网模式，此时再点击已填写局域网地址的图标将跳转至局域网地址(此配置仅保存在本地)')
+    ms.success('已经切换成局域网模式(此配置仅保存在本地)')
 
   else
-    ms.success('已经切换成外模式(此配置仅保存在本地)')
+    ms.success('已经切换成互联网模式(此配置仅保存在本地)')
 }
 
 // 结束拖拽
@@ -285,102 +285,106 @@ onMounted(() => {
             </div>
 
             <!-- 详情图标 -->
-            <div v-if="panelState.panelConfig.iconStyle === 0 && itemGroup.items ">
-              <VueDraggable
-                v-model="itemGroup.items" item-key="sort" :animation="300"
-                class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
-                filter=".not-drag"
-                :disabled="!stateDragAppSort.status"
-                @end="(event) => handleEndDrag(event, itemGroup)"
-              >
-                <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
-                  <div
-                    class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
-                    :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
-                    @click="handleItemClick(item)"
-                  >
-                    <div class="w-[70px]">
-                      <ItemIcon :item-icon="item.icon" />
-                    </div>
-                    <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                      <div>
-                        <NEllipsis>
-                          {{ item.title }}
-                        </NEllipsis>
+            <div v-if="panelState.panelConfig.iconStyle === 0">
+              <div v-if="itemGroup.items">
+                <VueDraggable
+                  v-model="itemGroup.items" item-key="sort" :animation="300"
+                  class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
+                  filter=".not-drag"
+                  :disabled="!stateDragAppSort.status"
+                  @end="(event) => handleEndDrag(event, itemGroup)"
+                >
+                  <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
+                    <div
+                      class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      @click="handleItemClick(item)"
+                    >
+                      <div class="w-[70px]">
+                        <ItemIcon :item-icon="item.icon" />
                       </div>
-                      <div>
-                        <NEllipsis :line-clamp="2" class="text-xs">
-                          {{ item.description }}
-                        </NEllipsis>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- <div class="not-drag">
-                  <div
-                    class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
-                    @click="handleAddAppClick"
-                  >
-                    <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#00000000' }" />
-                    <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                      <div>
-                        <NEllipsis>
-                          添加图标
-                        </NEllipsis>
-                      </div>
-
-                      <div class="text text-xs">
-                        <NEllipsis>
-                          新增一个新的图标
-                        </NEllipsis>
+                      <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
+                        <div>
+                          <NEllipsis>
+                            {{ item.title }}
+                          </NEllipsis>
+                        </div>
+                        <div>
+                          <NEllipsis :line-clamp="2" class="text-xs">
+                            {{ item.description }}
+                          </NEllipsis>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div> -->
-              </vuedraggable>
+
+                  <div v-if="itemGroup.items.length === 0" class="not-drag">
+                    <div
+                      class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                      @click="handleAddAppClick"
+                    >
+                      <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#00000000' }" />
+                      <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
+                        <div>
+                          <NEllipsis>
+                            添加图标
+                          </NEllipsis>
+                        </div>
+
+                        <div class="text text-xs">
+                          <NEllipsis>
+                            新增一个新的图标
+                          </NEllipsis>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </VueDraggable>
+              </div>
             </div>
 
             <!-- APP图标宫型盒子 -->
-            <div v-if="panelState.panelConfig.iconStyle === 1 && itemGroup.items">
-              <VueDraggable
-                v-model="itemGroup.items" item-key="id" :animation="300"
-                class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+            <div v-if="panelState.panelConfig.iconStyle === 1">
+              <div v-if="itemGroup.items">
+                <VueDraggable
+                  v-model="itemGroup.items" item-key="id" :animation="300"
+                  class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
 
-                filter=".not-drag"
-                :disabled="!stateDragAppSort.status"
-              >
-                <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
-                  <div
-                    class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
-                    :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
-                    @click="handleItemClick(item)"
-                  >
-                    <ItemIcon :item-icon="item.icon" />
+                  filter=".not-drag"
+                  :disabled="!stateDragAppSort.status"
+                >
+                  <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
+                    <div
+                      class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      @click="handleItemClick(item)"
+                    >
+                      <ItemIcon :item-icon="item.icon" />
+                    </div>
+                    <div
+                      class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+                      :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)"
+                    >
+                      <span>{{ item.title }}</span>
+                    </div>
                   </div>
-                  <div
-                    class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-                    :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)"
-                  >
-                    <span>{{ item.title }}</span>
-                  </div>
-                </div>
 
-                <!-- <div class="not-drag">
-                  <div
-                    class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
-                    @click="handleAddAppClick"
-                  >
-                    <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
+                  <div v-if="itemGroup.items.length === 0" class="not-drag">
+                    <div
+                      class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+                      @click="handleAddAppClick"
+                    >
+                      <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
+                    </div>
+                    <div
+                      class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+                      :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick"
+                    >
+                      添加图标
+                    </div>
                   </div>
-                  <div
-                    class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-                    :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick"
-                  >
-                    添加图标
-                  </div>
-                </div> -->
-              </vuedraggable>
+                </vuedraggable>
+              </div>
             </div>
 
             <!-- 编辑栏 -->
@@ -439,7 +443,7 @@ onMounted(() => {
           </template>
         </NButton>
 
-        <NButton color="#2a2a2a6b" @click="stateDragAppSort.status = !stateDragAppSort.status">
+        <NButton color="#2a2a2a6b" title="排序模式" @click="stateDragAppSort.status = !stateDragAppSort.status">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
           </template>
