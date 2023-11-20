@@ -35,8 +35,12 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 
 	if req.ID != 0 {
 		// 修改
+		updateField := []string{"IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "GroupId", "UserId", "ItemIconGroupId"}
+		if req.Sort != 0 {
+			updateField = append(updateField, "Sort")
+		}
 		global.Db.Model(&models.ItemIcon{}).
-			Select("IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "Sort", "GroupId", "UserId", "ItemIconGroupId").
+			Select(updateField).
 			Where("id=?", req.ID).Updates(&req)
 	} else {
 		req.Sort = 9999
