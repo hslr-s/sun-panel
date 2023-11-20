@@ -27,3 +27,10 @@ export function deletes<T>(ids: number[]) {
     data: { ids },
   })
 }
+
+export function saveSort<T>(data: Panel.ItemIconSortRequest) {
+  return post<T>({
+    url: '/panel/itemIcon/saveSort',
+    data,
+  })
+}

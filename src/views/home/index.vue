@@ -1,17 +1,28 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import { NButton, NButtonGroup, NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { EditItem, Setting } from './components'
 import { Clock } from '@/components/deskModule'
 import { ItemIcon, SvgIcon } from '@/components/common'
-import { deletes, getListByGroupId } from '@/api/panel/itemIcon'
+import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 
 import { getInfo } from '@/api/system/user'
 import { usePanelState, useUserStore } from '@/store'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { setTitle } from '@/utils/cmn'
+
+interface StateDragAppSort {
+  status: boolean
+}
+interface ItemGroup extends Panel.ItemIconGroup {
+  items?: Panel.ItemInfo[]
+}
+
+const stateDragAppSort = ref<StateDragAppSort>({
+  status: false,
+})
 
 const ms = useMessage()
 const dialog = useDialog()
@@ -49,9 +60,6 @@ const dropdownMenuOptions = [
   },
 ]
 
-interface ItemGroup extends Panel.ItemIconGroup {
-  items?: Panel.ItemInfo[]
-}
 const items = ref<ItemGroup[]>([])
 
 function handleAddAppClick() {
@@ -172,13 +180,45 @@ function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
     ms.success('已经切换成局域网模式，此时再点击已填写局域网地址的图标将跳转至局域网地址(此配置仅保存在本地)')
 
   else
-    ms.success('已经切换成互联网模式(此配置仅保存在本地)')
+    ms.success('已经切换成外模式(此配置仅保存在本地)')
 }
 
 // 结束拖拽
-function handleEndDrag() {
-  console.log(items.value)
+function handleEndDrag(event: any, itemIconGroup: Panel.ItemIconGroup) {
+  // console.log(event)
+  // console.log(items.value)
 }
+
+function handleSaveSort(itemGroup: ItemGroup) {
+  const saveItems: Common.SortItemRequest[] = []
+  if (itemGroup.items) {
+    for (let i = 0; i < itemGroup.items.length; i++) {
+      const element = itemGroup.items[i]
+      saveItems.push({
+        id: element.id as number,
+        sort: i + 1,
+      })
+    }
+
+    saveSort({ itemIconGroupId: itemGroup.id as number, sortItems: saveItems }).then(({ code, msg }) => {
+      if (code === 0) {
+        //
+        ms.success('保存成功')
+        // sortStatus.value = false
+      }
+      else {
+        ms.error(`保存失败:${msg}`)
+      }
+    })
+  }
+}
+
+watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
+  if (newvalue === false)
+    getList()
+  else
+    ms.warning('进入排序模式，记得点击保存再退出')
+})
 
 onMounted(() => {
   getList()
@@ -226,14 +266,19 @@ onMounted(() => {
             </div>
           </div>
           <!-- <div class="flex mt-[20px] mx-auto w-[80%]">
-          <SearchBox />
-        </div> -->
+            <SearchBox />
+          </div> -->
         </div>
 
         <!-- 应用盒子 -->
         <div class="mt-[50px]">
           <!-- 组纵向排列 -->
-          <div v-for="(itemGroup, itemGroupIndex) in items" :key="itemGroupIndex" class="mt-[50px]">
+          <div
+            v-for="(itemGroup, itemGroupIndex) in items"
+            :key="itemGroupIndex"
+            class="mt-[50px]"
+            :class="stateDragAppSort.status ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.8)]  p-[10px] rounded-2xl' : ''"
+          >
             <!-- 分组标题 -->
             <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px]">
               {{ itemGroup.title }}
@@ -244,11 +289,14 @@ onMounted(() => {
               <VueDraggable
                 v-model="itemGroup.items" item-key="sort" :animation="300"
                 class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
-                filter=".not-drag" @end="handleEndDrag"
+                filter=".not-drag"
+                :disabled="!stateDragAppSort.status"
+                @end="(event) => handleEndDrag(event, itemGroup)"
               >
                 <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
-                    class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                    class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                    :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
                     @click="handleItemClick(item)"
                   >
                     <div class="w-[70px]">
@@ -269,7 +317,7 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <div class="not-drag">
+                <!-- <div class="not-drag">
                   <div
                     class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
                     @click="handleAddAppClick"
@@ -289,7 +337,7 @@ onMounted(() => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </vuedraggable>
             </div>
 
@@ -298,11 +346,14 @@ onMounted(() => {
               <VueDraggable
                 v-model="itemGroup.items" item-key="id" :animation="300"
                 class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+
                 filter=".not-drag"
+                :disabled="!stateDragAppSort.status"
               >
                 <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                   <div
-                    class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                    class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                    :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
                     @click="handleItemClick(item)"
                   >
                     <ItemIcon :item-icon="item.icon" />
@@ -315,7 +366,7 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <div class="not-drag">
+                <!-- <div class="not-drag">
                   <div
                     class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
                     @click="handleAddAppClick"
@@ -328,8 +379,22 @@ onMounted(() => {
                   >
                     添加图标
                   </div>
-                </div>
+                </div> -->
               </vuedraggable>
+            </div>
+
+            <!-- 编辑栏 -->
+            <div v-if="stateDragAppSort.status" class="flex mt-[10px]">
+              <div>
+                <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
+                  <template #icon>
+                    <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
+                  </template>
+                  <div>
+                    保存排序
+                  </div>
+                </NButton>
+              </div>
             </div>
           </div>
         </div>
@@ -344,7 +409,18 @@ onMounted(() => {
 
     <!-- 悬浮按钮 -->
     <div class="fixed-element  shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
-      <NButtonGroup vertical>
+      <NButton v-if="stateDragAppSort.status" color="#2a2a2a6b" @click="stateDragAppSort.status = !stateDragAppSort.status">
+        <template #icon>
+          <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
+        </template>
+      </NButton>
+      <NButtonGroup v-if="!stateDragAppSort.status" vertical>
+        <NButton color="#2a2a2a6b" @click="handleAddAppClick">
+          <template #icon>
+            <SvgIcon class="text-white font-xl" icon="typcn:plus" />
+          </template>
+        </NButton>
+
         <NButton
           v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
           title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
@@ -353,6 +429,7 @@ onMounted(() => {
             <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline" />
           </template>
         </NButton>
+
         <NButton
           v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b"
           title="当前:互联网模式，点击切换成局域网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
@@ -361,6 +438,13 @@ onMounted(() => {
             <SvgIcon class="text-white font-xl" icon="mdi:wan" />
           </template>
         </NButton>
+
+        <NButton color="#2a2a2a6b" @click="stateDragAppSort.status = !stateDragAppSort.status">
+          <template #icon>
+            <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
+          </template>
+        </NButton>
+
         <NButton color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="ep:setting" />
@@ -433,7 +517,7 @@ html {
 .fixed-element {
   position: fixed;
   /* 将元素固定在屏幕上 */
-  right: 30px;
+  right: 20px;
   /* 距离屏幕顶部的距离 */
   bottom: 50px;
   /* 距离屏幕左侧的距离 */

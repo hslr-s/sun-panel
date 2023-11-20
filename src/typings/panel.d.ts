@@ -50,5 +50,10 @@ declare namespace Panel {
         panel:panelConfig
         searchEngine?:any
     }
+
+    interface ItemIconSortRequest{
+        sortItems:Common.SortItemRequest[]
+        itemIconGroupId:number
+    }
 }
 
