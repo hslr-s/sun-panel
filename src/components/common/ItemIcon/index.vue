@@ -6,6 +6,7 @@ import { SvgIcon } from '@/components/common'
 interface Prop {
   itemIcon?: Panel.ItemIcon | null
   size?: number // 默认70
+  forceBackground?: string // 强制背景色
 }
 
 const props = withDefaults(defineProps<Prop>(), { size: 70 })
@@ -20,21 +21,21 @@ const iconExt = computed(() => {
     <slot>
       <div v-if="itemIcon">
         <div v-if="itemIcon?.itemType === 1">
-          <NAvatar :size="props.size" :style="{ backgroundColor: itemIcon?.bgColor }">
+          <NAvatar :size="props.size" :style="{ backgroundColor: forceBackground ?? itemIcon?.bgColor }">
             {{ itemIcon.text }}
           </NAvatar>
         </div>
 
         <div v-else-if="itemIcon?.itemType === 2">
-          <div v-if="iconExt === 'svg'" :style="defaultStyle" class="flex justify-center items-center">
+          <div v-if="iconExt === 'svg'" :style="{ backgroundColor: forceBackground ?? itemIcon?.bgColor, ...defaultStyle }" class="flex justify-center items-center">
             <img :src="itemIcon?.src" class="w-[35px] h-[35px]">
             <!-- <object :data="itemIcon?.src" type="image/svg+xml" class="w-[35px] h-[35px]" style="fill: rgb(255, 255, 255) !important;" /> -->
           </div>
-          <NImage v-else :style="defaultStyle" :src="itemIcon?.src" preview-disabled />
+          <NImage v-else :style="{ backgroundColor: forceBackground ?? itemIcon?.bgColor, ...defaultStyle }" :src="itemIcon?.src" preview-disabled />
         </div>
 
         <div v-else-if="itemIcon?.itemType === 3">
-          <NAvatar :size="props.size" :style="{ backgroundColor: itemIcon?.bgColor }">
+          <NAvatar :size="props.size" :style="{ backgroundColor: forceBackground ?? itemIcon?.bgColor }">
             <SvgIcon style="font-size: 35px;" :icon="itemIcon.text" />
           </NAvatar>
         </div>

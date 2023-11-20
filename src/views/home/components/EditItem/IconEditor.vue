@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NButton, NColorPicker, NInput, NRadio, NUpload, useMessage } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
-import { defineProps, ref } from 'vue'
+import { defineProps, ref, watch } from 'vue'
 import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
 
@@ -17,16 +17,17 @@ const checkedValueRef = ref<number | null>(props.itemIcon?.itemType || 1)
 
 // 默认图标背景色
 const defautSwatchesBackground = [
-  '#000',
+  '#00000000',
   '#18A058',
   '#2080F0',
   '#F0A020',
   'rgba(208, 48, 80, 1)',
+  '#2a2a2a6b',
 ]
 
 const initData: Panel.ItemIcon = {
   itemType: 1,
-  bgColor: '#000',
+  bgColor: '#2a2a2a6b',
 }
 
 const itemIconInfo = ref<Panel.ItemIcon>(props.itemIcon ? { ...props.itemIcon } : { ...initData })
@@ -38,7 +39,6 @@ function handleIconTypeRadioChange(type: number) {
 }
 
 function handleChange() {
-  // console.log('值', itemIconInfo.value)
   emit('update:itemIcon', itemIconInfo.value || null)
 }
 
@@ -61,6 +61,10 @@ const handleUploadFinish = ({
 
   return file
 }
+
+watch(itemIconInfo.value, () => {
+  handleChange()
+})
 </script>
 
 <template>
@@ -94,17 +98,55 @@ const handleUploadFinish = ({
       </NRadio>
     </div>
 
-    <div class="flex h-[100px]">
-      <div>
-        <div class="border rounded-2xl bg-slate-200">
-          <ItemIcon :item-icon="itemIconInfo" />
+    <div class=" h-[100px]">
+      <div class="flex">
+        <div>
+          <div class="border rounded-2xl bg-slate-200">
+            <ItemIcon :item-icon="itemIconInfo" />
+          </div>
+        </div>
+        <!-- 文字 -->
+        <div class="ml-[20px]">
+          <!-- <NImage :src="model.icon" preview-disabled /> -->
+          <div v-if="checkedValueRef === 1">
+            <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入文字作为图标" @input="handleChange" />
+          </div>
+
+          <div v-if="checkedValueRef === 3">
+            <div>
+              <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入图标名字" @input="handleChange" />
+
+              <NButton quaternary type="info">
+                <a target="_blank" href="https://icon-sets.iconify.design/">图标库</a>
+              </NButton>
+            </div>
+          </div>
+
+          <!-- 图片 -->
+          <div v-if="checkedValueRef === 2">
+            <NInput v-model:value="itemIconInfo.src" class="mb-[5px] w-full" size="small" type="text" placeholder="输入图标地址或上传" @input="handleChange" />
+            <NUpload
+              action="/api/file/uploadImg"
+              :show-file-list="false"
+              name="imgfile"
+              :headers="{
+                token: authStore.token as string,
+              }"
+              @finish="handleUploadFinish"
+            >
+              <NButton size="small">
+                点击上传
+              </NButton>
+            </NUpload>
+          </div>
         </div>
       </div>
-      <!-- 文字 -->
-      <div class="ml-[20px]">
-        <!-- <NImage :src="model.icon" preview-disabled /> -->
-        <div v-if="checkedValueRef === 1">
-          <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入文字作为图标" @input="handleChange" />
+
+      <div class="flex items-center mt-[10px]">
+        <div class="w-auto text-slate-500 mr-[10px]">
+          背景色:
+        </div>
+        <div class="w-[150px] flex items-center mr-[10px]">
           <NColorPicker
             v-model:value="itemIconInfo.bgColor"
             size="small"
@@ -114,37 +156,10 @@ const handleUploadFinish = ({
             @update-value="handleChange"
           />
         </div>
-
-        <div v-if="checkedValueRef === 3">
-          <div>
-            <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入图标名字" @input="handleChange" />
-            <a target="_blank" href="https://icon-sets.iconify.design/" class="text-[blue]">图标库</a>
-          </div>
-          <NColorPicker
-            v-model:value="itemIconInfo.bgColor"
-            size="small"
-            :modes="['hex']"
-            :swatches="defautSwatchesBackground"
-            @complete="handleChange"
-            @update-value="handleChange"
-          />
-        </div>
-
-        <!-- 图片 -->
-        <div v-if="checkedValueRef === 2">
-          <NUpload
-            action="/api/file/uploadImg"
-            :show-file-list="false"
-            name="imgfile"
-            :headers="{
-              token: authStore.token as string,
-            }"
-            @finish="handleUploadFinish"
-          >
-            <NButton size="small">
-              点击上传
-            </NButton>
-          </NUpload>
+        <div class="w-auto text-slate-500 mr-[10px] cursor-pointer">
+          <NButton quaternary type="info" @click="itemIconInfo.bgColor = '#2a2a2a6b'">
+            恢复默认
+          </NButton>
         </div>
       </div>
     </div>

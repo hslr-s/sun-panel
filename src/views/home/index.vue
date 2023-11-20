@@ -296,12 +296,13 @@ onMounted(() => {
                 >
                   <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                     <div
-                      class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                      class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] flex"
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      :style="{ background: item.icon?.bgColor }"
                       @click="handleItemClick(item)"
                     >
                       <div class="w-[70px]">
-                        <ItemIcon :item-icon="item.icon" />
+                        <ItemIcon :item-icon="item.icon" force-background="transparent" />
                       </div>
                       <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
                         <div>
@@ -355,7 +356,7 @@ onMounted(() => {
                 >
                   <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
                     <div
-                      class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b]"
+                      class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
                       @click="handleItemClick(item)"
                     >
@@ -374,7 +375,7 @@ onMounted(() => {
                       class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
                       @click="handleAddAppClick"
                     >
-                      <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#343434' }" />
+                      <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#2a2a2a6b' }" />
                     </div>
                     <div
                       class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
