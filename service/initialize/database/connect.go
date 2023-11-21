@@ -122,6 +122,7 @@ func CreateDatabase(driver string, db *gorm.DB) error {
 		&models.UserConfig{},
 		&models.File{},
 		&models.ItemIconGroup{},
+		&models.ModuleConfig{},
 	)
 
 	return err
