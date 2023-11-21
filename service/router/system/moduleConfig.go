@@ -9,7 +9,7 @@ import (
 
 func InitModuleConfigRouter(router *gin.RouterGroup) {
 	api := api_v1.ApiGroupApp.ApiSystem.ModuleConfigApi
-	r := router.Group("", middleware.LoginInterceptorDev)
+	r := router.Group("", middleware.LoginInterceptor)
 	r.POST("/system/moduleConfig/getByName", api.GetByName)
 	r.POST("/system/moduleConfig/save", api.Save)
 
