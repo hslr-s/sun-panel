@@ -3,7 +3,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { NButton, NButtonGroup, NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { EditItem, Setting } from './components'
-import { Clock } from '@/components/deskModule'
+import { Clock, SearchBox } from '@/components/deskModule'
 import { ItemIcon, SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
@@ -266,9 +266,9 @@ onMounted(() => {
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
-          <!-- <div class="flex mt-[20px] mx-auto w-[80%]">
+          <div class="flex mt-[20px] mx-auto w-[80%]">
             <SearchBox />
-          </div> -->
+          </div>
         </div>
 
         <!-- 应用盒子 -->
