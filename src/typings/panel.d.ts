@@ -37,13 +37,13 @@ declare namespace Panel {
     interface panelConfig{
         backgroundImageSrc?:string
         backgroundBlur?:number
+        backgroundMaskNumber?:number
         iconStyle?:PanelPanelConfigStyleEnum
         iconTextColor?:string
         logoText?:string
         logoImageSrc?:string
         clockShowSecond?:boolean
         clockColor?:string
-
     }
 
     interface userConfig{

@@ -7,11 +7,13 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
   return {
     backgroundImageSrc: defaultBackground,
     backgroundBlur: 0,
+    backgroundMaskNumber: 0,
     iconStyle: PanelPanelConfigStyleEnum.icon,
     iconTextColor: '#ffffff',
     logoText: 'Sun-Panel',
     logoImageSrc: '',
     clockShowSecond: false,
+
   }
 }
 

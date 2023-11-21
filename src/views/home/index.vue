@@ -248,6 +248,7 @@ onMounted(() => {
         backgroundPosition: 'center',
       }"
     />
+    <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div class="absolute w-full h-full overflow-auto">
       <div class="p-2.5 max-w-[1200px] mx-auto mt-[10%]">
         <!-- 头 -->
@@ -498,6 +499,14 @@ html {
 </style>
 
 <style scoped>
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .sun-main {
   user-select: none;
 }

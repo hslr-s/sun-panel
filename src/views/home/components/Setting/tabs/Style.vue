@@ -111,9 +111,14 @@ function resetPanelConfig() {
         </NUploadDragger>
       </NUpload>
 
-      <div class="flex items-center mt-[5px]">
-        <span class="mr-[10px]">模糊处理</span>
+      <div class="flex items-center mt-[10px]">
+        <span class="mr-[10px]">模糊</span>
         <NSlider v-model:value="panelState.panelConfig.backgroundBlur" class="max-w-[200px]" :step="2" :max="20" />
+      </div>
+
+      <div class="flex items-center mt-[10px]">
+        <span class="mr-[10px]">遮罩</span>
+        <NSlider v-model:value="panelState.panelConfig.backgroundMaskNumber" class="max-w-[200px]" :step="0.1" :max="1" />
       </div>
     </NCard>
 
