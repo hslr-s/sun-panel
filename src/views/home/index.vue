@@ -110,7 +110,7 @@ function getList() {
           items.value[i].items = res.data.list
       })
     }
-    console.log(items)
+    // console.log(items)
   })
 }
 
@@ -306,7 +306,7 @@ onMounted(() => {
                         <ItemIcon :item-icon="item.icon" force-background="transparent" />
                       </div>
                       <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                        <div>
+                        <div class="font-semibold">
                           <NEllipsis>
                             {{ item.title }}
                           </NEllipsis>
@@ -327,7 +327,7 @@ onMounted(() => {
                     >
                       <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', bgColor: '#00000000' }" />
                       <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                        <div>
+                        <div class="font-medium">
                           <NEllipsis>
                             添加图标
                           </NEllipsis>
