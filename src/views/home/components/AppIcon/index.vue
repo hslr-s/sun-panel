@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { NEllipsis } from 'naive-ui'
 import { ItemIcon } from '@/components/common'
 import { PanelPanelConfigStyleEnum } from '@/enums'
@@ -18,6 +18,19 @@ const props = withDefaults(defineProps<Prop>(), {
 })
 
 const defaultBackground = '#2a2a2a6b'
+
+const calculateLuminance = (color: string) => {
+  const hex = color.replace(/^#/, '')
+  const r = parseInt(hex.substring(0, 2), 16)
+  const g = parseInt(hex.substring(2, 4), 16)
+  const b = parseInt(hex.substring(4, 6), 16)
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+}
+
+const textColor = computed(() => {
+  const luminance = calculateLuminance(props.itemInfo?.icon?.backgroundColor || defaultBackground)
+  return luminance > 0.5 ? 'black' : 'white'
+})
 
 onMounted(() => {
   console.log(props.style)
@@ -40,7 +53,8 @@ onMounted(() => {
       </div>
 
       <!-- 文字 -->
-      <div class="text-white flex items-center" :style="{ color: iconTextColor, maxWidth: 'calc(100% - 80px)' }">
+      <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
+      <div class="text-white flex items-center" :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }">
         <div class="w-full">
           <div class="font-semibold w-full">
             <NEllipsis>
