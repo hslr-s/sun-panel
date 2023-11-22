@@ -140,10 +140,11 @@ onMounted(() => {
     <VueDraggable
       v-model="groups"
       item-key="sort" :animation="300"
-      class="mt-[20px] p-[20px] bg-slate-200 rounded-xl"
+      class="w-full mt-[20px]  bg-slate-200 rounded-xl"
+      :style="{ padding: sortStatus ? '20px' : '10px' }"
       :disabled="!sortStatus"
     >
-      <div v-for="(item, index) in groups" :key="index" class="w-[60%]">
+      <div v-for="(item, index) in groups" :key="index" class="w-full">
         <NCard size="small" style="border-radius:10px;margin-bottom: 10px;">
           <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
             <div class="flex items-center">
