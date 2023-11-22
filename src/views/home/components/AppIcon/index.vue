@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { NEllipsis } from 'naive-ui'
 import { ItemIcon } from '@/components/common'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 
@@ -31,21 +32,26 @@ onMounted(() => {
       class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] flex"
       :style="{ background: itemInfo?.icon?.backgroundColor || defaultBackground }"
     >
+      <!-- 图标 -->
       <div class="w-[70px] h-[70px]">
         <div class="w-[70px] h-full flex items-center justify-center ">
           <ItemIcon :item-icon="itemInfo?.icon" force-background="transparent" :size="50" class="overflow-hidden rounded-xl" />
         </div>
       </div>
-      <div class="text-white m-[8px_8px_0_8px]" :style="{ color: iconTextColor }">
-        <div class="font-semibold">
-          <NEllipsis>
-            {{ itemInfo?.title }}
-          </NEllipsis>
-        </div>
-        <div v-if="!iconTextInfoHideDescription">
-          <NEllipsis :line-clamp="2" class="text-xs">
-            {{ itemInfo?.description }}
-          </NEllipsis>
+
+      <!-- 文字 -->
+      <div class="text-white flex items-center" :style="{ color: iconTextColor, maxWidth: 'calc(100% - 80px)' }">
+        <div class="w-full">
+          <div class="font-semibold w-full">
+            <NEllipsis>
+              {{ itemInfo?.title }}
+            </NEllipsis>
+          </div>
+          <div v-if="!iconTextInfoHideDescription">
+            <NEllipsis :line-clamp="2" class="text-xs">
+              {{ itemInfo?.description }}
+            </NEllipsis>
+          </div>
         </div>
       </div>
     </div>
