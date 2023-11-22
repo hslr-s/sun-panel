@@ -266,7 +266,7 @@ onMounted(() => {
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
-          <div class="flex mt-[20px] mx-auto w-[80%]">
+          <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto sm:w-full lg:w-[80%]">
             <SearchBox />
           </div>
         </div>
@@ -295,7 +295,7 @@ onMounted(() => {
                   :disabled="!stateDragAppSort.status"
                   @end="(event) => handleEndDrag(event, itemGroup)"
                 >
-                  <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
+                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
                     <div
                       class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] flex"
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
@@ -311,7 +311,7 @@ onMounted(() => {
                             {{ item.title }}
                           </NEllipsis>
                         </div>
-                        <div>
+                        <div v-if="!panelState.panelConfig.iconTextInfoHideDescription">
                           <NEllipsis :line-clamp="2" class="text-xs">
                             {{ item.description }}
                           </NEllipsis>
@@ -326,16 +326,10 @@ onMounted(() => {
                       @click="handleAddAppClick"
                     >
                       <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', backgroundColor: '#00000000' }" />
-                      <div class="text-white m-[8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                        <div class="font-medium">
+                      <div class="text-white m-[8px] flex items-center" :style="{ color: panelState.panelConfig.iconTextColor }">
+                        <div class="font-semibold">
                           <NEllipsis>
                             添加图标
-                          </NEllipsis>
-                        </div>
-
-                        <div class="text text-xs">
-                          <NEllipsis>
-                            新增一个新的图标
                           </NEllipsis>
                         </div>
                       </div>

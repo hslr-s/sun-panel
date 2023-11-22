@@ -10,10 +10,11 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     backgroundMaskNumber: 0,
     iconStyle: PanelPanelConfigStyleEnum.icon,
     iconTextColor: '#ffffff',
+    iconTextInfoHideDescription: false,
     logoText: 'Sun-Panel',
     logoImageSrc: '',
     clockShowSecond: false,
-
+    searchBoxShow: false,
   }
 }
 

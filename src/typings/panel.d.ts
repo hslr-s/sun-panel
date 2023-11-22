@@ -41,10 +41,12 @@ declare namespace Panel {
         backgroundMaskNumber?:number
         iconStyle?:PanelPanelConfigStyleEnum
         iconTextColor?:string
+        iconTextInfoHideDescription?:boolean
         logoText?:string
         logoImageSrc?:string
         clockShowSecond?:boolean
         clockColor?:string
+        searchBoxShow?:boolean
     }
 
     interface userConfig{
