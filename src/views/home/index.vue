@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
-import { NButton, NButtonGroup, NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref, watch } from 'vue'
-import { EditItem, Setting } from './components'
+import { AppIcon, EditItem, Setting } from './components'
 import { Clock, SearchBox } from '@/components/deskModule'
-import { ItemIcon, SvgIcon } from '@/components/common'
+import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 
 import { getInfo } from '@/api/system/user'
 import { usePanelState, useUserStore } from '@/store'
-import { PanelStateNetworkModeEnum } from '@/enums'
+import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { setTitle } from '@/utils/cmn'
 
 interface StateDragAppSort {
@@ -286,7 +286,7 @@ onMounted(() => {
             </div>
 
             <!-- 详情图标 -->
-            <div v-if="panelState.panelConfig.iconStyle === 0">
+            <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info">
               <div v-if="itemGroup.items">
                 <VueDraggable
                   v-model="itemGroup.items" item-key="sort" :animation="300"
@@ -296,51 +296,32 @@ onMounted(() => {
                   @end="(event) => handleEndDrag(event, itemGroup)"
                 >
                   <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
-                    <div
-                      class="w-full rounded-2xl  transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] flex"
+                    <AppIcon
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
-                      :style="{ background: item.icon?.backgroundColor || '#2a2a2a6b' }"
+                      :item-info="item"
+                      :icon-text-color="panelState.panelConfig.iconTextColor"
+                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :style="0"
                       @click="handleItemClick(item)"
-                    >
-                      <div class="w-[70px]">
-                        <ItemIcon :item-icon="item.icon" force-background="transparent" />
-                      </div>
-                      <div class="text-white m-[8px_8px_0_8px]" :style="{ color: panelState.panelConfig.iconTextColor }">
-                        <div class="font-semibold">
-                          <NEllipsis>
-                            {{ item.title }}
-                          </NEllipsis>
-                        </div>
-                        <div v-if="!panelState.panelConfig.iconTextInfoHideDescription">
-                          <NEllipsis :line-clamp="2" class="text-xs">
-                            {{ item.description }}
-                          </NEllipsis>
-                        </div>
-                      </div>
-                    </div>
+                    />
                   </div>
 
                   <div v-if="itemGroup.items.length === 0" class="not-drag">
-                    <div
-                      class="w-full rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] bg-[#2a2a2a6b] flex"
+                    <AppIcon
+                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
+                      :icon-text-color="panelState.panelConfig.iconTextColor"
+                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :style="0"
                       @click="handleAddAppClick"
-                    >
-                      <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', backgroundColor: '#00000000' }" />
-                      <div class="text-white m-[8px] flex items-center" :style="{ color: panelState.panelConfig.iconTextColor }">
-                        <div class="font-semibold">
-                          <NEllipsis>
-                            添加图标
-                          </NEllipsis>
-                        </div>
-                      </div>
-                    </div>
+                    />
                   </div>
                 </VueDraggable>
               </div>
             </div>
 
             <!-- APP图标宫型盒子 -->
-            <div v-if="panelState.panelConfig.iconStyle === 1">
+            <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon">
               <div v-if="itemGroup.items">
                 <VueDraggable
                   v-model="itemGroup.items" item-key="id" :animation="300"
@@ -349,36 +330,26 @@ onMounted(() => {
                   filter=".not-drag"
                   :disabled="!stateDragAppSort.status"
                 >
-                  <div v-for="item, index in itemGroup.items" :key="index" @contextmenu="(e) => handleContextMenu(e, item)">
-                    <div
-                      class="sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
+                    <AppIcon
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
-                      :title="item.description"
+                      :item-info="item"
+                      :icon-text-color="panelState.panelConfig.iconTextColor"
+                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :style="1"
                       @click="handleItemClick(item)"
-                    >
-                      <ItemIcon :item-icon="item.icon" />
-                    </div>
-                    <div
-                      class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-                      :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleItemClick(item)"
-                    >
-                      <span>{{ item.title }}</span>
-                    </div>
+                    />
                   </div>
 
                   <div v-if="itemGroup.items.length === 0" class="not-drag">
-                    <div
-                      class="w-[70px] h-[70px] mx-auto rounded-2xl cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+                    <AppIcon
+                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
+                      :icon-text-color="panelState.panelConfig.iconTextColor"
+                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :style="1"
                       @click="handleAddAppClick"
-                    >
-                      <ItemIcon :item-icon="{ itemType: 3, text: 'subway:add', backgroundColor: '#2a2a2a6b' }" />
-                    </div>
-                    <div
-                      class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-                      :style="{ color: panelState.panelConfig.iconTextColor }" @click="handleAddAppClick"
-                    >
-                      添加图标
-                    </div>
+                    />
                   </div>
                 </vuedraggable>
               </div>

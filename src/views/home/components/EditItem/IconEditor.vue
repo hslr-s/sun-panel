@@ -108,7 +108,7 @@ watch(itemIconInfo.value, () => {
     <div class=" h-[100px]">
       <div class="flex">
         <div>
-          <div class="border rounded-2xl bg-slate-200">
+          <div class="border rounded-2xl bg-slate-200 overflow-hidden rounded-2xl">
             <ItemIcon :item-icon="itemIconInfo" />
           </div>
         </div>
