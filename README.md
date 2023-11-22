@@ -1,5 +1,7 @@
 <div align=center>
-	
+
+<img src="./doc/images/logo.png" width="100" height="100" />
+
 # Sun-Panel
 
 <a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">B站视频</a>
