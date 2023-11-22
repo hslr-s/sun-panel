@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { NAvatar } from 'naive-ui'
+import { NAvatar, NCheckbox } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
 
@@ -11,9 +11,10 @@ import SvgSrcGoogle from '@/assets/search_engine_svg/google.svg'
 interface State {
   currentSearchEngine: DeskModule.SearchBox.SearchEngine
   searchEngineList: DeskModule.SearchBox.SearchEngine[]
+  newWindowOpen: boolean
 }
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   background?: string
   textColor?: string
 }>(), {
@@ -35,7 +36,7 @@ const defaultSearchEngineList = ref<DeskModule.SearchBox.SearchEngine[]>([
   {
     iconSrc: SvgSrcBaidu,
     title: 'Baidu',
-    url: 'https://www.baidu.com/s?wd=%s',
+    url: 'https://www.baidu.com/s?wd=',
   },
   {
     iconSrc: SvgSrcBing,
@@ -47,9 +48,10 @@ const defaultSearchEngineList = ref<DeskModule.SearchBox.SearchEngine[]>([
 const defaultState: State = {
   currentSearchEngine: defaultSearchEngineList.value[0],
   searchEngineList: [] || defaultSearchEngineList,
+  newWindowOpen: false,
 }
 
-const state = ref<State>(defaultState)
+const state = ref<State>({ ...defaultState })
 
 const onFocus = (): void => {
   isFocused.value = true
@@ -69,7 +71,24 @@ function handleEngineUpdate(engine: DeskModule.SearchBox.SearchEngine) {
 }
 
 function handleSearchClick() {
-  // 文本替换关键字 %s 同时 如果没有%s,将吧关键字放在网址最后
+  const url = state.value.currentSearchEngine.url
+  const keyword = searchTerm
+  // 如果网址中存在 %s，则直接替换为关键字
+  const fullUrl = replaceOrAppendKeywordToUrl(url, keyword.value)
+
+  if (state.value.newWindowOpen)
+    window.open(fullUrl)
+  else
+    window.location.href = fullUrl
+}
+
+function replaceOrAppendKeywordToUrl(url: string, keyword: string) {
+  // 如果网址中存在 %s，则直接替换为关键字
+  if (url.includes('%s'))
+    return url.replace('%s', encodeURIComponent(keyword))
+
+  // 如果网址中不存在 %s，则将关键字追加到末尾
+  return url + (keyword ? `${encodeURIComponent(keyword)}` : '')
 }
 
 onMounted(() => {
@@ -83,7 +102,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full" @keydown.enter="handleSearchClick">
     <div class="search-container flex rounded-2xl items-center justify-center text-white w-full" :style="{ background, color: textColor }" :class="{ focused: isFocused }">
       <div class="w-[40px] flex justify-center cursor-pointer" @click="handleEngineClick">
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
@@ -96,22 +115,32 @@ onMounted(() => {
     </div>
 
     <!-- 搜索引擎选择 -->
-    <div v-if="searchSelectListShow" class="w-full mt-[10px] bg-white h-[60px] flex items-center rounded-xl p-[10px]" :style="{ background }">
+    <div v-if="searchSelectListShow" class="w-full mt-[10px] rounded-xl p-[10px]" :style="{ background }">
       <div class="flex items-center">
-        <div
-          v-for="item, index in defaultSearchEngineList"
-          :key="index"
-          :title="item.title"
-          class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl"
-          @click="handleEngineUpdate(item)"
-        >
-          <NAvatar :src="item.iconSrc" style="background-color: transparent;" :size="20" />
-        </div>
+        <div class="flex items-center">
+          <div
+            v-for="item, index in defaultSearchEngineList"
+            :key="index"
+            :title="item.title"
+            class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl"
+            @click="handleEngineUpdate(item)"
+          >
+            <NAvatar :src="item.iconSrc" style="background-color: transparent;" :size="20" />
+          </div>
         <!-- <div class="w-[40px] h-[40px] ml-[10px] flex justify-center items-center cursor-pointer" @click="handleEngineClick">
           <NAvatar style="background-color: transparent;" :size="30">
             <SvgIcon icon="lets-icons:setting-alt-fill" style="font-size: 20px;" />
           </NAvatar>
         </div> -->
+        </div>
+      </div>
+
+      <div class="mt-[10px]">
+        <NCheckbox v-model:checked="state.newWindowOpen" @update-checked="moduleConfig.saveToCloud(moduleConfigName, state)">
+          <span :style="{ color: textColor }">
+            新窗口打开
+          </span>
+        </NCheckbox>
       </div>
     </div>
   </div>
