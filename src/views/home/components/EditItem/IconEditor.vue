@@ -29,10 +29,15 @@ const defautSwatchesBackground = [
 
 const initData: Panel.ItemIcon = {
   itemType: 1,
-  bgColor: '#2a2a2a6b',
+  backgroundColor: '#2a2a2a6b',
 }
 
-const itemIconInfo = ref<Panel.ItemIcon>(props.itemIcon ? { ...props.itemIcon } : { ...initData })
+// const itemIconInfo = ref<Panel.ItemIcon>(props.itemIcon ?? { ...initData })
+const itemIconInfo = ref<Panel.ItemIcon>({
+  ...initData,
+  ...props.itemIcon,
+  backgroundColor: props.itemIcon?.backgroundColor || initData.backgroundColor,
+})
 
 function handleIconTypeRadioChange(type: number) {
   checkedValueRef.value = type
@@ -150,7 +155,7 @@ watch(itemIconInfo.value, () => {
         </div>
         <div class="w-[150px] flex items-center mr-[10px]">
           <NColorPicker
-            v-model:value="itemIconInfo.bgColor"
+            v-model:value="itemIconInfo.backgroundColor"
             size="small"
             :modes="['hex']"
             :swatches="defautSwatchesBackground"
@@ -158,8 +163,8 @@ watch(itemIconInfo.value, () => {
             @update-value="handleChange"
           />
         </div>
-        <div class="w-auto text-slate-500 mr-[10px] cursor-pointer">
-          <NButton quaternary type="info" @click="itemIconInfo.bgColor = '#2a2a2a6b'">
+        <div v-if="itemIconInfo.backgroundColor !== initData.backgroundColor" class="w-auto text-slate-500 mr-[10px] cursor-pointer">
+          <NButton quaternary type="info" @click="itemIconInfo.backgroundColor = initData.backgroundColor">
             恢复默认
           </NButton>
         </div>

@@ -24,7 +24,8 @@ declare namespace Panel {
         itemType: number
         src ?: string
         text ?: string
-        bgColor ?: string
+        // bgColor ?: string
+        backgroundColor ?: string
     }
 
     interface State {
