@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { NEllipsis } from 'naive-ui'
 import { ItemIcon } from '@/components/common'
 import { PanelPanelConfigStyleEnum } from '@/enums'
@@ -30,10 +30,6 @@ const calculateLuminance = (color: string) => {
 const textColor = computed(() => {
   const luminance = calculateLuminance(props.itemInfo?.icon?.backgroundColor || defaultBackground)
   return luminance > 0.5 ? 'black' : 'white'
-})
-
-onMounted(() => {
-  console.log(props.style)
 })
 </script>
 

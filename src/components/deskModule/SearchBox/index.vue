@@ -36,7 +36,7 @@ const defaultSearchEngineList = ref<DeskModule.SearchBox.SearchEngine[]>([
   {
     iconSrc: SvgSrcBaidu,
     title: 'Baidu',
-    url: 'https://www.baidu.com/s?wd=',
+    url: 'https://www.baidu.com/s?wd=%s',
   },
   {
     iconSrc: SvgSrcBing,
@@ -94,7 +94,7 @@ function replaceOrAppendKeywordToUrl(url: string, keyword: string) {
 onMounted(() => {
   moduleConfig.getValueByNameFromCloud<State>('deskModuleSearchBox').then(({ code, data }) => {
     if (code === 0)
-      state.value = data
+      state.value = data || defaultState
     else
       state.value = defaultState
   })
