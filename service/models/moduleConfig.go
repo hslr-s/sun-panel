@@ -8,8 +8,8 @@ import (
 
 type ModuleConfig struct {
 	BaseModel
-	UserId    uint                   `gorm:"index:idx_userid_name" json:"userId"`
-	Name      string                 `gorm:"index:idx_userid_name,type:varchar(255)" json:"name"`
+	UserId    uint                   `gorm:"index" json:"userId"`
+	Name      string                 `gorm:"type:varchar(255)" json:"name"`
 	ValueJson string                 `gorm:"type:text" json:"-"`
 	Value     map[string]interface{} `gorm:"-" json:"value"`
 }
