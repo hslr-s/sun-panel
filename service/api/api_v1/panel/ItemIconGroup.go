@@ -49,7 +49,7 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	groups := []models.ItemIconGroup{}
 
-	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&groups, "user_id=?", 1, userInfo.ID).Error; err != nil {
+	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&groups).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
