@@ -137,44 +137,46 @@ onMounted(() => {
       </NButton>
     </div>
 
-    <VueDraggable
-      v-model="groups"
-      item-key="sort" :animation="300"
-      class="w-full mt-[20px]  bg-slate-200 rounded-xl"
-      :style="{ padding: sortStatus ? '20px' : '10px' }"
-      :disabled="!sortStatus"
-    >
-      <div v-for="(item, index) in groups" :key="index" class="w-full">
-        <NCard size="small" style="border-radius:10px;margin-bottom: 10px;">
-          <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
-            <div class="flex items-center">
-              <span class="mr-[10px]">
-                <SvgIcon class="text-[20px]" :icon="item.icon" />
-              </span>
-              <span>
-                {{ item.title }}
-              </span>
+    <div class=" overflow-auto w-full mt-[20px]  bg-slate-200 rounded-xl" style="height:calc(100% - 50px)">
+      <VueDraggable
+        v-model="groups"
+        item-key="sort" :animation="300"
+        :style="{ padding: sortStatus ? '20px' : '10px' }"
+        :disabled="!sortStatus"
+      >
+        <div v-for="(item, index) in groups" :key="index" class="w-full">
+          <NCard size="small" style="border-radius:10px;margin-bottom: 10px;">
+            <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
+              <div class="flex items-center">
+                <span class="mr-[10px]">
+                  <SvgIcon class="text-[20px]" :icon="item.icon" />
+                </span>
+                <span>
+                  {{ item.title }}
+                </span>
+              </div>
+              <div class="ml-auto">
+                <span>
+                  <NButton strong secondary type="success" size="small" @click="handleEditGroup(item)">
+                    <template #icon>
+                      <SvgIcon icon="basil:edit-solid" />
+                    </template>
+                  </NButton>
+                </span>
+                <span class="ml-[10px]">
+                  <NButton strong secondary type="error" size="small" class="ml-[10px]" @click="handleDelete(item)">
+                    <template #icon>
+                      <SvgIcon icon="material-symbols:delete" />
+                    </template>
+                  </NButton>
+                </span>
+              </div>
             </div>
-            <div class="ml-auto">
-              <span>
-                <NButton strong secondary type="success" size="small" @click="handleEditGroup(item)">
-                  <template #icon>
-                    <SvgIcon icon="basil:edit-solid" />
-                  </template>
-                </NButton>
-              </span>
-              <span class="ml-[10px]">
-                <NButton strong secondary type="error" size="small" class="ml-[10px]" @click="handleDelete(item)">
-                  <template #icon>
-                    <SvgIcon icon="material-symbols:delete" />
-                  </template>
-                </NButton>
-              </span>
-            </div>
-          </div>
-        </NCard>
-      </div>
-    </VueDraggable>
+          </NCard>
+        </div>
+      </VueDraggable>
+    </div>
+
     <RoundCardModal v-model:show="editModalArg.show" type="small" :title="editModalArg.editStatus === 1 ? '添加' : '编辑'" style="width: 400px;">
       <NForm ref="formRef" :model="editModalArg.model" :rules="editModalArg.rules">
         <NFormItem path="title" label="分组名称">
