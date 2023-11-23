@@ -300,7 +300,7 @@ onMounted(() => {
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="item"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
-                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
                       :style="0"
                       @click="handleItemClick(item)"
                     />
@@ -311,7 +311,7 @@ onMounted(() => {
                       :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
-                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
                       :style="0"
                       @click="handleAddAppClick"
                     />

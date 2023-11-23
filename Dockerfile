@@ -16,7 +16,7 @@ COPY . /build
 RUN pnpm run build
 
 # build backend
-FROM golang:1.20 as server_image
+FROM golang:1.21 as server_image
 
 WORKDIR /build
 
