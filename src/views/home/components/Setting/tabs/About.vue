@@ -28,7 +28,7 @@ onMounted(() => {
           {{ $t('common.appName') }}
         </div>
         <div class="text-xl">
-          - v{{ versionName }} -
+          v{{ versionName }}
         </div>
       </div>
     </div>
