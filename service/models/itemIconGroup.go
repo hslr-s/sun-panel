@@ -1,5 +1,9 @@
 package models
 
+import (
+	"gorm.io/gorm"
+)
+
 type ItemIconGroup struct {
 	BaseModel
 	Icon        string `json:"icon"`
@@ -8,4 +12,9 @@ type ItemIconGroup struct {
 	Sort        int    `gorm:"type:int(11)" json:"sort"`
 	UserId      uint   `json:"userId"`
 	User        User   `json:"user"`
+}
+
+func (m *ItemIconGroup) DeleteByUserId(db *gorm.DB, userId uint) (err error) {
+	err = db.Delete(&ItemIconGroup{}, "user_id = ?", userId).Error
+	return
 }

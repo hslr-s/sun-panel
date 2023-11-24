@@ -1,6 +1,7 @@
 package panel
 
 import (
+	"math"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 )
 
 // 此API 临时使用，后期带有管理功能，将废除！！！
@@ -64,10 +66,55 @@ func (a UsersApi) Deletes(c *gin.Context) {
 		return
 	}
 
-	if err := global.Db.Delete(&models.User{}, &param.UserIds).Error; err != nil {
+	var count int64
+	if err := global.Db.Model(&models.User{}).Count(&count).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
+	} else {
+		if math.Abs(float64(len(param.UserIds))-float64(count)) < 1 {
+			apiReturn.Error(c, "至少要保留一个")
+			return
+		}
 	}
+
+	txErr := global.Db.Transaction(func(tx *gorm.DB) error {
+		mitemIconGroup := models.ItemIconGroup{}
+
+		for _, v := range param.UserIds {
+			// 删除图标
+			if err := tx.Delete(&models.ItemIcon{}, "user_id=?", v).Error; err != nil {
+				return err
+			}
+			// 删除分组
+			if err := mitemIconGroup.DeleteByUserId(tx, v); err != nil {
+				return err
+			}
+			// 删除模块配置
+			if err := tx.Delete(&models.ModuleConfig{}, "user_id=?", v).Error; err != nil {
+				return err
+			}
+			// 删除用户配置
+			if err := tx.Delete(&models.ModuleConfig{}, "user_id=?", v).Error; err != nil {
+				return err
+			}
+			// // 删除文件记录（不删除资源文件）
+			// if err := tx.Delete(&models.File{}, "user_id=?", v).Error; err != nil {
+			// 	return err
+			// }
+		}
+
+		if err := tx.Delete(&models.User{}, &param.UserIds).Error; err != nil {
+			apiReturn.ErrorDatabase(c, err.Error())
+			return err
+		}
+		return nil
+	})
+
+	if txErr != nil {
+		apiReturn.ErrorDatabase(c, txErr.Error())
+		return
+	}
+
 	apiReturn.Success(c)
 }
 

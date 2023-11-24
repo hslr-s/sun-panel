@@ -98,8 +98,21 @@ func (a *ItemIconGroup) Deletes(c *gin.Context) {
 
 	}
 
-	if err := global.Db.Delete(&models.ItemIconGroup{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
-		apiReturn.ErrorDatabase(c, err.Error())
+	txErr := global.Db.Transaction(func(tx *gorm.DB) error {
+		mitemIcon := models.ItemIcon{}
+		if err := tx.Delete(&models.ItemIconGroup{}, "id in ? AND user_id=?", req.Ids, userInfo.ID).Error; err != nil {
+			return err
+		}
+
+		if err := mitemIcon.DeleteByItemIconGroupIds(tx, userInfo.ID, req.Ids); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if txErr != nil {
+		apiReturn.ErrorDatabase(c, txErr.Error())
 		return
 	}
 
