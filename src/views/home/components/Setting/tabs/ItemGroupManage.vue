@@ -149,7 +149,8 @@ onMounted(() => {
             <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
               <div class="flex items-center">
                 <span class="mr-[10px]">
-                  <SvgIcon class="text-[20px]" :icon="item.icon" />
+                  <SvgIcon class="text-[20px]" icon="material-symbols:ad-group-outline" />
+                  <!-- <SvgIcon class="text-[20px]" :icon="item.icon" /> -->
                 </span>
                 <span>
                   {{ item.title }}

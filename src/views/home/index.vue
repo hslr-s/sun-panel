@@ -45,26 +45,31 @@ const currentRightSelectItem = ref<Panel.ItemInfo | null>(null)
 
 const settingModalShow = ref(false)
 
-const dropdownMenuOptions = [
-  {
-    label: '新窗口打开',
-    key: 'newWindows',
-  },
-  {
-    label: '编辑',
-    key: 'edit',
-  },
-  {
-    label: '删除',
-    key: 'delete',
-  },
-]
-
 const items = ref<ItemGroup[]>([])
 
 function handleAddAppClick() {
   editItemInfoData.value = null
   editItemInfoShow.value = true
+}
+
+function openPage(openMethod: number, url: string, title?: string) {
+  switch (openMethod) {
+    case 1:
+      window.location.href = url
+      break
+    case 2:
+      window.open(url)
+      break
+    case 3:
+      windowShow.value = true
+      windowSrc.value = url
+      windowTitle.value = title || url
+      windowIframeIsLoad.value = true
+      break
+
+    default:
+      break
+  }
 }
 
 function handleItemClick(item: Panel.ItemInfo) {
@@ -75,23 +80,7 @@ function handleItemClick(item: Panel.ItemInfo) {
   if (item.lanUrl === '')
     jumpUrl = item.url
 
-  switch (item.openMethod) {
-    case 1:
-      window.location.href = jumpUrl
-      break
-    case 2:
-      window.open(jumpUrl)
-      break
-    case 3:
-      windowShow.value = true
-      windowSrc.value = jumpUrl
-      windowTitle.value = item.title
-      windowIframeIsLoad.value = true
-      break
-
-    default:
-      break
-  }
+  openPage(item.openMethod, jumpUrl, item.title)
 }
 
 function handWindowIframeIdLoad(payload: Event) {
@@ -123,6 +112,14 @@ function handleSelect(key: string | number) {
   switch (key) {
     case 'newWindows':
       window.open(jumpUrl)
+      break
+    case 'openWanUrl':
+      if (currentRightSelectItem.value)
+        openPage(currentRightSelectItem.value?.openMethod, currentRightSelectItem.value?.url, currentRightSelectItem.value?.title)
+      break
+    case 'openLanUrl':
+      if (currentRightSelectItem.value && currentRightSelectItem.value.lanUrl)
+        openPage(currentRightSelectItem.value?.openMethod, currentRightSelectItem.value.lanUrl, currentRightSelectItem.value?.title)
       break
     case 'edit':
       // 这里有个奇怪的问题，如果不使用{...}的方式 父组件的值会同步修改 标记一下
@@ -211,6 +208,40 @@ function handleSaveSort(itemGroup: ItemGroup) {
       }
     })
   }
+}
+
+function getDropdownMenuOptions() {
+  const dropdownMenuOptions = [
+    {
+      label: '新窗口打开',
+      key: 'newWindows',
+    },
+
+  ]
+
+  if (currentRightSelectItem.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
+    dropdownMenuOptions.push({
+      label: '打开局域网地址',
+      key: 'openLanUrl',
+    })
+  }
+
+  if (currentRightSelectItem.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
+    dropdownMenuOptions.push({
+      label: '打开互联网地址',
+      key: 'openWanUrl',
+    })
+  }
+
+  dropdownMenuOptions.push({
+    label: '编辑',
+    key: 'edit',
+  }, {
+    label: '删除',
+    key: 'delete',
+  })
+
+  return dropdownMenuOptions
 }
 
 watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
@@ -376,7 +407,7 @@ onMounted(() => {
     <!-- 右键菜单 -->
     <NDropdown
       placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
-      :options="dropdownMenuOptions" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleSelect"
+      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleSelect"
     />
 
     <!-- 悬浮按钮 -->
