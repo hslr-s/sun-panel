@@ -26,6 +26,11 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 		return
 	}
 
+	if req.ItemIconGroupId == 0 {
+		apiReturn.Error(c, "分组为必填项")
+		return
+	}
+
 	req.UserId = userInfo.ID
 
 	// json转字符串

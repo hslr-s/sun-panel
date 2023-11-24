@@ -50,7 +50,7 @@ const rules: FormRules = {
   },
   // itemIconGroupId: {
   //   required: true,
-  //   trigger: 'blur',
+  //   trigger: ['blur', 'change'],
   //   message: '必填项',
   // },
 }
@@ -96,15 +96,15 @@ const show = computed({
 })
 
 async function editApi() {
-  const { code, data } = await edit<Panel.ItemInfo>(model.value)
+  const { code, data, msg } = await edit<Panel.ItemInfo>(model.value)
   if (code === 0) {
     show.value = false
-    model.value = restoreDefault
+    model.value = { ...restoreDefault }
 
     emit('done', data)
   }
   else {
-    ms.error('保存失败')
+    ms.error(`保存失败：${msg}`)
   }
 }
 
@@ -125,10 +125,13 @@ function getGroupListOptions() {
   getGroupList<Common.ListResponse<Panel.ItemIconGroup[]>>().then(({ data, code, msg }) => {
     if (code === 0) {
       itemIconGroupOptions.value = []
+
       for (let i = 0; i < data.list.length; i++) {
         const element = data.list[i]
-        if (i === 0 && !model.value.itemIconGroupId)
+        if (i === 0 && !model.value.itemIconGroupId) {
+          restoreDefault.itemIconGroupId = element.id
           model.value.itemIconGroupId = element.id
+        }
 
         itemIconGroupOptions.value.push({
           value: element.id as number,

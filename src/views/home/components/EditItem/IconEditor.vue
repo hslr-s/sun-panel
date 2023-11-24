@@ -108,7 +108,7 @@ watch(itemIconInfo.value, () => {
     <div class=" h-[100px]">
       <div class="flex">
         <div>
-          <div class="border rounded-2xl bg-slate-200 overflow-hidden rounded-2xl">
+          <div class="border rounded-2xl bg-slate-200 overflow-hidden rounded-2xl transparent-grid">
             <ItemIcon :item-icon="itemIconInfo" />
           </div>
         </div>
@@ -172,3 +172,12 @@ watch(itemIconInfo.value, () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.transparent-grid {
+    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
+                      linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+}
+</style>
