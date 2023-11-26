@@ -42,13 +42,13 @@ function handleSubmit() {
 
 <template>
   <div class="login-container">
-    <NCard class="login-card">
-      <div class="login-title">
-        <NGradientText :size="30" type="success">
+    <NCard class="login-card" style="border-radius: 20px;">
+      <div class="login-title  ">
+        <NGradientText :size="30" type="success" class="!font-bold">
           {{ $t('common.appName') }}
         </NGradientText>
       </div>
-      <NForm :model="form" label-width="100px">
+      <NForm :model="form" label-width="100px" @keydown.enter="handleSubmit">
         <NFormItem>
           <NInput v-model:value="form.username" placeholder="请输入邮箱地址作为账号">
             <template #prefix>
@@ -77,13 +77,17 @@ function handleSubmit() {
           </NButton>
         </NFormItem>
 
-        <div class="flex justify-end">
+        <!-- <div class="flex justify-end">
           <NButton v-if="isShowRegister" quaternary type="info" class="flex" @click="$router.push({ path: '/register' })">
             注册
           </NButton>
-          <!-- <NButton quaternary type="info" class="flex" @click="$router.push({ path: '/resetPassword' })">
+          <NButton quaternary type="info" class="flex" @click="$router.push({ path: '/resetPassword' })">
             忘记密码?
-          </NButton> -->
+          </NButton>
+        </div> -->
+
+        <div class="flex justify-center text-slate-300">
+          Powered By <a href="https://github.com/hslr-s/sun-panel" target="_blank" class="ml-[5px] text-slate-500">Sun-Panel</a>
         </div>
       </NForm>
     </NCard>
