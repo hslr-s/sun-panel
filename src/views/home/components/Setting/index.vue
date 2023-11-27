@@ -27,8 +27,8 @@ const show = computed({
 
 <template>
   <div>
-    <RoundCardModal v-model:show="show" title="设置" style="max-height: 700px;">
-      <NTabs type="line" animated>
+    <RoundCardModal v-model:show="show" title="设置" style="max-height: 700px;max-width: 600px;">
+      <NTabs type="line" size="small" animated>
         <NTabPane name="style" tab="样式">
           <Style />
         </NTabPane>

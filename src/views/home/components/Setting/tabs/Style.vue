@@ -153,9 +153,9 @@ function resetPanelConfig() {
         :directory-dnd="true"
         @finish="handleUploadBackgroundFinish"
       >
-        <NUploadDragger>
+        <NUploadDragger style="width: 100%;">
           <div
-            class="h-[150px] w-[280px] border bg-slate-100 flex justify-center items-center cursor-pointer rounded-[10px]"
+            class="h-[200px] w-full border bg-slate-100 flex justify-center items-center cursor-pointer rounded-[10px]"
             :style="{ background: `url(${panelState.panelConfig.backgroundImageSrc}) no-repeat`, backgroundSize: 'cover' }"
           >
             <div class="text-shadow text-white">
