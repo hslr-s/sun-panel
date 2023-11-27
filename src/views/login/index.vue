@@ -10,7 +10,7 @@ const userStore = useUserStore()
 const authStore = useAuthStore()
 const ms = useMessage()
 const isShowCaptcha = ref<boolean>(false)
-const isShowRegister = ref<boolean>(false)
+// const isShowRegister = ref<boolean>(false)
 
 const captchaRef = ref()
 
