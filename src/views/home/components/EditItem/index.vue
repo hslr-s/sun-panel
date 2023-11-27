@@ -34,6 +34,9 @@ interface Emit {
 }
 
 const model = ref<Panel.Info>(props.itemInfo !== null ? { ...props.itemInfo } : { ...restoreDefault })
+// const model = computed(()=>{
+//   return props.itemInfo !== null ? { ...props.itemInfo } : { ...restoreDefault }
+// })
 const formRef = ref<FormInst | null>(null)
 
 const rules: FormRules = {
@@ -117,7 +120,7 @@ const handleValidateButtonClick = (e: MouseEvent) => {
 }
 
 watch(() => props.itemInfo, (newValue) => {
-  model.value = newValue || restoreDefault
+  model.value = newValue || { ...restoreDefault }
   getGroupListOptions()
 })
 
