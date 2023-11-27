@@ -286,11 +286,11 @@ onMounted(() => {
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
             <div>
-              <span class="text-5xl font-bold text-shadow">
+              <span class="text-2xl lg:text-5xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>
-            <div class="text-2xl mx-[10px]">
+            <div class="text-base lg:text-2xl mx-[10px]">
               |
             </div>
             <div class="text-shadow">
