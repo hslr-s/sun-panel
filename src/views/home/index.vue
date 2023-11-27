@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
-import { NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NBackTop, NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { AppIcon, EditItem, Setting } from './components'
 import { Clock, SearchBox } from '@/components/deskModule'
@@ -28,6 +28,8 @@ const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
 const userStore = useUserStore()
+
+const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
 const editItemInfoShow = ref<boolean>(false)
 const editItemInfoData = ref<Panel.ItemInfo | null>(null)
@@ -280,13 +282,13 @@ onMounted(() => {
       }"
     />
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
-    <div class="absolute w-full h-full overflow-auto">
+    <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
       <div class="p-2.5 max-w-[1200px] mx-auto mt-[10%]">
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
             <div>
-              <span class="text-2xl lg:text-5xl font-bold text-shadow">
+              <span class="text-2xl md:text-5xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>
@@ -455,6 +457,21 @@ onMounted(() => {
         </NButton>
       </NButtonGroup>
 
+      <NBackTop
+        :listen-to="() => scrollContainerRef"
+        :right="10"
+        :bottom="10"
+        style="background-color:transparent;border: none;box-shadow: none;"
+      >
+        <div class="shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
+          <NButton color="#2a2a2a6b">
+            <template #icon>
+              <SvgIcon class="text-white font-xl" icon="icon-park-outline:to-top" />
+            </template>
+          </NButton>
+        </div>
+      </NBackTop>
+
       <Setting v-model:visible="settingModalShow" />
     </div>
 
@@ -528,7 +545,7 @@ html {
 .fixed-element {
   position: fixed;
   /* 将元素固定在屏幕上 */
-  right: 20px;
+  right: 10px;
   /* 距离屏幕顶部的距离 */
   bottom: 50px;
   /* 距离屏幕左侧的距离 */
