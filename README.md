@@ -73,7 +73,7 @@
 ![](./doc/images/window-ssh.png)
 ![](./doc/images/window-xunlei.png)
 
-## 🍜 使用教程
+## 🍜 使用运行教程
 
 <div id="default-username"></div>
 
@@ -89,7 +89,20 @@
 |-config|生成配置文件（conf/conf.ini）|
 |-password-reset|重置第一个用户的密码|
 
+### 二进制文件运行
+
+去 [Releases](https://github.com/hslr-s/sun-panel/releases) 下载二进制文件
+
 执行示例
+
+```sh
+./sun-panel
+```
+
+#### 重置密码
+
+执行示例
+
 ```sh
 ./sun-panel -password-reset
 ```
@@ -126,14 +139,14 @@ hslr/sun-panel
 ```
 
 
-### 编译和运行
+### 自编译运行
 
 #### 前端
 ```
 # 开发运行
 pnpm dev
 
-# 编译打包
+# 编译打包(打包后生成dist目录，若需要结合后端使用请改成web)
 pnpm build
 ```
 

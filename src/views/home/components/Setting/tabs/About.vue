@@ -46,7 +46,7 @@ onMounted(() => {
       </div>
 
       <div>
-        开发者：<a href="https://blog.enianteam.com/u/sun/content/11" target="_blank" class="link">红烧猎人</a>
+        开发者：<a href="https://blog.enianteam.com/u/sun/content/11" target="_blank" class="link">红烧猎人</a> | <a href="https://github.com/hslr-s/sun-panel/blob/master/doc/donate.md" target="_blank" class="text-red-600 hover:text-red-900">🧧打赏</a>
       </div>
 
       <div class="flex mt-[10px]">
