@@ -12,9 +12,11 @@
 - [新增] 壁纸背景增加遮罩设置
 - [新增] 右键菜单新增打开局域网或者互联网地址
 - [优化] 网址输入框增加https/http提示
-- [优化] 小图标模式，鼠标悬浮显示详情
+- [优化] 小图标模式，鼠标悬浮显示详情，支持隐藏图标标题
 - [优化] 详情图标样式，支持隐藏描述信息
+- [优化] 添加用户密码时限制字符
 - [其他] 新增arm版本docker支持。[DockerHub](https://hub.docker.com/r/hslr/sun-panel)直接拉取即可
+- [其他] 新增多平台二进制文件运行。[Releases](https://github.com/hslr-s/sun-panel/releases)
 
 ## v1.0.0
 - 首个版本
