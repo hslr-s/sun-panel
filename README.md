@@ -10,7 +10,7 @@
 
 </div>
 
-![](./doc/images/icon-info.jpg)
+![](./doc/images/icon-info-new.png)
 
 ## 😎 特点
 
@@ -65,11 +65,16 @@
 
 ## 🖼️ 预览截图
 
-![](./doc/images/icon-small.jpg)
-![](./doc/images/full-color-info.jpg)
+**各种风格，自由搭配**
+
+![](./doc/images/icon-small-new.png)
+![](./doc/images/transparent-info.png)
+![](./doc/images/transparent-small.png)
+![](./doc/images/solid-color-info.png)
 ![](./doc/images/full-color-small.jpg)
 
-内置小窗口
+**内置小窗口**
+
 ![](./doc/images/window-ssh.png)
 ![](./doc/images/window-xunlei.png)
 

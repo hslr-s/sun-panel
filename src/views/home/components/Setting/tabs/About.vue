@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NDivider } from 'naive-ui'
+import { NDivider, NGradientText } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { get } from '@/api/system/about'
 import srcSvglogo from '@/assets/logo.svg'
@@ -31,7 +31,9 @@ onMounted(() => {
           {{ $t('common.appName') }}
         </div>
         <div class="text-xl">
-          v{{ versionName }}
+          <NGradientText type="info">
+            <a href="https://github.com/hslr-s/sun-panel/releases" title="点此查看更新说明" target="_blank">v{{ versionName }}</a>
+          </NGradientText>
         </div>
       </div>
     </div>

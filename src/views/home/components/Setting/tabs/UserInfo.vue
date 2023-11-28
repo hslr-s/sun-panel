@@ -3,6 +3,7 @@ import { NButton, NCard, useDialog, useMessage } from 'naive-ui'
 import { useAuthStore, usePanelState, useUserStore } from '@/store'
 import { logout } from '@/api'
 import { router } from '@/router'
+import { SvgIcon } from '@/components/common/'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
@@ -51,6 +52,9 @@ function handleLogiut() {
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <NButton size="small" quaternary type="error" @click="handleLogiut">
+        <template #icon>
+          <SvgIcon icon="tabler:logout" />
+        </template>
         退出登录
       </NButton>
     </NCard>
