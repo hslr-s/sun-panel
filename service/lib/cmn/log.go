@@ -93,7 +93,7 @@ func NewLog(log_file_name string) *LogStruct {
 	logDir := path.Dir(log_file_name)
 	ok, _ := PathExists(logDir)
 	if !ok {
-		if err := os.MkdirAll(logDir, 0666); err != nil {
+		if err := os.MkdirAll(logDir, 0700); err != nil {
 			fmt.Println("创建日志文件错误", err.Error())
 		}
 	}
@@ -128,7 +128,7 @@ func RunLog() *LogStruct {
 		runLogStatic.Writer = io.MultiWriter(f)
 	} else {
 		if runLogStatic.File == nil {
-			f, _ := os.OpenFile(log_file_name, os.O_APPEND|os.O_WRONLY, 0666)
+			f, _ := os.OpenFile(log_file_name, os.O_APPEND|os.O_WRONLY, 0700)
 			runLogStatic.File = f
 			runLogStatic.Writer = io.MultiWriter(f)
 		}
