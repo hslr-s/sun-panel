@@ -76,7 +76,7 @@ func (d *SQLiteConfig) Connect() (db *gorm.DB, err error) {
 
 		// 创建文件夹
 		if !exists {
-			if err = os.MkdirAll(path.Dir(filePath), 0666); err != nil {
+			if err = os.MkdirAll(path.Dir(filePath), 0700); err != nil {
 				return
 			}
 		}
