@@ -27,12 +27,12 @@ onMounted(() => {
     <div>
       <div class="flex flex-col items-center justify-center">
         <img :src="srcSvglogo" width="100" height="100" alt="">
-        <div class="text-3xl">
+        <div class="text-3xl font-semibold">
           {{ $t('common.appName') }}
         </div>
         <div class="text-xl">
           <NGradientText type="info">
-            <a href="https://github.com/hslr-s/sun-panel/releases" title="点此查看更新说明" target="_blank">v{{ versionName }}</a>
+            <a href="https://github.com/hslr-s/sun-panel/releases" class="font-semibold" title="点此查看更新说明" target="_blank">v{{ versionName }}</a>
           </NGradientText>
         </div>
       </div>
