@@ -10,6 +10,7 @@ interface Prop {
   forceBackground?: string // 强制背景色
   iconTextColor?: string
   iconTextInfoHideDescription: boolean
+  iconTextIconHideTitle: boolean
   style: PanelPanelConfigStyleEnum
 }
 
@@ -75,6 +76,7 @@ const textColor = computed(() => {
         <ItemIcon :item-icon="itemInfo?.icon" />
       </div>
       <div
+        v-if="!iconTextIconHideTitle"
         class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
         :style="{ color: iconTextColor }"
       >

@@ -42,6 +42,7 @@ declare namespace Panel {
         iconStyle?:PanelPanelConfigStyleEnum
         iconTextColor?:string
         iconTextInfoHideDescription?:boolean
+        iconTextIconHideTitle?:boolean
         logoText?:string
         logoImageSrc?:string
         clockShowSecond?:boolean

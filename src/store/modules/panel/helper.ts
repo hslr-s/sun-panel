@@ -11,6 +11,7 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     iconStyle: PanelPanelConfigStyleEnum.icon,
     iconTextColor: '#ffffff',
     iconTextInfoHideDescription: false,
+    iconTextIconHideTitle: false,
     logoText: 'Sun-Panel',
     logoImageSrc: '',
     clockShowSecond: false,

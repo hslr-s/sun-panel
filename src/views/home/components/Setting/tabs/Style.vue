@@ -118,6 +118,15 @@ function resetPanelConfig() {
         </div>
       </div>
 
+      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon" class="mt-[5px]">
+        <div>
+          隐藏标题
+        </div>
+        <div class="flex items-center mt-[5px]">
+          <NSwitch v-model:value="panelState.panelConfig.iconTextIconHideTitle" />
+        </div>
+      </div>
+
       <div class="mt-[5px]">
         <div>
           文字颜色

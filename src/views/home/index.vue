@@ -334,6 +334,7 @@ onMounted(() => {
                       :item-info="item"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
+                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="0"
                       @click="handleItemClick(item)"
                     />
@@ -345,6 +346,7 @@ onMounted(() => {
                       :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
+                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="0"
                       @click="handleAddAppClick"
                     />
@@ -369,6 +371,7 @@ onMounted(() => {
                       :item-info="item"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="1"
                       @click="handleItemClick(item)"
                     />
@@ -380,6 +383,7 @@ onMounted(() => {
                       :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
+                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="1"
                       @click="handleAddAppClick"
                     />
