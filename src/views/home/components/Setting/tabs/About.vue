@@ -38,11 +38,15 @@ onMounted(() => {
     <NDivider />
     <div class="flex flex-col items-center justify-center text-base">
       <div>
+        建议反馈：<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link">Github Issues</a>
+      </div>
+
+      <div>
         QQ交流群：<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=_I9WIoJn1roIdoaAqelSj9qClLKlXIa1&authKey=GfsQP2GagHnus0jMc7U8Sm6VhWjtsipXUzCHbFwQsGyHMgmYWx6ZbAP%2Bhut%2B4D6N&noverify=0&group_code=276594668" target="_blank" class="link">276594668</a>
       </div>
 
       <div>
-        开发者： <a href="https://blog.enianteam.com/u/sun/content/11" target="_blank" class="link">红烧猎人</a>
+        开发者：<a href="https://blog.enianteam.com/u/sun/content/11" target="_blank" class="link">红烧猎人</a>
       </div>
 
       <div class="flex mt-[10px]">
@@ -65,6 +69,6 @@ onMounted(() => {
 
 <style>
 .link{
-    color:blue
+    color:rgb(0, 89, 255)
 }
 </style>
