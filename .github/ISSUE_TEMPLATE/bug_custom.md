@@ -1,6 +1,6 @@
 ---
-name: bug_custom
-about: bug
+name: BUG
+about: Using encountered bugs
 title: "[BUG] Short description"
 labels: ''
 assignees: ''
