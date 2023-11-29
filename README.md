@@ -39,7 +39,9 @@
 ## 🐳 联系作者&交流群
 开发者：**[红烧猎人](https://blog.enianteam.com/u/sun/content/11)**
 
-新建的QQ交流群: **276594668**
+新建的QQ交流群，进不去可以点上方连接联系作者
+
+<img src="./doc/images/qq_group_qr.jpg"  height="350" />
 
 ## 🍵 打赏
 
