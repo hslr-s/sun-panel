@@ -277,21 +277,21 @@ onMounted(() => {
 // 前端搜索过滤
 function itemFrontEndSearch(keyword?: string) {
   if (stateDragAppSort.value.status) {
-		//排序禁用搜索
+    //排序禁用搜索
     return
   }
-  keyword = keyword.trim()
+  keyword = keyword?.trim()
   if (keyword !== '') {
     const filteredData = ref<ItemGroup[]>([])
     for (let i = 0; i < items.value.length; i++) {
-      const element = items.value[i].items?.filter(item => {
+      const element = items.value[i].items?.filter((item: Panel.ItemInfo) => {
         return (
-          item.title.toLowerCase().includes(keyword.toLowerCase())
-          || item.url.toLowerCase().includes(keyword.toLowerCase())
-					|| item.description.toLowerCase().includes(keyword.toLowerCase())
+          item.title.toLowerCase().includes(keyword?.toLowerCase() ?? '')
+          || item.url.toLowerCase().includes(keyword?.toLowerCase() ?? '')
+          || item.description?.toLowerCase().includes(keyword?.toLowerCase() ?? '')
         )
       })
-      if (element.length > 0){
+      if (element && element.length > 0){
 				filteredData.value.push({ items: element })
       }
     }
