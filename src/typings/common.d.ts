@@ -28,4 +28,9 @@ declare namespace Common {
         result?:boolean
         message?:string
     }
+
+    interface SortItemRequest{
+        id:number
+        sort:number
+    }
 }

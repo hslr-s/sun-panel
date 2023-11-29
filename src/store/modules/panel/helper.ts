@@ -1,5 +1,5 @@
 import { ss } from '@/utils/storage'
-import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enum'
+import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import defaultBackground from '@/assets/defaultBackground.webp'
 const LOCAL_NAME = 'panelStorage'
 
@@ -7,11 +7,15 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
   return {
     backgroundImageSrc: defaultBackground,
     backgroundBlur: 0,
+    backgroundMaskNumber: 0,
     iconStyle: PanelPanelConfigStyleEnum.icon,
     iconTextColor: '#ffffff',
+    iconTextInfoHideDescription: false,
+    iconTextIconHideTitle: false,
     logoText: 'Sun-Panel',
     logoImageSrc: '',
     clockShowSecond: false,
+    searchBoxShow: false,
   }
 }
 

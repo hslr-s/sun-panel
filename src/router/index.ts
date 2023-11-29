@@ -7,16 +7,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
-    // component: () => import('@/views/home/Layout.vue'),
     component: () => import('@/views/home/index.vue'),
-    // children: [
-
-    //   {
-    //     path: '/edit/:noteId?',
-    //     name: 'EditNote',
-    //     component: () => import('@/views/home/index.vue'),
-    //   },
-    // ],
   },
 
   {

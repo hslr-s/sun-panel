@@ -29,6 +29,7 @@ var DB_DRIVER = database.SQLITE
 // var ISDOCER = "" // 是否为docker模式
 
 func InitApp() error {
+	Logo()
 	gin.SetMode(global.RUNCODE) // GIN 运行模式
 
 	// 日志
@@ -175,4 +176,18 @@ func CommandRun() {
 		return
 	}
 	os.Exit(0) // 务必退出
+}
+
+func Logo() {
+	fmt.Println("     ____            ___                __")
+	fmt.Println("    / __/_ _____    / _ \\___ ____  ___ / /")
+	fmt.Println("   _\\ \\/ // / _ \\  / ___/ _ `/ _ \\/ -_) / ")
+	fmt.Println("  /___/\\_,_/_//_/ /_/   \\_,_/_//_/\\__/_/  ")
+	fmt.Println("")
+
+	versionInfo := cmn.GetSysVersionInfo()
+	fmt.Println("Version:", versionInfo.Version)
+	fmt.Println("Welcome to the Sun-Panel.")
+	fmt.Println("Project address:", "https://github.com/hslr-s/sun-panel")
+
 }

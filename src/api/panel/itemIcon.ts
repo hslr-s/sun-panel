@@ -14,9 +14,10 @@ export function edit<T>(req: Panel.ItemInfo) {
 //   })
 // }
 
-export function getListByGroupId<T>() {
+export function getListByGroupId<T>(itemIconGroupId: number | undefined) {
   return post<T>({
     url: '/panel/itemIcon/getListByGroupId',
+    data: { itemIconGroupId },
   })
 }
 
@@ -24,5 +25,12 @@ export function deletes<T>(ids: number[]) {
   return post<T>({
     url: '/panel/itemIcon/deletes',
     data: { ids },
+  })
+}
+
+export function saveSort<T>(data: Panel.ItemIconSortRequest) {
+  return post<T>({
+    url: '/panel/itemIcon/saveSort',
+    data,
   })
 }

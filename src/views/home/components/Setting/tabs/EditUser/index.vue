@@ -56,6 +56,12 @@ const rules: FormRules = {
     type: 'number',
     message: '请选择账号状态',
   },
+  password: {
+    trigger: 'blur',
+    min: 6,
+    max: 20,
+    message: '6-20个字符',
+  },
 }
 
 // 更新值父组件传来的值
@@ -106,7 +112,7 @@ const handleValidateButtonClick = (e: MouseEvent) => {
       </NFormItem>
 
       <NFormItem path="password" label="密码">
-        <NInput v-model:value="model.password" type="text" :placeholder="`${userInfo?.id ? '请输入新密码，留空密码不变' : '请输入密码'}`" />
+        <NInput v-model:value="model.password" :maxlength="20" type="password" :placeholder="`${userInfo?.id ? '请输入新密码，留空密码不变' : '请输入密码'}`" />
       </NFormItem>
     </NForm>
 

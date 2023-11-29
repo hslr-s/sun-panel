@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { h, onMounted, reactive, ref } from 'vue'
-import { NButton, NDataTable, NDropdown, useDialog, useMessage } from 'naive-ui'
+import { NAlert, NButton, NDataTable, NDropdown, useDialog, useMessage } from 'naive-ui'
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
 import { deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
@@ -171,7 +171,10 @@ onMounted(() => {
 
 <template>
   <div class="h-[500px] overflow-auto">
-    <div class="mb-[10px]">
+    <NAlert type="info" :bordered="false">
+      账号之间的数据不互通
+    </NAlert>
+    <div class="my-[10px]">
       <NButton type="primary" size="small" ghost @click="handleAdd">
         添加
       </NButton>

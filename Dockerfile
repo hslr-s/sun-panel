@@ -16,12 +16,13 @@ COPY . /build
 RUN pnpm run build
 
 # build backend
-FROM golang:1.19 as server_image
+FROM golang:1.21-alpine as server_image
 
 WORKDIR /build
 
 COPY ./service .
 
+RUN apk add --no-cache bash curl gcc git go musl-dev
 
 # 执行指令 关闭链接确认
 RUN go env -w GO111MODULE=on \
@@ -34,7 +35,7 @@ RUN go env -w GO111MODULE=on \
 
 
 # run_image
-FROM ubuntu
+FROM alpine
 
 WORKDIR /app
 
@@ -42,6 +43,8 @@ COPY --from=web_image /build/dist /app/web
 
 COPY --from=server_image /build/sun-panel /app/sun-panel
 
-RUN apt-get update && apt-get install -y ca-certificates &&./sun-panel -config
+RUN apk add --no-cache bash ca-certificates su-exec tzdata \
+    && chmod +x ./sun-panel \
+    && ./sun-panel -config
 
 CMD ./sun-panel

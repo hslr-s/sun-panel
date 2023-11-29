@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path"
@@ -198,7 +197,7 @@ func AssetsTakeFileToPath(assetsPath, targetPath string) error {
 			return err
 		}
 	}
-	return ioutil.WriteFile(targetPath, bytes, 0666)
+	return os.WriteFile(targetPath, bytes, 0666)
 }
 
 // 密码加密

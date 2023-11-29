@@ -6,4 +6,5 @@ func Init(routerGroup *gin.RouterGroup) {
 	InitItemIcon(routerGroup)
 	InitUserConfig(routerGroup)
 	InitUsersRouter(routerGroup)
+	InitItemIconGroup(routerGroup)
 }
