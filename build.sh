@@ -5,8 +5,9 @@ REPO=$(
   pwd
 )
 COMMIT_SHA=$(git rev-parse --short HEAD)
-VERSION=$(git describe --tags)
-# VERSION="0.1.1"
+# VERSION=$(git describe --tags)
+VERSION=$(cut -d '|' -f 2 ./service/assets/version)
+LATEST_TAG=$(git describe --tags --abbrev=0)
 FRONTEND="false"
 BINARY="false"
 RELEASE="false"
@@ -18,6 +19,7 @@ debugInfo() {
   echo "Release:        $RELEASE"
   echo "Version:        $VERSION"
   echo "Commit:        $COMMIT_SHA"
+  echo "LATEST_TAG:        $LATEST_TAG"
 }
 
 buildFrontend() {
@@ -61,6 +63,8 @@ _build() {
 
   if [ -n "$VERSION" ]; then
     outPath="sun-panel_${VERSION}_${os}_${arch}"
+  elif [ -n "$LATEST_TAG" ]; then
+    outPath="sun-panel_${LATEST_TAG}_${os}_${arch}"
   else
     outPath="sun-panel_${COMMIT_SHA}_${os}_${arch}"
   fi
