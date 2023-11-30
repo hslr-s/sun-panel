@@ -48,6 +48,7 @@ const currentRightSelectItem = ref<Panel.ItemInfo | null>(null)
 const settingModalShow = ref(false)
 
 const items = ref<ItemGroup[]>([])
+const filterItems = ref<ItemGroup[]>([])
 
 function handleAddAppClick() {
   editItemInfoData.value = null
@@ -101,6 +102,7 @@ function getList() {
           items.value[i].items = res.data.list
       })
     }
+		filterItems.value = items.value
     // console.log(items)
   })
 }
@@ -250,6 +252,8 @@ watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
   if (newvalue === false)
     getList()
   else
+    // 开始排序咯,禁用前端搜索功能
+    filterItems.value = items.value
     ms.warning('进入排序模式，记得点击保存再退出')
 })
 
@@ -269,6 +273,34 @@ onMounted(() => {
   if (panelState.panelConfig.logoText)
     setTitle(panelState.panelConfig.logoText)
 })
+
+// 前端搜索过滤
+function itemFrontEndSearch(keyword?: string) {
+  if (stateDragAppSort.value.status) {
+    //排序禁用搜索
+    return
+  }
+  keyword = keyword?.trim()
+  if (keyword !== '') {
+    const filteredData = ref<ItemGroup[]>([])
+    for (let i = 0; i < items.value.length; i++) {
+      const element = items.value[i].items?.filter((item: Panel.ItemInfo) => {
+        return (
+          item.title.toLowerCase().includes(keyword?.toLowerCase() ?? '')
+          || item.url.toLowerCase().includes(keyword?.toLowerCase() ?? '')
+          || item.description?.toLowerCase().includes(keyword?.toLowerCase() ?? '')
+        )
+      })
+      if (element && element.length > 0){
+				filteredData.value.push({ items: element })
+      }
+    }
+    filterItems.value = filteredData.value
+  } else {
+    filterItems.value = items.value
+  }
+}
+
 </script>
 
 <template>
@@ -300,7 +332,7 @@ onMounted(() => {
             </div>
           </div>
           <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto sm:w-full lg:w-[80%]">
-            <SearchBox />
+            <SearchBox  @itemSearch="itemFrontEndSearch"/>
           </div>
         </div>
 
@@ -308,7 +340,7 @@ onMounted(() => {
         <div class="mt-[50px]">
           <!-- 组纵向排列 -->
           <div
-            v-for="(itemGroup, itemGroupIndex) in items"
+            v-for="(itemGroup, itemGroupIndex) in filterItems"
             :key="itemGroupIndex"
             class="mt-[50px]"
             :class="stateDragAppSort.status ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.8)]  p-[10px] rounded-2xl' : ''"

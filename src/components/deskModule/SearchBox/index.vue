@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref ,defineEmits } from 'vue'
 import { NAvatar, NCheckbox } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
@@ -7,6 +7,8 @@ import { useModuleConfig } from '@/store/modules'
 import SvgSrcBaidu from '@/assets/search_engine_svg/baidu.svg'
 import SvgSrcBing from '@/assets/search_engine_svg/bing.svg'
 import SvgSrcGoogle from '@/assets/search_engine_svg/google.svg'
+
+const emits = defineEmits(['itemSearch'])
 
 interface State {
   currentSearchEngine: DeskModule.SearchBox.SearchEngine
@@ -91,6 +93,10 @@ function replaceOrAppendKeywordToUrl(url: string, keyword: string) {
   return url + (keyword ? `${encodeURIComponent(keyword)}` : '')
 }
 
+const handleItemSearch = () => {
+  emits('itemSearch', searchTerm.value)
+}
+
 onMounted(() => {
   moduleConfig.getValueByNameFromCloud<State>('deskModuleSearchBox').then(({ code, data }) => {
     if (code === 0)
@@ -108,7 +114,7 @@ onMounted(() => {
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>
 
-      <input v-model="searchTerm" placeholder="请输入搜索内容" @focus="onFocus" @blur="onBlur">
+      <input v-model="searchTerm" placeholder="请输入搜索内容" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
       <div class="w-[20px] flex justify-center cursor-pointer" @click="handleSearchClick">
         <SvgIcon icon="iconamoon:search-fill" />
       </div>
