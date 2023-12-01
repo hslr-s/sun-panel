@@ -1,7 +1,7 @@
 package panel
 
 import (
-	"math"
+	"errors"
 	"strings"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
@@ -17,6 +17,10 @@ import (
 // 此API 临时使用，后期带有管理功能，将废除！！！
 type UsersApi struct {
 }
+
+var (
+	ErrUsersApiAtLeastKeepOne = errors.New("at least keep one")
+)
 
 func (a UsersApi) Create(c *gin.Context) {
 	param := models.User{}
@@ -73,16 +77,16 @@ func (a UsersApi) Deletes(c *gin.Context) {
 		return
 	}
 
-	var count int64
-	if err := global.Db.Model(&models.User{}).Count(&count).Error; err != nil {
-		apiReturn.ErrorDatabase(c, err.Error())
-		return
-	} else {
-		if math.Abs(float64(len(param.UserIds))-float64(count)) < 1 {
-			apiReturn.Error(c, "至少要保留一个")
-			return
-		}
-	}
+	// var count int64
+	// if err := global.Db.Model(&models.User{}).Count(&count).Error; err != nil {
+	// 	apiReturn.ErrorDatabase(c, err.Error())
+	// 	return
+	// } else {
+	// 	if math.Abs(float64(len(param.UserIds))-float64(count)) < 1 {
+	// 		apiReturn.Error(c, "至少要保留一个")
+	// 		return
+	// 	}
+	// }
 
 	txErr := global.Db.Transaction(func(tx *gorm.DB) error {
 		mitemIconGroup := models.ItemIconGroup{}
@@ -114,10 +118,21 @@ func (a UsersApi) Deletes(c *gin.Context) {
 			apiReturn.ErrorDatabase(c, err.Error())
 			return err
 		}
+
+		// 验证是否还存在管理员
+		var count int64
+		if err := tx.Model(&models.User{}).Count(&count).Error; err != nil {
+			return err
+		} else if count == 0 {
+			return ErrUsersApiAtLeastKeepOne
+		}
+
 		return nil
 	})
-
-	if txErr != nil {
+	if txErr == ErrUsersApiAtLeastKeepOne {
+		apiReturn.Error(c, "至少要保留一个平台管理")
+		return
+	} else if txErr != nil {
 		apiReturn.ErrorDatabase(c, txErr.Error())
 		return
 	}
