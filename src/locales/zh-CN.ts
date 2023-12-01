@@ -27,6 +27,11 @@ export default {
     failed: '操作失败',
     verify: '验证',
     unauthorizedTips: '未经授权，请先进行验证。',
+    inputPlaceholder: '请输入',
+    role: {
+      regularUser: '普通用户',
+      admin: '平台管理',
+    },
   },
   setting: {
     setting: '设置',
@@ -57,5 +62,18 @@ export default {
     usernamePlaceholder: '请输入账号',
     passwordPlaceholder: '请输入密码',
     welcomeMessage: '欢迎回来！',
+  },
+  adminSettingUsers: {
+    username: '账号',
+    nikeName: '昵称',
+    password: '密码',
+    passwordPlaceholder: '请输入密码',
+    EditpasswordPlaceholder: '请输入新密码，留空密码不变',
+    role: '角色',
+    formRules: {
+      usernameRequired: '请输入账号且大于5个字符',
+      roleRequired: '请选择角色',
+      passwordLimit: '6-20个字符',
+    },
   },
 }

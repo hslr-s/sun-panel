@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { NButton, NForm, NFormItem, NInput, useMessage } from 'naive-ui'
+import { NButton, NForm, NFormItem, NInput, NSelect, useMessage } from 'naive-ui'
 import { edit as userManageEdit } from '@/api/panel/users'
 import { RoundCardModal } from '@/components/common'
+import { t } from '@/locales'
 
 interface Props {
   visible: boolean
@@ -30,37 +31,43 @@ const formInitValue = {
 const model = ref<User.Info>(formInitValue)
 const formRef = ref<FormInst | null>(null)
 
+const roleOtions = ref([
+  {
+    label: t('common.role.regularUser'),
+    value: 2,
+  },
+  {
+    label: t('common.role.admin'),
+    value: 1,
+  },
+])
+
 const rules: FormRules = {
   username: [
     {
       required: true,
       trigger: 'blur',
-      message: '请输入账号且大于5个字符',
+      message: t('adminSettingUsers.formRules.usernameRequired'),
       min: 5,
-    },
-    {
-      trigger: 'blur',
-      message: '请输入邮箱作为账号',
-      type: 'email',
     },
   ],
   role: {
     required: true,
     trigger: 'blur',
     type: 'number',
-    message: '请选择角色',
+    message: t('adminSettingUsers.formRules.roleRequired'),
   },
-  status: {
-    required: true,
-    trigger: 'blur',
-    type: 'number',
-    message: '请选择账号状态',
-  },
+  // status: {
+  //   required: true,
+  //   trigger: 'blur',
+  //   type: 'number',
+  //   message: '请选择账号状态',
+  // },
   password: {
     trigger: 'blur',
     min: 6,
     max: 20,
-    message: '6-20个字符',
+    message: t('adminSettingUsers.formRules.passwordLimit'),
   },
 }
 
@@ -86,7 +93,7 @@ const add = async () => {
     emit('done', res.data.id as number)
 
   else if (res.code !== -1)
-    message.warning('操作失败')
+    message.warning(t('common.failed'))
 }
 
 const handleValidateButtonClick = (e: MouseEvent) => {
@@ -101,25 +108,32 @@ const handleValidateButtonClick = (e: MouseEvent) => {
 </script>
 
 <template>
-  <RoundCardModal v-model:show="show" size="small" preset="card" style="width: 400px" :title="`${userInfo?.id ? '编辑' : '添加'}用户`">
+  <RoundCardModal v-model:show="show" size="small" preset="card" style="width: 400px" :title="`${userInfo?.id ? $t('common.edit') : $t('common.add')}`">
     <NForm ref="formRef" :model="model" :rules="rules">
-      <NFormItem path="username" label="账号">
-        <NInput v-model:value="model.username" type="text" placeholder="邮箱地址作为账号" />
+      <NFormItem path="username" :label="$t('adminSettingUsers.username')">
+        <NInput v-model:value="model.username" type="text" :placeholder="$t('common.inputPlaceholder')" />
       </NFormItem>
 
-      <NFormItem path="name" label="昵称">
-        <NInput v-model:value="model.name" type="text" placeholder="请输入昵称" />
+      <NFormItem path="name" :label="$t('adminSettingUsers.nikeName')">
+        <NInput v-model:value="model.name" type="text" :placeholder="$t('common.inputPlaceholder')" />
       </NFormItem>
 
-      <NFormItem path="password" label="密码">
-        <NInput v-model:value="model.password" :maxlength="20" type="password" :placeholder="`${userInfo?.id ? '请输入新密码，留空密码不变' : '请输入密码'}`" />
+      <NFormItem path="role" :label="$t('adminSettingUsers.role')">
+        <NSelect
+          v-model:value="model.role"
+          :options="roleOtions"
+        />
+      </NFormItem>
+
+      <NFormItem path="password" :label="$t('adminSettingUsers.password')">
+        <NInput v-model:value="model.password" :maxlength="20" type="password" :placeholder="`${userInfo?.id ? $t('adminSettingUsers.EditpasswordPlaceholder') : $t('adminSettingUsers.passwordPlaceholder')}`" />
       </NFormItem>
     </NForm>
 
     <template #footer>
       <div class="float-right">
         <NButton type="success" size="small" @click="handleValidateButtonClick">
-          保存
+          {{ $t('common.save') }}
         </NButton>
       </div>
     </template>
