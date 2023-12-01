@@ -2,6 +2,7 @@ package panel
 
 import (
 	"math"
+	"strings"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
@@ -29,14 +30,20 @@ func (a UsersApi) Create(c *gin.Context) {
 		return
 	}
 
+	param.Username = strings.Trim(param.Username, " ")
+	if len(param.Username) < 5 {
+		apiReturn.ErrorParamFomat(c, "账号不得少于5个字符")
+		return
+	}
+
 	mUser := models.User{
-		Username:  param.Username,
+		Username:  strings.Trim(param.Username, " "),
 		Password:  cmn.PasswordEncryption(param.Password),
 		Name:      param.Username,
 		HeadImage: param.HeadImage,
 		Status:    1,
-		Role:      1, // 固定管理员
-		Mail:      param.Username,
+		Role:      param.Role,
+		// Mail:      param.Username, 不再保存邮箱账号字段
 	}
 
 	// 验证账号是否存在
@@ -130,19 +137,26 @@ func (a UsersApi) Update(c *gin.Context) {
 		param.Password = "-" // 修改不允许修改密码，为了验证通过
 	}
 
-	param.Mail = param.Username // 密码邮箱同时修改
+	// param.Mail = param.Username // 密码邮箱同时修改
 	if errMsg, err := base.ValidateInputStruct(param); err != nil {
 		apiReturn.ErrorParamFomat(c, errMsg)
 		return
 	}
 
-	allowField := []string{"Username", "Name", "Mail", "Token"}
+	param.Username = strings.Trim(param.Username, " ")
+	if len(param.Username) < 5 {
+		apiReturn.ErrorParamFomat(c, "账号不得少于5个字符")
+		return
+	}
+
+	allowField := []string{"Username", "Name", "Mail", "Token", "Role"}
 
 	// 密码不为默认“-”空，修改密码
 	if param.Password != "-" {
 		param.Password = cmn.PasswordEncryption(param.Password)
 		allowField = append(allowField, "Password")
 	}
+
 	mUser := models.User{}
 
 	userInfo := models.User{}
