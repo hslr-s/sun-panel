@@ -121,7 +121,7 @@ func (a UsersApi) Deletes(c *gin.Context) {
 
 		// 验证是否还存在管理员
 		var count int64
-		if err := tx.Model(&models.User{}).Count(&count).Error; err != nil {
+		if err := tx.Model(&models.User{}).Where("role=?", 1).Count(&count).Error; err != nil {
 			return err
 		} else if count == 0 {
 			return ErrUsersApiAtLeastKeepOne
