@@ -82,4 +82,10 @@ export default {
     deletePromptContent: '你确定删除{name}({username})？',
     currentUseUsername: '当前账号',
   },
+  deskModule: {
+    searchBox: {
+      openWithNewOpen: '新窗口打开',
+      inputPlaceholder: '请输入搜索内容（支持搜索图标）',
+    },
+  },
 }

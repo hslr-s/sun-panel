@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref ,defineEmits } from 'vue'
+import { defineEmits, onMounted, ref } from 'vue'
 import { NAvatar, NCheckbox } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
@@ -8,14 +8,6 @@ import SvgSrcBaidu from '@/assets/search_engine_svg/baidu.svg'
 import SvgSrcBing from '@/assets/search_engine_svg/bing.svg'
 import SvgSrcGoogle from '@/assets/search_engine_svg/google.svg'
 
-const emits = defineEmits(['itemSearch'])
-
-interface State {
-  currentSearchEngine: DeskModule.SearchBox.SearchEngine
-  searchEngineList: DeskModule.SearchBox.SearchEngine[]
-  newWindowOpen: boolean
-}
-
 withDefaults(defineProps<{
   background?: string
   textColor?: string
@@ -23,6 +15,14 @@ withDefaults(defineProps<{
   background: '#2a2a2a6b',
   textColor: 'white',
 })
+
+const emits = defineEmits(['itemSearch'])
+
+interface State {
+  currentSearchEngine: DeskModule.SearchBox.SearchEngine
+  searchEngineList: DeskModule.SearchBox.SearchEngine[]
+  newWindowOpen: boolean
+}
 
 const moduleConfigName = 'deskModuleSearchBox'
 const moduleConfig = useModuleConfig()
@@ -97,6 +97,11 @@ const handleItemSearch = () => {
   emits('itemSearch', searchTerm.value)
 }
 
+const handleClearSearchTerm = () => {
+  searchTerm.value = ''
+  emits('itemSearch', searchTerm.value)
+}
+
 onMounted(() => {
   moduleConfig.getValueByNameFromCloud<State>('deskModuleSearchBox').then(({ code, data }) => {
     if (code === 0)
@@ -114,9 +119,13 @@ onMounted(() => {
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>
 
-      <input v-model="searchTerm" placeholder="请输入搜索内容" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
-      <div class="w-[20px] flex justify-center cursor-pointer" @click="handleSearchClick">
-        <SvgIcon icon="iconamoon:search-fill" />
+      <input v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
+
+      <div v-if="searchTerm !== ''" class="w-[25px] mr-[10px] flex justify-center cursor-pointer" @click="handleClearSearchTerm">
+        <SvgIcon style="width: 20px;height: 20px;" icon="line-md:close-small" />
+      </div>
+      <div class="w-[25px] flex justify-center cursor-pointer" @click="handleSearchClick">
+        <SvgIcon style="width: 20px;height: 20px;" icon="iconamoon:search-fill" />
       </div>
     </div>
 
@@ -144,7 +153,7 @@ onMounted(() => {
       <div class="mt-[10px]">
         <NCheckbox v-model:checked="state.newWindowOpen" @update-checked="moduleConfig.saveToCloud(moduleConfigName, state)">
           <span :style="{ color: textColor }">
-            新窗口打开
+            {{ $t('deskModule.searchBox.openWithNewOpen') }}
           </span>
         </NCheckbox>
       </div>
