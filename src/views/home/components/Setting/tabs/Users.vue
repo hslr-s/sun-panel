@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { h, onMounted, reactive, ref } from 'vue'
-import { NAlert, NButton, NDataTable, NDropdown, useDialog, useMessage } from 'naive-ui'
+import { NAlert, NButton, NDataTable, NDropdown, NTag, useDialog, useMessage } from 'naive-ui'
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
 import { deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
 import { SvgIcon } from '@/components/common'
 import { useUserStore } from '@/store'
+import { t } from '@/locales'
+import { AdminAuthRole } from '@/enums/admin'
 
 const message = useMessage()
 const userStore = useUserStore()
@@ -22,20 +24,34 @@ const createColumns = ({
 }): DataTableColumns<User.Info> => {
   return [
     {
-      title: '账号',
+      title: t('adminSettingUsers.username'),
       key: 'username',
       render(row: User.Info) {
         if (row.username === userStore.userInfo.username)
-          return `${row.username} (当前账号)`
+          return `${row.username} (${t('adminSettingUsers.currentUseUsername')})`
         return row.username
       },
     },
     {
-      title: '昵称',
+      title: t('adminSettingUsers.nikeName'),
       key: 'name',
     },
     {
-      title: '操作',
+      title: t('adminSettingUsers.role'),
+      key: 'role',
+      render(row) {
+        switch (row.role) {
+          case AdminAuthRole.admin:
+            return h(NTag, t('common.role.admin'))
+          case AdminAuthRole.regularUser:
+            return h(NTag, { type: 'info' }, t('common.role.regularUser'))
+          default:
+            return '-'
+        }
+      },
+    },
+    {
+      title: t('common.action'),
       key: '',
       render(row) {
         const btn = h(
@@ -59,17 +75,16 @@ const createColumns = ({
         return h(NDropdown, {
           trigger: 'click',
           onSelect(key: string | number) {
-            console.log(key)
             switch (key) {
               case 'update':
                 update(row)
                 break
               case 'delete':
                 dialog.warning({
-                  title: '警告',
-                  content: `你确定删除${row.name}(${row.username})？`,
-                  positiveText: '确定',
-                  negativeText: '取消',
+                  title: t('common.warning'),
+                  content: t('adminSettingUsers.deletePromptContent', { name: row.name, username: row.username }),
+                  positiveText: t('common.confirm'),
+                  negativeText: t('common.cancel'),
                   onPositiveClick: () => {
                     deletes([row.id as number])
                   },
@@ -82,11 +97,11 @@ const createColumns = ({
           },
           options: [
             {
-              label: '修改信息',
+              label: t('common.edit'),
               key: 'update',
             },
             {
-              label: '删除',
+              label: t('common.delete'),
               key: 'delete',
             },
           ],
@@ -120,7 +135,7 @@ const pagination = reactive({
     getList(null)
   },
   prefix(item: PaginationProps) {
-    return `共 ${item.itemCount} 位用户`
+    return t('adminSettingUsers.userCountText', { count: item.itemCount })
   },
 })
 
@@ -136,7 +151,7 @@ function handleAdd() {
 
 function handelDone() {
   editUserDialogShow.value = false
-  message.success('操作成功')
+  message.success(t('common.success'))
   getList(null)
 }
 
@@ -159,7 +174,7 @@ async function getList(page: number | null) {
 async function deletes(ids: number[]) {
   const { code } = await usersDeletes(ids)
   if (code === 0) {
-    message.success('已删除')
+    message.success(t('common.deleteSuccess'))
     getList(null)
   }
 }
@@ -172,11 +187,11 @@ onMounted(() => {
 <template>
   <div class="h-[500px] overflow-auto">
     <NAlert type="info" :bordered="false">
-      账号之间的数据不互通
+      {{ $t('adminSettingUsers.alertText') }}
     </NAlert>
     <div class="my-[10px]">
       <NButton type="primary" size="small" ghost @click="handleAdd">
-        添加
+        {{ $t('common.add') }}
       </NButton>
     </div>
 
