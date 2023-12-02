@@ -144,15 +144,15 @@ func CommandRun() {
 		fmt.Println("配置文件已经创建 conf/conf.ini ", "请按照自己的需求修改")
 		os.Exit(0) // 务必退出
 	} else if pwd {
+		// 重置密码
 
 		// 配置初始化
 		config, _ := config.ConfigInit()
 		global.Config = config
 
-		// 重置密码
 		DatabaseConnect()
 		userInfo := models.User{}
-		if err := global.Db.First(&userInfo).Error; err != nil {
+		if err := global.Db.Where("role=?", 1).Order("id").First(&userInfo).Error; err != nil {
 			fmt.Println("ERROR", err.Error())
 			os.Exit(0) // 务必退出
 		}
@@ -163,6 +163,7 @@ func CommandRun() {
 			Password: cmn.PasswordEncryption(newPassword),
 			Token:    "",
 		}
+		// 重置第一个管理员的密码
 		if err := global.Db.Select("Password", "Token").Where("id=?", userInfo.ID).Updates(&updateInfo).Error; err != nil {
 			fmt.Println("ERROR", err.Error())
 			os.Exit(0) // 务必退出
