@@ -8,6 +8,7 @@ import (
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
+	"sun-panel/lib/cmn/systemSetting"
 	"sun-panel/models"
 
 	"github.com/gin-gonic/gin"
@@ -265,7 +266,7 @@ func (a UsersApi) SetPublicVisitUser(c *gin.Context) {
 		}
 	}
 
-	if err := global.SystemSetting.Set("publicUserId", req.UserId); err != nil {
+	if err := global.SystemSetting.Set(systemSetting.PANEL_PUBLIC_USER_ID, req.UserId); err != nil {
 		apiReturn.Error(c, "set fail")
 		return
 	}
@@ -274,7 +275,7 @@ func (a UsersApi) SetPublicVisitUser(c *gin.Context) {
 
 func (a UsersApi) GetPublicVisitUser(c *gin.Context) {
 	var userId *uint
-	if err := global.SystemSetting.GetValueByInterface("publicUserId", &userId); err == nil && userId != nil {
+	if err := global.SystemSetting.GetValueByInterface(systemSetting.PANEL_PUBLIC_USER_ID, &userId); err == nil && userId != nil {
 		userInfo := models.User{}
 		if err := global.Db.First(&userInfo, "id=?", userId).Error; err == nil {
 			apiReturn.SuccessData(c, userInfo)

@@ -101,6 +101,10 @@ const createColumns = ({
               key: 'update',
             },
             {
+              label: t('adminSettingUsers.publicMode'),
+              key: 'publicMode',
+            },
+            {
               label: t('common.delete'),
               key: 'delete',
             },

@@ -12,6 +12,11 @@ func InitUserConfig(router *gin.RouterGroup) {
 	r := router.Group("", middleware.LoginInterceptor)
 	{
 		r.POST("/panel/userConfig/set", api.Set)
-		r.POST("/panel/userConfig/get", api.Get)
+	}
+
+	// 公开模式
+	rPublic := router.Group("", middleware.PublicModeInterceptor)
+	{
+		rPublic.POST("/panel/userConfig/get", api.Get)
 	}
 }

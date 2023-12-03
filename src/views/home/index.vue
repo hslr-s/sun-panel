@@ -8,10 +8,9 @@ import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 
-import { getInfo } from '@/api/system/user'
+import { setTitle, updateLocalUserInfo } from '@/utils/cmn'
 import { usePanelState, useUserStore } from '@/store'
 import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
-import { setTitle } from '@/utils/cmn'
 
 interface StateDragAppSort {
   status: boolean
@@ -102,7 +101,7 @@ function getList() {
           items.value[i].items = res.data.list
       })
     }
-		filterItems.value = items.value
+    filterItems.value = items.value
     // console.log(items)
   })
 }
@@ -254,17 +253,14 @@ watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
   else
     // 开始排序咯,禁用前端搜索功能
     filterItems.value = items.value
-    ms.warning('进入排序模式，记得点击保存再退出')
+  ms.warning('进入排序模式，记得点击保存再退出')
 })
 
 onMounted(() => {
   getList()
 
-  // 获取用户信息
-  getInfo<User.Info>().then((res) => {
-    if (res.code === 0)
-      userStore.updateUserInfo(res.data)
-  })
+  // 更新用户信息
+  updateLocalUserInfo()
 
   // 更新同步云端配置
   panelState.updatePanelConfigByCloud()
@@ -277,7 +273,7 @@ onMounted(() => {
 // 前端搜索过滤
 function itemFrontEndSearch(keyword?: string) {
   if (stateDragAppSort.value.status) {
-    //排序禁用搜索
+    // 排序禁用搜索
     return
   }
   keyword = keyword?.trim()
@@ -291,16 +287,15 @@ function itemFrontEndSearch(keyword?: string) {
           || item.description?.toLowerCase().includes(keyword?.toLowerCase() ?? '')
         )
       })
-      if (element && element.length > 0){
-				filteredData.value.push({ items: element })
-      }
+      if (element && element.length > 0)
+        filteredData.value.push({ items: element })
     }
     filterItems.value = filteredData.value
-  } else {
+  }
+  else {
     filterItems.value = items.value
   }
 }
-
 </script>
 
 <template>
@@ -332,7 +327,7 @@ function itemFrontEndSearch(keyword?: string) {
             </div>
           </div>
           <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto sm:w-full lg:w-[80%]">
-            <SearchBox  @itemSearch="itemFrontEndSearch"/>
+            <SearchBox @itemSearch="itemFrontEndSearch" />
           </div>
         </div>
 
