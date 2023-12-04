@@ -81,7 +81,8 @@ export default {
     userCountText: '共{count}位用户',
     deletePromptContent: '你确定删除{name}({username})？',
     currentUseUsername: '当前账号',
-    publicMode: '公开访问',
+    setOrUnsetPublicMode: '设置/取消公开访问',
+    pblicText: '公开',
   },
   deskModule: {
     searchBox: {

@@ -3,19 +3,20 @@ import { h, onMounted, reactive, ref } from 'vue'
 import { NAlert, NButton, NDataTable, NDropdown, NTag, useDialog, useMessage } from 'naive-ui'
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
-import { deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
+import { getPublicVisitUser, setPublicVisitUser, deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
 import { SvgIcon } from '@/components/common'
-import { useUserStore } from '@/store'
+import { useAuthStore } from '@/store'
 import { t } from '@/locales'
 import { AdminAuthRole } from '@/enums/admin'
 
 const message = useMessage()
-const userStore = useUserStore()
+const authStore = useAuthStore()
 const tableIsLoading = ref<boolean>(false)
 const editUserDialogShow = ref<boolean>(false)
 const keyWord = ref<string>()
 const editUserUserInfo = ref<User.Info>()
 const dialog = useDialog()
+const publicVisitUserId = ref<number | null>(null)
 
 const createColumns = ({
   update,
@@ -27,9 +28,13 @@ const createColumns = ({
       title: t('adminSettingUsers.username'),
       key: 'username',
       render(row: User.Info) {
-        if (row.username === userStore.userInfo.username)
-          return `${row.username} (${t('adminSettingUsers.currentUseUsername')})`
-        return row.username
+        let publicVisitHtml = ''
+        if (publicVisitUserId.value && publicVisitUserId.value === row.id)
+          publicVisitHtml = `[${t('adminSettingUsers.pblicText')}]`
+
+        if (row.username === authStore.userInfo?.username)
+          return `${publicVisitHtml}${row.username} (${t('adminSettingUsers.currentUseUsername')})`
+        return publicVisitHtml + row.username
       },
     },
     {
@@ -42,9 +47,9 @@ const createColumns = ({
       render(row) {
         switch (row.role) {
           case AdminAuthRole.admin:
-            return h(NTag, t('common.role.admin'))
+            return h(NTag, { type: 'info' }, t('common.role.admin'))
           case AdminAuthRole.regularUser:
-            return h(NTag, { type: 'info' }, t('common.role.regularUser'))
+            return h(NTag, t('common.role.regularUser'))
           default:
             return '-'
         }
@@ -79,6 +84,24 @@ const createColumns = ({
               case 'update':
                 update(row)
                 break
+              case 'publicMode':
+                // 取消
+                if (publicVisitUserId.value && publicVisitUserId.value === row.id) {
+                  setPublicVisitUser(null).then(({ code }) => {
+                    if (code === 0)
+                      publicVisitUserId.value = null
+                  })
+                }
+                else {
+                // 设置
+                  setPublicVisitUser(row.id as number).then(({ code }) => {
+                    if (code === 0)
+                      publicVisitUserId.value = row.id as number
+                    else if (code === 1111)
+                      message.error('用户不存在，请刷新后再试')
+                  })
+                }
+                break
               case 'delete':
                 dialog.warning({
                   title: t('common.warning'),
@@ -101,7 +124,7 @@ const createColumns = ({
               key: 'update',
             },
             {
-              label: t('adminSettingUsers.publicMode'),
+              label: t('adminSettingUsers.setOrUnsetPublicMode'),
               key: 'publicMode',
             },
             {
@@ -184,6 +207,9 @@ async function deletes(ids: number[]) {
 }
 
 onMounted(() => {
+  getPublicVisitUser<User.Info>().then(({ data }) => {
+    publicVisitUserId.value = data.id || null
+  })
   getList(null)
 })
 </script>

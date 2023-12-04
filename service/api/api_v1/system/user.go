@@ -35,6 +35,7 @@ func (a *UserApi) GetAuthInfo(c *gin.Context) {
 	user.HeadImage = userInfo.HeadImage
 	user.Name = userInfo.Name
 	user.Role = userInfo.Role
+	user.Username = userInfo.Username
 	apiReturn.SuccessData(c, gin.H{
 		"user":      user,
 		"visitMode": visitMode,

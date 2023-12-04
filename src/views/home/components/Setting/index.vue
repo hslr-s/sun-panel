@@ -6,7 +6,7 @@ import About from './tabs/About.vue'
 import Users from './tabs/Users.vue'
 import UserInfo from './tabs/UserInfo.vue'
 import ItemGroupManage from './tabs/ItemGroupManage.vue'
-import { useUserStore } from '@/store'
+import { useAuthStore } from '@/store'
 import { AdminAuthRole } from '@/enums/admin'
 import { RoundCardModal } from '@/components/common'
 
@@ -18,7 +18,7 @@ const emit = defineEmits<{
   (e: 'update:visible', visible: boolean): void
 }>()
 
-const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const show = computed({
   get: () => props.visible,
@@ -44,7 +44,7 @@ const show = computed({
         <NTabPane name="about" tab="关于">
           <About />
         </NTabPane>
-        <NTabPane v-if="userStore.userInfo?.role === AdminAuthRole.admin" name="password" tab="账号管理">
+        <NTabPane v-if="authStore.userInfo?.role === AdminAuthRole.admin" name="password" tab="账号管理">
           <Users />
         </NTabPane>
       </NTabs>
