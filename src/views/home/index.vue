@@ -9,8 +9,10 @@ import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 
 import { setTitle, updateLocalUserInfo } from '@/utils/cmn'
-import { usePanelState, useUserStore } from '@/store'
+import { useAuthStore, usePanelState, useUserStore } from '@/store'
 import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
+import { VisitMode } from '@/enums/auth'
+import { router } from '@/router'
 
 interface StateDragAppSort {
   status: boolean
@@ -27,6 +29,7 @@ const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
@@ -450,7 +453,7 @@ function itemFrontEndSearch(keyword?: string) {
         </template>
       </NButton>
       <NButtonGroup v-if="!stateDragAppSort.status" vertical>
-        <NButton color="#2a2a2a6b" @click="handleAddAppClick">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="handleAddAppClick">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="typcn:plus" />
           </template>
@@ -474,15 +477,21 @@ function itemFrontEndSearch(keyword?: string) {
           </template>
         </NButton>
 
-        <NButton color="#2a2a2a6b" title="排序模式" @click="stateDragAppSort.status = !stateDragAppSort.status">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" title="排序模式" @click="stateDragAppSort.status = !stateDragAppSort.status">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
           </template>
         </NButton>
 
-        <NButton color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="ep:setting" />
+          </template>
+        </NButton>
+
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" title="登录" @click="router.push('/login')">
+          <template #icon>
+            <SvgIcon class="text-white font-xl" icon="mdi:user" />
           </template>
         </NButton>
       </NButtonGroup>
