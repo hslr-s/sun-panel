@@ -2,11 +2,13 @@ package panel
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
+	"sun-panel/lib/cmn/systemSetting"
 	"sun-panel/models"
 
 	"github.com/gin-gonic/gin"
@@ -242,4 +244,45 @@ func (a UsersApi) GetList(c *gin.Context) {
 	// }
 
 	apiReturn.SuccessListData(c, list, count)
+}
+
+func (a UsersApi) SetPublicVisitUser(c *gin.Context) {
+	type Req struct {
+		UserId *uint `json:"userId"`
+	}
+
+	req := Req{}
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	if req.UserId != nil {
+		userInfo := models.User{}
+		if err := global.Db.First(&userInfo, "id=?", req.UserId).Error; err != nil {
+			fmt.Println(err, userInfo)
+			apiReturn.ErrorDataNotFound(c)
+			return
+		}
+	}
+
+	if err := global.SystemSetting.Set(systemSetting.PANEL_PUBLIC_USER_ID, req.UserId); err != nil {
+		apiReturn.Error(c, "set fail")
+		return
+	}
+	apiReturn.Success(c)
+}
+
+func (a UsersApi) GetPublicVisitUser(c *gin.Context) {
+	var userId *uint
+	if err := global.SystemSetting.GetValueByInterface(systemSetting.PANEL_PUBLIC_USER_ID, &userId); err == nil && userId != nil {
+		userInfo := models.User{}
+		if err := global.Db.First(&userInfo, "id=?", userId).Error; err == nil {
+			apiReturn.SuccessData(c, userInfo)
+			return
+		}
+	}
+
+	// 没有此配置
+	apiReturn.ErrorDataNotFound(c)
 }

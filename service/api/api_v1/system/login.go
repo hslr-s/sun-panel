@@ -109,6 +109,8 @@ func (l LoginApi) Login(c *gin.Context) {
 		}
 		info.Token = bToken
 	}
+	info.Password = ""
+	info.ReferralCode = ""
 
 	// global.UserToken.SetDefault(bToken, info)
 	cToken := uuid.NewString() + "-" + cmn.Md5(cmn.Md5("userId"+strconv.Itoa(int(info.ID))))

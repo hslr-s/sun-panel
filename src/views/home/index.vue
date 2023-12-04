@@ -8,10 +8,11 @@ import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 
-import { getInfo } from '@/api/system/user'
-import { usePanelState, useUserStore } from '@/store'
+import { setTitle, updateLocalUserInfo } from '@/utils/cmn'
+import { useAuthStore, usePanelState, useUserStore } from '@/store'
 import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
-import { setTitle } from '@/utils/cmn'
+import { VisitMode } from '@/enums/auth'
+import { router } from '@/router'
 
 interface StateDragAppSort {
   status: boolean
@@ -28,6 +29,7 @@ const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
@@ -102,7 +104,7 @@ function getList() {
           items.value[i].items = res.data.list
       })
     }
-		filterItems.value = items.value
+    filterItems.value = items.value
     // console.log(items)
   })
 }
@@ -254,17 +256,13 @@ watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
   else
     // 开始排序咯,禁用前端搜索功能
     filterItems.value = items.value
-    ms.warning('进入排序模式，记得点击保存再退出')
+  ms.warning('进入排序模式，记得点击保存再退出')
 })
 
 onMounted(() => {
+  // 更新用户信息
+  updateLocalUserInfo()
   getList()
-
-  // 获取用户信息
-  getInfo<User.Info>().then((res) => {
-    if (res.code === 0)
-      userStore.updateUserInfo(res.data)
-  })
 
   // 更新同步云端配置
   panelState.updatePanelConfigByCloud()
@@ -277,7 +275,7 @@ onMounted(() => {
 // 前端搜索过滤
 function itemFrontEndSearch(keyword?: string) {
   if (stateDragAppSort.value.status) {
-    //排序禁用搜索
+    // 排序禁用搜索
     return
   }
   keyword = keyword?.trim()
@@ -291,16 +289,15 @@ function itemFrontEndSearch(keyword?: string) {
           || item.description?.toLowerCase().includes(keyword?.toLowerCase() ?? '')
         )
       })
-      if (element && element.length > 0){
-				filteredData.value.push({ items: element })
-      }
+      if (element && element.length > 0)
+        filteredData.value.push({ items: element })
     }
     filterItems.value = filteredData.value
-  } else {
+  }
+  else {
     filterItems.value = items.value
   }
 }
-
 </script>
 
 <template>
@@ -332,7 +329,7 @@ function itemFrontEndSearch(keyword?: string) {
             </div>
           </div>
           <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto sm:w-full lg:w-[80%]">
-            <SearchBox  @itemSearch="itemFrontEndSearch"/>
+            <SearchBox @itemSearch="itemFrontEndSearch" />
           </div>
         </div>
 
@@ -456,7 +453,7 @@ function itemFrontEndSearch(keyword?: string) {
         </template>
       </NButton>
       <NButtonGroup v-if="!stateDragAppSort.status" vertical>
-        <NButton color="#2a2a2a6b" @click="handleAddAppClick">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="handleAddAppClick">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="typcn:plus" />
           </template>
@@ -480,15 +477,21 @@ function itemFrontEndSearch(keyword?: string) {
           </template>
         </NButton>
 
-        <NButton color="#2a2a2a6b" title="排序模式" @click="stateDragAppSort.status = !stateDragAppSort.status">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" title="排序模式" @click="stateDragAppSort.status = !stateDragAppSort.status">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
           </template>
         </NButton>
 
-        <NButton color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="ep:setting" />
+          </template>
+        </NButton>
+
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" title="登录" @click="router.push('/login')">
+          <template #icon>
+            <SvgIcon class="text-white font-xl" icon="mdi:user" />
           </template>
         </NButton>
       </NButtonGroup>

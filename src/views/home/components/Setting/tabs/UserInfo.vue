@@ -40,14 +40,14 @@ function handleLogiut() {
       <div class="text-slate-500 mb-[5px]">
         账号/邮箱
       </div>
-      {{ userStore.userInfo.username }}
+      {{ authStore.userInfo?.username }}
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px]">
         昵称
       </div>
-      {{ userStore.userInfo.name }}
+      {{ authStore.userInfo?.name }}
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">

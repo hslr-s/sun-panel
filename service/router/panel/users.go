@@ -16,5 +16,7 @@ func InitUsersRouter(router *gin.RouterGroup) {
 		rAdmin.POST("panel/users/update", userApi.Update)
 		rAdmin.POST("panel/users/getList", userApi.GetList)
 		rAdmin.POST("panel/users/deletes", userApi.Deletes)
+		rAdmin.POST("panel/users/getPublicVisitUser", userApi.GetPublicVisitUser)
+		rAdmin.POST("panel/users/setPublicVisitUser", userApi.SetPublicVisitUser)
 	}
 }

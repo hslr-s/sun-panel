@@ -1,8 +1,14 @@
 import { post } from '@/utils/request'
 
-export function getInfo<T>() {
+// export function getInfo<T>() {
+//   return post<T>({
+//     url: '/user/getInfo',
+//   })
+// }
+
+export function getAuthInfo<T>() {
   return post<T>({
-    url: '/user/getInfo',
+    url: '/user/getAuthInfo',
   })
 }
 

@@ -14,4 +14,10 @@ func InitUserRouter(router *gin.RouterGroup) {
 	r.POST("/user/updatePasssword", api.UpdatePasssword)
 	r.POST("/user/updateInfo", api.UpdateInfo)
 	r.POST("/user/getReferralCode", api.GetReferralCode)
+
+	// 公开模式
+	rPublic := router.Group("", middleware.PublicModeInterceptor)
+	{
+		rPublic.POST("/user/getAuthInfo", api.GetAuthInfo)
+	}
 }

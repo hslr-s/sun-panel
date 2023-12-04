@@ -1,63 +1,58 @@
 import { defineStore } from 'pinia'
-import { getToken, getUserInfo, removeToken, setToken } from './helper'
-import { store } from '@/store'
-import { fetchSession } from '@/api'
+import { ref, toRefs } from 'vue'
+import { getStorage, removeToken as hRemoveToken, setStorage } from './helper'
+import { VisitMode } from '@/enums/auth'
 
-interface SessionResponse {
-  auth: boolean
-  model: 'ChatGPTAPI' | 'ChatGPTUnofficialProxyAPI'
-}
+// interface SessionResponse {
+//   auth: boolean
+// }
 
 export interface AuthState {
   token: string | undefined
   userInfo: User.Info | undefined
-  session: SessionResponse | null
-
+  // session: SessionResponse | null
+  visitMode: VisitMode
 }
 
-export const useAuthStore = defineStore('auth-store', {
-  state: (): AuthState => ({
-    userInfo: getUserInfo(),
-    token: getToken(),
-    session: null,
-  }),
+const defaultState: AuthState = {
+  token: undefined,
+  userInfo: undefined,
+  visitMode: VisitMode.VISIT_MODE_LOGIN,
+}
 
-  getters: {
-    isChatGPTAPI(state): boolean {
-      return state.session?.model === 'ChatGPTAPI'
-    },
-  },
+export const useAuthStore = defineStore('auth-store', () => {
+  const state = ref<AuthState>(getStorage() || defaultState)
 
-  actions: {
-    async getSession() {
-      try {
-        const { data } = await fetchSession<SessionResponse>()
-        this.session = { ...data }
-        return Promise.resolve(data)
-      }
-      catch (error) {
-        return Promise.reject(error)
-      }
-    },
+  function setToken(token: string) {
+    state.value.token = token
+    saveStorage()
+  }
 
-    setToken(token: string) {
-      this.token = token
-      setToken(token)
-    },
+  function setUserInfo(userInfo: User.Info) {
+    state.value.userInfo = userInfo
+    saveStorage()
+  }
 
-    setUserInfo(userInfo: User.Info) {
-      this.userInfo = userInfo
-      this.setUserInfo(userInfo)
-    },
+  function setVisitMode(visitMode: VisitMode) {
+    state.value.visitMode = visitMode
+    saveStorage()
+  }
 
-    // 清除所有的本地储存
-    removeToken() {
-      this.token = undefined
-      removeToken()
-    },
-  },
+  function saveStorage() {
+    setStorage(state.value)
+  }
+
+  function removeToken() {
+    state.value = defaultState
+    hRemoveToken()
+  }
+  const stateRefs = toRefs(state.value)
+  return {
+    state: state.value,
+    ...stateRefs,
+    setToken,
+    setUserInfo,
+    setVisitMode,
+    removeToken,
+  }
 })
-
-export function useAuthStoreWithout() {
-  return useAuthStore(store)
-}

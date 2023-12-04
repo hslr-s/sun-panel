@@ -2,12 +2,14 @@ import moment from 'moment'
 import { h } from 'vue'
 import type { NotificationReactive } from 'naive-ui'
 import { NButton, createDiscreteApi } from 'naive-ui'
-import { useNoticeStore, useUserStore } from '@/store'
-import { getInfo as getUserInfo } from '@/api/system/user'
+import { useAuthStore, useNoticeStore, useUserStore } from '@/store'
+import { getAuthInfo } from '@/api/system/user'
+import type { VisitMode } from '@/enums/auth'
 import { getListByDisplayType as getListByDisplayTypeApi } from '@/api/notice'
 
 const noticeStore = useNoticeStore()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const { notification } = createDiscreteApi(['notification'])
 
@@ -102,9 +104,15 @@ export function getTitle(titile: string) {
 
 //
 export async function updateLocalUserInfo() {
-  const { data } = await getUserInfo<User.Info>()
+  interface Req {
+    user: User.Info
+    visitMode: VisitMode
+  }
 
-  userStore.updateUserInfo({ headImage: data.headImage, name: data.name })
+  const { data } = await getAuthInfo<Req>()
+  userStore.updateUserInfo({ headImage: data.user.headImage, name: data.user.name })
+  authStore.setUserInfo(data.user)
+  authStore.setVisitMode(data.visitMode)
 }
 
 export async function getNotice(displayType: number | number[]) {

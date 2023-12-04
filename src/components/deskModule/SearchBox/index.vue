@@ -3,6 +3,8 @@ import { defineEmits, onMounted, ref } from 'vue'
 import { NAvatar, NCheckbox } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
+import { useAuthStore } from '@/store'
+import { VisitMode } from '@/enums/auth'
 
 import SvgSrcBaidu from '@/assets/search_engine_svg/baidu.svg'
 import SvgSrcBing from '@/assets/search_engine_svg/bing.svg'
@@ -26,6 +28,7 @@ interface State {
 
 const moduleConfigName = 'deskModuleSearchBox'
 const moduleConfig = useModuleConfig()
+const authStore = useAuthStore()
 const searchTerm = ref('')
 const isFocused = ref(false)
 const searchSelectListShow = ref(false)
@@ -64,6 +67,9 @@ const onBlur = (): void => {
 }
 
 function handleEngineClick() {
+  // 访客模式不允许修改
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC)
+    return
   searchSelectListShow.value = !searchSelectListShow.value
 }
 
