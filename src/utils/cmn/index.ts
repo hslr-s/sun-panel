@@ -110,7 +110,6 @@ export async function updateLocalUserInfo() {
   }
 
   const { data } = await getAuthInfo<Req>()
-
   userStore.updateUserInfo({ headImage: data.user.headImage, name: data.user.name })
   authStore.setUserInfo(data.user)
   authStore.setVisitMode(data.visitMode)

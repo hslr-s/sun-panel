@@ -2,14 +2,15 @@
 import { NButton, NCard, NForm, NFormItem, NGradientText, NInput, useMessage } from 'naive-ui'
 import { ref } from 'vue'
 import { login } from '@/api'
-import { useAuthStore, useUserStore } from '@/store'
-import { router } from '@/router'
+import { useAuthStore } from '@/store'
 import { SvgIcon } from '@/components/common'
+import { router } from '@/router'
 import { t } from '@/locales'
 
-const userStore = useUserStore()
+// const userStore = useUserStore()
 const authStore = useAuthStore()
 const ms = useMessage()
+const loading = ref(false)
 // const isShowCaptcha = ref<boolean>(false)
 // const isShowRegister = ref<boolean>(false)
 
@@ -21,16 +22,21 @@ const form = ref<Login.LoginReqest>({
 })
 
 const loginPost = async () => {
+  loading.value = true
   const res = await login<Login.LoginResponse>(form.value)
-
-  userStore.updateUserInfo(res.data)
 
   if (res.code === 0) {
     authStore.setToken(res.data.token)
-    ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
-    router.push({ path: '/' })
+    authStore.setUserInfo(res.data)
+
+    setTimeout(() => {
+      ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
+      loading.value = false
+      router.push({ path: '/' })
+    }, 500)
   }
   else {
+    loading.value = false
     captchaRef.value.refresh()
   }
 }
@@ -73,7 +79,7 @@ function handleSubmit() {
           <NInput v-model:value="form.vcode" type="text" placeholder="请输入图像验证码" />
         </NFormItem> -->
         <NFormItem style="margin-top: 10px">
-          <NButton type="primary" block @click="handleSubmit">
+          <NButton type="primary" block :loading="loading" @click="handleSubmit">
             {{ $t('login.loginButton') }}
           </NButton>
         </NFormItem>

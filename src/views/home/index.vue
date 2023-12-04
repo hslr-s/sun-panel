@@ -257,10 +257,9 @@ watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
 })
 
 onMounted(() => {
-  getList()
-
   // 更新用户信息
   updateLocalUserInfo()
+  getList()
 
   // 更新同步云端配置
   panelState.updatePanelConfigByCloud()
