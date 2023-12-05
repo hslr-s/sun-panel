@@ -239,13 +239,15 @@ function getDropdownMenuOptions() {
     })
   }
 
-  dropdownMenuOptions.push({
-    label: '编辑',
-    key: 'edit',
-  }, {
-    label: '删除',
-    key: 'delete',
-  })
+  if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
+    dropdownMenuOptions.push({
+      label: '编辑',
+      key: 'edit',
+    }, {
+      label: '删除',
+      key: 'delete',
+    })
+  }
 
   return dropdownMenuOptions
 }
@@ -312,7 +314,7 @@ function itemFrontEndSearch(keyword?: string) {
     />
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
-      <div class="p-2.5 max-w-[1200px] mx-auto mt-[10%]">
+      <div class="p-2.5 max-w-[90%] md:max-w-[80%] 2xl:max-w-[70%] mx-auto mt-[10%]">
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
