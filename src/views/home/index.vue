@@ -314,7 +314,10 @@ function itemFrontEndSearch(keyword?: string) {
     />
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
-      <div class="p-2.5 max-w-[90%] md:max-w-[80%] 2xl:max-w-[70%] mx-auto mt-[10%]">
+      <div
+        class="p-2.5 max-w-[90%] md:max-w-[80%] 2xl:max-w-[70%] mx-auto my-[10%]"
+        :style="{ marginTop: `${panelState.panelConfig.marginTop}%`, marginBottom: `${panelState.panelConfig.marginBottom}%` }"
+      >
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
