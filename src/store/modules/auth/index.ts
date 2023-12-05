@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ref, toRefs } from 'vue'
 import { getStorage, removeToken as hRemoveToken, setStorage } from './helper'
 import { VisitMode } from '@/enums/auth'
 
@@ -20,39 +19,33 @@ const defaultState: AuthState = {
   visitMode: VisitMode.VISIT_MODE_LOGIN,
 }
 
-export const useAuthStore = defineStore('auth-store', () => {
-  const state = ref<AuthState>(getStorage() || defaultState)
+export const useAuthStore = defineStore('auth-store', {
+  state: (): AuthState => getStorage() || defaultState,
 
-  function setToken(token: string) {
-    state.value.token = token
-    saveStorage()
-  }
+  actions: {
+    setToken(token: string) {
+      this.token = token
+      this.saveStorage()
+    },
 
-  function setUserInfo(userInfo: User.Info) {
-    state.value.userInfo = userInfo
-    saveStorage()
-  }
+    setUserInfo(userInfo: User.Info) {
+      this.userInfo = userInfo
+      this.saveStorage()
+    },
 
-  function setVisitMode(visitMode: VisitMode) {
-    state.value.visitMode = visitMode
-    saveStorage()
-  }
+    setVisitMode(visitMode: VisitMode) {
+      this.visitMode = visitMode
+      this.saveStorage()
+    },
 
-  function saveStorage() {
-    setStorage(state.value)
-  }
+    saveStorage() {
+      setStorage(this.$state)
+    },
 
-  function removeToken() {
-    state.value = defaultState
-    hRemoveToken()
-  }
-  const stateRefs = toRefs(state.value)
-  return {
-    state: state.value,
-    ...stateRefs,
-    setToken,
-    setUserInfo,
-    setVisitMode,
-    removeToken,
-  }
+    removeToken() {
+      this.$state = defaultState
+      hRemoveToken()
+    },
+  },
+
 })
