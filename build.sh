@@ -86,6 +86,67 @@ _build() {
   rm -rf "${pathRelease}/${outPath}"
 }
 
+# 定义函数BuildReleaseLinuxMusl，用于构建正式版Linux-musl平台的二进制文件(参考Alist构建方案)
+buildReleaseLinuxMusl() {
+  cd $REPO/service
+  ldflags="-X sun-panel/global.RUNCODE=release"
+  pathRelease=$REPO/release
+  # 清理.git目录，创建build目录，并下载交叉编译工具
+  # rm -rf .git/
+  # mkdir -p "build"
+  muslflags="--extldflags '-static -fpic' $ldflags"
+  BASE="https://musl.nn.ci/"
+  # FILES=(x86_64-linux-musl-cross aarch64-linux-musl-cross mips-linux-musl-cross mips64-linux-musl-cross mips64el-linux-musl-cross mipsel-linux-musl-cross powerpc64le-linux-musl-cross s390x-linux-musl-cross)
+  FILES=(x86_64-linux-musl-cross)
+  for i in "${FILES[@]}"; do
+    url="${BASE}${i}.tgz"
+    curl -L -o "${i}.tgz" "${url}"
+    tar xf "${i}.tgz" --strip-components 1 -C /usr/local
+    rm -f "${i}.tgz"
+  done
+  # OS_ARCHES=(linux-musl-amd64 linux-musl-arm64 linux-musl-mips linux-musl-mips64 linux-musl-mips64le linux-musl-mipsle linux-musl-ppc64le linux-musl-s390x)
+  # CGO_ARGS=(x86_64-linux-musl-gcc aarch64-linux-musl-gcc mips-linux-musl-gcc mips64-linux-musl-gcc mips64el-linux-musl-gcc mipsel-linux-musl-gcc powerpc64le-linux-musl-gcc s390x-linux-musl-gcc)
+
+  # 暂时仅编译amd64
+  OS_ARCHES=(linux-musl-amd64)
+  CGO_ARGS=(x86_64-linux-musl-gcc)
+  
+
+  for i in "${!OS_ARCHES[@]}"; do
+    os_arch=${OS_ARCHES[$i]}
+    cgo_cc=${CGO_ARGS[$i]}
+    echo building for ${os_arch}
+    export GOOS=${os_arch%%-*}
+    export GOARCH=${os_arch##*-}
+    export CC=${cgo_cc}
+    export CGO_ENABLED=1
+
+    if [ -n "$VERSION" ]; then
+      outPath="sun-panel_${VERSION}_${GOOS}_musl_${GOARCH}"
+    elif [ -n "$LATEST_TAG" ]; then
+      outPath="sun-panel_${LATEST_TAG}_${GOOS}_musl_${GOARCH}"
+    else
+      outPath="sun-panel_${COMMIT_SHA}_${GOOS}_musl_${GOARCH}"
+    fi
+
+    outname="${pathRelease}/${outPath}/sun-panel"
+
+    go build -o "${outname}" -ldflags="$muslflags" main.go
+    # go build -o "${outname}" -ldflags="$muslflags" -tags=jsoniter main.go
+  done
+
+  cd $pathRelease
+  # copy front file
+  cp -r "${REPO}/dist" "${pathRelease}/${outPath}/web"
+
+  echo "Release ${outPath}"
+
+  mv $outname $outPath/sun-panel
+  tar -zcvf "${pathRelease}/${outPath}.tar.gz" $outPath
+  
+  rm -rf "${pathRelease}/${outPath}"
+}
+
 release() {
   cd $REPO/service
   ## List of architectures and OS to test coss compilation.
@@ -95,6 +156,9 @@ release() {
   for each_osarch in ${SUPPORTED_OSARCH}; do
     _build "${each_osarch}"
   done
+
+  # 临时方案解决centos无法运行的问题
+  buildReleaseLinuxMusl
 }
 
 usage() {
