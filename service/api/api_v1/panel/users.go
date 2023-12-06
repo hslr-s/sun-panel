@@ -45,7 +45,7 @@ func (a UsersApi) Create(c *gin.Context) {
 	mUser := models.User{
 		Username:  strings.Trim(param.Username, " "),
 		Password:  cmn.PasswordEncryption(param.Password),
-		Name:      param.Username,
+		Name:      param.Name,
 		HeadImage: param.HeadImage,
 		Status:    1,
 		Role:      param.Role,
