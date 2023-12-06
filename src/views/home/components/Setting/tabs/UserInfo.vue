@@ -92,6 +92,7 @@ function handleUpdatePassword(e: MouseEvent) {
       if (code === 0) {
         // 成功
         updatePasswordModalState.value.show = false
+        ms.success(t('common.success'))
       }
       else if (code === 0) {
         // 旧密码错误
