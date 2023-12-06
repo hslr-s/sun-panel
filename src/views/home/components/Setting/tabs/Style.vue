@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { UploadFileInfo } from 'naive-ui'
-import { NButton, NCard, NColorPicker, NInput, NPopconfirm, NSelect, NSlider, NSwitch, NUpload, NUploadDragger, useMessage } from 'naive-ui'
+import { NButton, NCard, NColorPicker, NGrid, NGridItem, NInput, NPopconfirm, NSelect, NSlider, NSwitch, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { useAuthStore, usePanelState } from '@/store'
 import { set as setUserConfig } from '@/api/panel/userConfig'
 import { PanelPanelConfigStyleEnum } from '@/enums/panel'
@@ -70,14 +70,22 @@ function resetPanelConfig() {
 <template>
   <div class="bg-slate-200 rounded-[10px] p-[8px] h-[500px] overflow-auto">
     <NCard style="border-radius:10px" size="small">
-      <div class="text-slate-500 mb-[5px]">
+      <div class="text-slate-500 mb-[5px] font-bold">
         LOGO
       </div>
-      <NInput v-model:value="panelState.panelConfig.logoText" type="text" show-count :maxlength="20" placeholder="请输入文字" />
+
+      <div>
+        <div>
+          文本内容
+        </div>
+        <div class="flex items-center mt-[5px]">
+          <NInput v-model:value="panelState.panelConfig.logoText" type="text" show-count :maxlength="20" placeholder="请输入文字" />
+        </div>
+      </div>
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px]">
+      <div class="text-slate-500 mb-[5px] font-bold">
         时钟
       </div>
       <div class="flex items-center mt-[5px]">
@@ -87,7 +95,7 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px]">
+      <div class="text-slate-500 mb-[5px] font-bold">
         搜索框
       </div>
       <div class="flex items-center mt-[5px]">
@@ -97,7 +105,7 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px]">
+      <div class="text-slate-500 mb-[5px] font-bold">
         图标
       </div>
       <div class="mt-[5px]">
@@ -149,7 +157,7 @@ function resetPanelConfig() {
       </div>
     </NCard>
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px]">
+      <div class="text-slate-500 mb-[5px] font-bold">
         壁纸
       </div>
       <NUpload
@@ -183,6 +191,27 @@ function resetPanelConfig() {
         <span class="mr-[10px]">遮罩</span>
         <NSlider v-model:value="panelState.panelConfig.backgroundMaskNumber" class="max-w-[200px]" :step="0.1" :max="1" />
       </div>
+    </NCard>
+
+    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <div class="text-slate-500 mb-[5px] font-bold">
+        其他
+      </div>
+
+      <NGrid cols="2">
+        <NGridItem span="12 400:12">
+          <div class="flex items-center mt-[10px]">
+            <span class="mr-[10px]">上边距 (%)</span>
+            <NSlider v-model:value="panelState.panelConfig.marginTop" class="max-w-[200px]" :step="1" :max="50" />
+          </div>
+        </NGridItem>
+        <NGridItem span="12 400:6">
+          <div class="flex items-center mt-[10px]">
+            <span class="mr-[10px]">下边距 (%)</span>
+            <NSlider v-model:value="panelState.panelConfig.marginBottom" class="max-w-[200px]" :step="1" :max="50" />
+          </div>
+        </NGridItem>
+      </NGrid>
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">

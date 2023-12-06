@@ -30,15 +30,19 @@ const show = computed({
 
 <template>
   <div>
-    <RoundCardModal v-model:show="show" title="设置" style="max-height: 700px;max-width: 600px;">
+    <RoundCardModal
+      v-model:show="show" title="设置"
+      class="fixed right-[10px] bottom-[10px]"
+      style="max-height: 700px;max-width: 600px;"
+    >
       <NTabs type="line" size="small" animated>
-        <NTabPane name="style" tab="样式">
+        <NTabPane name="style" tab="面板样式">
           <Style />
         </NTabPane>
         <NTabPane name="itemGroupManage" tab="分组管理">
           <ItemGroupManage />
         </NTabPane>
-        <NTabPane name="userInfo" tab="登录信息">
+        <NTabPane name="userInfo" tab="账号信息">
           <UserInfo />
         </NTabPane>
         <NTabPane name="about" tab="关于">

@@ -48,6 +48,8 @@ declare namespace Panel {
         clockShowSecond?:boolean
         clockColor?:string
         searchBoxShow?:boolean
+        marginTop?:number
+        marginBottom?:number
     }
 
     interface userConfig{

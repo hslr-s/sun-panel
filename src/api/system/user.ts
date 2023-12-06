@@ -17,3 +17,17 @@ export function getReferralCode<T>() {
     url: '/user/getReferralCode',
   })
 }
+
+export function updateInfo<T>(name: string) {
+  return post<T>({
+    url: '/user/updateInfo',
+    data: { name },
+  })
+}
+
+export function updatePassword<T>(oldPassword: string, newPassword: string) {
+  return post<T>({
+    url: '/user/updatePassword',
+    data: { newPassword, oldPassword },
+  })
+}
