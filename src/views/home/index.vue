@@ -9,7 +9,7 @@ import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 
 import { setTitle, updateLocalUserInfo } from '@/utils/cmn'
-import { useAuthStore, usePanelState, useUserStore } from '@/store'
+import { useAuthStore, usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { router } from '@/router'
@@ -28,7 +28,6 @@ const stateDragAppSort = ref<StateDragAppSort>({
 const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
-const userStore = useUserStore()
 const authStore = useAuthStore()
 
 const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
