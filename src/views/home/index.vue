@@ -322,7 +322,7 @@ function itemFrontEndSearch(keyword?: string) {
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
             <div>
-              <span class="text-2xl md:text-5xl font-bold text-shadow">
+              <span class="text-2xl md:text-6xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>

@@ -110,22 +110,22 @@ const handleValidateButtonClick = (e: MouseEvent) => {
 <template>
   <RoundCardModal v-model:show="show" size="small" preset="card" style="width: 400px" :title="`${userInfo?.id ? $t('common.edit') : $t('common.add')}`">
     <NForm ref="formRef" :model="model" :rules="rules">
-      <NFormItem path="username" :label="$t('adminSettingUsers.username')">
+      <NFormItem path="username" :label="$t('common.username')">
         <NInput v-model:value="model.username" type="text" :placeholder="$t('common.inputPlaceholder')" />
       </NFormItem>
 
-      <NFormItem path="name" :label="$t('adminSettingUsers.nikeName')">
+      <NFormItem path="name" :label="$t('common.nikeName')">
         <NInput v-model:value="model.name" type="text" :placeholder="$t('common.inputPlaceholder')" />
       </NFormItem>
 
-      <NFormItem path="role" :label="$t('adminSettingUsers.role')">
+      <NFormItem path="role" :label="$t('common.role')">
         <NSelect
           v-model:value="model.role"
           :options="roleOtions"
         />
       </NFormItem>
 
-      <NFormItem path="password" :label="$t('adminSettingUsers.password')">
+      <NFormItem path="password" :label="$t('common.password')">
         <NInput v-model:value="model.password" :maxlength="20" type="password" :placeholder="`${userInfo?.id ? $t('adminSettingUsers.EditpasswordPlaceholder') : $t('adminSettingUsers.passwordPlaceholder')}`" />
       </NFormItem>
     </NForm>
