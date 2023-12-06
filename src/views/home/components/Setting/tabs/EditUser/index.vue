@@ -118,7 +118,7 @@ const handleValidateButtonClick = (e: MouseEvent) => {
         <NInput v-model:value="model.name" type="text" :placeholder="$t('common.inputPlaceholder')" />
       </NFormItem>
 
-      <NFormItem path="role" :label="$t('common.role')">
+      <NFormItem path="role" :label="$t('adminSettingUsers.role')">
         <NSelect
           v-model:value="model.role"
           :options="roleOtions"
