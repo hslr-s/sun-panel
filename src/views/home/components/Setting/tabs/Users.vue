@@ -25,7 +25,7 @@ const createColumns = ({
 }): DataTableColumns<User.Info> => {
   return [
     {
-      title: t('adminSettingUsers.username'),
+      title: t('common.username'),
       key: 'username',
       render(row: User.Info) {
         let publicVisitHtml = ''
@@ -38,7 +38,7 @@ const createColumns = ({
       },
     },
     {
-      title: t('adminSettingUsers.nikeName'),
+      title: t('common.nikeName'),
       key: 'name',
     },
     {
