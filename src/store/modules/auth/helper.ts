@@ -20,6 +20,7 @@ const LOCAL_NAME = 'SECRET_TOKEN'
 // }
 
 export function setStorage(state: AuthState) {
+  console.log('保存auth', state)
   return ss.set(LOCAL_NAME, state)
 }
 

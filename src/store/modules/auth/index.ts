@@ -7,15 +7,15 @@ import { VisitMode } from '@/enums/auth'
 // }
 
 export interface AuthState {
-  token: string | undefined
-  userInfo: User.Info | undefined
+  token: string | null
+  userInfo: User.Info | null
   // session: SessionResponse | null
   visitMode: VisitMode
 }
 
 const defaultState: AuthState = {
-  token: undefined,
-  userInfo: undefined,
+  token: null,
+  userInfo: null,
   visitMode: VisitMode.VISIT_MODE_LOGIN,
 }
 
