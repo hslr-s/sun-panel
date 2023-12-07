@@ -6,7 +6,7 @@ REPO=$(
 )
 COMMIT_SHA=$(git rev-parse --short HEAD)
 # VERSION=$(git describe --tags)
-VERSION=$(cut -d '|' -f 2 ./service/assets/version)
+VERSION="v${cut -d '|' -f 2 ./service/assets/version}"
 LATEST_TAG=$(git describe --tags --abbrev=0)
 FRONTEND="false"
 BINARY="false"
