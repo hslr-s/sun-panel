@@ -468,7 +468,7 @@ function itemFrontEndSearch(keyword?: string) {
           title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
         >
           <template #icon>
-            <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline" />
+            <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline-rounded" />
           </template>
         </NButton>
 
@@ -495,7 +495,7 @@ function itemFrontEndSearch(keyword?: string) {
 
         <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" title="登录" @click="router.push('/login')">
           <template #icon>
-            <SvgIcon class="text-white font-xl" icon="mdi:user" />
+            <SvgIcon class="text-white font-xl" icon="material-symbols:account-circle" />
           </template>
         </NButton>
       </NButtonGroup>

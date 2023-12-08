@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NAvatar, NImage } from 'naive-ui'
 import { computed, ref, withDefaults } from 'vue'
-import { SvgIcon } from '@/components/common'
+import { SvgIconOnline } from '@/components/common'
 
 interface Prop {
   itemIcon?: Panel.ItemIcon | null
@@ -39,7 +39,7 @@ const iconExt = computed(() => {
 
         <div v-else-if="itemIcon?.itemType === 3">
           <NAvatar :size="props.size" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground }">
-            <SvgIcon style="font-size: 35px;" :icon="itemIcon.text" />
+            <SvgIconOnline style="font-size: 35px;" :icon="itemIcon.text" />
           </NAvatar>
         </div>
       </div>
