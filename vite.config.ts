@@ -3,6 +3,7 @@ import type { PluginOption } from 'vite'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   return [
@@ -17,6 +18,10 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
         ],
       },
+    }),
+    createSvgIconsPlugin({
+      iconDirs: [path.resolve(process.cwd(), 'src/assets/svg-icons')],
+      symbolId: '[name]',
     }),
   ]
 }

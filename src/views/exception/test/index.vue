@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { NColorPicker } from 'naive-ui'
-
+import { SvgIcon } from '@/components/common'
 // 获取背景颜色的 RGB 值（假设这里获取到了背景颜色的值）
 const bgColor = ref('#000000') // 假设为蓝色
 
@@ -26,6 +26,10 @@ const textColor = computed(() => {
     Background Color Example
   </div>
   <NColorPicker v-model:value="bgColor" />
+
+  <div>
+    <SvgIcon icon="mingcute-more-1-fill" style="color: pink;height: 50px;width: 50px;" />
+  </div>
 </template>
 
 <style scoped>
