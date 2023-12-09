@@ -56,6 +56,34 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	apiReturn.SuccessData(c, req)
 }
 
+// 添加多个图标
+func (a *ItemIcon) AddMultiple(c *gin.Context) {
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	// type Request
+	req := []models.ItemIcon{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	for i := 0; i < len(req); i++ {
+		if req[i].ItemIconGroupId == 0 {
+			apiReturn.Error(c, "分组为必填项")
+			return
+		}
+		req[i].UserId = userInfo.ID
+		// json转字符串
+		if j, err := json.Marshal(req[i].Icon); err == nil {
+			req[i].IconJson = string(j)
+		}
+	}
+
+	global.Db.Create(&req)
+
+	apiReturn.SuccessData(c, req)
+}
+
 // // 获取详情
 // func (a *ItemIcon) GetInfo(c *gin.Context) {
 // 	req := systemApiStructs.AiDrawGetInfoReq{}

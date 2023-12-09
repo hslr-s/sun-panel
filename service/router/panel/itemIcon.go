@@ -14,6 +14,8 @@ func InitItemIcon(router *gin.RouterGroup) {
 		r.POST("/panel/itemIcon/edit", itemIcon.Edit)
 		r.POST("/panel/itemIcon/deletes", itemIcon.Deletes)
 		r.POST("/panel/itemIcon/saveSort", itemIcon.SaveSort)
+		r.POST("/panel/itemIcon/addMultiple", itemIcon.AddMultiple)
+
 	}
 
 	// 公开模式

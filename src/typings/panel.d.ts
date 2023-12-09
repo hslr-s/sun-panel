@@ -8,6 +8,7 @@ declare namespace Panel {
         icon: ItemIcon |null
         title: string
         url: string
+        sort: number
         lanUrl?: string
         description?: string
         openMethod: number

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import type { UploadFileInfo } from 'naive-ui'
-import { NAlert, NButton, NCheckbox, NCheckboxGroup, NInput, NSpace, NUpload, useMessage } from 'naive-ui'
+import { NAlert, NButton, NCheckbox, NCheckboxGroup, NDivider, NInput, NSpace, NUpload, useMessage } from 'naive-ui'
 import { RoundCardModal, SvgIcon } from '@/components/common'
 import type { IconGroup, ImportJsonResult } from '@/utils/jsonImportExport'
 import { ConfigVersionLowError, FormatError, exportJson, importJsonString } from '@/utils/jsonImportExport'
@@ -24,7 +24,7 @@ const exportRoundModalShow = ref(false)
 const loading = ref(false)
 const uploadLoading = ref(false)
 const version = ref('') // 当前软件版本
-const debug = ref(true)
+const debug = ref(false)
 
 const importObj = ref<ImportJsonResult | null> (null)
 
@@ -32,18 +32,21 @@ const importItems = ref<string[]>(['icons']) // 当前软件版本支持导入�
 const checkedItems = ref<string[]>(['icons']) // 当前准备导入的项目
 
 // 导入图标
-async function importIcons() {
+async function importIcons(): Promise<string | null> {
   const groups = importObj.value?.geticons()
   const batchSize = 50
 
-  if (groups) {
+  if (!groups)
+    return null
+
+  try {
     for (let i = 0; i < groups.length; i++) {
       const element = groups[i]
 
       // 创建组得到组id
       const createGroupResponse = await addGroup<Panel.ItemIconGroup>({
         title: element.title,
-        sort: 9999,
+        sort: element.sort,
       })
 
       if (createGroupResponse.code === 0) {
@@ -72,7 +75,7 @@ async function importIcons() {
               const response = await addMultipleIcons(addIcons)
 
               if (response.code !== 0)
-                ms.warning('请求出错')
+                return response.msg
 
               addIcons = []
             }
@@ -80,60 +83,19 @@ async function importIcons() {
         }
       }
       else {
-        ms.warning(`${t('common.failed')}:${createGroupResponse.msg}`)
+        return createGroupResponse.msg
       }
     }
+
+    return null
+  }
+  catch (error) {
+    if (error instanceof Error)
+      return `发生错误: ${error.message}`
+    else
+      return '发生未知错误'
   }
 }
-
-// function importIcons1() {
-//   const groups = importObj.value?.geticons()
-//   const batchSize = 50
-//   if (groups) {
-//     for (let i = 0; i < groups.length; i++) {
-//       const element = groups[i]
-
-//       // 创建组得到组id
-//       addGroup<Panel.ItemIconGroup>({
-//         title: element.title,
-//         sort: element.sort,
-//       }).then((res) => {
-//         if (res.code === 0) {
-//           const groupId = res.data.id
-//           if (groupId) {
-//             let addIcons: Panel.ItemInfo[] = []
-//             // 批量添加子项
-//             for (let iconI = 0; iconI < element.children.length; iconI++) {
-//               const iconElement = element.children[iconI]
-
-//               addIcons.push({
-//                 title: iconElement.title,
-//                 sort: iconElement.sort,
-//                 icon: iconElement.icon,
-//                 url: iconElement.url,
-//                 lanUrl: iconElement.lanUrl,
-//                 description: iconElement.description,
-//                 openMethod: iconElement.openMethod,
-//               })
-//               // 每50个添加一次
-//               addMultipleIcons(addIcons).then((res) => {
-//                 if (res.code === 0)
-//                   addIcons = []
-//                 else
-//                   ms.warning('请求出错')
-//               })
-//             }
-//           }
-//         }
-//         else {
-//           ms.warning(`${t('common.failed')}:${res.msg}`)
-//         }
-//       }).catch(() => {
-//         ms.warning('请求出错')
-//       })
-//     }
-//   }
-// }
 
 // 导出图标
 async function exportIcons(): Promise<IconGroup[]> {
@@ -190,6 +152,7 @@ onMounted(() => {
 })
 
 function handleFileChange(options: { file: UploadFileInfo; fileList: Array<UploadFileInfo> }) {
+  uploadLoading.value = true
   console.log(options.file.file)
   if (options.file.file) {
     const reader = new FileReader()
@@ -207,6 +170,7 @@ function handleFileChange(options: { file: UploadFileInfo; fileList: Array<Uploa
   }
 }
 
+// 验证导入文件
 function importCheck() {
   importWarning.value = []
   if (jsonData.value) {
@@ -265,18 +229,22 @@ async function handleStartExport() {
   exportResult.exportFile()
   loading.value = false
   exportRoundModalShow.value = false
+  // ms.success(t('common.success'))
 }
 
 // 开始导入
-function handleStartImport() {
+async function handleStartImport() {
   loading.value = true
   if (checkedItems.value.includes('icons')) {
     console.log('export icons ...')
-    importIcons()
+    const errMsg = await importIcons()
+    if (errMsg !== null)
+      ms.success(`${t('common.failed')}:${errMsg}`)
   }
 
   loading.value = false
   importRoundModalShow.value = false
+  ms.success(t('common.success'))
 }
 </script>
 
@@ -290,7 +258,7 @@ function handleStartImport() {
           :show-file-list="false"
           @change="handleFileChange"
         >
-          <NButton type="info" size="large" :loading="uploadLoading" @click="uploadLoading = true">
+          <NButton type="info" size="large" :loading="uploadLoading">
             <template #icon>
               <SvgIcon icon="fa6:solid-file-import" />
             </template>
@@ -310,7 +278,7 @@ function handleStartImport() {
 
     <div class="flex justify-center">
       <NButton quaternary>
-        浏览器书签转换工具
+        浏览器书签转换工具(开发中，请期待)
       </NButton>
     </div>
 
@@ -340,7 +308,7 @@ function handleStartImport() {
       </div>
     </div>
 
-    <RoundCardModal v-model:show="importRoundModalShow" style="max-width: 600px;" title="导入">
+    <RoundCardModal v-model:show="importRoundModalShow" style="max-width: 400px;" title="导入">
       <div v-if="importWarning.length > 0">
         <NAlert :title="$t('common.warning')" type="warning">
           <div v-for="(text, index) in importWarning " :key="index">
@@ -348,9 +316,9 @@ function handleStartImport() {
           </div>
         </NAlert>
       </div>
-      <!-- <NDivider title-placement="left">
+      <NDivider title-placement="left">
         请选择要导入的项目
-      </NDivider> -->
+      </NDivider>
 
       <NSpace justify="center" style="margin-top: 20px;">
         <NCheckboxGroup v-model:value="checkedItems">
@@ -367,10 +335,10 @@ function handleStartImport() {
       </NSpace>
     </RoundCardModal>
 
-    <RoundCardModal v-model:show="exportRoundModalShow" style="max-width: 600px;" title="导出">
-      <!-- <NDivider title-placement="left">
-        请选择要导入的项目
-      </NDivider> -->
+    <RoundCardModal v-model:show="exportRoundModalShow" style="max-width: 400px;" title="导出">
+      <NDivider title-placement="left">
+        请选择要导出的项目
+      </NDivider>
 
       <NSpace justify="center" style="margin-top: 20px;">
         <NCheckboxGroup v-model:value="checkedItems">
