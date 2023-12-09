@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, onMounted, ref, watch } from 'vue'
+import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import { NButton, NForm, NFormItem, NGrid, NGridItem, NInput, NModal, NSelect, useMessage } from 'naive-ui'
 import IconEditor from './IconEditor.vue'
@@ -124,6 +124,11 @@ watch(() => props.itemInfo, (newValue) => {
   getGroupListOptions()
 })
 
+watch(() => props.visible, (newValue) => {
+  if (newValue)
+    getGroupListOptions()
+})
+
 function getGroupListOptions() {
   getGroupList<Common.ListResponse<Panel.ItemIconGroup[]>>().then(({ data, code, msg }) => {
     if (code === 0) {
@@ -147,10 +152,6 @@ function getGroupListOptions() {
     }
   })
 }
-
-onMounted(() => {
-  getGroupListOptions()
-})
 </script>
 
 <template>

@@ -1,6 +1,7 @@
 package panel
 
 import (
+	"fmt"
 	"math"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
@@ -49,32 +50,45 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	groups := []models.ItemIconGroup{}
 
-	if err := global.Db.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&groups).Error; err != nil {
+	err := global.Db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Order("sort ,created_at").Where("user_id=?", userInfo.ID).Find(&groups).Error; err != nil {
+			apiReturn.ErrorDatabase(c, err.Error())
+			return err
+		}
+
+		// 判断分组是否为空，为空将自动创建默认分组
+		if len(groups) == 0 {
+			defaultGroup := models.ItemIconGroup{
+				Title:  "APP",
+				UserId: userInfo.ID,
+				Icon:   "material-symbols:ad-group-outline",
+			}
+			if err := tx.Create(&defaultGroup).Error; err != nil {
+				apiReturn.ErrorDatabase(c, err.Error())
+				return err
+			}
+
+			// 并将当前账号下所有无分组的图标更新到当前组
+			if err := tx.Model(&models.ItemIcon{}).Where("user_id=?", userInfo.ID).Update("item_icon_group_id", defaultGroup.ID).Error; err != nil {
+				apiReturn.ErrorDatabase(c, err.Error())
+				return err
+			}
+
+			fmt.Println("创建了默认分组", defaultGroup.ID)
+
+			groups = append(groups, defaultGroup)
+		}
+
+		// 返回 nil 提交事务
+		return nil
+	})
+
+	if err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
+	} else {
+		apiReturn.SuccessListData(c, groups, 0)
 	}
-
-	// 判断分组是否为空，为空将自动创建默认分组
-	if len(groups) == 0 {
-		defaultGroup := models.ItemIconGroup{
-			Title:  "APP",
-			UserId: userInfo.ID,
-			Icon:   "material-symbols:ad-group-outline"}
-		if err := global.Db.Create(&defaultGroup).Error; err != nil {
-			apiReturn.ErrorDatabase(c, err.Error())
-			return
-		}
-
-		// 并将当前账号下所有无分组的图标更新到当前组
-		if err := global.Db.Model(&models.ItemIcon{}).Where("user_id=?", userInfo.ID).Update("item_icon_group_id", defaultGroup.ID).Error; err != nil {
-			apiReturn.ErrorDatabase(c, err.Error())
-			return
-		}
-
-		groups = append(groups, defaultGroup)
-	}
-
-	apiReturn.SuccessListData(c, groups, 0)
 }
 
 func (a *ItemIconGroup) Deletes(c *gin.Context) {
