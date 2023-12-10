@@ -1,5 +1,12 @@
 import { post } from '@/utils/request'
 
+export function addMultiple<T>(req: Panel.ItemInfo[]) {
+  return post<T>({
+    url: '/panel/itemIcon/addMultiple',
+    data: req,
+  })
+}
+
 export function edit<T>(req: Panel.ItemInfo) {
   return post<T>({
     url: '/panel/itemIcon/edit',

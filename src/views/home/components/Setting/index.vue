@@ -6,6 +6,7 @@ import About from './tabs/About.vue'
 import Users from './tabs/Users.vue'
 import UserInfo from './tabs/UserInfo.vue'
 import ItemGroupManage from './tabs/ItemGroupManage.vue'
+import ImportExport from './tabs/ImportExport.vue'
 import { useAuthStore } from '@/store'
 import { AdminAuthRole } from '@/enums/admin'
 import { RoundCardModal } from '@/components/common'
@@ -44,6 +45,9 @@ const show = computed({
         </NTabPane>
         <NTabPane name="userInfo" tab="账号信息">
           <UserInfo />
+        </NTabPane>
+        <NTabPane name="ImportExport" tab="导入导出">
+          <ImportExport />
         </NTabPane>
         <NTabPane name="about" tab="关于">
           <About />

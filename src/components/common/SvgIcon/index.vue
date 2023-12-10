@@ -1,41 +1,5 @@
-<script setup lang="ts">
-import { computed, onMounted, ref, useAttrs } from 'vue'
-
-const props = defineProps<{
-  icon?: string
-}>()
-
-const attrs = useAttrs()
-const iconName = ref(compatibleName(props.icon || ''))
-const iconContent = ref<string | null>(null)
-const bindAttrs = computed<{ class: string; style: string }>(() => ({
-  class: (attrs.class as string) || '',
-  style: (attrs.style as string) || '',
-}))
-
-const loadIcon = async () => {
-  try {
-    const iconPath = import.meta.glob('@/assets/svg-icons/*.svg')
-    const iconModule = await iconPath[`/src/assets/svg-icons/${iconName.value}.svg`]()
-    const moduleDefault = iconModule as { default: string }
-    const response = await fetch(moduleDefault.default)
-    const content = await response.text()
-
-    if (isValidSvg(content))
-      iconContent.value = content
-    else
-      console.error(`Invalid SVG format for icon ${iconName.value}`)
-  }
-  catch (error) {
-    console.error(`Error loading icon ${iconName.value}:`, error)
-  }
-}
-
-function isValidSvg(content: string): boolean {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(content, 'image/svg+xml')
-  return doc.documentElement.tagName.toLowerCase() === 'svg'
-}
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
 
 function compatibleName(inputString: string): string {
   // 使用正则表达式替换所有的冒号
@@ -43,11 +7,46 @@ function compatibleName(inputString: string): string {
   return resultString
 }
 
-onMounted(() => {
-  loadIcon()
+export default defineComponent({
+  name: 'SvgIcon',
+  props: {
+    icon: {
+      type: String,
+      required: true,
+    },
+    className: {
+      type: String,
+      default: '',
+    },
+  },
+  setup(props) {
+    const symbolId = computed(() => `#${compatibleName(props.icon)}`)
+    const svgClass = computed(() => {
+      if (props.className)
+        return `svg-icon ${props.className}`
+
+      return 'svg-icon'
+    })
+
+    return {
+      symbolId,
+      svgClass,
+    }
+  },
 })
 </script>
 
 <template>
-  <div v-if="iconContent" v-bind="bindAttrs" v-html="iconContent" />
+  <svg :class="svgClass" aria-hidden="true">
+    <use class="svg-use" :href="symbolId" />
+  </svg>
 </template>
+
+<style scoped>
+  .svg-icon {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    overflow: hidden;
+  }
+</style>
