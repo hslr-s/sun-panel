@@ -253,6 +253,7 @@ async function handleStartImport() {
     <div class="flex justify-center m-[50px]">
       <div class="m-[10px]">
         <NUpload
+          accept=".sun-panel.json,.sunpanel.json"
           directory-dnd
           :default-upload="false"
           :show-file-list="false"
