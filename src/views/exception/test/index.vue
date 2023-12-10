@@ -157,7 +157,7 @@ async function exportIcons(): Promise<IconGroup[]> {
         for (const iconElement of res.data.list) {
           group.children.push({
             icon: iconElement.icon,
-            sort: iconElement.sort,
+            sort: iconElement.sort || 99999,
             title: iconElement.title,
             url: iconElement.url,
             lanUrl: iconElement.lanUrl || '',

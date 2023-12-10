@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
 import { computed, defineComponent } from 'vue'
 
-function compatibleName(inputString) {
+function compatibleName(inputString: string): string {
   // 使用正则表达式替换所有的冒号
   const resultString = inputString.replace(/:/g, '-')
   return resultString
@@ -27,9 +27,12 @@ export default defineComponent({
 
       return 'svg-icon'
     })
-    return { symbolId, svgClass }
-  },
 
+    return {
+      symbolId,
+      svgClass,
+    }
+  },
 })
 </script>
 
@@ -39,7 +42,7 @@ export default defineComponent({
   </svg>
 </template>
 
-<style scope>
+<style scoped>
   .svg-icon {
     width: 1em;
     height: 1em;

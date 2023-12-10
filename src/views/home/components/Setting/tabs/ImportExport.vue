@@ -119,7 +119,7 @@ async function exportIcons(): Promise<IconGroup[]> {
         for (const iconElement of res.data.list) {
           group.children.push({
             icon: iconElement.icon,
-            sort: iconElement.sort,
+            sort: iconElement.sort || 99999,
             title: iconElement.title,
             url: iconElement.url,
             lanUrl: iconElement.lanUrl || '',
@@ -244,7 +244,7 @@ async function handleStartImport() {
 
   loading.value = false
   importRoundModalShow.value = false
-  ms.success(t('common.success'))
+  ms.success(`${t('common.success')}，请手动刷新页面`)
 }
 </script>
 
