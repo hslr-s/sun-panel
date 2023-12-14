@@ -2,7 +2,7 @@
 import { VueDraggable } from 'vue-draggable-plus'
 import { NBackTop, NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref, watch } from 'vue'
-import { AppIcon, EditItem, Setting } from './components'
+import { AppIcon, AppStarter, EditItem } from './components'
 import { Clock, SearchBox } from '@/components/deskModule'
 import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
@@ -489,7 +489,7 @@ function itemFrontEndSearch(keyword?: string) {
 
         <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
           <template #icon>
-            <SvgIcon class="text-white font-xl" icon="ep:setting" />
+            <SvgIcon class="text-white font-xl" icon="majesticons-applications" />
           </template>
         </NButton>
 
@@ -515,7 +515,8 @@ function itemFrontEndSearch(keyword?: string) {
         </div>
       </NBackTop>
 
-      <Setting v-model:visible="settingModalShow" />
+      <AppStarter v-model:visible="settingModalShow" />
+      <!-- <Setting v-model:visible="settingModalShow" /> -->
     </div>
 
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" @done="handleEditSuccess" />

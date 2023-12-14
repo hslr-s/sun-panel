@@ -7,6 +7,7 @@ import NaiveProvider from './NaiveProvider/index.vue'
 import RoundCardModal from './RoundCardModal/index.vue'
 import SvgIconOnline from './SvgIconOnline/index.vue'
 import JsonImportExport from './JsonImportExport/index.vue'
+import AppLoader from './AppLoader/index.vue'
 
 export {
   Verification,
@@ -18,4 +19,5 @@ export {
   RoundCardModal,
   SvgIconOnline,
   JsonImportExport,
+  AppLoader,
 }
