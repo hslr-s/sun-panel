@@ -30,7 +30,7 @@ const createColumns = ({
       render(row: User.Info) {
         let publicVisitHtml = ''
         if (publicVisitUserId.value && publicVisitUserId.value === row.id)
-          publicVisitHtml = `[${t('adminSettingUsers.pblicText')}]`
+          publicVisitHtml = `[${t('adminSettingUsers.pblicText')}]-`
 
         if (row.username === authStore.userInfo?.username)
           return `${publicVisitHtml}${row.username} (${t('adminSettingUsers.currentUseUsername')})`

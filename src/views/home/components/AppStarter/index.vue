@@ -31,7 +31,7 @@ const apps = ref<App[]>([
     icon: 'material-symbols-person-edit-outline-rounded',
   },
   {
-    name: '设置',
+    name: '基本设置',
     componentName: 'Style',
     icon: 'ep-setting',
   },

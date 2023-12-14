@@ -40,7 +40,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <NDivider />
+    <NDivider> • </NDivider>
     <div class="flex flex-col items-center justify-center text-base">
       <div>
         建议反馈：<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link">Github Issues</a>

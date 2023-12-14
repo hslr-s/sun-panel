@@ -250,6 +250,9 @@ async function handleStartImport() {
 
 <template>
   <div>
+    <NAlert type="info" :bordered="false">
+      <p>导入图标不会清空原有图标</p>
+    </NAlert>
     <div class="flex justify-center m-[50px]">
       <div class="m-[10px]">
         <NUpload
@@ -278,9 +281,7 @@ async function handleStartImport() {
     </div>
 
     <div class="flex justify-center">
-      <NButton quaternary>
-        浏览器书签转换工具(开发中，请期待)
-      </NButton>
+      <a href="https://hslr-s.github.io/sun-panel-tool-page/#/" target="_blank">浏览器书签转换工具</a>
     </div>
 
     <!-- 调试模式 -->
