@@ -131,6 +131,43 @@ export async function getNotice(displayType: number | number[]) {
   }
 }
 
+// 权限受限暂时不用
+// export async function getFaviconUrl(url: string, extName = 'ico'): Promise<string | null> {
+//   try {
+//     // 获取网址的域名
+//     const { protocol, host } = new URL(url)
+//     const domain = `${protocol}//${host}`
+
+//     // 构建 favicon URL
+//     const faviconUrl = `${domain}/favicon.${extName}`
+
+//     // 检查 favicon 是否存在，包含 CORS 头部
+//     const response = await fetch(faviconUrl, { method: 'HEAD', mode: 'cors' })
+
+//     // 如果请求成功，返回 favicon URL
+//     if (response.ok) {
+//       return faviconUrl
+//     }
+//     else {
+//       console.log('Favicon not found.')
+//       return null
+//     }
+//   }
+//   catch (error) {
+//     // 如果出现错误，返回 null，表示找不到 favicon
+//     console.error('Error:', error)
+//     return null
+//   }
+// }
+
+export function getFaviconUrl(url: string): string {
+  // 获取网址的域名
+  const { protocol, host } = new URL(url)
+  const domain = `${protocol}//${host}`
+  // 构建 favicon URL
+  return `${domain}/favicon.ico`
+}
+
 /**
  * @description: 获取随机码
  * @param {number} size

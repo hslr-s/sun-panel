@@ -101,7 +101,7 @@ watch(itemIconInfo.value, () => {
         name="iconType"
         @change="handleIconTypeRadioChange(3)"
       >
-        图标
+        在线图标
       </NRadio>
     </div>
 
@@ -124,7 +124,7 @@ watch(itemIconInfo.value, () => {
               <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入图标名字" @input="handleChange" />
 
               <NButton quaternary type="info">
-                <a target="_blank" href="https://icon-sets.iconify.design/">图标库</a>
+                <a target="_blank" href="https://icon-sets.iconify.design/">在线图标库</a>
               </NButton>
             </div>
           </div>
