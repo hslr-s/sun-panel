@@ -252,12 +252,14 @@ function getDropdownMenuOptions() {
 }
 
 watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
-  if (newvalue === false)
+  if (newvalue === false) {
     getList()
-  else
+  }
+  else {
     // 开始排序咯,禁用前端搜索功能
     filterItems.value = items.value
-  ms.warning('进入排序模式，记得点击保存再退出')
+    ms.warning('进入排序模式，记得点击保存再退出')
+  }
 })
 
 onMounted(() => {
@@ -275,8 +277,8 @@ onMounted(() => {
 
 // 前端搜索过滤
 function itemFrontEndSearch(keyword?: string) {
-  if (stateDragAppSort.value.status) {
-    // 排序禁用搜索
+  if (!panelState.panelConfig.searchBoxSearchIcon || stateDragAppSort.value.status) {
+    // 关闭搜索图标功能和排序禁用搜索
     return
   }
   keyword = keyword?.trim()

@@ -102,6 +102,10 @@ function resetPanelConfig() {
         <span class="mr-[10px]">显示</span>
         <NSwitch v-model:value="panelState.panelConfig.searchBoxShow" />
       </div>
+      <div v-if="panelState.panelConfig.searchBoxShow" class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">允许搜索快捷图标</span>
+        <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" />
+      </div>
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">

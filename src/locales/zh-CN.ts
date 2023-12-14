@@ -100,7 +100,7 @@ export default {
   deskModule: {
     searchBox: {
       openWithNewOpen: '新窗口打开',
-      inputPlaceholder: '请输入搜索内容（支持搜索图标）',
+      inputPlaceholder: '请输入搜索内容',
     },
   },
 }

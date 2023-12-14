@@ -83,7 +83,7 @@ function handleSearchClick() {
   const keyword = searchTerm
   // 如果网址中存在 %s，则直接替换为关键字
   const fullUrl = replaceOrAppendKeywordToUrl(url, keyword.value)
-
+  handleClearSearchTerm()
   if (state.value.newWindowOpen)
     window.open(fullUrl)
   else
@@ -103,7 +103,7 @@ const handleItemSearch = () => {
   emits('itemSearch', searchTerm.value)
 }
 
-const handleClearSearchTerm = () => {
+function handleClearSearchTerm() {
   searchTerm.value = ''
   emits('itemSearch', searchTerm.value)
 }

@@ -16,6 +16,7 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     logoImageSrc: '',
     clockShowSecond: false,
     searchBoxShow: false,
+    searchBoxSearchIcon: false,
     marginBottom: 10,
     marginTop: 10,
   }
