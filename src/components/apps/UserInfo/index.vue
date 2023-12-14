@@ -61,6 +61,7 @@ async function logoutApi() {
   panelState.removeState()
   ms.success(t('settingUserInfo.logoutSuccess'))
   router.push({ path: '/login' })
+  location.reload()// 强制刷新一下页面
 }
 
 function handleSaveInfo() {
@@ -107,7 +108,6 @@ function handleUpdatePassword(e: MouseEvent) {
     }).catch(() => {
       ms.error(t('common.serverError'))
     })
-    console.log('aaa')
   })
 }
 
