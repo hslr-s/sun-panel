@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import { NBackTop, NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { AppIcon, AppStarter, EditItem } from './components'
 import { Clock, SearchBox } from '@/components/deskModule'
 import { SvgIcon } from '@/components/common'
@@ -14,16 +14,11 @@ import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { router } from '@/router'
 
-interface StateDragAppSort {
-  status: boolean
-}
 interface ItemGroup extends Panel.ItemIconGroup {
+  sortStatus?: boolean
+  hoverStatus: boolean
   items?: Panel.ItemInfo[]
 }
-
-const stateDragAppSort = ref<StateDragAppSort>({
-  status: false,
-})
 
 const ms = useMessage()
 const dialog = useDialog()
@@ -45,16 +40,12 @@ const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 const currentRightSelectItem = ref<Panel.ItemInfo | null>(null)
+const currentAddItenIconGroupId = ref<number | undefined>()
 
 const settingModalShow = ref(false)
 
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
-
-function handleAddAppClick() {
-  editItemInfoData.value = null
-  editItemInfoShow.value = true
-}
 
 function openPage(openMethod: number, url: string, title?: string) {
   switch (openMethod) {
@@ -98,17 +89,23 @@ function getList() {
       items.value = data.list
     for (let i = 0; i < data.list.length; i++) {
       const element = data.list[i]
-      getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(element.id).then((res) => {
-        if (res.code === 0)
-          items.value[i].items = res.data.list
-      })
+      if (element.id)
+        updateItemIconGroupByNet(i, element.id)
     }
     filterItems.value = items.value
     // console.log(items)
   })
 }
 
-function handleSelect(key: string | number) {
+// 从后端获取组下面的图标
+function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: number) {
+  getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
+    if (res.code === 0)
+      items.value[itemIconGroupIndex].items = res.data.list
+  })
+}
+
+function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
   // console.log(currentRightSelectItem, key)
   let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? currentRightSelectItem.value?.lanUrl : currentRightSelectItem.value?.url
@@ -128,8 +125,7 @@ function handleSelect(key: string | number) {
       break
     case 'edit':
       // 这里有个奇怪的问题，如果不使用{...}的方式 父组件的值会同步修改 标记一下
-      editItemInfoData.value = { ...currentRightSelectItem.value } as Panel.ItemInfo
-      editItemInfoShow.value = true
+      handleEditItem({ ...currentRightSelectItem.value } as Panel.ItemInfo)
       break
     case 'delete':
       dialog.warning({
@@ -186,10 +182,10 @@ function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
 }
 
 // 结束拖拽
-function handleEndDrag(event: any, itemIconGroup: Panel.ItemIconGroup) {
-  // console.log(event)
-  // console.log(items.value)
-}
+// function handleEndDrag(event: any, itemIconGroup: Panel.ItemIconGroup) {
+//   // console.log(event)
+//   // console.log(items.value)
+// }
 
 function handleSaveSort(itemGroup: ItemGroup) {
   const saveItems: Common.SortItemRequest[] = []
@@ -204,9 +200,8 @@ function handleSaveSort(itemGroup: ItemGroup) {
 
     saveSort({ itemIconGroupId: itemGroup.id as number, sortItems: saveItems }).then(({ code, msg }) => {
       if (code === 0) {
-        //
         ms.success('保存成功')
-        // sortStatus.value = false
+        itemGroup.sortStatus = false
       }
       else {
         ms.error(`保存失败:${msg}`)
@@ -251,17 +246,6 @@ function getDropdownMenuOptions() {
   return dropdownMenuOptions
 }
 
-watch(() => stateDragAppSort.value.status, (newvalue: boolean) => {
-  if (newvalue === false) {
-    getList()
-  }
-  else {
-    // 开始排序咯,禁用前端搜索功能
-    filterItems.value = items.value
-    ms.warning('进入排序模式，记得点击保存再退出')
-  }
-})
-
 onMounted(() => {
   // 更新用户信息
   updateLocalUserInfo()
@@ -277,10 +261,6 @@ onMounted(() => {
 
 // 前端搜索过滤
 function itemFrontEndSearch(keyword?: string) {
-  if (!panelState.panelConfig.searchBoxSearchIcon || stateDragAppSort.value.status) {
-    // 关闭搜索图标功能和排序禁用搜索
-    return
-  }
   keyword = keyword?.trim()
   if (keyword !== '') {
     const filteredData = ref<ItemGroup[]>([])
@@ -293,13 +273,43 @@ function itemFrontEndSearch(keyword?: string) {
         )
       })
       if (element && element.length > 0)
-        filteredData.value.push({ items: element })
+        filteredData.value.push({ items: element, hoverStatus: false })
     }
     filterItems.value = filteredData.value
   }
   else {
     filterItems.value = items.value
   }
+}
+
+function handleSetHoverStatus(groupIndex: number, hoverStatus: boolean) {
+  if (items.value[groupIndex])
+    items.value[groupIndex].hoverStatus = hoverStatus
+}
+
+function handleSetSortStatus(groupIndex: number, sortStatus: boolean) {
+  if (items.value[groupIndex])
+    items.value[groupIndex].sortStatus = sortStatus
+
+  // 并未保存排序重新更新数据
+  if (!sortStatus) {
+    // 单独更新组
+    if (items.value[groupIndex] && items.value[groupIndex].id)
+      updateItemIconGroupByNet(groupIndex, items.value[groupIndex].id as number)
+  }
+}
+
+function handleEditItem(item: Panel.ItemInfo) {
+  editItemInfoData.value = item
+  editItemInfoShow.value = true
+  currentAddItenIconGroupId.value = undefined
+}
+
+function handleAddItem(itemIconGroupId?: number) {
+  editItemInfoData.value = null
+  editItemInfoShow.value = true
+  if (itemIconGroupId)
+    currentAddItenIconGroupId.value = itemIconGroupId
 }
 </script>
 
@@ -316,7 +326,7 @@ function itemFrontEndSearch(keyword?: string) {
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
       <div
-        class="p-2.5 max-w-[90%] md:max-w-[80%] 2xl:max-w-[70%] mx-auto my-[10%]"
+        class="p-2.5 xs:max-w-[95%] lg:max-w-[80%]  mx-auto "
         :style="{ marginTop: `${panelState.panelConfig.marginTop}%`, marginBottom: `${panelState.panelConfig.marginBottom}%` }"
       >
         <!-- 头 -->
@@ -343,14 +353,29 @@ function itemFrontEndSearch(keyword?: string) {
         <div class="mt-[50px]">
           <!-- 组纵向排列 -->
           <div
-            v-for="(itemGroup, itemGroupIndex) in filterItems"
-            :key="itemGroupIndex"
+            v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
             class="mt-[50px]"
-            :class="stateDragAppSort.status ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.8)]  p-[10px] rounded-2xl' : ''"
+            :class="itemGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
+            @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
+            @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
             <!-- 分组标题 -->
-            <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px]">
-              {{ itemGroup.title }}
+            <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
+              <span>
+                {{ itemGroup.title }}
+              </span>
+              <div
+                v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+                class="ml-2 delay-100 transition-opacity flex"
+                :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
+              >
+                <span class="mr-2 cursor-pointer" title="添加快捷图标" @click="handleAddItem(itemGroup.id)">
+                  <SvgIcon class="text-white font-xl" icon="typcn:plus" />
+                </span>
+                <span class="mr-2 cursor-pointer " title="排序组快捷图标" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
+                  <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
+                </span>
+              </div>
             </div>
 
             <!-- 详情图标 -->
@@ -358,14 +383,13 @@ function itemFrontEndSearch(keyword?: string) {
               <div v-if="itemGroup.items">
                 <VueDraggable
                   v-model="itemGroup.items" item-key="sort" :animation="300"
-                  class="mx-auto mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:12 gap-5"
+                  class="icon-info-box"
                   filter=".not-drag"
-                  :disabled="!stateDragAppSort.status"
-                  @end="(event) => handleEndDrag(event, itemGroup)"
+                  :disabled="!itemGroup.sortStatus"
                 >
                   <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
                     <AppIcon
-                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="item"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
@@ -377,13 +401,13 @@ function itemFrontEndSearch(keyword?: string) {
 
                   <div v-if="itemGroup.items.length === 0" class="not-drag">
                     <AppIcon
-                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
                       :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="0"
-                      @click="handleAddAppClick"
+                      @click="handleAddItem(itemGroup.id)"
                     />
                   </div>
                 </VueDraggable>
@@ -395,14 +419,14 @@ function itemFrontEndSearch(keyword?: string) {
               <div v-if="itemGroup.items">
                 <VueDraggable
                   v-model="itemGroup.items" item-key="id" :animation="300"
-                  class="mx-auto mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:12 gap-5"
+                  class="icon-small-box"
 
                   filter=".not-drag"
-                  :disabled="!stateDragAppSort.status"
+                  :disabled="!itemGroup.sortStatus"
                 >
                   <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
                     <AppIcon
-                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="item"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
@@ -414,13 +438,13 @@ function itemFrontEndSearch(keyword?: string) {
 
                   <div v-if="itemGroup.items.length === 0" class="not-drag">
                     <AppIcon
-                      :class="stateDragAppSort.status ? 'cursor-move' : 'cursor-pointer'"
+                      class="cursor-pointer"
                       :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
                       :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="1"
-                      @click="handleAddAppClick"
+                      @click="handleAddItem(itemGroup.id)"
                     />
                   </div>
                 </vuedraggable>
@@ -428,7 +452,7 @@ function itemFrontEndSearch(keyword?: string) {
             </div>
 
             <!-- 编辑栏 -->
-            <div v-if="stateDragAppSort.status" class="flex mt-[10px]">
+            <div v-if="itemGroup.sortStatus" class="flex mt-[10px]">
               <div>
                 <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
                   <template #icon>
@@ -448,23 +472,12 @@ function itemFrontEndSearch(keyword?: string) {
     <!-- 右键菜单 -->
     <NDropdown
       placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
-      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleSelect"
+      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleRightMenuSelect"
     />
 
     <!-- 悬浮按钮 -->
     <div class="fixed-element  shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
-      <NButton v-if="stateDragAppSort.status" color="#2a2a2a6b" @click="stateDragAppSort.status = !stateDragAppSort.status">
-        <template #icon>
-          <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
-        </template>
-      </NButton>
-      <NButtonGroup v-if="!stateDragAppSort.status" vertical>
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="handleAddAppClick">
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="typcn:plus" />
-          </template>
-        </NButton>
-
+      <NButtonGroup vertical>
         <NButton
           v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
           title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
@@ -480,12 +493,6 @@ function itemFrontEndSearch(keyword?: string) {
         >
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="mdi:wan" />
-          </template>
-        </NButton>
-
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" title="排序模式" @click="stateDragAppSort.status = !stateDragAppSort.status">
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
           </template>
         </NButton>
 
@@ -521,7 +528,7 @@ function itemFrontEndSearch(keyword?: string) {
       <!-- <Setting v-model:visible="settingModalShow" /> -->
     </div>
 
-    <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" @done="handleEditSuccess" />
+    <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" :item-group-id="currentAddItenIconGroupId" @done="handleEditSuccess" />
 
     <!-- 弹窗 -->
     <NModal
@@ -595,5 +602,27 @@ html {
   /* 距离屏幕顶部的距离 */
   bottom: 50px;
   /* 距离屏幕左侧的距离 */
+}
+
+.icon-info-box {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+
+}
+
+.icon-small-box {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  gap: 18px;
+
+}
+
+@media (max-width: 500px) {
+  .icon-info-box{
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
 }
 </style>

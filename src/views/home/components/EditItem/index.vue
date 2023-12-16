@@ -9,6 +9,7 @@ import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 interface Props {
   visible: boolean
   itemInfo: Panel.Info | null
+  itemGroupId?: number
 }
 
 const props = defineProps<Props>()
@@ -25,7 +26,7 @@ const restoreDefault: Panel.Info = {
   url: '',
   lanUrl: '',
   description: '',
-  openMethod: 1,
+  openMethod: 2,
 }
 
 interface Emit {
@@ -33,10 +34,7 @@ interface Emit {
   (e: 'done', item: Panel.Info): void// 创建完成
 }
 
-const model = ref<Panel.Info>(props.itemInfo !== null ? { ...props.itemInfo } : { ...restoreDefault })
-// const model = computed(()=>{
-//   return props.itemInfo !== null ? { ...props.itemInfo } : { ...restoreDefault }
-// })
+const model = ref<Panel.Info>(props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault })
 const formRef = ref<FormInst | null>(null)
 
 const rules: FormRules = {
@@ -74,22 +72,6 @@ const options = [
   },
 ]
 
-// const urlProtocolOptions = [
-//   {
-//     default: true,
-//     label: 'http://',
-//     value: 'http://',
-//   },
-//   {
-//     label: 'https://',
-//     value: 'https://',
-//   },
-//   {
-//     label: '不使用',
-//     value: '',
-//   },
-// ]
-
 // 更新值父组件传来的值
 const show = computed({
   get: () => props.visible,
@@ -103,6 +85,7 @@ async function editApi() {
   if (code === 0) {
     show.value = false
     model.value = { ...restoreDefault }
+    console.log('重置完成', model.value)
 
     emit('done', data)
   }
@@ -136,14 +119,14 @@ const handleValidateButtonClick = (e: MouseEvent) => {
 //   }
 // }
 
-watch(() => props.itemInfo, (newValue) => {
-  model.value = newValue || { ...restoreDefault }
-  getGroupListOptions()
-})
-
 watch(() => props.visible, (newValue) => {
-  if (newValue)
-    getGroupListOptions()
+  if (newValue === true) {
+    model.value = props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault }
+    if (props.itemGroupId)
+      model.value.itemIconGroupId = props.itemGroupId
+  }
+
+  getGroupListOptions()
 })
 
 function getGroupListOptions() {
@@ -154,8 +137,8 @@ function getGroupListOptions() {
       for (let i = 0; i < data.list.length; i++) {
         const element = data.list[i]
         if (i === 0 && !model.value.itemIconGroupId) {
-          restoreDefault.itemIconGroupId = element.id
           model.value.itemIconGroupId = element.id
+          restoreDefault.itemIconGroupId = element.id
         }
 
         itemIconGroupOptions.value.push({
