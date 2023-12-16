@@ -26,8 +26,18 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 		return
 	} else {
 		fileExt := strings.ToLower(path.Ext(f.Filename))
-		if fileExt != ".png" && fileExt != ".jpg" && fileExt != ".gif" && fileExt != ".jpeg" && fileExt != ".webp" && fileExt != ".svg" {
-			apiReturn.Error(c, "上传失败!只允许png,jpg,gif,jpeg,svg文件")
+		agreeExts := []string{
+			".png",
+			".jpg",
+			".gif",
+			".jpeg",
+			".webp",
+			".svg",
+			".ico",
+		}
+
+		if !cmn.InArray(agreeExts, fileExt) {
+			apiReturn.Error(c, "上传失败!只允许png,jpg,gif,jpeg,svg,ico文件")
 			return
 		}
 		fileName := cmn.Md5(fmt.Sprintf("%s%s", f.Filename, time.Now().String()))

@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"strings"
 	"sun-panel/assets"
@@ -179,6 +180,18 @@ func InStringArray(arr []string, item string) bool {
 		}
 	}
 	return true
+}
+
+func InArray[T uint | int | int8 | int64 | float32 | float64 | string](arr []T, item T) bool {
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i] < arr[j]
+	})
+
+	index := sort.Search(len(arr), func(i int) bool {
+		return arr[i] >= item
+	})
+
+	return index < len(arr) && arr[index] == item
 }
 
 // 从Assets文件夹中抽取文件保存到路劲
