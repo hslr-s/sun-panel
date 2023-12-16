@@ -109,6 +109,7 @@ onUnmounted(() => {
       v-model:show="show"
       style="max-width: 900px;"
       title="应用列表"
+      size="small"
     >
       <template #header>
         <div class="flex items-center select-none" @click="collapsed = !collapsed">
