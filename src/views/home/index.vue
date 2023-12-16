@@ -67,7 +67,10 @@ function openPage(openMethod: number, url: string, title?: string) {
   }
 }
 
-function handleItemClick(item: Panel.ItemInfo) {
+function handleItemClick(itemGroupIndex: number, item: Panel.ItemInfo) {
+  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus)
+    return
+
   let jumpUrl = ''
 
   if (item)
@@ -152,7 +155,10 @@ function handleRightMenuSelect(key: string | number) {
   }
 }
 
-function handleContextMenu(e: MouseEvent, item: Panel.ItemInfo) {
+function handleContextMenu(e: MouseEvent, itemGroupIndex: number, item: Panel.ItemInfo) {
+  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus)
+    return
+
   e.preventDefault()
   currentRightSelectItem.value = item
   dropdownShow.value = false
@@ -387,7 +393,7 @@ function handleAddItem(itemIconGroupId?: number) {
                   filter=".not-drag"
                   :disabled="!itemGroup.sortStatus"
                 >
-                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
+                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
                     <AppIcon
                       :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="item"
@@ -395,7 +401,7 @@ function handleAddItem(itemIconGroupId?: number) {
                       :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
                       :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="0"
-                      @click="handleItemClick(item)"
+                      @click="handleItemClick(itemGroupIndex, item)"
                     />
                   </div>
 
@@ -424,7 +430,7 @@ function handleAddItem(itemIconGroupId?: number) {
                   filter=".not-drag"
                   :disabled="!itemGroup.sortStatus"
                 >
-                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, item)">
+                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
                     <AppIcon
                       :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
                       :item-info="item"
@@ -432,7 +438,7 @@ function handleAddItem(itemIconGroupId?: number) {
                       :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
                       :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
                       :style="1"
-                      @click="handleItemClick(item)"
+                      @click="handleItemClick(itemGroupIndex, item)"
                     />
                   </div>
 
