@@ -78,6 +78,7 @@ function handleResize() {
     isSmallScreen.value = true
   }
   else {
+    collapsed.value = false
     isSmallScreen.value = false
   }
 }
