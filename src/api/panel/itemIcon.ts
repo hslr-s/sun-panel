@@ -1,5 +1,12 @@
 import { post } from '@/utils/request'
 
+export function addMultiple<T>(req: Panel.ItemInfo[]) {
+  return post<T>({
+    url: '/panel/itemIcon/addMultiple',
+    data: req,
+  })
+}
+
 export function edit<T>(req: Panel.ItemInfo) {
   return post<T>({
     url: '/panel/itemIcon/edit',
@@ -25,5 +32,12 @@ export function deletes<T>(ids: number[]) {
   return post<T>({
     url: '/panel/itemIcon/deletes',
     data: { ids },
+  })
+}
+
+export function saveSort<T>(data: Panel.ItemIconSortRequest) {
+  return post<T>({
+    url: '/panel/itemIcon/saveSort',
+    data,
   })
 }

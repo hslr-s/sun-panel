@@ -1,5 +1,7 @@
 <div align=center>
-	
+
+<img src="./doc/images/logo.png" width="100" height="100" />
+
 # Sun-Panel
 
 <a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">B站视频</a>
@@ -8,13 +10,13 @@
 
 </div>
 
-![](./doc/images/icon-info.jpg)
+![](./doc/images/icon-info-new.png)
 
 ## 😎 特点
 
-- 局域网内外网链接切换
 - 简洁
-- docker 部署
+- 局域网内外网链接切换
+- docker部署,对arm系统支持
 - 上手简单，免修改代码
 - 无需连接外部数据库
 - 丰富图标自由搭配（文字图标+svg图标+内置三方图标库）
@@ -37,7 +39,9 @@
 ## 🐳 联系作者&交流群
 开发者：**[红烧猎人](https://blog.enianteam.com/u/sun/content/11)**
 
-新建的QQ交流群: **276594668**
+新建的QQ交流群，进不去可以点上方连接联系作者
+
+<img src="./doc/images/qq_group_qr.jpg"  height="350" />
 
 ## 🍵 打赏
 
@@ -47,22 +51,36 @@
 
 先画个饼
 
-- [ ] 图标排序
+- [x] 分组，拖拽排序
+- [ ] 导入导出功能
+- [ ] 增加访客账号
+- [ ] 用户自定义搜索框搜索引擎
+- [ ] 搜索框样式自定义（背景颜色，文字颜色）
+- [ ] 帐号解除邮箱限制
+- [ ] 对上传的文件管理（针对账户增强重复利用，节省空间）
+- [ ] 多国语言支持
 - [ ] 服务器监控
 - [ ] docker管理器
 - [ ] 计划任务
 
+
+
 ## 🖼️ 预览截图
 
-![](./doc/images/icon-small.jpg)
-![](./doc/images/full-color-info.jpg)
+**各种风格，自由搭配**
+
+![](./doc/images/icon-small-new.png)
+![](./doc/images/transparent-info.png)
+![](./doc/images/transparent-small.png)
+![](./doc/images/solid-color-info.png)
 ![](./doc/images/full-color-small.jpg)
 
-内置小窗口
+**内置小窗口**
+
 ![](./doc/images/window-ssh.png)
 ![](./doc/images/window-xunlei.png)
 
-## 🍜 使用教程
+## 🍜 使用运行教程
 
 <div id="default-username"></div>
 
@@ -78,7 +96,20 @@
 |-config|生成配置文件（conf/conf.ini）|
 |-password-reset|重置第一个用户的密码|
 
+### 二进制文件运行
+
+去 [Releases](https://github.com/hslr-s/sun-panel/releases) 下载二进制文件
+
 执行示例
+
+```sh
+./sun-panel
+```
+
+#### 重置密码
+
+执行示例
+
 ```sh
 ./sun-panel -password-reset
 ```
@@ -115,14 +146,14 @@ hslr/sun-panel
 ```
 
 
-### 编译和运行
+### 自编译运行
 
 #### 前端
 ```
 # 开发运行
 pnpm dev
 
-# 编译打包
+# 编译打包(打包后生成dist目录，若需要结合后端使用请改成web)
 pnpm build
 ```
 

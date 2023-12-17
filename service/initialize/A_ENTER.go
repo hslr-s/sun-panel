@@ -29,6 +29,7 @@ var DB_DRIVER = database.SQLITE
 // var ISDOCER = "" // 是否为docker模式
 
 func InitApp() error {
+	Logo()
 	gin.SetMode(global.RUNCODE) // GIN 运行模式
 
 	// 日志
@@ -143,15 +144,15 @@ func CommandRun() {
 		fmt.Println("配置文件已经创建 conf/conf.ini ", "请按照自己的需求修改")
 		os.Exit(0) // 务必退出
 	} else if pwd {
+		// 重置密码
 
 		// 配置初始化
 		config, _ := config.ConfigInit()
 		global.Config = config
 
-		// 重置密码
 		DatabaseConnect()
 		userInfo := models.User{}
-		if err := global.Db.First(&userInfo).Error; err != nil {
+		if err := global.Db.Where("role=?", 1).Order("id").First(&userInfo).Error; err != nil {
 			fmt.Println("ERROR", err.Error())
 			os.Exit(0) // 务必退出
 		}
@@ -162,6 +163,7 @@ func CommandRun() {
 			Password: cmn.PasswordEncryption(newPassword),
 			Token:    "",
 		}
+		// 重置第一个管理员的密码
 		if err := global.Db.Select("Password", "Token").Where("id=?", userInfo.ID).Updates(&updateInfo).Error; err != nil {
 			fmt.Println("ERROR", err.Error())
 			os.Exit(0) // 务必退出
@@ -175,4 +177,18 @@ func CommandRun() {
 		return
 	}
 	os.Exit(0) // 务必退出
+}
+
+func Logo() {
+	fmt.Println("     ____            ___                __")
+	fmt.Println("    / __/_ _____    / _ \\___ ____  ___ / /")
+	fmt.Println("   _\\ \\/ // / _ \\  / ___/ _ `/ _ \\/ -_) / ")
+	fmt.Println("  /___/\\_,_/_//_/ /_/   \\_,_/_//_/\\__/_/  ")
+	fmt.Println("")
+
+	versionInfo := cmn.GetSysVersionInfo()
+	fmt.Println("Version:", versionInfo.Version)
+	fmt.Println("Welcome to the Sun-Panel.")
+	fmt.Println("Project address:", "https://github.com/hslr-s/sun-panel")
+
 }

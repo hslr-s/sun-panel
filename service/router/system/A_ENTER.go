@@ -10,4 +10,5 @@ func Init(routerGroup *gin.RouterGroup) {
 	InitCaptchaRouter(routerGroup)
 	InitRegister(routerGroup)
 	InitNoticeRouter(routerGroup)
+	InitModuleConfigRouter(routerGroup)
 }

@@ -27,6 +27,7 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+.pnpm-store
 
 # Environment variables files
 /service/.env

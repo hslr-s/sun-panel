@@ -23,8 +23,8 @@ type LoginApi struct {
 
 // 登录输入验证
 type LoginLoginVerify struct {
-	Username string `json:"username" validate:"required,min=5"`
-	Password string `json:"password" validate:"required,min=5,max=20"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required,max=50"`
 	VCode    string `json:"vcode" validate:"max=6"`
 	Email    string `json:"email"`
 }
@@ -109,6 +109,8 @@ func (l LoginApi) Login(c *gin.Context) {
 		}
 		info.Token = bToken
 	}
+	info.Password = ""
+	info.ReferralCode = ""
 
 	// global.UserToken.SetDefault(bToken, info)
 	cToken := uuid.NewString() + "-" + cmn.Md5(cmn.Md5("userId"+strconv.Itoa(int(info.ID))))

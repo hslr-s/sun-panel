@@ -21,6 +21,15 @@ type PageLimitVerify struct {
 	Limit int64
 }
 
+const (
+	VISIT_MODE_LOGIN = iota
+	VISIT_MODE_PUBLIC
+)
+
+const (
+	GIN_GET_VISIT_MODE = "VISIT_MODE"
+)
+
 // 验证输入是否有效并返回错误
 func validateInputStruct(params interface{}) (errMsg string, err error) {
 	var validate = validator.New()
@@ -74,6 +83,16 @@ func GetCurrentUserInfo(c *gin.Context) (userInfo models.User, exist bool) {
 	if value, exist := c.Get("userInfo"); exist {
 		if v, ok := value.(models.User); ok {
 			return v, exist
+		}
+	}
+	return
+}
+
+// 获取当前访问模式
+func GetCurrentVisitMode(c *gin.Context) (visitMode int) {
+	if value, exist := c.Get(GIN_GET_VISIT_MODE); exist {
+		if v, ok := value.(int); ok {
+			return v
 		}
 	}
 	return

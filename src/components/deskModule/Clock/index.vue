@@ -59,10 +59,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="w-full text-center">
-    <span class="text-3xl font-[600]">
+    <span class="text-2xl sm:text-2xl md:text-3xl font-[600]">
       {{ currentDate.time }}
     </span>
-    <div>
+    <div class="hidden sm:hidden md:block">
       <span>
         {{ currentDate.date }}
       </span>

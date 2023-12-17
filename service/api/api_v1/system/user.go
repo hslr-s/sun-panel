@@ -27,6 +27,21 @@ func (a *UserApi) GetInfo(c *gin.Context) {
 	})
 }
 
+func (a *UserApi) GetAuthInfo(c *gin.Context) {
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	visitMode := base.GetCurrentVisitMode(c)
+	user := models.User{}
+	user.ID = userInfo.ID
+	user.HeadImage = userInfo.HeadImage
+	user.Name = userInfo.Name
+	user.Role = userInfo.Role
+	user.Username = userInfo.Username
+	apiReturn.SuccessData(c, gin.H{
+		"user":      user,
+		"visitMode": visitMode,
+	})
+}
+
 // 修改资料
 func (a *UserApi) UpdateInfo(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)

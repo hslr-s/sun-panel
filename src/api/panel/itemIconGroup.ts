@@ -19,3 +19,10 @@ export function deletes<T>(ids: number[]) {
     data: { ids },
   })
 }
+
+export function saveSort<T>(sortItems: Common.SortItemRequest[]) {
+  return post<T>({
+    url: '/panel/itemIconGroup/saveSort',
+    data: { sortItems },
+  })
+}

@@ -37,6 +37,8 @@ export const usePanelState = defineStore('panel', {
       getUserConfig<Panel.userConfig>().then((res) => {
         if (res.code === 0)
           this.panelConfig = res.data.panel
+        else
+          this.resetPanelConfig() // 重置恢复默认
         this.recordState()
       })
     },

@@ -8,9 +8,11 @@ declare namespace Panel {
         icon: ItemIcon |null
         title: string
         url: string
+        sort?: number
         lanUrl?: string
         description?: string
         openMethod: number
+        itemIconGroupId ?:number
     }
 
     interface ItemIconGroup extends Common.InfoBase {
@@ -23,7 +25,8 @@ declare namespace Panel {
         itemType: number
         src ?: string
         text ?: string
-        bgColor ?: string
+        // bgColor ?: string
+        backgroundColor ?: string
     }
 
     interface State {
@@ -36,18 +39,29 @@ declare namespace Panel {
     interface panelConfig{
         backgroundImageSrc?:string
         backgroundBlur?:number
+        backgroundMaskNumber?:number
         iconStyle?:PanelPanelConfigStyleEnum
         iconTextColor?:string
+        iconTextInfoHideDescription?:boolean
+        iconTextIconHideTitle?:boolean
         logoText?:string
         logoImageSrc?:string
         clockShowSecond?:boolean
         clockColor?:string
-
+        searchBoxShow?:boolean
+        searchBoxSearchIcon?:boolean
+        marginTop?:number
+        marginBottom?:number
     }
 
     interface userConfig{
         panel:panelConfig
         searchEngine?:any
+    }
+
+    interface ItemIconSortRequest{
+        sortItems:Common.SortItemRequest[]
+        itemIconGroupId:number
     }
 }
 

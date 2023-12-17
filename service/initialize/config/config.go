@@ -37,12 +37,12 @@ func ConfigInit() (*iniConfig.IniConfig, error) {
 			return nil, err
 		}
 
-		global.Logger.Errorln("配置文件已经自动生成'conf/conf.ini',将再次读取配置")
+		global.Logger.Infoln("配置文件已经自动生成'conf/conf.ini',将再次读取配置")
 		// 创建成功再次读取文件
 		if configAgain, errAgain, _ := Conf(getDefaultConfig()); errAgain != nil {
 			return nil, errAgain
 		} else {
-			global.Logger.Errorln("尝试读取配置文件'conf/conf.ini',二次读取配置文件成功")
+			global.Logger.Infoln("尝试读取配置文件'conf/conf.ini',二次读取配置文件成功")
 			return configAgain, nil
 		}
 	} else {

@@ -20,3 +20,12 @@ type VerificationResponse struct {
 	Result  bool   `json:"result"`
 	Message string `json:"message"`
 }
+
+type SortRequestItem struct {
+	Id   uint `json:"id"`
+	Sort uint `json:"sort"`
+}
+
+type SortRequest struct {
+	SortItems []SortRequestItem `json:"sortItems"`
+}

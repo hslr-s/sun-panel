@@ -14,6 +14,7 @@ const (
 	SYSTEM_EMAIL          = "system_email"
 	DISCLAIMER            = "disclaimer"            // 免责声明 储存类型：字符串
 	WEB_ABOUT_DESCRIPTION = "web_about_description" // 关于的描述信息
+	PANEL_PUBLIC_USER_ID  = "panel_public_user_id"  // 公开访问模式用户id *uint|null
 )
 
 type SystemSettingCache struct {

@@ -1,6 +1,10 @@
 package models
 
-import "sun-panel/models/datatype"
+import (
+	"sun-panel/models/datatype"
+
+	"gorm.io/gorm"
+)
 
 type ItemIcon struct {
 	BaseModel
@@ -15,4 +19,13 @@ type ItemIcon struct {
 	ItemIconGroupId int                       `json:"itemIconGroupId"`
 	UserId          uint                      `json:"userId"`
 	User            User                      `json:"user"`
+}
+
+func (m *ItemIcon) DeleteByItemIconGroupIds(db *gorm.DB, userId uint, itemIconGroupIds []uint) (err error) {
+	err = db.Delete(&ItemIcon{}, "item_icon_group_id in ? AND user_id=?", itemIconGroupIds, userId).Error
+	return
+}
+
+func (m *ItemIcon) DeleteByUserId(db *gorm.DB, userId uint) (err error) {
+	return db.Delete(&ItemIcon{}, "user_id=?", userId).Error
 }

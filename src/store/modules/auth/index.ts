@@ -1,63 +1,51 @@
 import { defineStore } from 'pinia'
-import { getToken, getUserInfo, removeToken, setToken } from './helper'
-import { store } from '@/store'
-import { fetchSession } from '@/api'
+import { getStorage, removeToken as hRemoveToken, setStorage } from './helper'
+import { VisitMode } from '@/enums/auth'
 
-interface SessionResponse {
-  auth: boolean
-  model: 'ChatGPTAPI' | 'ChatGPTUnofficialProxyAPI'
-}
+// interface SessionResponse {
+//   auth: boolean
+// }
 
 export interface AuthState {
-  token: string | undefined
-  userInfo: User.Info | undefined
-  session: SessionResponse | null
+  token: string | null
+  userInfo: User.Info | null
+  // session: SessionResponse | null
+  visitMode: VisitMode
+}
 
+const defaultState: AuthState = {
+  token: null,
+  userInfo: null,
+  visitMode: VisitMode.VISIT_MODE_LOGIN,
 }
 
 export const useAuthStore = defineStore('auth-store', {
-  state: (): AuthState => ({
-    userInfo: getUserInfo(),
-    token: getToken(),
-    session: null,
-  }),
-
-  getters: {
-    isChatGPTAPI(state): boolean {
-      return state.session?.model === 'ChatGPTAPI'
-    },
-  },
+  state: (): AuthState => getStorage() || defaultState,
 
   actions: {
-    async getSession() {
-      try {
-        const { data } = await fetchSession<SessionResponse>()
-        this.session = { ...data }
-        return Promise.resolve(data)
-      }
-      catch (error) {
-        return Promise.reject(error)
-      }
-    },
-
     setToken(token: string) {
       this.token = token
-      setToken(token)
+      this.saveStorage()
     },
 
     setUserInfo(userInfo: User.Info) {
       this.userInfo = userInfo
-      this.setUserInfo(userInfo)
+      this.saveStorage()
     },
 
-    // 清除所有的本地储存
+    setVisitMode(visitMode: VisitMode) {
+      this.visitMode = visitMode
+      this.saveStorage()
+    },
+
+    saveStorage() {
+      setStorage(this.$state)
+    },
+
     removeToken() {
-      this.token = undefined
-      removeToken()
+      this.$state = defaultState
+      hRemoveToken()
     },
   },
-})
 
-export function useAuthStoreWithout() {
-  return useAuthStore(store)
-}
+})
