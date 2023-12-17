@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NButton, NColorPicker, NInput, NRadio, NUpload, useMessage } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
-import { defineProps, ref, watch } from 'vue'
+import { computed, defineProps } from 'vue'
 import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
 
@@ -13,7 +13,6 @@ const emit = defineEmits<{
 }>()
 const authStore = useAuthStore()
 const ms = useMessage()
-const checkedValueRef = ref<number | null>(props.itemIcon?.itemType || 1)
 
 // 默认图标背景色
 const defautSwatchesBackground = [
@@ -28,19 +27,26 @@ const defautSwatchesBackground = [
 ]
 
 const initData: Panel.ItemIcon = {
-  itemType: 1,
+  itemType: 2,
   backgroundColor: '#2a2a2a6b',
 }
 
-// const itemIconInfo = ref<Panel.ItemIcon>(props.itemIcon ?? { ...initData })
-const itemIconInfo = ref<Panel.ItemIcon>({
-  ...initData,
-  ...props.itemIcon,
-  backgroundColor: props.itemIcon?.backgroundColor || initData.backgroundColor,
+const itemIconInfo = computed({
+  get() {
+    const v = {
+      ...initData,
+      ...props.itemIcon,
+      backgroundColor: props.itemIcon?.backgroundColor || initData.backgroundColor,
+    }
+    return v
+  },
+  set() {
+    handleChange()
+  },
 })
 
 function handleIconTypeRadioChange(type: number) {
-  checkedValueRef.value = type
+  // checkedValueRef.value = type
   itemIconInfo.value.itemType = type
   emit('update:itemIcon', itemIconInfo.value)
 }
@@ -68,17 +74,13 @@ const handleUploadFinish = ({
 
   return file
 }
-
-watch(itemIconInfo.value, () => {
-  handleChange()
-})
 </script>
 
 <template>
   <div>
     <div class="mb-[10px]">
       <NRadio
-        :checked="checkedValueRef === 1 "
+        :checked="itemIconInfo.itemType === 1 "
         :value="1"
         name="iconType"
         @change="handleIconTypeRadioChange(1)"
@@ -87,7 +89,7 @@ watch(itemIconInfo.value, () => {
       </NRadio>
 
       <NRadio
-        :checked="checkedValueRef === 2"
+        :checked="itemIconInfo.itemType === 2"
         :value="2"
         name="iconType"
         @change="handleIconTypeRadioChange(2)"
@@ -96,7 +98,7 @@ watch(itemIconInfo.value, () => {
       </NRadio>
 
       <NRadio
-        :checked="checkedValueRef === 3"
+        :checked="itemIconInfo.itemType === 3"
         :value="3"
         name="iconType"
         @change="handleIconTypeRadioChange(3)"
@@ -115,11 +117,11 @@ watch(itemIconInfo.value, () => {
         <!-- 文字 -->
         <div class="ml-[20px]">
           <!-- <NImage :src="model.icon" preview-disabled /> -->
-          <div v-if="checkedValueRef === 1">
+          <div v-if="itemIconInfo.itemType === 1">
             <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入文字作为图标" @input="handleChange" />
           </div>
 
-          <div v-if="checkedValueRef === 3">
+          <div v-if="itemIconInfo.itemType === 3">
             <div>
               <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入图标名字" @input="handleChange" />
 
@@ -130,7 +132,7 @@ watch(itemIconInfo.value, () => {
           </div>
 
           <!-- 图片 -->
-          <div v-if="checkedValueRef === 2">
+          <div v-if="itemIconInfo.itemType === 2">
             <NInput v-model:value="itemIconInfo.src" class="mb-[5px] w-full" size="small" type="text" placeholder="输入图标地址或上传" @input="handleChange" />
             <NUpload
               action="/api/file/uploadImg"
@@ -142,7 +144,7 @@ watch(itemIconInfo.value, () => {
               @finish="handleUploadFinish"
             >
               <NButton size="small">
-                点击上传
+                本地上传
               </NButton>
             </NUpload>
           </div>

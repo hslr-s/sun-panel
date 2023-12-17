@@ -5,6 +5,7 @@ import { NButton, NForm, NFormItem, NGrid, NGridItem, NInput, NInputGroup, NModa
 import IconEditor from './IconEditor.vue'
 import { edit } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
+import { getFaviconUrl } from '@/utils/cmn'
 
 interface Props {
   visible: boolean
@@ -102,22 +103,13 @@ const handleValidateButtonClick = (e: MouseEvent) => {
   })
 }
 
-// async function getIconByUrl(url: string) {
-//   let iconUrl = await getFaviconUrl(url)
-//   if (iconUrl === null)
-//     iconUrl = await getFaviconUrl(url)
-
-//   if (iconUrl === null) {
-//     ms.error('无法获取该站点图标')
-//   }
-//   else {
-//     if (model.value.icon)
-//       model.value.icon.src = iconUrl
-//     else
-//     model.value.icon={}
-//       console.log('怒涛有')
-//   }
-// }
+function getIconByUrl(url: string) {
+  const iconUrl = getFaviconUrl(url)
+  model.value.icon = {
+    itemType: 2,
+    src: iconUrl,
+  }
+}
 
 watch(() => props.visible, (newValue) => {
   if (newValue === true) {
@@ -155,7 +147,7 @@ function getGroupListOptions() {
 </script>
 
 <template>
-  <NModal v-model:show="show" preset="card" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? '修改项目' : '添加项目'">
+  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? '修改项目' : '添加项目'">
     <div class="h-[600px] overflow-auto p-[5px]">
       <NForm ref="formRef" :model="model" :rules="rules">
         <NGrid cols="2" :x-gap="10" item-responsive>
@@ -178,17 +170,17 @@ function getGroupListOptions() {
           <!-- <NSelect :style="{ width: '100px' }" :options="urlProtocolOptions" /> -->
           <NInputGroup>
             <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
-            <!-- <NButton @click="getIconByUrl(model.url)">
+            <NButton :disabled="!model.url" @click="getIconByUrl(model.url)">
               获取图标
-            </NButton> -->
+            </NButton>
           </NInputGroup>
         </NFormItem>
         <NFormItem path="lanUrl" label="局域网跳转地址">
           <NInputGroup>
             <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" placeholder="http(s)://（可以留空，切换到局域网模式，点击会使用该地址）" />
-            <!-- <NButton @click="getIconByUrl(model.lanUrl || '')">
+            <NButton :disabled="!model.lanUrl" @click="getIconByUrl(model.lanUrl || '')">
               获取图标
-            </NButton> -->
+            </NButton>
           </NInputGroup>
         </NFormItem>
         <NFormItem path="description" label="描述信息">
