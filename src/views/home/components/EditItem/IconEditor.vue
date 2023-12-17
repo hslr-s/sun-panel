@@ -48,11 +48,16 @@ const itemIconInfo = computed({
 function handleIconTypeRadioChange(type: number) {
   // checkedValueRef.value = type
   itemIconInfo.value.itemType = type
-  emit('update:itemIcon', itemIconInfo.value)
+  handleChange()
 }
 
 function handleChange() {
   emit('update:itemIcon', itemIconInfo.value || null)
+}
+
+function handleResetBackgroundColor() {
+  itemIconInfo.value.backgroundColor = initData.backgroundColor
+  handleChange()
 }
 
 const handleUploadFinish = ({
@@ -166,7 +171,7 @@ const handleUploadFinish = ({
           />
         </div>
         <div v-if="itemIconInfo.backgroundColor !== initData.backgroundColor" class="w-auto text-slate-500 mr-[10px] cursor-pointer">
-          <NButton quaternary type="info" @click="itemIconInfo.backgroundColor = initData.backgroundColor">
+          <NButton quaternary type="info" @click="handleResetBackgroundColor">
             恢复默认
           </NButton>
         </div>
