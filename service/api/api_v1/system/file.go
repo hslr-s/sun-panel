@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
@@ -13,6 +14,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 )
 
 type FileApi struct{}
@@ -94,4 +97,44 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 		"succMap":  succMap,
 		"errFiles": errFiles,
 	})
+}
+
+func (a *FileApi) GetList(c *gin.Context) {
+	list := []models.File{}
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	if err := global.Db.Order("created_at desc").Find(&list, "user_id=?", userInfo.ID).Error; err != nil {
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
+	}
+	apiReturn.SuccessData(c, list)
+}
+
+func (a *FileApi) Deletes(c *gin.Context) {
+	req := commonApiStructs.RequestDeleteIds[uint]{}
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	global.Db.Transaction(func(tx *gorm.DB) error {
+		files := []models.File{}
+
+		if err := tx.Order("created_at desc").Find(&files, "user_id=? AND id in ?", userInfo.ID, req.Ids).Error; err != nil {
+			return err
+		}
+
+		for _, v := range files {
+			os.Remove(v.Src)
+		}
+
+		if err := tx.Order("created_at desc").Delete(&files, "user_id=? AND id in ?", userInfo.ID, req.Ids).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	apiReturn.Success(c)
+
 }
