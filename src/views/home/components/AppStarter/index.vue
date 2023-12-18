@@ -46,6 +46,11 @@ const apps = ref<App[]>([
     icon: 'icon-park-outline-import-and-export',
   },
   {
+    name: '上传文件管理',
+    componentName: 'UploadFileManager',
+    icon: 'tabler:file-upload',
+  },
+  {
     name: '关于',
     componentName: 'About',
     icon: 'lucide-info',
@@ -156,9 +161,11 @@ onUnmounted(() => {
                 </div>
               </div>
             </NLayoutSider>
-            <NLayoutContent content-style="height:500px;overflow:hidden">
-              <div class="p-[5px] rounded-lg transition-all duration-500 min-w-[300px]" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
-                <AppLoader :component-name="componentName" />
+            <NLayoutContent content-style="height:500px;">
+              <div class="rounded-lg h-full m-5px overflow-auto bg-slate-200">
+                <div class="m-1 transition-all duration-500 min-w-[300px]" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+                  <AppLoader :component-name="componentName" />
+                </div>
               </div>
             </NLayoutContent>
           </NLayout>

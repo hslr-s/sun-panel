@@ -102,11 +102,12 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 func (a *FileApi) GetList(c *gin.Context) {
 	list := []models.File{}
 	userInfo, _ := base.GetCurrentUserInfo(c)
-	if err := global.Db.Order("created_at desc").Find(&list, "user_id=?", userInfo.ID).Error; err != nil {
+	var count int64
+	if err := global.Db.Order("created_at desc").Find(&list, "user_id=?", userInfo.ID).Count(&count).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
-	apiReturn.SuccessData(c, list)
+	apiReturn.SuccessListData(c, list, count)
 }
 
 func (a *FileApi) Deletes(c *gin.Context) {

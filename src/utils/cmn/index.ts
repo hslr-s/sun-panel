@@ -187,3 +187,37 @@ export function randomCode(size: number, seed?: Array<string>) {
   }
   return createPassword
 }
+
+// 复制文字到剪切板
+export async function copyToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard) {
+    // 使用 Clipboard API
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+    catch (err) {
+      console.error('copy fail', err)
+      return false
+    }
+  }
+  else {
+    // 兼容旧版浏览器
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+    document.body.appendChild(textArea)
+    textArea.select()
+
+    try {
+      document.execCommand('copy')
+      return true
+    }
+    catch (err) {
+      console.error('copy fail', err)
+      return false
+    }
+    finally {
+      document.body.removeChild(textArea)
+    }
+  }
+}
