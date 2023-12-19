@@ -2,13 +2,26 @@
 import { NButton, NButtonGroup, NCard, NEllipsis, NImage, NImageGroup, NSpace, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { deletes, getList } from '@/api/system/file'
-import { SvgIcon } from '@/components/common'
+import { set as savePanelConfig } from '@/api/panel/userConfig'
+import { RoundCardModal, SvgIcon } from '@/components/common'
 import { copyToClipboard, timeFormat } from '@/utils/cmn'
 import { t } from '@/locales'
+import { usePanelState } from '@/store'
 
+interface InfoModalState {
+  title: string
+  show: boolean
+  fileInfo: File.Info | null
+}
 const imageList = ref<File.Info[]>([])
 const ms = useMessage()
 const dialog = useDialog()
+const panelStore = usePanelState()
+const infoModalState = ref<InfoModalState>({
+  show: false,
+  title: '',
+  fileInfo: null,
+})
 
 async function getFileList() {
   const { data } = await getList<Common.ListResponse<File.Info[]>>()
@@ -18,16 +31,16 @@ async function getFileList() {
 async function copyImageUrl(text: string) {
   const res = await copyToClipboard(text)
   if (res)
-    ms.success('复制成功')
+    ms.success(t('apps.uploadsFileManager.copySuccess'))
 
   else
-    ms.error('复制失败')
+    ms.error(t('apps.uploadsFileManager.copyFailed'))
 }
 
 function handleDelete(id: number) {
   dialog.warning({
     title: t('common.warning'),
-    content: '你确定删除此图片吗？',
+    content: t('apps.uploadsFileManager.deleteWarningText'),
     positiveText: t('common.confirm'),
     negativeText: t('common.cancel'),
     onPositiveClick: () => {
@@ -52,6 +65,16 @@ async function deletesImges(id: number) {
   }
 }
 
+function handleInfoClick(fileInfo: File.Info) {
+  infoModalState.value.fileInfo = fileInfo
+  infoModalState.value.show = true
+}
+
+function handleSetWallpaper(imgSrc: string) {
+  panelStore.panelConfig.backgroundImageSrc = imgSrc
+  savePanelConfig({ panel: panelStore.panelConfig })
+}
+
 onMounted(() => {
   getFileList()
 })
@@ -63,7 +86,7 @@ onMounted(() => {
       <NImageGroup>
         <NSpace>
           <div v-for=" item, index in imageList" :key="index">
-            <NCard style="width: 150px;" size="small">
+            <NCard style="width: 130px;" size="small">
               <template #cover>
                 <div class="card transparent-grid">
                   <NImage :lazy="true" width="100%" style="width: auto;object-fit: contain;height: 100%;" :src="item.src" />
@@ -77,17 +100,22 @@ onMounted(() => {
                 </span>
                 <div class="flex justify-center mt-[10px]">
                   <NButtonGroup>
-                    <NButton size="tiny" tertiary style="cursor: pointer;" @click="copyImageUrl(item.src)">
+                    <NButton size="tiny" tertiary style="cursor: pointer;" :title="$t('apps.uploadsFileManager.copyLink')" @click="copyImageUrl(item.src)">
                       <template #icon>
                         <SvgIcon icon="ion-copy" />
                       </template>
                     </NButton>
-                    <NButton size="tiny" tertiary style="cursor: pointer;" :title="timeFormat(item.createTime)">
+                    <NButton size="tiny" tertiary style="cursor: pointer;" :title="timeFormat(item.createTime)" @click="handleInfoClick(item)">
                       <template #icon>
                         <SvgIcon icon="mdi-information-box-outline" />
                       </template>
                     </NButton>
-                    <NButton size="tiny" tertiary type="error" style="cursor: pointer;" @click="handleDelete(item.id as number)">
+                    <NButton size="tiny" tertiary style="cursor: pointer;" :title="$t('apps.uploadsFileManager.setWallpaper')" @click="handleSetWallpaper(item.src)">
+                      <template #icon>
+                        <SvgIcon icon="lucide:wallpaper" />
+                      </template>
+                    </NButton>
+                    <NButton size="tiny" tertiary type="error" style="cursor: pointer;" :title="$t('common.delete')" @click="handleDelete(item.id as number)">
                       <template #icon>
                         <SvgIcon icon="material-symbols-delete" />
                       </template>
@@ -100,6 +128,37 @@ onMounted(() => {
         </NSpace>
       </NImageGroup>
     </div>
+
+    <RoundCardModal v-model:show="infoModalState.show" style="max-width: 300px;" size="small" :title="$t('apps.uploadsFileManager.infoTitle')">
+      <div>
+        <div>
+          <div class="mb-2">
+            <span class="text-slate-500">
+              {{ $t('apps.uploadsFileManager.fileName') }}
+            </span>
+            <div class="text-xs">
+              {{ infoModalState.fileInfo?.fileName }}
+            </div>
+          </div>
+          <div class="mb-2">
+            <span class="text-slate-500">
+              {{ $t('apps.uploadsFileManager.path') }}
+            </span>
+            <div class="text-xs">
+              {{ infoModalState.fileInfo?.src }}
+            </div>
+          </div>
+          <div class="mb-2">
+            <span class="text-slate-500">
+              {{ $t('apps.uploadsFileManager.uploadTime') }}
+            </span>
+            <div class="text-xs">
+              {{ timeFormat(infoModalState.fileInfo?.createTime) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </RoundCardModal>
   </div>
 </template>
 
@@ -108,7 +167,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
+  height: 80px;
 }
 
 .transparent-grid {

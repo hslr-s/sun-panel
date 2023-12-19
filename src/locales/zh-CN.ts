@@ -103,4 +103,17 @@ export default {
       inputPlaceholder: '请输入搜索内容',
     },
   },
+  apps: {
+    uploadsFileManager: {
+      copyLink: '复制链接',
+      infoTitle: '文件详情',
+      fileName: '文件名称',
+      path: '文件目录',
+      uploadTime: '上传时间',
+      deleteWarningText: '删除后无法恢复，你确定要继续吗？',
+      copySuccess: '链接复制成功，可以在图标地址栏和壁纸地址栏粘贴',
+      copyFailed: '复制失败',
+      setWallpaper: '设置为壁纸',
+    },
+  },
 }
