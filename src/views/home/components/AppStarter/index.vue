@@ -23,6 +23,8 @@ const componentName = ref('UserInfo')
 const collapsed = ref(false)
 const screenWidth = ref(0)
 const isSmallScreen = ref(false)
+const defaultTitle = '系统应用 & 设置'
+const title = ref('')
 
 const apps = ref<App[]>([
   {
@@ -122,7 +124,7 @@ onUnmounted(() => {
             <SvgIcon class=" transition-all duration-500" :icon="collapsed ? 'tabler-layout-sidebar-right-collapse-filled' : 'tabler-layout-sidebar-left-collapse-filled'" />
           </div>
           <div class="ml-1">
-            系统应用 & 设置
+            {{ title === '' ? defaultTitle : title }}
           </div>
         </div>
       </template>

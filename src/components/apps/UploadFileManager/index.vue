@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NButton, NButtonGroup, NCard, NEllipsis, NImage, NImageGroup, NSpace, useDialog, useMessage } from 'naive-ui'
+import { NButton, NButtonGroup, NCard, NEllipsis, NGrid, NGridItem, NImage, NImageGroup, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { deletes, getList } from '@/api/system/file'
 import { set as savePanelConfig } from '@/api/panel/userConfig'
@@ -84,12 +84,12 @@ onMounted(() => {
   <div>
     <div class="flex justify-center">
       <NImageGroup>
-        <NSpace>
-          <div v-for=" item, index in imageList" :key="index">
-            <NCard style="width: 130px;" size="small">
+        <NGrid cols="2 300:2 600:4 900:6 1100:9" :x-gap="5" :y-gap="5">
+          <NGridItem v-for=" item, index in imageList" :key="index">
+            <NCard size="small" style="border-radius: 5px;">
               <template #cover>
                 <div class="card transparent-grid">
-                  <NImage :lazy="true" width="100%" style="width: auto;object-fit: contain;height: 100%;" :src="item.src" />
+                  <NImage :lazy="true" style="object-fit: contain;height: 100%;" :src="item.src" />
                 </div>
               </template>
               <template #footer>
@@ -124,8 +124,8 @@ onMounted(() => {
                 </div>
               </template>
             </NCard>
-          </div>
-        </NSpace>
+          </NGridItem>
+        </NGrid>
       </NImageGroup>
     </div>
 
@@ -171,8 +171,8 @@ onMounted(() => {
 }
 
 .transparent-grid {
-  background-image: linear-gradient(45deg, #e6e4e4 25%, transparent 25%, transparent 75%, #e6e4e4 75%),
-    linear-gradient(45deg, #e6e4e4 25%, transparent 25%, transparent 75%, #e6e4e4 75%);
+  background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%),
+    linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%);
   background-size: 16px 16px;
   background-position: 0 0, 8px 8px;
 }
