@@ -2,11 +2,11 @@ package system
 
 import (
 	"strconv"
+	"strings"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
-	"sun-panel/lib/captcha"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/cmn/systemSetting"
 	"sun-panel/lib/mail"
@@ -50,30 +50,13 @@ func (l LoginApi) Login(c *gin.Context) {
 	settings := systemSetting.ApplicationSetting{}
 	global.SystemSetting.GetValueByInterface("system_application", &settings)
 
-	// 验证验证码
-	if settings.Login.LoginCaptcha {
-		var captchaId string
-		var err error
-
-		// 获取captchaId
-		if captchaId, err = captcha.CaptchaGetIdByCookieHeader(c, "CaptchaId"); err != nil {
-			apiReturn.Error(c, global.Lang.Get("login.err_captcha_check_fail"))
-			return
-		}
-
-		// 验证码错误
-		if !captcha.CaptchaVerifyHandle(captchaId, param.VCode) {
-			apiReturn.Error(c, global.Lang.Get("captcha.api_captcha_fail"))
-			return
-		}
-	}
-
 	mUser := models.User{}
 	var (
 		err  error
 		info models.User
 	)
 	bToken := ""
+	param.Username = strings.TrimSpace(param.Username)
 	if info, err = mUser.GetUserInfoByUsernameAndPassword(param.Username, cmn.PasswordEncryption(param.Password)); err != nil {
 		// 未找到记录 账号或密码错误
 		if err == gorm.ErrRecordNotFound {
