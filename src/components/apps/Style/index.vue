@@ -31,9 +31,9 @@ watch(panelState.panelConfig, () => {
       panelState.recordState()// 本地记录
       setUserConfig({ panel: panelState.panelConfig }).then((res) => {
         if (res.code === 0)
-          ms.success('配置已同步到云端')
+          ms.success('配置已保存')
         else
-          ms.error(`配置同步到云端失败${res.msg}`)
+          ms.error(`配置保存失败${res.msg}`)
         isSaveing.value = false
       })
     }, 1000)
