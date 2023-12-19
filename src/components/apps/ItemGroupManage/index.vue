@@ -48,6 +48,7 @@ function handleAddGroup() {
 function handleEditGroup(groupInfo: Panel.ItemIconGroup) {
   editModalArg.value.show = true
   editModalArg.value.model = groupInfo
+  editModalArg.value.editStatus = 2
 }
 
 function handleDragSort() {
@@ -122,8 +123,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-[500px]">
-    <div>
+  <div class="h-full">
+    <div class="p-2">
       <NButton type="success" size="small" style="margin-right: 10px;" @click="handleAddGroup">
         新增分组
       </NButton>
@@ -137,7 +138,7 @@ onMounted(() => {
       </NButton>
     </div>
 
-    <div class=" overflow-auto w-full mt-[20px]  bg-slate-200 rounded-xl" style="height:calc(100% - 50px)">
+    <div class=" overflow-auto w-full mt-[20px]  bg-slate-200 rounded-xl" style="height:calc(100% - 65px)">
       <VueDraggable
         v-model="groups"
         item-key="sort" :animation="300"
@@ -178,7 +179,7 @@ onMounted(() => {
       </VueDraggable>
     </div>
 
-    <RoundCardModal v-model:show="editModalArg.show" type="small" :title="editModalArg.editStatus === 1 ? '添加' : '编辑'" style="width: 400px;">
+    <RoundCardModal v-model:show="editModalArg.show" size="small" type="small" :title="editModalArg.editStatus === 1 ? '添加' : '编辑'" style="width: 400px;">
       <NForm ref="formRef" :model="editModalArg.model" :rules="editModalArg.rules">
         <NFormItem path="title" label="分组名称">
           <NInput v-model:value="editModalArg.model.title" type="text" :maxlength="20" show-count placeholder="请输入" />

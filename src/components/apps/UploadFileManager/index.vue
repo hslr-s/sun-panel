@@ -81,12 +81,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="bg-slate-200 p-2 h-full">
     <div class="flex justify-center">
       <NImageGroup>
         <NGrid cols="2 300:2 600:4 900:6 1100:9" :x-gap="5" :y-gap="5">
           <NGridItem v-for=" item, index in imageList" :key="index">
-            <NCard size="small" style="border-radius: 5px;">
+            <NCard size="small" style="border-radius: 5px;" :bordered="true">
               <template #cover>
                 <div class="card transparent-grid">
                   <NImage :lazy="true" style="object-fit: contain;height: 100%;" :src="item.src" />

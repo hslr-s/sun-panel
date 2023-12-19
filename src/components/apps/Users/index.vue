@@ -215,7 +215,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-[500px] overflow-auto">
+  <div class="overflow-auto pt-2">
     <NAlert type="info" :bordered="false">
       {{ $t('adminSettingUsers.alertText') }}
     </NAlert>

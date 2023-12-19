@@ -25,6 +25,7 @@ const screenWidth = ref(0)
 const isSmallScreen = ref(false)
 const defaultTitle = '系统应用 & 设置'
 const title = ref('')
+const height = ref('500px')
 
 const apps = ref<App[]>([
   {
@@ -139,7 +140,14 @@ onUnmounted(() => {
               style="height: 100%;"
               content-style="overflow: hidden"
             >
-              <div class="h-[500px] p-[5px] bg-slate-200 rounded-xl overflow-auto" :style="{ width: isSmallScreen ? '100%' : '220px', minWidth: '200px' }">
+              <div
+                class="p-[5px] bg-slate-200 rounded-xl overflow-auto"
+                :style="{
+                  width: isSmallScreen ? '100%' : '220px',
+                  minWidth: '200px',
+                  height,
+                }"
+              >
                 <div
                   v-for=" (item, index) in apps"
                   :key="index"
@@ -163,11 +171,9 @@ onUnmounted(() => {
                 </div>
               </div>
             </NLayoutSider>
-            <NLayoutContent content-style="height:500px;">
-              <div class="rounded-lg h-full m-5px overflow-auto bg-slate-200">
-                <div class="m-1 transition-all duration-500 min-w-[300px]" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
-                  <AppLoader :component-name="componentName" />
-                </div>
+            <NLayoutContent :content-style="{ height }">
+              <div class="rounded-lg h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+                <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>
           </NLayout>

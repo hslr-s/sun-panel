@@ -125,7 +125,7 @@ function handleLogout() {
 </script>
 
 <template>
-  <div class="bg-slate-200 rounded-[10px] p-[8px]">
+  <div class="bg-slate-200 p-2 h-full">
     <NCard style="border-radius:10px" size="small">
       <div>
         <div class="text-slate-500 font-bold">

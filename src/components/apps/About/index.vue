@@ -26,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="pt-10">
     <div>
       <div class="flex flex-col items-center justify-center">
         <img :src="srcSvglogo" width="100" height="100" alt="">

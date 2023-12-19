@@ -249,7 +249,7 @@ async function handleStartImport() {
 </script>
 
 <template>
-  <div>
+  <div class="pt-2">
     <NAlert type="info" :bordered="false">
       <p>导入图标不会清空原有图标</p>
     </NAlert>
