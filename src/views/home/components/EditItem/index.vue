@@ -16,6 +16,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 const ms = useMessage()
+const submitLoading = ref(false)
 const itemIconGroupOptions = ref<{
   label: string
   value: number
@@ -82,17 +83,24 @@ const show = computed({
 })
 
 async function editApi() {
-  const { code, data, msg } = await edit<Panel.ItemInfo>(model.value)
-  if (code === 0) {
-    show.value = false
-    model.value = { ...restoreDefault }
-    console.log('重置完成', model.value)
+  submitLoading.value = true
+  try {
+    const { code, data, msg } = await edit<Panel.ItemInfo>(model.value)
+    if (code === 0) {
+      show.value = false
+      model.value = { ...restoreDefault }
+      console.log('重置完成', model.value)
 
-    emit('done', data)
+      emit('done', data)
+    }
+    else {
+      ms.error(`保存失败：${msg}`)
+    }
   }
-  else {
-    ms.error(`保存失败：${msg}`)
+  catch (error) {
+    ms.error('保存失败')
   }
+  submitLoading.value = false
 }
 
 const handleValidateButtonClick = (e: MouseEvent) => {
@@ -193,7 +201,7 @@ function getGroupListOptions() {
     </div>
 
     <template #footer>
-      <NButton type="success" style="float: right;" @click="handleValidateButtonClick">
+      <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleValidateButtonClick">
         确定
       </NButton>
     </template>
