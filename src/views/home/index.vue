@@ -68,8 +68,10 @@ function openPage(openMethod: number, url: string, title?: string) {
 }
 
 function handleItemClick(itemGroupIndex: number, item: Panel.ItemInfo) {
-  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus)
+  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus) {
+    handleEditItem(item)
     return
+  }
 
   let jumpUrl = ''
 
