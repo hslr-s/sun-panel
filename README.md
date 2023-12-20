@@ -4,7 +4,7 @@
 
 # Sun-Panel
 
-<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">B站视频</a>
+<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">bilibili</a> | <a href="https://www.youtube.com/channel/UCKwbFmKU25R602z6P2fgPYg">YouTube</a>
 
 一个服务器、NAS导航面板、Homepage、浏览器首页。
 
@@ -28,7 +28,7 @@
 演示站说明：
 1. 服务器资源有限请不要上传特大图片文件
 2. 方便他人访问，请不要修改主账号密码
-3. 数据不定期清理，请不要作为主力导航页使用
+3. 数据定期清理，请不要作为主力导航页使用
 4. 请不要放违规内容
 
 演示地址：[点此跳转](http://sunpaneldemo.enianteam.com/#/)
@@ -45,19 +45,23 @@
 
 ## 🍵 打赏
 
-开源不易，如果该项目对您有帮助，您可以选择对我打赏[[点此去打赏页面](./doc/donate.md)]，在寒冷的冬天让我喝上一杯热乎乎的奶茶❤️。
+> 开源开发不易，如果觉得我的项目有帮到你，欢迎给我[打赏](./doc/donate.md)或者请我喝个奶茶☕（如果可以备注下您的昵称或者名字），你的支持就是我的动力，谢谢。
+
+|   |   |
+| ------------ | ------------ |
+| <img height="300" src="./doc/images/donate/weixin.png"/> |  <img height="300" src="./doc/images/donate/alipay.png" /> |
 
 ## 🫓 后面想做的事
 
 先画个饼
 
 - [x] 分组，拖拽排序
-- [ ] 导入导出功能
-- [ ] 增加访客账号
+- [x] 导入导出功能
+- [x] 增加访客账号
+- [x] 帐号解除邮箱限制
+- [x] 对上传的文件管理（针对账户增强重复利用，节省空间）
 - [ ] 用户自定义搜索框搜索引擎
 - [ ] 搜索框样式自定义（背景颜色，文字颜色）
-- [ ] 帐号解除邮箱限制
-- [ ] 对上传的文件管理（针对账户增强重复利用，节省空间）
 - [ ] 多国语言支持
 - [ ] 服务器监控
 - [ ] docker管理器
@@ -200,3 +204,6 @@ docker run --rm -d -p 3003:3002 -v  D:\docker\data\sun-panel\conf:/app/conf -v  
 ## ❤️ 感谢
 
 - [Roc](https://github.com/RocCheng)提供自动构建多平台docker镜像[方案](https://github.com/hslr-s/sun-panel/issues/9#issuecomment-1817433439)
+
+## LINCENSE
+[MIT](./LICENSE)
