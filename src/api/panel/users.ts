@@ -25,3 +25,16 @@ export function deletes<T>(userIds: number[]) {
     data: { userIds },
   })
 }
+
+export function getPublicVisitUser<T>() {
+  return post<T>({
+    url: '/panel/users/getPublicVisitUser',
+  })
+}
+
+export function setPublicVisitUser<T>(userId: number | null) {
+  return post<T>({
+    url: '/panel/users/setPublicVisitUser',
+    data: { userId },
+  })
+}

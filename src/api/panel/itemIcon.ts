@@ -1,5 +1,12 @@
 import { post } from '@/utils/request'
 
+export function addMultiple<T>(req: Panel.ItemInfo[]) {
+  return post<T>({
+    url: '/panel/itemIcon/addMultiple',
+    data: req,
+  })
+}
+
 export function edit<T>(req: Panel.ItemInfo) {
   return post<T>({
     url: '/panel/itemIcon/edit',
@@ -32,5 +39,12 @@ export function saveSort<T>(data: Panel.ItemIconSortRequest) {
   return post<T>({
     url: '/panel/itemIcon/saveSort',
     data,
+  })
+}
+
+export function getSiteFavicon<T>(url: string) {
+  return post<T>({
+    url: '/panel/itemIcon/getSiteFavicon',
+    data: { url },
   })
 }

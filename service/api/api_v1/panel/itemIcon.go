@@ -7,6 +7,7 @@ import (
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
+	"sun-panel/lib/siteFavicon"
 	"sun-panel/models"
 
 	"github.com/gin-gonic/gin"
@@ -52,6 +53,34 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 		// 创建
 		global.Db.Create(&req)
 	}
+
+	apiReturn.SuccessData(c, req)
+}
+
+// 添加多个图标
+func (a *ItemIcon) AddMultiple(c *gin.Context) {
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	// type Request
+	req := []models.ItemIcon{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	for i := 0; i < len(req); i++ {
+		if req[i].ItemIconGroupId == 0 {
+			apiReturn.Error(c, "分组为必填项")
+			return
+		}
+		req[i].UserId = userInfo.ID
+		// json转字符串
+		if j, err := json.Marshal(req[i].Icon); err == nil {
+			req[i].IconJson = string(j)
+		}
+	}
+
+	global.Db.Create(&req)
 
 	apiReturn.SuccessData(c, req)
 }
@@ -156,4 +185,20 @@ func (a *ItemIcon) SaveSort(c *gin.Context) {
 	}
 
 	apiReturn.Success(c)
+}
+
+func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
+	req := panelApiStructs.ItemIconGetSiteFaviconReq{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+	resp := panelApiStructs.ItemIconGetSiteFaviconResp{}
+	if iconUrl, ok := siteFavicon.GetOneFaviconURL(req.Url); ok {
+		resp.IconUrl = iconUrl
+		apiReturn.SuccessData(c, resp)
+		return
+	}
+	apiReturn.Error(c, "acquisition failed")
 }

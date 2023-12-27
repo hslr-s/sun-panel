@@ -2,12 +2,14 @@ import moment from 'moment'
 import { h } from 'vue'
 import type { NotificationReactive } from 'naive-ui'
 import { NButton, createDiscreteApi } from 'naive-ui'
-import { useNoticeStore, useUserStore } from '@/store'
-import { getInfo as getUserInfo } from '@/api/system/user'
+import { useAuthStore, useNoticeStore, useUserStore } from '@/store'
+import { getAuthInfo } from '@/api/system/user'
+import type { VisitMode } from '@/enums/auth'
 import { getListByDisplayType as getListByDisplayTypeApi } from '@/api/notice'
 
 const noticeStore = useNoticeStore()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const { notification } = createDiscreteApi(['notification'])
 
@@ -102,9 +104,15 @@ export function getTitle(titile: string) {
 
 //
 export async function updateLocalUserInfo() {
-  const { data } = await getUserInfo<User.Info>()
+  interface Req {
+    user: User.Info
+    visitMode: VisitMode
+  }
 
-  userStore.updateUserInfo({ headImage: data.headImage, name: data.name })
+  const { data } = await getAuthInfo<Req>()
+  userStore.updateUserInfo({ headImage: data.user.headImage, name: data.user.name })
+  authStore.setUserInfo(data.user)
+  authStore.setVisitMode(data.visitMode)
 }
 
 export async function getNotice(displayType: number | number[]) {
@@ -121,6 +129,43 @@ export async function getNotice(displayType: number | number[]) {
     if (element.id && !noticeStore.getReadByNoticeId(element.id, userStore.userInfo.username))
       noticeCreate(element)
   }
+}
+
+// 权限受限暂时不用
+// export async function getFaviconUrl(url: string, extName = 'ico'): Promise<string | null> {
+//   try {
+//     // 获取网址的域名
+//     const { protocol, host } = new URL(url)
+//     const domain = `${protocol}//${host}`
+
+//     // 构建 favicon URL
+//     const faviconUrl = `${domain}/favicon.${extName}`
+
+//     // 检查 favicon 是否存在，包含 CORS 头部
+//     const response = await fetch(faviconUrl, { method: 'HEAD', mode: 'cors' })
+
+//     // 如果请求成功，返回 favicon URL
+//     if (response.ok) {
+//       return faviconUrl
+//     }
+//     else {
+//       console.log('Favicon not found.')
+//       return null
+//     }
+//   }
+//   catch (error) {
+//     // 如果出现错误，返回 null，表示找不到 favicon
+//     console.error('Error:', error)
+//     return null
+//   }
+// }
+
+export function getFaviconUrl(url: string): string {
+  // 获取网址的域名
+  const { protocol, host } = new URL(url)
+  const domain = `${protocol}//${host}`
+  // 构建 favicon URL
+  return `${domain}/favicon.ico`
 }
 
 /**
@@ -141,4 +186,38 @@ export function randomCode(size: number, seed?: Array<string>) {
     createPassword += seed[j]
   }
   return createPassword
+}
+
+// 复制文字到剪切板
+export async function copyToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard) {
+    // 使用 Clipboard API
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+    catch (err) {
+      console.error('copy fail', err)
+      return false
+    }
+  }
+  else {
+    // 兼容旧版浏览器
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+    document.body.appendChild(textArea)
+    textArea.select()
+
+    try {
+      document.execCommand('copy')
+      return true
+    }
+    catch (err) {
+      console.error('copy fail', err)
+      return false
+    }
+    finally {
+      document.body.removeChild(textArea)
+    }
+  }
 }

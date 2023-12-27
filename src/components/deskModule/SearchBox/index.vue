@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { defineEmits, onMounted, ref } from 'vue'
 import { NAvatar, NCheckbox } from 'naive-ui'
 import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
+import { useAuthStore } from '@/store'
+import { VisitMode } from '@/enums/auth'
 
 import SvgSrcBaidu from '@/assets/search_engine_svg/baidu.svg'
 import SvgSrcBing from '@/assets/search_engine_svg/bing.svg'
 import SvgSrcGoogle from '@/assets/search_engine_svg/google.svg'
-
-interface State {
-  currentSearchEngine: DeskModule.SearchBox.SearchEngine
-  searchEngineList: DeskModule.SearchBox.SearchEngine[]
-  newWindowOpen: boolean
-}
 
 withDefaults(defineProps<{
   background?: string
@@ -22,8 +18,17 @@ withDefaults(defineProps<{
   textColor: 'white',
 })
 
+const emits = defineEmits(['itemSearch'])
+
+interface State {
+  currentSearchEngine: DeskModule.SearchBox.SearchEngine
+  searchEngineList: DeskModule.SearchBox.SearchEngine[]
+  newWindowOpen: boolean
+}
+
 const moduleConfigName = 'deskModuleSearchBox'
 const moduleConfig = useModuleConfig()
+const authStore = useAuthStore()
 const searchTerm = ref('')
 const isFocused = ref(false)
 const searchSelectListShow = ref(false)
@@ -62,6 +67,9 @@ const onBlur = (): void => {
 }
 
 function handleEngineClick() {
+  // 访客模式不允许修改
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC)
+    return
   searchSelectListShow.value = !searchSelectListShow.value
 }
 
@@ -75,7 +83,7 @@ function handleSearchClick() {
   const keyword = searchTerm
   // 如果网址中存在 %s，则直接替换为关键字
   const fullUrl = replaceOrAppendKeywordToUrl(url, keyword.value)
-
+  handleClearSearchTerm()
   if (state.value.newWindowOpen)
     window.open(fullUrl)
   else
@@ -89,6 +97,15 @@ function replaceOrAppendKeywordToUrl(url: string, keyword: string) {
 
   // 如果网址中不存在 %s，则将关键字追加到末尾
   return url + (keyword ? `${encodeURIComponent(keyword)}` : '')
+}
+
+const handleItemSearch = () => {
+  emits('itemSearch', searchTerm.value)
+}
+
+function handleClearSearchTerm() {
+  searchTerm.value = ''
+  emits('itemSearch', searchTerm.value)
 }
 
 onMounted(() => {
@@ -108,9 +125,13 @@ onMounted(() => {
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>
 
-      <input v-model="searchTerm" placeholder="请输入搜索内容" @focus="onFocus" @blur="onBlur">
-      <div class="w-[20px] flex justify-center cursor-pointer" @click="handleSearchClick">
-        <SvgIcon icon="iconamoon:search-fill" />
+      <input v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
+
+      <div v-if="searchTerm !== ''" class="w-[25px] mr-[10px] flex justify-center cursor-pointer" @click="handleClearSearchTerm">
+        <SvgIcon style="width: 20px;height: 20px;" icon="line-md:close-small" />
+      </div>
+      <div class="w-[25px] flex justify-center cursor-pointer" @click="handleSearchClick">
+        <SvgIcon style="width: 20px;height: 20px;" icon="iconamoon:search-fill" />
       </div>
     </div>
 
@@ -138,7 +159,7 @@ onMounted(() => {
       <div class="mt-[10px]">
         <NCheckbox v-model:checked="state.newWindowOpen" @update-checked="moduleConfig.saveToCloud(moduleConfigName, state)">
           <span :style="{ color: textColor }">
-            新窗口打开
+            {{ $t('deskModule.searchBox.openWithNewOpen') }}
           </span>
         </NCheckbox>
       </div>

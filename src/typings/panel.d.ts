@@ -8,6 +8,7 @@ declare namespace Panel {
         icon: ItemIcon |null
         title: string
         url: string
+        sort?: number
         lanUrl?: string
         description?: string
         openMethod: number
@@ -48,6 +49,9 @@ declare namespace Panel {
         clockShowSecond?:boolean
         clockColor?:string
         searchBoxShow?:boolean
+        searchBoxSearchIcon?:boolean
+        marginTop?:number
+        marginBottom?:number
     }
 
     interface userConfig{

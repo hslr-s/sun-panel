@@ -10,11 +10,13 @@ import (
 func InitUsersRouter(router *gin.RouterGroup) {
 	userApi := api_v1.ApiGroupApp.ApiPanel.UsersApi
 
-	r := router.Group("", middleware.LoginInterceptor)
+	rAdmin := router.Group("", middleware.LoginInterceptor, middleware.AdminInterceptor)
 	{
-		r.POST("panel/users/create", userApi.Create)
-		r.POST("panel/users/update", userApi.Update)
-		r.POST("panel/users/getList", userApi.GetList)
-		r.POST("panel/users/deletes", userApi.Deletes)
+		rAdmin.POST("panel/users/create", userApi.Create)
+		rAdmin.POST("panel/users/update", userApi.Update)
+		rAdmin.POST("panel/users/getList", userApi.GetList)
+		rAdmin.POST("panel/users/deletes", userApi.Deletes)
+		rAdmin.POST("panel/users/getPublicVisitUser", userApi.GetPublicVisitUser)
+		rAdmin.POST("panel/users/setPublicVisitUser", userApi.SetPublicVisitUser)
 	}
 }
