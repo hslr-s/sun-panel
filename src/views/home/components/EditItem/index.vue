@@ -69,7 +69,7 @@ const options = [
     value: 2,
   },
   {
-    label: '弹窗打开',
+    label: '当前页面弹窗打开',
     value: 3,
   },
 ]
