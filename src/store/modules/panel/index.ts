@@ -7,12 +7,6 @@ export const usePanelState = defineStore('panel', {
   state: (): Panel.State => getLocalState() || defaultState(),
 
   getters: {
-    // getChatHistoryByCurrentActive(state: AiApplet.State) {
-    //   const index = state.history.findIndex(item => item.id === state.active)
-    //   if (index !== -1)
-    //     return state.history[index]
-    //   return null
-    // },
 
   },
 
@@ -36,7 +30,7 @@ export const usePanelState = defineStore('panel', {
     updatePanelConfigByCloud() {
       getUserConfig<Panel.userConfig>().then((res) => {
         if (res.code === 0)
-          this.panelConfig = res.data.panel
+          this.panelConfig = { ...defaultStatePanelConfig(), ...res.data.panel }
         else
           this.resetPanelConfig() // 重置恢复默认
         this.recordState()

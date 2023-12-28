@@ -40,6 +40,7 @@ watch(panelState.panelConfig, () => {
 
     setTimeout(() => {
       panelState.recordState()// 本地记录
+      isSaveing.value = false
       uploadCloud()
     }, 1000)
   }
