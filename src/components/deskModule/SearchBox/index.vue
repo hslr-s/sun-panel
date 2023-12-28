@@ -76,6 +76,7 @@ function handleEngineClick() {
 function handleEngineUpdate(engine: DeskModule.SearchBox.SearchEngine) {
   state.value.currentSearchEngine = engine
   moduleConfig.saveToCloud(moduleConfigName, state.value)
+  searchSelectListShow.value = false
 }
 
 function handleSearchClick() {

@@ -52,6 +52,9 @@ declare namespace Panel {
         searchBoxSearchIcon?:boolean
         marginTop?:number
         marginBottom?:number
+        maxWidth?:number
+        maxWidthUnit:string
+        marginX?:number
     }
 
     interface userConfig{

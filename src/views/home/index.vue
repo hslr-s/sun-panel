@@ -334,8 +334,12 @@ function handleAddItem(itemIconGroupId?: number) {
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
       <div
-        class="p-2.5 xs:max-w-[95%] lg:max-w-[80%]  mx-auto "
-        :style="{ marginTop: `${panelState.panelConfig.marginTop}%`, marginBottom: `${panelState.panelConfig.marginBottom}%` }"
+        class="p-2.5 mx-auto"
+        :style="{
+          marginTop: `${panelState.panelConfig.marginTop}%`,
+          marginBottom: `${panelState.panelConfig.marginBottom}%`,
+          maxWidth: (panelState.panelConfig.maxWidth ?? '1200') + panelState.panelConfig.maxWidthUnit,
+        }"
       >
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
@@ -358,7 +362,7 @@ function handleAddItem(itemIconGroupId?: number) {
         </div>
 
         <!-- 应用盒子 -->
-        <div class="mt-[50px]">
+        <div class="mt-[50px]" :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
           <!-- 组纵向排列 -->
           <div
             v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
@@ -369,7 +373,7 @@ function handleAddItem(itemIconGroupId?: number) {
           >
             <!-- 分组标题 -->
             <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
-              <span>
+              <span class="text-shadow">
                 {{ itemGroup.title }}
               </span>
               <div

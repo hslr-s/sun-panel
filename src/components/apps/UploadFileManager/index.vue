@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NButton, NButtonGroup, NCard, NEllipsis, NGrid, NGridItem, NImage, NImageGroup, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NAlert, NButton, NButtonGroup, NCard, NEllipsis, NGrid, NGridItem, NImage, NImageGroup, NSpin, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { deletes, getList } from '@/api/system/file'
 import { set as savePanelConfig } from '@/api/panel/userConfig'
@@ -86,8 +86,14 @@ onMounted(() => {
 <template>
   <div class="bg-slate-200 p-2 h-full">
     <NSpin v-show="loading" size="small" />
-    <div class="flex justify-center">
-      <NImageGroup>
+    <NAlert type="info" :bordered="false">
+      {{ $t('apps.uploadsFileManager.alertText') }}
+    </NAlert>
+    <div class="flex justify-center mt-2">
+      <div v-if="imageList.length === 0 && !loading" class="flex">
+        {{ $t('apps.uploadsFileManager.nothingText') }}
+      </div>
+      <NImageGroup v-else>
         <NGrid cols="2 300:2 600:4 900:6 1100:9" :x-gap="5" :y-gap="5">
           <NGridItem v-for=" item, index in imageList" :key="index">
             <NCard size="small" style="border-radius: 5px;" :bordered="true">

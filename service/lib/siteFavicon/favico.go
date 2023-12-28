@@ -2,7 +2,6 @@ package siteFavicon
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -13,7 +12,7 @@ import (
 )
 
 func IsHTTPURL(url string) bool {
-	httpPattern := `^(http://|https://)`
+	httpPattern := `^(http://|https://|//)`
 	match, err := regexp.MatchString(httpPattern, url)
 	if err != nil {
 		return false
@@ -24,7 +23,6 @@ func IsHTTPURL(url string) bool {
 func GetOneFaviconURL(urlStr string) (string, bool) {
 	iconURLs, err := getFaviconURL(urlStr)
 	if err != nil {
-		fmt.Println("Error:", err)
 		return "", false
 	}
 
@@ -44,10 +42,20 @@ func GetOneFaviconURL(urlStr string) (string, bool) {
 func getFaviconURL(url string) ([]string, error) {
 	var icons []string
 	icons = make([]string, 0)
-	resp, err := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return icons, err
 	}
+
+	// 设置User-Agent头字段，模拟浏览器请求
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return icons, err
+	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
@@ -71,7 +79,7 @@ func getFaviconURL(url string) ([]string, error) {
 	})
 
 	if len(icons) == 0 {
-		return icons, fmt.Errorf("favicon not found on the page")
+		return icons, errors.New("favicon not found on the page")
 	}
 
 	return icons, nil

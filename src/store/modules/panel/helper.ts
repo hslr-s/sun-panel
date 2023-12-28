@@ -19,6 +19,9 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     searchBoxSearchIcon: false,
     marginBottom: 10,
     marginTop: 10,
+    maxWidth: 1200,
+    maxWidthUnit: 'px',
+    marginX: 5,
   }
 }
 

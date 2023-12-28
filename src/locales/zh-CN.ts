@@ -114,6 +114,8 @@ export default {
       copySuccess: '链接复制成功，可以在图标地址栏',
       copyFailed: '复制失败',
       setWallpaper: '设置为壁纸',
+      alertText: '你可以在这里管理你上传过的壁纸和图标',
+      nothingText: '你还没有上传过任何图片',
     },
   },
 }

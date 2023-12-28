@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { UploadFileInfo } from 'naive-ui'
-import { NButton, NCard, NColorPicker, NGrid, NGridItem, NInput, NPopconfirm, NSelect, NSlider, NSwitch, NUpload, NUploadDragger, useMessage } from 'naive-ui'
+import { NButton, NCard, NColorPicker, NGrid, NGridItem, NInput, NInputGroup, NPopconfirm, NSelect, NSlider, NSwitch, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { useAuthStore, usePanelState } from '@/store'
 import { set as setUserConfig } from '@/api/panel/userConfig'
 import { PanelPanelConfigStyleEnum } from '@/enums/panel'
@@ -23,19 +23,24 @@ const iconTypeOptions = [
   },
 ]
 
+const maxWidthUnitOption = [
+  {
+    label: 'px',
+    value: 'px',
+  },
+  {
+    label: '%',
+    value: '%',
+  },
+]
+
 watch(panelState.panelConfig, () => {
   if (!isSaveing.value) {
     isSaveing.value = true
 
     setTimeout(() => {
       panelState.recordState()// 本地记录
-      setUserConfig({ panel: panelState.panelConfig }).then((res) => {
-        if (res.code === 0)
-          ms.success('配置已保存')
-        else
-          ms.error(`配置保存失败${res.msg}`)
-        isSaveing.value = false
-      })
+      uploadCloud()
     }, 1000)
   }
 })
@@ -55,9 +60,9 @@ function handleUploadBackgroundFinish({
 function uploadCloud() {
   setUserConfig({ panel: panelState.panelConfig }).then((res) => {
     if (res.code === 0)
-      ms.success('配置已同步到云端')
+      ms.success('配置已保存')
     else
-      ms.error(`配置同步到云端失败${res.msg}`)
+      ms.error(`配置已保存${res.msg}`)
   })
 }
 
@@ -199,10 +204,27 @@ function resetPanelConfig() {
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
-        其他
+        内容区域
       </div>
 
       <NGrid cols="2">
+        <NGridItem span="12 400:12">
+          <div class="flex items-center mt-[10px]">
+            <span class="mr-[10px]">最大宽度</span>
+            <div class="flex">
+              <NInputGroup>
+                <NInput v-model:value="panelState.panelConfig.maxWidth" size="small" type="number" :maxlength="10" :style="{ width: '100px' }" placeholder="1200" />
+                <NSelect v-model:value="panelState.panelConfig.maxWidthUnit" :style="{ width: '80px' }" :options="maxWidthUnitOption" size="small" />
+              </NInputGroup>
+            </div>
+          </div>
+        </NGridItem>
+        <NGridItem span="12 400:12">
+          <div class="flex items-center mt-[10px]">
+            <span class="mr-[10px]">左右边距</span>
+            <NSlider v-model:value="panelState.panelConfig.marginX" class="max-w-[200px]" :step="1" :max="100" />
+          </div>
+        </NGridItem>
         <NGridItem span="12 400:12">
           <div class="flex items-center mt-[10px]">
             <span class="mr-[10px]">上边距 (%)</span>
@@ -231,7 +253,7 @@ function resetPanelConfig() {
       </NPopconfirm>
 
       <NButton size="small" quaternary type="success" class="ml-[10px]" @click="uploadCloud">
-        立即同步到云端
+        立即保存
       </NButton>
     </NCard>
   </div>

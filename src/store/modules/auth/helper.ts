@@ -1,7 +1,7 @@
 import type { AuthState } from './index'
 import { ss } from '@/utils/storage'
 
-const LOCAL_NAME = 'SECRET_TOKEN'
+const LOCAL_NAME = 'AUTH_TOKEN'
 
 // export function getToken() {
 //   return ss.get(LOCAL_NAME)
