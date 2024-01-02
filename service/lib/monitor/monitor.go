@@ -1,0 +1,126 @@
+package monitor
+
+import (
+	"time"
+
+	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v3/mem"
+	"github.com/shirou/gopsutil/v3/net"
+)
+
+type CPUInfo struct {
+	CoreCount int32
+	CPUNum    int
+	Model     string
+	Usages    []float64
+}
+
+type DiskInfo struct {
+	Mountpoint  string
+	Total       uint64
+	Used        uint64
+	Free        uint64
+	UsedPercent float64
+}
+
+type NetIOCountersInfo struct {
+	BytesSent uint64
+	BytesRecv uint64
+	Name      string
+}
+
+type MemoryInfo struct {
+	Total uint64
+	Free  uint64
+}
+
+// 获取CPU信息
+func GetCPUInfo() (CPUInfo, error) {
+	cpuInfoRes := CPUInfo{}
+	cpuInfo, err := cpu.Info()
+	if err == nil && len(cpuInfo) > 0 {
+		cpuInfoRes.CoreCount = cpuInfo[0].Cores
+		cpuInfoRes.Model = cpuInfo[0].ModelName
+	}
+	numCPU, _ := cpu.Counts(true)
+	cpuInfoRes.CPUNum = numCPU
+	cpuPercentages, err := cpu.Percent(time.Second, true)
+	cpuInfoRes.Usages = cpuPercentages
+
+	return cpuInfoRes, err
+}
+
+// 获取内存信息 单位：MB
+func GetMemoryInfo() (MemoryInfo, error) {
+	memoryInfo := MemoryInfo{}
+	// 获取内存信息
+	memInfo, err := mem.VirtualMemory()
+	if err == nil {
+		return memoryInfo, err
+	}
+	memoryInfo.Free = memInfo.Free
+	memoryInfo.Total = memInfo.Total
+	return memoryInfo, err
+}
+
+// 获取每个磁盘分区使用情况
+func GetDiskInfo() ([]DiskInfo, error) {
+	disks := []DiskInfo{}
+	// 获取所有磁盘分区的信息
+	partitions, err := disk.Partitions(true)
+	if err != nil {
+		return disks, err
+	}
+
+	for _, partition := range partitions {
+		usage, err := disk.Usage(partition.Mountpoint)
+		if err != nil {
+			// fmt.Printf("Error getting disk usage for %s: %v\n", partition.Mountpoint, err)
+			continue
+		}
+
+		disks = append(disks, DiskInfo{
+			Mountpoint:  partition.Mountpoint,
+			Total:       usage.Total / 1024 / 1024,
+			Used:        usage.Used / 1024 / 1024,
+			Free:        usage.Free / 1024 / 1024,
+			UsedPercent: usage.UsedPercent,
+		})
+	}
+
+	return disks, nil
+}
+
+// 获取网络统计信息
+func GetNetIOCountersInfo() ([]NetIOCountersInfo, error) {
+	netInfo := []NetIOCountersInfo{}
+	netStats, err := net.IOCounters(true)
+	if err == nil {
+		for _, netStat := range netStats {
+			netInfo = append(netInfo, NetIOCountersInfo{
+				BytesRecv: netStat.BytesRecv,
+				BytesSent: netStat.BytesSent,
+				Name:      netStat.Name,
+			})
+
+		}
+	}
+	return netInfo, err
+}
+
+// func GetCountDiskInfo() {
+// 	// 获取所有磁盘的总使用情况
+// 	allUsage, err := disk.Usage("/")
+// 	if err != nil {
+// 		fmt.Printf("Error getting total disk usage: %v\n", err)
+// 		return
+// 	}
+
+// 	// 打印所有磁盘的总使用情况
+// 	fmt.Println("Total Disk Usage:")
+// 	fmt.Printf("Total: %d MB\n", allUsage.Total/1024/1024)
+// 	fmt.Printf("Used: %d MB\n", allUsage.Used/1024/1024)
+// 	fmt.Printf("Free: %d MB\n", allUsage.Free/1024/1024)
+// 	fmt.Printf("Usage: %.2f%%\n", allUsage.UsedPercent)
+// }
