@@ -242,6 +242,18 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <div class="text-slate-500 mb-[5px] font-bold">
+        自定义footer
+      </div>
+
+      <NInput
+        v-model:value="panelState.panelConfig.footerHtml"
+        type="textarea"
+        placeholder="基本的 Textarea"
+      />
+    </NCard>
+
+    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <NPopconfirm
         @positive-click="resetPanelConfig"
       >

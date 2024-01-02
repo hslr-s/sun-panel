@@ -55,6 +55,7 @@ declare namespace Panel {
         maxWidth?:number
         maxWidthUnit:string
         marginX?:number
+        footerHtml?:string
     }
 
     interface userConfig{

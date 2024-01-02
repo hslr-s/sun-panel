@@ -478,6 +478,7 @@ function handleAddItem(itemIconGroupId?: number) {
             </div>
           </div>
         </div>
+        <div class="mt-5 footer" v-html="panelState.panelConfig.footerHtml" />
       </div>
     </div>
 
