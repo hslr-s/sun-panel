@@ -10,29 +10,29 @@ import (
 )
 
 type CPUInfo struct {
-	CoreCount int32
-	CPUNum    int
-	Model     string
-	Usages    []float64
+	CoreCount int32     `json:"coreCount"`
+	CPUNum    int       `json:"cpuNum"`
+	Model     string    `json:"model"`
+	Usages    []float64 `json:"usages"`
 }
 
 type DiskInfo struct {
-	Mountpoint  string
-	Total       uint64
-	Used        uint64
-	Free        uint64
-	UsedPercent float64
+	Mountpoint  string  `json:"mountpoint"`
+	Total       uint64  `json:"total"`
+	Used        uint64  `json:"used"`
+	Free        uint64  `json:"free"`
+	UsedPercent float64 `json:"usedPercent"`
 }
 
 type NetIOCountersInfo struct {
-	BytesSent uint64
-	BytesRecv uint64
-	Name      string
+	BytesSent uint64 `json:"bytesSent"`
+	BytesRecv uint64 `json:"bytesRecv"`
+	Name      string `json:"name"`
 }
 
 type MemoryInfo struct {
-	Total uint64
-	Free  uint64
+	Total uint64 `json:"total"`
+	Free  uint64 `json:"free"`
 }
 
 // 获取CPU信息
@@ -57,10 +57,10 @@ func GetMemoryInfo() (MemoryInfo, error) {
 	// 获取内存信息
 	memInfo, err := mem.VirtualMemory()
 	if err == nil {
-		return memoryInfo, err
+		memoryInfo.Free = memInfo.Free
+		memoryInfo.Total = memInfo.Total
 	}
-	memoryInfo.Free = memInfo.Free
-	memoryInfo.Total = memInfo.Total
+
 	return memoryInfo, err
 }
 

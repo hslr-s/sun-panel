@@ -17,7 +17,10 @@ func Start(cacher cache.Cacher[global.ModelSystemMonitor], interval time.Duratio
 			select {
 			case <-ticker.C:
 				go func() {
-					GetInfo()
+					monitorInfo := GetInfo()
+					// jsonByte, _ := json.Marshal(monitorInfo)
+					// fmt.Println("系统监控：", string(jsonByte))
+					cacher.SetDefault("value", monitorInfo)
 				}()
 			}
 		}

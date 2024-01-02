@@ -7,6 +7,4 @@ type ModelSystemMonitor struct {
 	DiskInfo          []monitor.DiskInfo
 	NetIOCountersInfo []monitor.NetIOCountersInfo
 	MemoryInfo        monitor.MemoryInfo
-	// NetIOCountersInfo monitor.NetIOCountersInfo
-
 }
