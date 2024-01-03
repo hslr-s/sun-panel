@@ -333,6 +333,9 @@ function handleAddItem(itemIconGroupId?: number) {
     />
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
+      <div v-if="panelState.panelConfig.searchBoxShow" class="flex mx-auto ">
+        <SystemMonitor @itemSearch="itemFrontEndSearch" />
+      </div>
       <div
         class="p-2.5 mx-auto"
         :style="{
@@ -363,9 +366,9 @@ function handleAddItem(itemIconGroupId?: number) {
 
         <!-- 应用盒子 -->
         <div class="mt-[50px]" :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
-          <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto ">
+          <!-- <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto ">
             <SystemMonitor @itemSearch="itemFrontEndSearch" />
-          </div>
+          </div> -->
 
           <!-- 组纵向排列 -->
           <div

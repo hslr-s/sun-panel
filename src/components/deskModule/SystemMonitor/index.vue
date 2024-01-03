@@ -8,6 +8,7 @@ import { bytesToSize } from '@/utils/cmn'
 interface ProgressStyle {
   color: string
   railColor: string
+  height: number
 }
 
 let timer: NodeJS.Timer
@@ -15,6 +16,7 @@ const systemMonitorData = ref<SystemMonitor.GetAllRes | null>(null)
 const progressStyle = ref<ProgressStyle>({
   color: 'white',
   railColor: 'rgba(0, 0, 0, 0.5)',
+  height: 5,
 })
 const svgStyle = {
   width: '25px',
@@ -64,7 +66,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full p-5 px-5 bg-[#2a2a2a6b] rounded-2xl system-monitor flex items-center px-2 text-white overflow-auto">
+  <div class="w-full p-5 px-5 bg-[#2a2a2a6b] system-monitor flex items-center px-2 text-white overflow-auto">
     <!-- <div class="flex flex-col items-center justify-center ">
       <div>
         <NProgress type="dashboard" :percentage="correctionNumber(systemMonitorData?.cpuInfo.usages[0] || 0)" :stroke-width="15" style="width: 50px;">
@@ -94,6 +96,7 @@ onUnmounted(() => {
           type="line"
           :color="progressStyle.color"
           :rail-color="progressStyle.railColor"
+          :height="progressStyle.height"
           :percentage="correctionNumber(systemMonitorData?.cpuInfo.usages[0] || 0)"
           :show-indicator="false"
           :stroke-width="15"
@@ -119,6 +122,7 @@ onUnmounted(() => {
           type="line"
           :color="progressStyle.color"
           :rail-color="progressStyle.railColor"
+          :height="progressStyle.height"
           :percentage="systemMonitorData?.memoryInfo.usedPercent"
           :show-indicator="false"
           :stroke-width="15" style="width: 150px;"
@@ -158,6 +162,7 @@ onUnmounted(() => {
           <NProgress
             :color="progressStyle.color"
             :rail-color="progressStyle.railColor"
+            :height="progressStyle.height"
             type="line"
             :percentage="item.usedPercent"
             :show-indicator="false"
