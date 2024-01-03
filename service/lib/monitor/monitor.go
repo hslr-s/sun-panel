@@ -31,14 +31,17 @@ type NetIOCountersInfo struct {
 }
 
 type MemoryInfo struct {
-	Total uint64 `json:"total"`
-	Free  uint64 `json:"free"`
+	Total       uint64  `json:"total"`
+	Free        uint64  `json:"free"`
+	Used        uint64  `json:"used"`
+	UsedPercent float64 `json:"usedPercent"`
 }
 
 // 获取CPU信息
 func GetCPUInfo() (CPUInfo, error) {
 	cpuInfoRes := CPUInfo{}
 	cpuInfo, err := cpu.Info()
+
 	if err == nil && len(cpuInfo) > 0 {
 		cpuInfoRes.CoreCount = cpuInfo[0].Cores
 		cpuInfoRes.Model = cpuInfo[0].ModelName
@@ -59,6 +62,8 @@ func GetMemoryInfo() (MemoryInfo, error) {
 	if err == nil {
 		memoryInfo.Free = memInfo.Free
 		memoryInfo.Total = memInfo.Total
+		memoryInfo.Used = memInfo.Used
+		memoryInfo.UsedPercent = memInfo.UsedPercent
 	}
 
 	return memoryInfo, err
