@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { NProgress } from 'naive-ui'
 import { getAll } from '@/api/system/systemMonitor'
 import { SvgIcon } from '@/components/common'
+import { bytesToSize } from '@/utils/cmn'
 
 interface ProgressStyle {
   color: string
@@ -35,12 +36,20 @@ function correctionNumber(v: number, keepNum = 2): number {
   return v === 0 ? 0 : Number(v.toFixed(keepNum))
 }
 
-function formatMemoryToGB(v: number): number {
-  return correctionNumber(v / 1024 / 1024 / 1024)
+// function formatMemoryToGB(v: number): number {
+//   return correctionNumber(v / 1024 / 1024 / 1024)
+// }
+
+function formatMemorySize(v: number): string {
+  return bytesToSize(v)
 }
 
-function formatdiskToGB(v: number): number {
-  return correctionNumber(v / 1024)
+function formatdiskSize(v: number): string {
+  return bytesToSize(v)
+}
+
+function formatdiskToByte(v: number): number {
+  return v * 1024 * 1024
 }
 onMounted(() => {
   getData()
@@ -100,10 +109,10 @@ onUnmounted(() => {
       <div>
         <div class="mb-1">
           <span>
-            内存
+            RAM
           </span>
           <span class="float-right">
-            {{ formatMemoryToGB(systemMonitorData?.memoryInfo.total || 0) }} GB/{{ correctionNumber(formatMemoryToGB(systemMonitorData?.memoryInfo.total || 0) - formatMemoryToGB(systemMonitorData?.memoryInfo.free || 0)) }} GB
+            {{ formatMemorySize(systemMonitorData?.memoryInfo.total || 0) }}/{{ formatMemorySize(systemMonitorData?.memoryInfo.free || 0) }}
           </span>
         </div>
         <NProgress
@@ -143,7 +152,7 @@ onUnmounted(() => {
               {{ item.mountpoint }}
             </span>
             <span class="float-right">
-              {{ formatdiskToGB(item.total || 0) }} GB/{{ formatdiskToGB(item.used || 0) }} GB
+              {{ formatdiskSize(formatdiskToByte(item.total || 0)) }}/{{ formatdiskSize(formatdiskToByte(item.free || 0)) }}
             </span>
           </div>
           <NProgress
