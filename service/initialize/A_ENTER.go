@@ -12,7 +12,6 @@ import (
 	"sun-panel/initialize/other"
 	"sun-panel/initialize/redis"
 	"sun-panel/initialize/runlog"
-	"sun-panel/initialize/systemMonitor"
 	"sun-panel/initialize/systemSettingCache"
 	"sun-panel/initialize/userToken"
 	"sun-panel/lib/cmn"
@@ -90,8 +89,7 @@ func InitApp() error {
 	// 其他的初始化
 	global.VerifyCodeCachePool = other.InitVerifyCodeCachePool()
 	global.SystemSetting = systemSettingCache.InItSystemSettingCache()
-	global.SystemMonitor = global.NewCache[global.ModelSystemMonitor](5*time.Hour, -1, "systemMonitorCache")
-	systemMonitor.Start(global.SystemMonitor, 3*time.Second)
+	global.SystemMonitor = global.NewCache[interface{}](5*time.Hour, -1, "systemMonitorCache")
 
 	return nil
 }

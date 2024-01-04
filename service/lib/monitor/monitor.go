@@ -97,6 +97,20 @@ func GetDiskInfo() ([]DiskInfo, error) {
 	return disks, nil
 }
 
+func GetDiskInfoByPath(path string) (*DiskInfo, error) {
+	diskInfo := DiskInfo{}
+	usage, err := disk.Usage(path)
+	if err != nil {
+		return nil, err
+	}
+	diskInfo.Free = usage.Free
+	diskInfo.Mountpoint = usage.Path
+	diskInfo.Total = usage.Total
+	diskInfo.Used = usage.Used
+	diskInfo.UsedPercent = usage.UsedPercent
+	return &diskInfo, nil
+}
+
 // 获取网络统计信息
 func GetNetIOCountersInfo() ([]NetIOCountersInfo, error) {
 	netInfo := []NetIOCountersInfo{}
