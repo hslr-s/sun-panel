@@ -5,3 +5,22 @@ export function getAll<T>() {
     url: '/system/monitor/getAll',
   })
 }
+
+export function getCpuState<T>() {
+  return post<T>({
+    url: '/system/monitor/getCpuState',
+  })
+}
+
+export function getDiskStateByPath<T>(path: string) {
+  return post<T>({
+    url: '/system/monitor/getDiskStateByPath',
+    data: { path },
+  })
+}
+
+export function getMemonyState<T>() {
+  return post<T>({
+    url: '/system/monitor/getMemonyState',
+  })
+}

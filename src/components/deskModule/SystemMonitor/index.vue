@@ -1,176 +1,152 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { NProgress } from 'naive-ui'
-import { getAll } from '@/api/system/systemMonitor'
-import { SvgIcon } from '@/components/common'
-import { bytesToSize } from '@/utils/cmn'
+import { ref } from 'vue'
+import { VueDraggable } from 'vue-draggable-plus'
+import AppIconSystemMonitor from './AppIconSystemMonitor/index.vue'
+import { MonitorType } from './typings'
+import type { CardStyle, MonitorData, ProgressStyle } from './typings'
+import { useAuthStore, usePanelState } from '@/store'
+import { PanelPanelConfigStyleEnum } from '@/enums'
 
-interface ProgressStyle {
-  color: string
-  railColor: string
-  height: number
-}
-
-let timer: NodeJS.Timer
+const panelState = usePanelState()
+const authStore = useAuthStore()
 const systemMonitorData = ref<SystemMonitor.GetAllRes | null>(null)
 const progressStyle = ref<ProgressStyle>({
   color: 'white',
-  railColor: 'rgba(0, 0, 0, 0.5)',
+  railColor: 'rgba(0, 0, 0, 0.2)',
   height: 5,
 })
-const svgStyle = {
-  width: '25px',
-  height: '25px',
+
+const cardStyle: CardStyle = {
+  background: '#2a2a2a6b',
 }
 
-async function getData() {
-  try {
-    const { data, code } = await getAll<SystemMonitor.GetAllRes>()
-    if (code === 0)
-      systemMonitorData.value = data
-  }
-  catch (error) {
-
-  }
-}
-
-function correctionNumber(v: number, keepNum = 2): number {
-  return v === 0 ? 0 : Number(v.toFixed(keepNum))
-}
-
-// function formatMemoryToGB(v: number): number {
-//   return correctionNumber(v / 1024 / 1024 / 1024)
-// }
-
-function formatMemorySize(v: number): string {
-  return bytesToSize(v)
-}
-
-function formatdiskSize(v: number): string {
-  return bytesToSize(v)
-}
-
-function formatdiskToByte(v: number): number {
-  return v * 1024 * 1024
-}
-onMounted(() => {
-  getData()
-  timer = setInterval(() => {
-    getData()
-  }, 5000)
-})
-
-onUnmounted(() => {
-  clearInterval(timer)
-})
+const monitorDatas = ref<MonitorData[]>([
+  {
+    monitorType: MonitorType.cpu,
+    extendParam: {
+      progressStyle,
+    },
+    description: 'CPU状态',
+    cardStyle,
+  },
+  {
+    monitorType: MonitorType.memory,
+    cardStyle,
+    extendParam: {
+      progressStyle,
+    },
+  },
+  {
+    monitorType: MonitorType.disk,
+    extendParam: {
+      progressStyle,
+      path: 'C:',
+    },
+    cardStyle,
+  },
+])
 </script>
 
 <template>
-  <div class="w-full p-5 px-5 bg-[#2a2a2a6b] system-monitor flex items-center px-2 text-white overflow-auto">
-    <!-- <div class="flex flex-col items-center justify-center ">
-      <div>
-        <NProgress type="dashboard" :percentage="correctionNumber(systemMonitorData?.cpuInfo.usages[0] || 0)" :stroke-width="15" style="width: 50px;">
-          <div class="text-white text-xs">
-            {{ correctionNumber(systemMonitorData?.cpuInfo.usages[0] || 0, 1) }}%
-          </div>
-        </NProgress>
-      </div>
-      <span>
-        CPU
+  <div class="w-full">
+    <!-- 分组标题 -->
+    <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
+      <span class="text-shadow">
+        系统状态
       </span>
-    </div> -->
-    <div class="text-xs mr-10 flex justify-center items-center">
-      <div class="mr-2">
-        <SvgIcon icon="solar-cpu-bold" :style="svgStyle" />
-      </div>
-      <div>
-        <div class="mb-1">
-          <span>
-            CPU
-          </span>
-          <span class="float-right">
-            {{ correctionNumber(systemMonitorData?.cpuInfo.usages[0] || 0) }}%
-          </span>
-        </div>
-        <NProgress
-          type="line"
-          :color="progressStyle.color"
-          :rail-color="progressStyle.railColor"
-          :height="progressStyle.height"
-          :percentage="correctionNumber(systemMonitorData?.cpuInfo.usages[0] || 0)"
-          :show-indicator="false"
-          :stroke-width="15"
-          style="width: 150px;"
-        />
-      </div>
+      <!-- <div
+        v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+        class="ml-2 delay-100 transition-opacity flex"
+        :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
+      >
+        <span class="mr-2 cursor-pointer" title="添加快捷图标" @click="handleAddItem(itemGroup.id)">
+          <SvgIcon class="text-white font-xl" icon="typcn:plus" />
+        </span>
+        <span class="mr-2 cursor-pointer " title="排序组快捷图标" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
+          <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
+        </span>
+      </div> -->
     </div>
 
-    <div class="text-xs mr-10 flex justify-center items-center">
-      <div class="mr-2">
-        <SvgIcon icon="material-symbols-memory-alt-rounded" :style="svgStyle" />
-      </div>
-      <div>
-        <div class="mb-1">
-          <span>
-            RAM
-          </span>
-          <span class="float-right">
-            {{ formatMemorySize(systemMonitorData?.memoryInfo.total || 0) }}/{{ formatMemorySize(systemMonitorData?.memoryInfo.free || 0) }}
-          </span>
-        </div>
-        <NProgress
-          type="line"
-          :color="progressStyle.color"
-          :rail-color="progressStyle.railColor"
-          :height="progressStyle.height"
-          :percentage="systemMonitorData?.memoryInfo.usedPercent"
-          :show-indicator="false"
-          :stroke-width="15" style="width: 150px;"
-        />
-      </div>
-    </div>
-
-    <!-- <div class="text-xs mr-2">
-      <div class="mb-1">
-        <span>
-          网络:{{ systemMonitorData?.netIOCountersInfo[0].name }}
-        </span>
-      </div>
-      <div>
-        <span class="float-right">
-          上行：{{ netIOToKB(systemMonitorData?.netIOCountersInfo[0].bytesSent || 0) }}
-          下行：{{ netIOToKB(systemMonitorData?.netIOCountersInfo[0].bytesRecv || 0) }}
-        </span>
-      </div>
-    </div> -->
-
-    <!-- 磁盘信息 -->
-    <div v-for=" item, index in systemMonitorData?.diskInfo" :key="index">
-      <div class="text-xs mr-10 flex justify-center items-center">
-        <div class="mr-2">
-          <SvgIcon icon="clarity-hard-disk-solid" :style="svgStyle" />
-        </div>
-        <div>
-          <div class="mb-1">
-            <span>
-              {{ item.mountpoint }}
-            </span>
-            <span class="float-right">
-              {{ formatdiskSize(formatdiskToByte(item.total || 0)) }}/{{ formatdiskSize(formatdiskToByte(item.free || 0)) }}
-            </span>
-          </div>
-          <NProgress
-            :color="progressStyle.color"
-            :rail-color="progressStyle.railColor"
-            :height="progressStyle.height"
-            type="line"
-            :percentage="item.usedPercent"
-            :show-indicator="false"
-            :stroke-width="15"
-            style="width: 150px;"
+    <!-- 详情图标 -->
+    <!-- <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info"> -->
+    <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info">
+      <VueDraggable
+        v-model="monitorDatas" item-key="sort" :animation="300"
+        class="icon-info-box"
+        filter=".not-drag"
+      >
+        <div v-for="item, index in monitorDatas" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
+          <AppIconSystemMonitor
+            :extend-param="item.extendParam"
+            :icon-text-icon-hide-title="false"
+            :card-type-style="panelState.panelConfig.iconStyle"
+            :monitor-type="item.monitorType"
+            :card-style="cardStyle"
+            :icon-text-color="panelState.panelConfig.iconTextColor"
           />
         </div>
+      </VueDraggable>
+    </div>
+
+    <!-- APP图标宫型盒子 -->
+    <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon">
+      <div v-if="monitorDatas">
+        <VueDraggable
+          v-model="monitorDatas" item-key="sort" :animation="300"
+          class="icon-small-box"
+          filter=".not-drag"
+        >
+          <div v-for="item, index in monitorDatas" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
+            <AppIconSystemMonitor
+              :extend-param="item.extendParam"
+              :icon-text-icon-hide-title="false"
+              :card-type-style="panelState.panelConfig.iconStyle"
+              :monitor-type="item.monitorType"
+              :card-style="cardStyle"
+              :icon-text-color="panelState.panelConfig.iconTextColor"
+            />
+          </div>
+        </vuedraggable>
       </div>
     </div>
+
+    <!-- 编辑栏 -->
+    <!-- <div v-if="itemGroup.sortStatus" class="flex mt-[10px]">
+        <div>
+          <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
+            <template #icon>
+              <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
+            </template>
+            <div>
+              保存排序
+            </div>
+          </NButton>
+        </div>
+      </div> -->
   </div>
 </template>
+
+<style>
+.icon-info-box {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+
+}
+
+.icon-small-box {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  gap: 18px;
+
+}
+
+@media (max-width: 500px) {
+  .icon-info-box{
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+</style>
