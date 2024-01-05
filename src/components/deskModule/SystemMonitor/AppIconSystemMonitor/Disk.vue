@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { NProgress } from 'naive-ui'
-import type { ProgressStyle } from '../typings'
-import { PanelPanelConfigStyleEnum } from '@/enums'
+import GenericProgress from '../components/GenericProgress/index.vue'
+import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { bytesToSize } from '@/utils/cmn'
 import { getDiskStateByPath } from '@/api/system/systemMonitor'
 
 interface Prop {
   cardTypeStyle: PanelPanelConfigStyleEnum
-  progressStyle: ProgressStyle
   refreshInterval: number
+  textColor: string
+  progressColor: string
+  progressRailColor: string
   path: string
 }
 
@@ -54,40 +55,15 @@ onUnmounted(() => {
 
 <template>
   <div class="w-full">
-    <div v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info">
-      <div class="mb-1">
-        <span>
-          {{ diskState?.mountpoint }}
-        </span>
-        <span class="float-right">
-          {{ formatdiskSize(formatdiskToByte(diskState?.total || 0)) }}/{{ formatdiskSize(formatdiskToByte(diskState?.free || 0)) }}
-        </span>
-      </div>
-      <NProgress
-        :color="progressStyle.color"
-        :rail-color="progressStyle.railColor"
-        :height="progressStyle.height"
-        type="line"
-        :percentage="diskState?.usedPercent"
-        :show-indicator="false"
-        :stroke-width="15"
-        style="width: 150px;"
-      />
-    </div>
-    <div v-else>
-      <div class="flex justify-center h-full w-full mt-3">
-        <NProgress
-          :color="progressStyle.color"
-          :rail-color="progressStyle.railColor"
-          type="dashboard"
-          :percentage="correctionNumber(diskState?.usedPercent || 0)" :stroke-width="15"
-          style="width: 50px;"
-        >
-          <div class="text-white" style="font-size: 10px;">
-            {{ correctionNumber(diskState?.usedPercent || 0, 1) }}%
-          </div>
-        </NProgress>
-      </div>
-    </div>
+    <GenericProgress
+      :progress-color="progressColor"
+      :progress-rail-color="progressRailColor"
+      :progress-height="5"
+      :percentage="correctionNumber(diskState?.usedPercent || 0)"
+      :card-type-style="cardTypeStyle"
+      :info-card-right-text="`${formatdiskSize(formatdiskToByte(diskState?.total || 0))}/${formatdiskSize(formatdiskToByte(diskState?.free || 0))}`"
+      :info-card-left-text="diskState?.mountpoint"
+      :text-color="textColor"
+    />
   </div>
 </template>
