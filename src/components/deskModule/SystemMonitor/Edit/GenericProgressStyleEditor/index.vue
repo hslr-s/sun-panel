@@ -1,30 +1,37 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { NColorPicker, NForm, NFormItem } from 'naive-ui'
 import type { GenericProgressStyleExtendParam } from '../../typings'
 import GenericMonitorCard from '../../components/GenericMonitorCard/index.vue'
 import GenericProgress from '../../components/GenericProgress/index.vue'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 
+interface Emit {
+  (e: 'update:genericProgressStyleExtendParam', visible: GenericProgressStyleExtendParam): void
+}
+
 const props = defineProps<{
   genericProgressStyleExtendParam: GenericProgressStyleExtendParam
 }>()
+const emit = defineEmits<Emit>()
 
-// const emit = defineEmits<{
-//   (e: 'update:genericProgressStyleExtendParam', visible: ProgressStyle): void
-// }>()
-
-const data = ref(props.genericProgressStyleExtendParam)
+const data = computed({
+  get: () => props.genericProgressStyleExtendParam,
+  set: (visible) => {
+    emit('update:genericProgressStyleExtendParam', visible)
+  },
+})
 </script>
 
 <template>
   <div>
+    <!-- <div>{{ genericProgressStyleExtendParam }}</div>
+    <div>{{ data }}</div> -->
     <div class="flex mb-5 justify-center">
       <div class="w-[200px]">
         <GenericMonitorCard
           icon-text-icon-hide-title
           :card-type-style="PanelPanelConfigStyleEnum.info"
-          class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
           icon="solar-cpu-bold"
           :background-color="data.backgroundColor"
           :text-color="data.color"
@@ -48,7 +55,6 @@ const data = ref(props.genericProgressStyleExtendParam)
         <GenericMonitorCard
           icon-text-icon-hide-title
           :card-type-style="PanelPanelConfigStyleEnum.icon"
-          class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
           icon="solar-cpu-bold"
           :background-color="data.backgroundColor"
           :icon-text-color="data.color"
@@ -66,7 +72,7 @@ const data = ref(props.genericProgressStyleExtendParam)
       </div>
     </div>
 
-    <NForm ref="formRef">
+    <NForm ref="formRef" v-model="data">
       <NFormItem label="主色">
         <NColorPicker v-model:value="data.progressColor" :modes="['hex']" size="small" />
       </NFormItem>

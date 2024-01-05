@@ -1,10 +1,5 @@
 <script setup lang="ts">
-// -------------------
-// 系统监控图标临时使用（与 AppIcon/index.vue 一致）
-// 如果确定这种方案将 AppIcon/index.vue 封装成通用组件
-// -------------------
-
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { MonitorType } from '../typings'
 import type { CardStyle } from '../typings'
 import GenericMonitorCard from '../components/GenericMonitorCard/index.vue'
@@ -23,14 +18,20 @@ interface Prop {
   cardStyle: CardStyle
 }
 
-withDefaults(defineProps<Prop>(), {})
+const props = withDefaults(defineProps<Prop>(), {})
 
-const iconText = ref('自定义')
-const refreshInterval = 5
-const svgStyle = {
-  width: '35px',
-  height: '35px',
-}
+const iconText = computed(() => {
+  switch (props.monitorType) {
+    case MonitorType.cpu:
+      return 'CPU'
+    case MonitorType.disk:
+      return props.extendParam.path
+    case MonitorType.memory:
+      return 'RAM'
+  }
+  return ''
+})
+const refreshInterval = 50000
 </script>
 
 <template>
@@ -39,15 +40,17 @@ const svgStyle = {
       :icon-text-icon-hide-title="false"
       :card-type-style="cardTypeStyle"
       :icon-text="iconText"
+      :icon-text-color="iconTextColor"
+      :background-color="extendParam.backgroundColor"
       class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
     >
       <template #icon>
         <!-- 图标 -->
         <div class="w-[60px] h-[70px]">
           <div class="w-[60px] h-full flex items-center justify-center text-white">
-            <SvgIcon v-if="monitorType === MonitorType.cpu" icon="solar-cpu-bold" :style="svgStyle" />
-            <SvgIcon v-if="monitorType === MonitorType.memory" icon="material-symbols-memory-alt-rounded" :style="svgStyle" />
-            <SvgIcon v-if="monitorType === MonitorType.disk" icon="clarity-hard-disk-solid" :style="svgStyle" />
+            <SvgIcon v-if="monitorType === MonitorType.cpu" icon="solar-cpu-bold" :style="{ color: extendParam.color }" style="width:35px;height:35px" />
+            <SvgIcon v-if="monitorType === MonitorType.memory" icon="material-symbols-memory-alt-rounded" :style="{ color: extendParam.color }" style="width:35px;height:35px" />
+            <SvgIcon v-if="monitorType === MonitorType.disk" icon="clarity-hard-disk-solid" :style="{ color: extendParam.color }" style="width:35px;height:35px" />
           </div>
         </div>
       </template>
@@ -61,7 +64,7 @@ const svgStyle = {
             :card-type-style="PanelPanelConfigStyleEnum.info"
             :progress-color="extendParam?.progressColor"
             :progress-rail-color="extendParam?.progressRailColor"
-            :text-color="extendParam?.textColor"
+            :text-color="extendParam?.color"
             :refresh-interval="refreshInterval"
           />
           <Memory
@@ -69,7 +72,7 @@ const svgStyle = {
             :card-type-style="PanelPanelConfigStyleEnum.info"
             :progress-color="extendParam?.progressColor"
             :progress-rail-color="extendParam?.progressRailColor"
-            :text-color="extendParam?.textColor"
+            :text-color="extendParam?.color"
             :refresh-interval="refreshInterval"
           />
           <Disk
@@ -77,7 +80,7 @@ const svgStyle = {
             :card-type-style="PanelPanelConfigStyleEnum.info"
             :progress-color="extendParam?.progressColor"
             :progress-rail-color="extendParam?.progressRailColor"
-            :text-color="extendParam?.textColor"
+            :text-color="extendParam?.color"
             :path="extendParam?.path"
             :refresh-interval="refreshInterval"
           />
@@ -89,7 +92,7 @@ const svgStyle = {
           :card-type-style="PanelPanelConfigStyleEnum.icon"
           :progress-color="extendParam?.progressColor"
           :progress-rail-color="extendParam?.progressRailColor"
-          :text-color="extendParam?.textColor"
+          :text-color="extendParam?.color"
           :refresh-interval="refreshInterval"
         />
         <Memory
@@ -97,7 +100,7 @@ const svgStyle = {
           :card-type-style="PanelPanelConfigStyleEnum.icon"
           :progress-color="extendParam?.progressColor"
           :progress-rail-color="extendParam?.progressRailColor"
-          :text-color="extendParam?.textColor"
+          :text-color="extendParam?.color"
           :refresh-interval="refreshInterval"
         />
         <Disk
@@ -105,7 +108,7 @@ const svgStyle = {
           :card-type-style="PanelPanelConfigStyleEnum.icon"
           :progress-color="extendParam?.progressColor"
           :progress-rail-color="extendParam?.progressRailColor"
-          :text-color="extendParam?.textColor"
+          :text-color="extendParam?.color"
           :path="extendParam?.path"
           :refresh-interval="refreshInterval"
         />

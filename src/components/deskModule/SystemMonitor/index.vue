@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { NButton } from 'naive-ui'
 import AppIconSystemMonitor from './AppIconSystemMonitor/index.vue'
-import { MonitorType } from './typings'
-import type { CardStyle, MonitorData, ProgressStyle } from './typings'
+import type { CardStyle, MonitorData } from './typings'
 import Edit from './Edit/index.vue'
+import { getAll } from './common'
 import { useAuthStore, usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
@@ -18,21 +18,25 @@ interface MonitorGroup extends Panel.ItemIconGroup {
 }
 const panelState = usePanelState()
 const authStore = useAuthStore()
-const systemMonitorData = ref<SystemMonitor.GetAllRes | null>(null)
+// const systemMonitorData = ref<SystemMonitor.GetAllRes | null>(null)
 const monitorGroup = ref<MonitorGroup>({
   hoverStatus: false,
   sortStatus: false,
 })
-const progressStyle = ref<ProgressStyle>({
-  color: 'white',
-  railColor: 'rgba(0, 0, 0, 0.2)',
-  height: 5,
-})
+// const progressStyle = ref<ProgressStyle>({
+//   color: 'white',
+//   railColor: 'rgba(0, 0, 0, 0.2)',
+//   height: 5,
+// })
 
-const EditShowStatus = ref<boolean>(true)
+const editShowStatus = ref<boolean>(false)
+const editData = ref<MonitorData | null>(null)
+const editIndex = ref<number | null>(null)
 
 function handleAddItem() {
-  EditShowStatus.value = true
+  editShowStatus.value = true
+  editData.value = null
+  editIndex.value = null
 }
 
 function handleSetSortStatus(sortStatus: boolean) {
@@ -54,31 +58,25 @@ const cardStyle: CardStyle = {
   background: '#2a2a2a6b',
 }
 
-const monitorDatas = ref<MonitorData[]>([
-  {
-    monitorType: MonitorType.cpu,
-    extendParam: {
-      progressStyle,
-    },
-    description: 'CPU状态',
-    cardStyle,
-  },
-  {
-    monitorType: MonitorType.memory,
-    cardStyle,
-    extendParam: {
-      progressStyle,
-    },
-  },
-  {
-    monitorType: MonitorType.disk,
-    extendParam: {
-      progressStyle,
-      path: 'C:',
-    },
-    cardStyle,
-  },
-])
+const monitorDatas = ref<MonitorData[]>([])
+
+function handleClick(index: number, item: MonitorData) {
+  editShowStatus.value = true
+  editData.value = item
+  editIndex.value = index
+}
+
+async function getData() {
+  monitorDatas.value = await getAll()
+}
+
+onMounted(() => {
+  getData()
+})
+
+function handleSaveDone() {
+  getData()
+}
 </script>
 
 <template>
@@ -109,7 +107,6 @@ const monitorDatas = ref<MonitorData[]>([
       </div>
 
       <!-- 详情图标 -->
-      <!-- <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info"> -->
       <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info">
         <VueDraggable
           v-model="monitorDatas" item-key="sort" :animation="300"
@@ -117,7 +114,12 @@ const monitorDatas = ref<MonitorData[]>([
           filter=".not-drag"
           :disabled="!monitorGroup.sortStatus"
         >
-          <div v-for="item, index in monitorDatas" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
+          <div
+            v-for="item, index in monitorDatas" :key="index"
+            :title="item.description"
+            @click="handleClick(index, item)"
+            @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)"
+          >
             <AppIconSystemMonitor
               :extend-param="item.extendParam"
               :icon-text-icon-hide-title="false"
@@ -139,7 +141,12 @@ const monitorDatas = ref<MonitorData[]>([
             filter=".not-drag"
             :disabled="!monitorGroup.sortStatus"
           >
-            <div v-for="item, index in monitorDatas" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
+            <div
+              v-for="item, index in monitorDatas" :key="index"
+              :title="item.description"
+              @click="handleClick(index, item)"
+              @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)"
+            >
               <AppIconSystemMonitor
                 :extend-param="item.extendParam"
                 :icon-text-icon-hide-title="false"
@@ -168,7 +175,7 @@ const monitorDatas = ref<MonitorData[]>([
       </div>
     </div>
 
-    <Edit v-model:visible="EditShowStatus" />
+    <Edit v-model:visible="editShowStatus" :monitor-data="editData" :index="editIndex" @done="handleSaveDone" />
   </div>
 </template>
 

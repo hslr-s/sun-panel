@@ -6,7 +6,7 @@ interface Prop {
   cardTypeStyle: PanelPanelConfigStyleEnum
   class?: string
   backgroundColor?: string
-  iconTextIconHideTitle: boolean // 隐藏小图标标题
+  iconTextIconHideTitle?: boolean // 隐藏小图标标题
   iconTextColor?: string // 小图标文字颜色
   iconText?: string // 小图标文字
 }

@@ -12,7 +12,7 @@ export interface MonitorData {
   monitorType: MonitorType
   extendParam?: { [key: string]: [value:any] } | any
   description?: string
-  cardStyle: CardStyle
+  // cardStyle: CardStyle
 }
 
 export interface ProgressStyle {

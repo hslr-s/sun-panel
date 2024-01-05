@@ -12,7 +12,7 @@ interface Prop {
 //   size?: number // 默认70
   extendParam?: any
   iconTextColor?: string
-  iconTextIconHideTitle: boolean
+  iconTextIconHideTitle?: boolean
   iconText?: string
   textColor?: string
   cardTypeStyle: PanelPanelConfigStyleEnum
@@ -29,11 +29,12 @@ const propClass = ref(props.class)
 <template>
   <div class="w-full">
     <ItemCard
-      icon-text-icon-hide-title
       :card-type-style="cardTypeStyle"
       :icon-text="iconText"
+      :icon-text-color="iconTextColor"
       :class="propClass"
       :background-color="backgroundColor"
+      :icon-text-icon-hide-title="iconTextIconHideTitle"
     >
       <template #info>
         <!-- 图标 -->

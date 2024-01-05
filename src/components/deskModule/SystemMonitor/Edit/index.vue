@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref } from 'vue'
+import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import { NButton, NModal, NTabPane, NTabs, useMessage } from 'naive-ui'
+import { MonitorType } from '../typings'
 import type { GenericProgressStyleExtendParam, MonitorData } from '../typings'
+import { add, saveByIndex } from '../common'
+
 import GenericProgressStyleEditor from './GenericProgressStyleEditor/index.vue'
 
 interface Props {
   visible: boolean
   monitorData: MonitorData | null
+  index: number | null
 }
 
 const props = defineProps<Props>()
@@ -14,22 +18,27 @@ const emit = defineEmits<Emit>()
 
 // 默认通用的进度扩展参数
 const defaultGenericProgressStyleExtendParam: GenericProgressStyleExtendParam = {
-  progressColor: 'white',
-  progressRailColor: 'white',
-  color: 'white',
+  progressColor: '#fff',
+  progressRailColor: '#CFCFCFA8',
+  color: '#fff',
   backgroundColor: '#2a2a2a6b',
 }
 
-// const currentData = ref<MonitorData>(props.monitorData)
+const defaultMonitorData: MonitorData = {
+  extendParam: defaultGenericProgressStyleExtendParam,
+  monitorType: MonitorType.cpu,
+}
 
-const currentDataExterdParam = ref<GenericProgressStyleExtendParam>(defaultGenericProgressStyleExtendParam)
+const active = ref<string>(MonitorType.cpu)
+const currentMonitorData = ref<MonitorData>(props.monitorData || { ...defaultMonitorData })
+const currentGenericProgressStyleExtendParam = ref<GenericProgressStyleExtendParam>({ ...defaultGenericProgressStyleExtendParam })
 
 const ms = useMessage()
 const submitLoading = ref(false)
 
 interface Emit {
   (e: 'update:visible', visible: boolean): void
-  (e: 'done', item: MonitorData): void// 创建完成
+  (e: 'done', item: boolean): void
 }
 
 // 更新值父组件传来的值
@@ -39,28 +48,78 @@ const show = computed({
     emit('update:visible', visible)
   },
 })
+
+watch(() => props.visible, (value) => {
+  active.value = props.monitorData?.monitorType || MonitorType.cpu
+  if (props.monitorData?.monitorType === MonitorType.cpu || props.monitorData?.monitorType === MonitorType.memory)
+    currentGenericProgressStyleExtendParam.value = { ...props.monitorData?.extendParam }
+
+  if (!value)
+    handleResetGenericProgressStyleExtendParam()
+})
+
+function handleResetGenericProgressStyleExtendParam() {
+  currentGenericProgressStyleExtendParam.value = { ...defaultGenericProgressStyleExtendParam }
+}
+
+// 保存提交
+async function handleSubmit() {
+  if (currentMonitorData.value.monitorType === MonitorType.cpu || currentMonitorData.value.monitorType === MonitorType.memory) {
+    currentMonitorData.value.monitorType = active.value as MonitorType
+    currentMonitorData.value.extendParam = currentGenericProgressStyleExtendParam
+
+    console.log('保存', currentMonitorData.value.extendParam)
+  }
+
+  if (props.index !== null) {
+    const res = await saveByIndex(props.index, currentMonitorData.value)
+    if (res) {
+      show.value = false
+      emit('done', true)
+    }
+    else {
+      ms.error('保存失败')
+    }
+  }
+  else {
+    const res = await add(currentMonitorData.value)
+    if (res) {
+      show.value = false
+      emit('done', true)
+    }
+    else {
+      ms.error('保存失败')
+    }
+  }
+}
 </script>
 
 <template>
   <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="monitorData ? '修改项目' : '添加项目'">
     <!-- 选择监视器 -->
     <div>
-      progressStyle值：{{ JSON.stringify(currentDataExterdParam) }}
+      <!-- progressStyle值：{{ JSON.stringify(currentGenericProgressStyleExtendParam) }} -->
     </div>
-    <NTabs type="segment">
-      <NTabPane name="chap1" tab="CPU">
-        <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentDataExterdParam" />
+    <NTabs v-model:value="active" type="segment">
+      <NTabPane :name="MonitorType.cpu" tab="CPU状态">
+        <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
+        <NButton @click="handleResetGenericProgressStyleExtendParam">
+          重置
+        </NButton>
       </NTabPane>
-      <NTabPane name="chap2" tab="内存">
-        <!--  -->
+      <NTabPane :name="MonitorType.memory" tab="内存状态">
+        <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
+        <NButton @click="handleResetGenericProgressStyleExtendParam">
+          重置
+        </NButton>
       </NTabPane>
-      <NTabPane name="chap3" tab="磁盘">
+      <NTabPane :name="MonitorType.disk" tab="磁盘状态">
         <!--  -->
       </NTabPane>
     </NTabs>
 
     <template #footer>
-      <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleValidateButtonClick">
+      <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleSubmit">
         确定
       </NButton>
     </template>
