@@ -24,3 +24,9 @@ export function getMemonyState<T>() {
     url: '/system/monitor/getMemonyState',
   })
 }
+
+export function getDiskMountpoints<T>() {
+  return post<T>({
+    url: '/system/monitor/getDiskMountpoints',
+  })
+}

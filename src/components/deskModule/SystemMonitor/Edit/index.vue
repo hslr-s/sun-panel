@@ -2,10 +2,11 @@
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import { NButton, NModal, NTabPane, NTabs, useMessage } from 'naive-ui'
 import { MonitorType } from '../typings'
-import type { GenericProgressStyleExtendParam, MonitorData } from '../typings'
+import type { DiskExtendParam, GenericProgressStyleExtendParam, MonitorData } from '../typings'
 import { add, saveByIndex } from '../common'
 
 import GenericProgressStyleEditor from './GenericProgressStyleEditor/index.vue'
+import DiskEditor from './DiskEditor/index.vue'
 
 interface Props {
   visible: boolean
@@ -24,6 +25,14 @@ const defaultGenericProgressStyleExtendParam: GenericProgressStyleExtendParam = 
   backgroundColor: '#2a2a2a6b',
 }
 
+const defaultDiskExtendParam: DiskExtendParam = {
+  progressColor: '#fff',
+  progressRailColor: '#CFCFCFA8',
+  color: '#fff',
+  backgroundColor: '#2a2a2a6b',
+  path: '',
+}
+
 const defaultMonitorData: MonitorData = {
   extendParam: defaultGenericProgressStyleExtendParam,
   monitorType: MonitorType.cpu,
@@ -32,6 +41,7 @@ const defaultMonitorData: MonitorData = {
 const active = ref<string>(MonitorType.cpu)
 const currentMonitorData = ref<MonitorData>(props.monitorData || { ...defaultMonitorData })
 const currentGenericProgressStyleExtendParam = ref<GenericProgressStyleExtendParam>({ ...defaultGenericProgressStyleExtendParam })
+const currentDiskExtendParam = ref<DiskExtendParam>({ ...defaultDiskExtendParam })
 
 const ms = useMessage()
 const submitLoading = ref(false)
@@ -64,12 +74,14 @@ function handleResetGenericProgressStyleExtendParam() {
 
 // 保存提交
 async function handleSubmit() {
-  if (currentMonitorData.value.monitorType === MonitorType.cpu || currentMonitorData.value.monitorType === MonitorType.memory) {
-    currentMonitorData.value.monitorType = active.value as MonitorType
+  currentMonitorData.value.monitorType = active.value as MonitorType
+  if (currentMonitorData.value.monitorType === MonitorType.cpu || currentMonitorData.value.monitorType === MonitorType.memory)
     currentMonitorData.value.extendParam = currentGenericProgressStyleExtendParam
 
-    console.log('保存', currentMonitorData.value.extendParam)
-  }
+  else if (currentMonitorData.value.monitorType === MonitorType.disk)
+    currentMonitorData.value.extendParam = currentDiskExtendParam
+
+  console.log('保存', currentMonitorData.value.extendParam)
 
   if (props.index !== null) {
     const res = await saveByIndex(props.index, currentMonitorData.value)
@@ -114,7 +126,10 @@ async function handleSubmit() {
         </NButton>
       </NTabPane>
       <NTabPane :name="MonitorType.disk" tab="磁盘状态">
-        <!--  -->
+        <DiskEditor v-model:disk-extend-param="currentDiskExtendParam" />
+        <NButton @click="handleResetGenericProgressStyleExtendParam">
+          重置
+        </NButton>
       </NTabPane>
     </NTabs>
 

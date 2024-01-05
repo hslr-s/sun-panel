@@ -31,7 +31,7 @@ const iconText = computed(() => {
   }
   return ''
 })
-const refreshInterval = 50000
+const refreshInterval = 5000
 </script>
 
 <template>

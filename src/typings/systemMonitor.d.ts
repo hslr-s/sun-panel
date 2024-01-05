@@ -34,4 +34,10 @@ declare namespace SystemMonitor {
         netIOCountersInfo: NetIOCountersInfo[]
         memoryInfo: MemoryInfo
     }
+
+    interface Mountpoint{
+        device:string
+        mountpoint:string
+        fstype:string
+    }
 }
