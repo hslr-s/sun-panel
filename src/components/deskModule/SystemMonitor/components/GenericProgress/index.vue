@@ -19,7 +19,7 @@ defineProps<Prop>()
 <template>
   <div class="w-full">
     <div v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info">
-      <div class="mb-1" :style="{ color: textColor }">
+      <div class="mb-1 text-xs" :style="{ color: textColor }">
         <span>
           {{ infoCardLeftText }}
         </span>
