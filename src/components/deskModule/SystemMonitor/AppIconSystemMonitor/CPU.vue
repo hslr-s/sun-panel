@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { NProgress } from 'naive-ui'
 import type { ProgressStyle } from '../typings'
+import GenericProgress from '../components/GenericProgress/index.vue'
 import { getCpuState } from '@/api/system/systemMonitor'
-import { PanelPanelConfigStyleEnum } from '@/enums'
+import type { PanelPanelConfigStyleEnum } from '@/enums'
 
 interface Prop {
   cardTypeStyle: PanelPanelConfigStyleEnum
@@ -44,40 +44,13 @@ onUnmounted(() => {
 
 <template>
   <div class="w-full">
-    <div v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info">
-      <div class="mb-1">
-        <span>
-          CPU
-        </span>
-        <span class="float-right">
-          {{ correctionNumber(cpuState?.usages[0] || 0) }}%
-        </span>
-      </div>
-      <NProgress
-        type="line"
-        :color="progressStyle.color"
-        :rail-color="progressStyle.railColor"
-        :height="progressStyle.height"
-        :percentage="correctionNumber(cpuState?.usages[0] || 0)"
-        :show-indicator="false"
-        :stroke-width="15"
-        style="max-width: 135px;"
-      />
-    </div>
-    <div v-else>
-      <div class="flex justify-center h-full w-full mt-3">
-        <NProgress
-          :color="progressStyle.color"
-          :rail-color="progressStyle.railColor"
-          type="dashboard"
-          :percentage="correctionNumber(cpuState?.usages[0] || 0)" :stroke-width="15"
-          style="width: 50px;"
-        >
-          <div class="text-white" style="font-size: 10px;">
-            {{ correctionNumber(cpuState?.usages[0] || 0, 1) }}%
-          </div>
-        </NProgress>
-      </div>
-    </div>
+    <GenericProgress
+      :progress-style="progressStyle"
+      :percentage="correctionNumber(cpuState?.usages[0] || 0)"
+      :card-type-style="cardTypeStyle"
+      :info-card-right-text="`${correctionNumber(cpuState?.usages[0] || 0)}%`"
+      info-card-left-text="CPU"
+      text-color="black"
+    />
   </div>
 </template>

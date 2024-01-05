@@ -20,3 +20,10 @@ export interface ProgressStyle {
   railColor: string
   height: number
 }
+
+export interface GenericProgressStyleExtendParam {
+  progressColor: string
+  progressRailColor: string
+  color: string
+  backgroundColor: string
+}

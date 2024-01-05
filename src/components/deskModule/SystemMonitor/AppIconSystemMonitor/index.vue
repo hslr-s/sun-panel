@@ -4,18 +4,18 @@
 // 如果确定这种方案将 AppIcon/index.vue 封装成通用组件
 // -------------------
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { MonitorType } from '../typings'
 import type { CardStyle } from '../typings'
 import CardCPU from './CPU.vue'
 import Memory from './Memory.vue'
 import Disk from './Disk.vue'
-import { SvgIcon } from '@/components/common'
+import { ItemCard, SvgIcon } from '@/components/common'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 
 interface Prop {
   size?: number // 默认70
-  extendParam?: { [key: string]: [value: any] }
+  extendParam?: any
   iconTextColor?: string
   iconTextIconHideTitle: boolean
   cardTypeStyle: PanelPanelConfigStyleEnum
@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<Prop>(), {
 })
 
 const defaultBackground = '#2a2a2a6b'
+const iconText = ref('自定义')
 const refreshInterval = 5
 const svgStyle = {
   width: '35px',
@@ -50,99 +51,69 @@ const textColor = computed(() => {
 
 <template>
   <div class="w-full">
-    <!-- 详情图标 -->
-    <div
-      v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info"
-      class="w-full rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] flex"
-      :style="{ backgroundColor: cardStyle.background }"
+    <ItemCard
+      icon-text-icon-hide-title
+      :card-type-style="cardTypeStyle"
+      :icon-text="iconText"
+      class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
     >
-      <!-- 图标 -->
-      <div class="w-[60px] h-[70px]">
-        <div class="w-[60px] h-full flex items-center justify-center text-white">
-          <SvgIcon v-if="monitorType === MonitorType.cpu" icon="solar-cpu-bold" :style="svgStyle" />
-          <SvgIcon v-if="monitorType === MonitorType.memory" icon="material-symbols-memory-alt-rounded" :style="svgStyle" />
-          <SvgIcon v-if="monitorType === MonitorType.disk" icon="clarity-hard-disk-solid" :style="svgStyle" />
+      <template #info>
+        <!-- 图标 -->
+        <div class="w-[60px] h-[70px]">
+          <div class="w-[60px] h-full flex items-center justify-center text-white">
+            <SvgIcon v-if="monitorType === MonitorType.cpu" icon="solar-cpu-bold" :style="svgStyle" />
+            <SvgIcon v-if="monitorType === MonitorType.memory" icon="material-symbols-memory-alt-rounded" :style="svgStyle" />
+            <SvgIcon v-if="monitorType === MonitorType.disk" icon="clarity-hard-disk-solid" :style="svgStyle" />
+          </div>
         </div>
-      </div>
 
-      <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
-      <div
-        class=" w-full text-white flex items-center"
-        :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }"
-      >
-        <CardCPU
-          v-if="monitorType === MonitorType.cpu"
-          :card-type-style="PanelPanelConfigStyleEnum.info"
-          :progress-style="extendParam?.progressStyle as any"
-          :refresh-interval="refreshInterval"
-        />
-        <Memory
-          v-else-if="monitorType === MonitorType.memory"
-          :card-type-style="PanelPanelConfigStyleEnum.info"
-          :progress-style="extendParam?.progressStyle as any"
-          :refresh-interval="refreshInterval"
-        />
-        <Disk
-          v-else-if="monitorType === MonitorType.disk"
-          :card-type-style="PanelPanelConfigStyleEnum.info"
-          :progress-style="extendParam?.progressStyle as any"
-          :path="extendParam?.path as any"
-          :refresh-interval="refreshInterval"
-        />
-      </div>
-    </div>
-
-    <!-- 极简图标（APP） -->
-    <div
-      v-if="cardTypeStyle === PanelPanelConfigStyleEnum.icon"
-    >
-      <div
-        class="overflow-hidden rounded-2xl sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
-        :style="{ backgroundColor: cardStyle.background }"
-      >
+        <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
+        <div
+          class=" w-full text-white flex items-center"
+          :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }"
+        >
+          <CardCPU
+            v-if="monitorType === MonitorType.cpu"
+            :card-type-style="PanelPanelConfigStyleEnum.info"
+            :progress-style="extendParam?.progressStyle"
+            :refresh-interval="refreshInterval"
+          />
+          <Memory
+            v-else-if="monitorType === MonitorType.memory"
+            :card-type-style="PanelPanelConfigStyleEnum.info"
+            :progress-style="extendParam?.progressStyle"
+            :refresh-interval="refreshInterval"
+          />
+          <Disk
+            v-else-if="monitorType === MonitorType.disk"
+            :card-type-style="PanelPanelConfigStyleEnum.info"
+            :progress-style="extendParam?.progressStyle"
+            :path="extendParam?.path"
+            :refresh-interval="refreshInterval"
+          />
+        </div>
+      </template>
+      <template #small>
         <CardCPU
           v-if="monitorType === MonitorType.cpu"
           :card-type-style="PanelPanelConfigStyleEnum.icon"
-          :progress-style="extendParam?.progressStyle as any"
+          :progress-style="extendParam?.progressStyle"
           :refresh-interval="refreshInterval"
         />
         <Memory
           v-else-if="monitorType === MonitorType.memory"
           :card-type-style="PanelPanelConfigStyleEnum.icon"
-          :progress-style="extendParam?.progressStyle as any"
+          :progress-style="extendParam?.progressStyle"
           :refresh-interval="refreshInterval"
         />
         <Disk
           v-else-if="monitorType === MonitorType.disk"
           :card-type-style="PanelPanelConfigStyleEnum.icon"
-          :progress-style="extendParam?.progressStyle as any"
-          :path="extendParam?.path as any"
+          :progress-style="extendParam?.progressStyle"
+          :path="extendParam?.path"
           :refresh-interval="refreshInterval"
         />
-      </div>
-      <div
-        v-if="!iconTextIconHideTitle"
-        class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-        :style="{ color: iconTextColor }"
-      >
-        <span
-          v-if="monitorType === MonitorType.cpu"
-        >
-          CPU
-        </span>
-
-        <span
-          v-else-if="monitorType === MonitorType.memory"
-        >
-          RAM
-        </span>
-
-        <span
-          v-else-if="monitorType === MonitorType.disk"
-        >
-          {{ extendParam?.path }}
-        </span>
-      </div>
-    </div>
+      </template>
+    </ItemCard>
   </div>
 </template>
