@@ -9,7 +9,8 @@ import (
 
 func InitMonitorRouter(router *gin.RouterGroup) {
 	api := api_v1.ApiGroupApp.ApiSystem.MonitorApi
-	// r := router.Group("", middleware.LoginInterceptor)
+	r := router.Group("", middleware.LoginInterceptor)
+	r.POST("/system/monitor/getDiskMountpoints", api.GetDiskMountpoints)
 
 	// 公开模式
 	rPublic := router.Group("", middleware.PublicModeInterceptor)

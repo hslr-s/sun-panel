@@ -97,6 +97,10 @@ func GetDiskInfo() ([]DiskInfo, error) {
 	return disks, nil
 }
 
+func GetDiskMountpoints() ([]disk.PartitionStat, error) {
+	return disk.Partitions(true)
+}
+
 func GetDiskInfoByPath(path string) (*DiskInfo, error) {
 	diskInfo := DiskInfo{}
 	usage, err := disk.Usage(path)

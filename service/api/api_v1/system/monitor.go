@@ -70,7 +70,7 @@ func (a *MonitorApi) GetDiskStateByPath(c *gin.Context) {
 	cacheDiskName := global.SystemMonitor_DISK_INFO + req.Path
 
 	if v, ok := global.SystemMonitor.Get(cacheDiskName); ok {
-		global.Logger.Debugln("读取缓存的的RAM信息")
+		global.Logger.Debugln("读取缓存的的DISK信息")
 		apiReturn.SuccessData(c, v)
 		return
 	}
@@ -84,4 +84,13 @@ func (a *MonitorApi) GetDiskStateByPath(c *gin.Context) {
 	// 缓存
 	global.SystemMonitor.Set(cacheDiskName, diskState, cacheSecond*time.Second)
 	apiReturn.SuccessData(c, diskState)
+}
+
+func (a *MonitorApi) GetDiskMountpoints(c *gin.Context) {
+	if list, err := monitor.GetDiskMountpoints(); err != nil {
+		apiReturn.Error(c, err.Error())
+		return
+	} else {
+		apiReturn.SuccessData(c, list)
+	}
 }
