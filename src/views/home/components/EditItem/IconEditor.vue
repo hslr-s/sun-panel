@@ -41,6 +41,7 @@ const itemIconInfo = computed({
     return v
   },
   set() {
+    console.log('aaaa')
     handleChange()
   },
 })
@@ -52,6 +53,7 @@ function handleIconTypeRadioChange(type: number) {
 }
 
 function handleChange() {
+  console.log('21222')
   emit('update:itemIcon', itemIconInfo.value || null)
 }
 

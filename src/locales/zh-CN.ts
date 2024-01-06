@@ -40,6 +40,7 @@ export default {
       regularUser: '普通',
       admin: '管理',
     },
+    leastOne: '请至少保留一项',
   },
   setting: {
     setting: '设置',

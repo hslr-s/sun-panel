@@ -1,6 +1,14 @@
 package global
 
-import "sun-panel/lib/monitor"
+import (
+	"sun-panel/lib/monitor"
+)
+
+const (
+	SystemMonitor_CPU_INFO    = "CPU_INFO"
+	SystemMonitor_MEMORY_INFO = "MEMORY_INFO"
+	SystemMonitor_DISK_INFO   = "DISK_INFO"
+)
 
 type ModelSystemMonitor struct {
 	CPUInfo           monitor.CPUInfo             `json:"cpuInfo"`
