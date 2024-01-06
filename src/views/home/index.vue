@@ -362,13 +362,10 @@ function handleAddItem(itemIconGroupId?: number) {
         </div>
 
         <!-- 应用盒子 -->
-        <div class="mt-[50px]" :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
-          <!-- <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto ">
-            <SystemMonitor @itemSearch="itemFrontEndSearch" />
-          </div> -->
-
+        <div :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
+          <!-- 系统状态 -->
           <div v-if="panelState.panelConfig.searchBoxShow" class="flex mx-auto ">
-            <SystemMonitor />
+            <SystemMonitor allow-edit />
           </div>
 
           <!-- 组纵向排列 -->
