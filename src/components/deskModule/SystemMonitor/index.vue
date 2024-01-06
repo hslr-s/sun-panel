@@ -5,7 +5,7 @@ import { NButton } from 'naive-ui'
 import AppIconSystemMonitor from './AppIconSystemMonitor/index.vue'
 import type { CardStyle, MonitorData } from './typings'
 import Edit from './Edit/index.vue'
-import { getAll } from './common'
+import { getAll, saveAll } from './common'
 import { useAuthStore, usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
@@ -23,11 +23,6 @@ const monitorGroup = ref<MonitorGroup>({
   hoverStatus: false,
   sortStatus: false,
 })
-// const progressStyle = ref<ProgressStyle>({
-//   color: 'white',
-//   railColor: 'rgba(0, 0, 0, 0.2)',
-//   height: 5,
-// })
 
 const editShowStatus = ref<boolean>(false)
 const editData = ref<MonitorData | null>(null)
@@ -42,12 +37,9 @@ function handleAddItem() {
 function handleSetSortStatus(sortStatus: boolean) {
   monitorGroup.value.sortStatus = sortStatus
 
-  // // 并未保存排序重新更新数据
-  // if (!sortStatus) {
-  //   // 单独更新组
-  //   if (items.value[groupIndex] && items.value[groupIndex].id)
-  //     updateItemIconGroupByNet(groupIndex, items.value[groupIndex].id as number)
-  // }
+  // 并未保存排序重新更新数据
+  if (!sortStatus)
+    getData()
 }
 
 function handleSetHoverStatus(hoverStatus: boolean) {
@@ -62,11 +54,8 @@ const monitorDatas = ref<MonitorData[]>([])
 
 function handleClick(index: number, item: MonitorData) {
   editShowStatus.value = true
-
   editData.value = item
   editIndex.value = index
-
-  console.log(editData.value)
 }
 
 async function getData() {
@@ -81,8 +70,10 @@ function handleSaveDone() {
   getData()
 }
 
-function handleSaveSort() {
-
+async function handleSaveSort() {
+  const { code } = await saveAll(monitorDatas.value)
+  if (code === 0)
+    monitorGroup.value.sortStatus = false
 }
 </script>
 
