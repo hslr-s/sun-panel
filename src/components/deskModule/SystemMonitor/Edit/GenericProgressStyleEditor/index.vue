@@ -5,6 +5,7 @@ import type { GenericProgressStyleExtendParam } from '../../typings'
 import GenericMonitorCard from '../../components/GenericMonitorCard/index.vue'
 import GenericProgress from '../../components/GenericProgress/index.vue'
 import { PanelPanelConfigStyleEnum } from '@/enums'
+import { defautSwatchesBackground } from '@/utils/defaultData'
 
 interface Emit {
   (e: 'update:genericProgressStyleExtendParam', visible: GenericProgressStyleExtendParam): void
@@ -27,7 +28,7 @@ const data = computed({
   <div>
     <!-- <div>{{ genericProgressStyleExtendParam }}</div>
     <div>{{ data }}</div> -->
-    <div class="flex mb-5 justify-center">
+    <div class="flex mb-5 justify-center transparent-grid p-2 rounded-xl border">
       <div class="w-[200px]">
         <GenericMonitorCard
           icon-text-icon-hide-title
@@ -74,17 +75,27 @@ const data = computed({
 
     <NForm ref="formRef" v-model="data">
       <NFormItem label="主色">
-        <NColorPicker v-model:value="data.progressColor" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="data.progressColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
       <NFormItem label="副色">
-        <NColorPicker v-model:value="data.progressRailColor" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="data.progressRailColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
       <NFormItem label="文字图标颜色">
-        <NColorPicker v-model:value="data.color" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="data.color" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
       <NFormItem label="卡片背景色">
-        <NColorPicker v-model:value="data.backgroundColor" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="data.backgroundColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
     </NForm>
   </div>
 </template>
+
+<style>
+.transparent-grid {
+    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
+                      linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    background-color: #e2e8f0;
+}
+</style>

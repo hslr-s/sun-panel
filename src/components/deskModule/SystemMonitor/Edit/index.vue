@@ -63,13 +63,16 @@ watch(() => props.visible, (value) => {
   active.value = props.monitorData?.monitorType || MonitorType.cpu
   if (props.monitorData?.monitorType === MonitorType.cpu || props.monitorData?.monitorType === MonitorType.memory)
     currentGenericProgressStyleExtendParam.value = { ...props.monitorData?.extendParam }
+  else if (props.monitorData?.monitorType === MonitorType.disk)
+    currentDiskExtendParam.value = { ...props.monitorData?.extendParam }
 
   if (!value)
-    handleResetGenericProgressStyleExtendParam()
+    handleResetExtendParam()
 })
 
-function handleResetGenericProgressStyleExtendParam() {
+function handleResetExtendParam() {
   currentGenericProgressStyleExtendParam.value = { ...defaultGenericProgressStyleExtendParam }
+  currentDiskExtendParam.value = { ...defaultDiskExtendParam }
 }
 
 // 保存提交
@@ -109,25 +112,26 @@ async function handleSubmit() {
 <template>
   <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="monitorData ? '修改项目' : '添加项目'">
     <!-- 选择监视器 -->
-    <div>
-      <!-- progressStyle值：{{ JSON.stringify(currentGenericProgressStyleExtendParam) }} -->
-    </div>
+    <!-- <div>
+      {{ JSON.stringify(currentGenericProgressStyleExtendParam) }}
+      {{ JSON.stringify(currentDiskExtendParam) }}
+    </div> -->
     <NTabs v-model:value="active" type="segment">
       <NTabPane :name="MonitorType.cpu" tab="CPU状态">
         <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
-        <NButton @click="handleResetGenericProgressStyleExtendParam">
+        <NButton @click="handleResetExtendParam">
           重置
         </NButton>
       </NTabPane>
       <NTabPane :name="MonitorType.memory" tab="内存状态">
         <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
-        <NButton @click="handleResetGenericProgressStyleExtendParam">
+        <NButton @click="handleResetExtendParam">
           重置
         </NButton>
       </NTabPane>
       <NTabPane :name="MonitorType.disk" tab="磁盘状态">
         <DiskEditor v-model:disk-extend-param="currentDiskExtendParam" />
-        <NButton @click="handleResetGenericProgressStyleExtendParam">
+        <NButton @click="handleResetExtendParam">
           重置
         </NButton>
       </NTabPane>

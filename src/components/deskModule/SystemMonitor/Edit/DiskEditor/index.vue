@@ -6,6 +6,7 @@ import GenericMonitorCard from '../../components/GenericMonitorCard/index.vue'
 import GenericProgress from '../../components/GenericProgress/index.vue'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { getDiskMountpoints } from '@/api/system/systemMonitor'
+import { defautSwatchesBackground } from '@/utils/defaultData'
 
 interface Emit {
   (e: 'update:diskExtendParam', visible: DiskExtendParam): void
@@ -21,7 +22,7 @@ const mountPointList = ref<{
   value: string
 }[]>([])
 
-const data = computed({
+const extendParam = computed({
   get: () => props.diskExtendParam,
   set: (visible) => {
     emit('update:diskExtendParam', visible)
@@ -34,8 +35,11 @@ async function getMountPointList() {
     mountPointList.value = []
     for (let i = 0; i < data.length; i++) {
       const element = data[i]
+      if (i === 0 && !extendParam.value.path)
+        extendParam.value.path = element.mountpoint
+
       mountPointList.value.push({
-        label: element.device,
+        label: element.mountpoint,
         value: element.mountpoint,
       })
     }
@@ -52,26 +56,25 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- <div>{{ genericProgressStyleExtendParam }}</div>
-    <div>{{ data }}</div> -->
-    <div class="flex mb-5 justify-center">
+    <!-- <div>{{ diskExtendParam }}</div> -->
+    <div class="flex mb-5 justify-center transparent-grid p-2 rounded-xl border">
       <div class="w-[200px]">
         <GenericMonitorCard
           icon-text-icon-hide-title
           :card-type-style="PanelPanelConfigStyleEnum.info"
           icon="solar-cpu-bold"
-          :background-color="data.backgroundColor"
-          :text-color="data.color"
+          :background-color="extendParam.backgroundColor"
+          :text-color="extendParam.color"
         >
           <template #info>
             <GenericProgress
-              :progress-color="data.progressColor"
-              :progress-rail-color="data.progressRailColor"
+              :progress-color="extendParam.progressColor"
+              :progress-rail-color="extendParam.progressRailColor"
               :percentage="50"
               :progress-height="5"
               info-card-left-text="DEMO"
               info-card-right-text="TEXT"
-              :text-color="data.color"
+              :text-color="extendParam.color"
               :card-type-style="PanelPanelConfigStyleEnum.info"
             />
           </template>
@@ -83,15 +86,15 @@ onMounted(() => {
           icon-text-icon-hide-title
           :card-type-style="PanelPanelConfigStyleEnum.icon"
           icon="solar-cpu-bold"
-          :background-color="data.backgroundColor"
-          :icon-text-color="data.color"
+          :background-color="extendParam.backgroundColor"
+          :icon-text-color="extendParam.color"
         >
           <template #small>
             <GenericProgress
-              :progress-color="data.progressColor"
-              :progress-rail-color="data.progressRailColor"
+              :progress-color="extendParam.progressColor"
+              :progress-rail-color="extendParam.progressRailColor"
               :percentage="50"
-              :text-color="data.color"
+              :text-color="extendParam.color"
               :card-type-style="PanelPanelConfigStyleEnum.icon"
             />
           </template>
@@ -99,22 +102,32 @@ onMounted(() => {
       </div>
     </div>
 
-    <NForm ref="formRef" v-model="data">
-      <NFormItem label="挂载点">
-        <NSelect v-model:value="data.path" size="small" :options="mountPointList" />
+    <NForm ref="formRef" v-model="extendParam">
+      <NFormItem label="磁盘挂载点">
+        <NSelect v-model:value="extendParam.path" size="small" :options="mountPointList" />
       </NFormItem>
       <NFormItem label="主色">
-        <NColorPicker v-model:value="data.progressColor" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="extendParam.progressColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
       <NFormItem label="副色">
-        <NColorPicker v-model:value="data.progressRailColor" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="extendParam.progressRailColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
       <NFormItem label="文字图标颜色">
-        <NColorPicker v-model:value="data.color" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="extendParam.color" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
       <NFormItem label="卡片背景色">
-        <NColorPicker v-model:value="data.backgroundColor" :modes="['hex']" size="small" />
+        <NColorPicker v-model:value="extendParam.backgroundColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
     </NForm>
   </div>
 </template>
+
+<style>
+.transparent-grid {
+    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
+                      linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    background-color: #e2e8f0;
+}
+</style>

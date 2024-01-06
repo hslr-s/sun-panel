@@ -62,8 +62,11 @@ const monitorDatas = ref<MonitorData[]>([])
 
 function handleClick(index: number, item: MonitorData) {
   editShowStatus.value = true
+
   editData.value = item
   editIndex.value = index
+
+  console.log(editData.value)
 }
 
 async function getData() {
@@ -76,6 +79,10 @@ onMounted(() => {
 
 function handleSaveDone() {
   getData()
+}
+
+function handleSaveSort() {
+
 }
 </script>
 
@@ -118,7 +125,6 @@ function handleSaveDone() {
             v-for="item, index in monitorDatas" :key="index"
             :title="item.description"
             @click="handleClick(index, item)"
-            @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)"
           >
             <AppIconSystemMonitor
               :extend-param="item.extendParam"
@@ -145,7 +151,6 @@ function handleSaveDone() {
               v-for="item, index in monitorDatas" :key="index"
               :title="item.description"
               @click="handleClick(index, item)"
-              @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)"
             >
               <AppIconSystemMonitor
                 :extend-param="item.extendParam"
@@ -163,7 +168,7 @@ function handleSaveDone() {
       <!-- 编辑栏 -->
       <div v-if="monitorGroup.sortStatus" class="flex mt-[10px]">
         <div>
-          <NButton color="#2a2a2a6b" @click="handleSaveSort(monitorGroup)">
+          <NButton color="#2a2a2a6b" @click="handleSaveSort()">
             <template #icon>
               <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
             </template>
