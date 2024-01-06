@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { NButton, NDropdown, useDialog } from 'naive-ui'
+import { NButton, NDropdown, useDialog, useMessage } from 'naive-ui'
 import AppIconSystemMonitor from './AppIconSystemMonitor/index.vue'
-import type { CardStyle, MonitorData } from './typings'
+import { type CardStyle, type MonitorData, MonitorType } from './typings'
 import Edit from './Edit/index.vue'
 import { deleteByIndex, getAll, saveAll } from './common'
 import { usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { SvgIcon } from '@/components/common'
+import { t } from '@/locales'
 
 interface MonitorGroup extends Panel.ItemIconGroup {
   sortStatus?: boolean
@@ -23,6 +24,7 @@ const props = defineProps<{
 const panelState = usePanelState()
 
 const dialog = useDialog()
+const ms = useMessage()
 
 const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
@@ -72,6 +74,24 @@ function handleClick(index: number, item: MonitorData) {
 
 async function getData() {
   monitorDatas.value = await getAll()
+
+  if (monitorDatas.value.length === 0) {
+    // 防止空 - 默认数据
+    monitorDatas.value.push(
+      {
+        extendParam: {
+          backgroundColor: '#2a2a2a6b',
+          color: '#fff',
+          progressColor: '#fff',
+          progressRailColor: '#CFCFCFA8',
+        },
+        monitorType: MonitorType.cpu,
+      },
+    )
+
+    // 生成并保存
+    saveAll(monitorDatas.value)
+  }
 }
 
 onMounted(() => {
@@ -104,7 +124,7 @@ function handleContextMenu(e: MouseEvent, index: number | null, item: MonitorDat
 function getDropdownMenuOptions() {
   const dropdownMenuOptions = [
     {
-      label: '删除',
+      label: t('common.delete'),
       key: 'delete',
     },
   ]
@@ -134,6 +154,10 @@ function handleRightMenuSelect(key: string | number) {
         positiveText: '确定',
         negativeText: '取消',
         onPositiveClick: () => {
+          if (monitorDatas.value.length <= 1) {
+            ms.warning(t('common.leastOne'))
+            return
+          }
           if (currentRightSelectIndex.value !== null)
             deleteOneByIndex(currentRightSelectIndex.value)
         },
