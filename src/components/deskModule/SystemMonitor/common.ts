@@ -77,10 +77,11 @@ export async function deleteByIndex(index: number): Promise<boolean> {
     const data = await getAll()
     if (data[index])
       data.splice(index, 1)
-    saveAll(data)
+    await saveAll(data)
   }
   catch (error) {
     success = false
+    console.error(error)
   }
 
   return success

@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { NButton } from 'naive-ui'
+import { NButton, NDropdown, useDialog } from 'naive-ui'
 import AppIconSystemMonitor from './AppIconSystemMonitor/index.vue'
 import type { CardStyle, MonitorData } from './typings'
 import Edit from './Edit/index.vue'
-import { getAll, saveAll } from './common'
-import { useAuthStore, usePanelState } from '@/store'
+import { deleteByIndex, getAll, saveAll } from './common'
+import { usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum } from '@/enums'
-import { VisitMode } from '@/enums/auth'
 import { SvgIcon } from '@/components/common'
 
 interface MonitorGroup extends Panel.ItemIconGroup {
@@ -16,9 +15,20 @@ interface MonitorGroup extends Panel.ItemIconGroup {
   hoverStatus: boolean
   items?: Panel.ItemInfo[]
 }
+
+const props = defineProps<{
+  allowEdit?: boolean
+  showTitle?: boolean
+}>()
 const panelState = usePanelState()
-const authStore = useAuthStore()
-// const systemMonitorData = ref<SystemMonitor.GetAllRes | null>(null)
+
+const dialog = useDialog()
+
+const dropdownMenuX = ref(0)
+const dropdownMenuY = ref(0)
+const dropdownShow = ref(false)
+const currentRightSelectIndex = ref<number | null>(null)
+
 const monitorGroup = ref<MonitorGroup>({
   hoverStatus: false,
   sortStatus: false,
@@ -53,6 +63,8 @@ const cardStyle: CardStyle = {
 const monitorDatas = ref<MonitorData[]>([])
 
 function handleClick(index: number, item: MonitorData) {
+  if (!props.allowEdit)
+    return
   editShowStatus.value = true
   editData.value = item
   editIndex.value = index
@@ -75,6 +87,63 @@ async function handleSaveSort() {
   if (code === 0)
     monitorGroup.value.sortStatus = false
 }
+
+function handleContextMenu(e: MouseEvent, index: number | null, item: MonitorData) {
+  if (index !== null) {
+    e.preventDefault()
+    currentRightSelectIndex.value = index
+  }
+
+  nextTick().then(() => {
+    dropdownShow.value = true
+    dropdownMenuX.value = e.clientX
+    dropdownMenuY.value = e.clientY
+  })
+}
+
+function getDropdownMenuOptions() {
+  const dropdownMenuOptions = [
+    {
+      label: '删除',
+      key: 'delete',
+    },
+  ]
+
+  return dropdownMenuOptions
+}
+
+function onClickoutside() {
+  // message.info('clickoutside')
+  dropdownShow.value = false
+}
+
+async function deleteOneByIndex(index: number) {
+  const res = await deleteByIndex(index)
+  if (res)
+    getData()
+}
+
+function handleRightMenuSelect(key: string | number) {
+  dropdownShow.value = false
+
+  switch (key) {
+    case 'delete':
+      dialog.warning({
+        title: '警告',
+        content: '你确定要删除吗？',
+        positiveText: '确定',
+        negativeText: '取消',
+        onPositiveClick: () => {
+          if (currentRightSelectIndex.value !== null)
+            deleteOneByIndex(currentRightSelectIndex.value)
+        },
+      })
+
+      break
+    default:
+      break
+  }
+}
 </script>
 
 <template>
@@ -87,11 +156,11 @@ async function handleSaveSort() {
     >
       <!-- 分组标题 -->
       <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
-        <span class="text-shadow">
+        <span v-if="showTitle" class="text-shadow">
           系统状态
         </span>
         <div
-          v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+          v-if="allowEdit"
           class="ml-2 delay-100 transition-opacity flex"
           :class="monitorGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
         >
@@ -116,6 +185,7 @@ async function handleSaveSort() {
             v-for="item, index in monitorDatas" :key="index"
             :title="item.description"
             @click="handleClick(index, item)"
+            @contextmenu="(e) => handleContextMenu(e, index, item)"
           >
             <AppIconSystemMonitor
               :extend-param="item.extendParam"
@@ -142,6 +212,7 @@ async function handleSaveSort() {
               v-for="item, index in monitorDatas" :key="index"
               :title="item.description"
               @click="handleClick(index, item)"
+              @contextmenu="(e) => handleContextMenu(e, index, item)"
             >
               <AppIconSystemMonitor
                 :extend-param="item.extendParam"
@@ -157,7 +228,7 @@ async function handleSaveSort() {
       </div>
 
       <!-- 编辑栏 -->
-      <div v-if="monitorGroup.sortStatus" class="flex mt-[10px]">
+      <div v-if="monitorGroup.sortStatus && allowEdit" class="flex mt-[10px]">
         <div>
           <NButton color="#2a2a2a6b" @click="handleSaveSort()">
             <template #icon>
@@ -172,6 +243,11 @@ async function handleSaveSort() {
     </div>
 
     <Edit v-model:visible="editShowStatus" :monitor-data="editData" :index="editIndex" @done="handleSaveDone" />
+
+    <NDropdown
+      placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
+      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleRightMenuSelect"
+    />
   </div>
 </template>
 
