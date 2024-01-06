@@ -116,6 +116,24 @@ function resetPanelConfig() {
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
+        系统监控
+      </div>
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">显示</span>
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShow" />
+      </div>
+      <div v-if="panelState.panelConfig.systemMonitorShow" class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">显示标题</span>
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShowTitle" />
+      </div>
+      <div v-if="panelState.panelConfig.systemMonitorShow" class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">公开模式允许显示</span>
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorPublicVisitModeShow" />
+      </div>
+    </NCard>
+
+    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <div class="text-slate-500 mb-[5px] font-bold">
         图标
       </div>
       <div class="mt-[5px]">
@@ -249,7 +267,6 @@ function resetPanelConfig() {
       <NInput
         v-model:value="panelState.panelConfig.footerHtml"
         type="textarea"
-        placeholder="基本的 Textarea"
       />
     </NCard>
 

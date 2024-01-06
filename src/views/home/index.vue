@@ -363,9 +363,17 @@ function handleAddItem(itemIconGroupId?: number) {
 
         <!-- 应用盒子 -->
         <div :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
-          <!-- 系统状态 -->
-          <div v-if="panelState.panelConfig.searchBoxShow" class="flex mx-auto ">
-            <SystemMonitor allow-edit />
+          <!-- 系统监控状态 -->
+          <div
+            v-if="panelState.panelConfig.systemMonitorShow
+              && ((panelState.panelConfig.systemMonitorPublicVisitModeShow && authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC)
+                || authStore.visitMode === VisitMode.VISIT_MODE_LOGIN)"
+            class="flex mx-auto"
+          >
+            <SystemMonitor
+              :allow-edit="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+              :show-title="panelState.panelConfig.systemMonitorShowTitle"
+            />
           </div>
 
           <!-- 组纵向排列 -->
