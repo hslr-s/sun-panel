@@ -187,7 +187,7 @@ function resetPanelConfig() {
     </NCard>
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.customFooter') }}
+        {{ $t('apps.baseSettings.wallpaper') }}
       </div>
       <NUpload
         action="/api/file/uploadImg"
