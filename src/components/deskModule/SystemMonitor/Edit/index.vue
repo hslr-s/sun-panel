@@ -7,6 +7,7 @@ import { add, saveByIndex } from '../common'
 
 import GenericProgressStyleEditor from './GenericProgressStyleEditor/index.vue'
 import DiskEditor from './DiskEditor/index.vue'
+import { t } from '@/locales'
 
 interface Props {
   visible: boolean
@@ -84,7 +85,7 @@ async function handleSubmit() {
   else if (currentMonitorData.value.monitorType === MonitorType.disk)
     currentMonitorData.value.extendParam = currentDiskExtendParam
 
-  console.log('保存', currentMonitorData.value.extendParam)
+  // console.log('保存', currentMonitorData.value.extendParam)
 
   if (props.index !== null) {
     const res = await saveByIndex(props.index, currentMonitorData.value)
@@ -93,7 +94,7 @@ async function handleSubmit() {
       emit('done', true)
     }
     else {
-      ms.error('保存失败')
+      ms.error(t('common.saveFail'))
     }
   }
   else {
@@ -103,43 +104,36 @@ async function handleSubmit() {
       emit('done', true)
     }
     else {
-      ms.error('保存失败')
+      ms.error(t('common.saveFail'))
     }
   }
 }
 </script>
 
 <template>
-  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="monitorData ? '修改项目' : '添加项目'">
+  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="monitorData ? t('common.edit') : t('common.add')">
     <!-- 选择监视器 -->
     <!-- <div>
       {{ JSON.stringify(currentGenericProgressStyleExtendParam) }}
       {{ JSON.stringify(currentDiskExtendParam) }}
     </div> -->
     <NTabs v-model:value="active" type="segment">
-      <NTabPane :name="MonitorType.cpu" tab="CPU状态">
+      <NTabPane :name="MonitorType.cpu" :tab="$t('deskModule.systemMonitor.cpuState')">
         <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
-        <NButton @click="handleResetExtendParam">
-          重置
-        </NButton>
       </NTabPane>
-      <NTabPane :name="MonitorType.memory" tab="内存状态">
+      <NTabPane :name="MonitorType.memory" :tab="$t('deskModule.systemMonitor.memoryState')">
         <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
-        <NButton @click="handleResetExtendParam">
-          重置
-        </NButton>
       </NTabPane>
-      <NTabPane :name="MonitorType.disk" tab="磁盘状态">
+      <NTabPane :name="MonitorType.disk" :tab="$t('deskModule.systemMonitor.diskState')">
         <DiskEditor v-model:disk-extend-param="currentDiskExtendParam" />
-        <NButton @click="handleResetExtendParam">
-          重置
-        </NButton>
       </NTabPane>
     </NTabs>
-
+    <NButton @click="handleResetExtendParam">
+      {{ t('common.reset') }}
+    </NButton>
     <template #footer>
       <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleSubmit">
-        确定
+        {{ t('common.confirm') }}
       </NButton>
     </template>
   </NModal>

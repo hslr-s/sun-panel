@@ -4,6 +4,7 @@ import type { UploadFileInfo } from 'naive-ui'
 import { computed, defineProps } from 'vue'
 import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
+import { t } from '@/locales'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null
@@ -41,7 +42,6 @@ const itemIconInfo = computed({
     return v
   },
   set() {
-    console.log('aaaa')
     handleChange()
   },
 })
@@ -53,7 +53,6 @@ function handleIconTypeRadioChange(type: number) {
 }
 
 function handleChange() {
-  console.log('21222')
   emit('update:itemIcon', itemIconInfo.value || null)
 }
 
@@ -76,7 +75,7 @@ const handleUploadFinish = ({
     emit('update:itemIcon', itemIconInfo.value || null)
   }
   else {
-    ms.error(`上传错误：${res.msg}`)
+    ms.error(`${t('common.uploadFail')}:${res.msg}`)
   }
 
   return file
@@ -92,7 +91,7 @@ const handleUploadFinish = ({
         name="iconType"
         @change="handleIconTypeRadioChange(1)"
       >
-        文字
+        {{ $t('common.text') }}
       </NRadio>
 
       <NRadio
@@ -101,7 +100,7 @@ const handleUploadFinish = ({
         name="iconType"
         @change="handleIconTypeRadioChange(2)"
       >
-        图片/SVG
+        {{ $t('common.image') }}
       </NRadio>
 
       <NRadio
@@ -110,7 +109,7 @@ const handleUploadFinish = ({
         name="iconType"
         @change="handleIconTypeRadioChange(3)"
       >
-        在线图标
+        {{ $t('iconItem.onlineIcon') }}
       </NRadio>
     </div>
 
@@ -125,22 +124,22 @@ const handleUploadFinish = ({
         <div class="ml-[20px]">
           <!-- <NImage :src="model.icon" preview-disabled /> -->
           <div v-if="itemIconInfo.itemType === 1">
-            <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入文字作为图标" @input="handleChange" />
+            <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" @input="handleChange" />
           </div>
 
           <div v-if="itemIconInfo.itemType === 3">
             <div>
-              <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" placeholder="请输入图标名字" @input="handleChange" />
+              <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" :placeholder="$t('iconItem.inputIconName')" @input="handleChange" />
 
               <NButton quaternary type="info">
-                <a target="_blank" href="https://icon-sets.iconify.design/">在线图标库</a>
+                <a target="_blank" href="https://icon-sets.iconify.design/">{{ $t('iconItem.onlineIconLibrary') }}</a>
               </NButton>
             </div>
           </div>
 
           <!-- 图片 -->
           <div v-if="itemIconInfo.itemType === 2">
-            <NInput v-model:value="itemIconInfo.src" class="mb-[5px] w-full" size="small" type="text" placeholder="输入图标地址或上传" @input="handleChange" />
+            <NInput v-model:value="itemIconInfo.src" class="mb-[5px] w-full" size="small" type="text" :placeholder="$t('iconItem.inputIconUrlOrUpload')" @input="handleChange" />
             <NUpload
               action="/api/file/uploadImg"
               :show-file-list="false"
@@ -151,7 +150,7 @@ const handleUploadFinish = ({
               @finish="handleUploadFinish"
             >
               <NButton size="small">
-                本地上传
+                {{ $t('iconItem.selectUpload') }}
               </NButton>
             </NUpload>
           </div>
@@ -160,7 +159,7 @@ const handleUploadFinish = ({
 
       <div class="flex items-center mt-[10px]">
         <div class="w-auto text-slate-500 mr-[10px]">
-          背景色:
+          {{ $t('common.backgroundColor') }}
         </div>
         <div class="w-[150px] flex items-center mr-[10px]">
           <NColorPicker
@@ -174,7 +173,7 @@ const handleUploadFinish = ({
         </div>
         <div v-if="itemIconInfo.backgroundColor !== initData.backgroundColor" class="w-auto text-slate-500 mr-[10px] cursor-pointer">
           <NButton quaternary type="info" @click="handleResetBackgroundColor">
-            恢复默认
+            {{ $t('common.reset') }}
           </NButton>
         </div>
       </div>

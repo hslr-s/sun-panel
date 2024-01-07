@@ -74,16 +74,16 @@ const data = computed({
     </div>
 
     <NForm ref="formRef" v-model="data">
-      <NFormItem label="主色">
+      <NFormItem :label="$t('deskModule.systemMonitor.progressColor')">
         <NColorPicker v-model:value="data.progressColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
-      <NFormItem label="副色">
+      <NFormItem :label="$t('deskModule.systemMonitor.progressRailColor')">
         <NColorPicker v-model:value="data.progressRailColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
-      <NFormItem label="文字图标颜色">
+      <NFormItem :label="$t('common.textColor')">
         <NColorPicker v-model:value="data.color" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
-      <NFormItem label="卡片背景色">
+      <NFormItem :label="$t('common.backgroundColor')">
         <NColorPicker v-model:value="data.backgroundColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
     </NForm>

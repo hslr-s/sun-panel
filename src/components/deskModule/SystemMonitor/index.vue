@@ -149,10 +149,10 @@ function handleRightMenuSelect(key: string | number) {
   switch (key) {
     case 'delete':
       dialog.warning({
-        title: '警告',
-        content: '你确定要删除吗？',
-        positiveText: '确定',
-        negativeText: '取消',
+        title: t('common.warning'),
+        content: t('common.deleteConfirm'),
+        positiveText: t('common.confirm'),
+        negativeText: t('common.cancel'),
         onPositiveClick: () => {
           if (monitorDatas.value.length <= 1) {
             ms.warning(t('common.leastOne'))
@@ -181,17 +181,17 @@ function handleRightMenuSelect(key: string | number) {
       <!-- 分组标题 -->
       <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
         <span v-if="showTitle" class="text-shadow">
-          系统状态
+          {{ $t('deskModule.systemMonitor.systemState') }}
         </span>
         <div
           v-if="allowEdit"
           class="ml-2 delay-100 transition-opacity flex"
           :class="monitorGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
         >
-          <span class="mr-2 cursor-pointer" title="添加快捷图标" @click="handleAddItem()">
+          <span class="mr-2 cursor-pointer" @click="handleAddItem()">
             <SvgIcon class="text-white font-xl" icon="typcn:plus" />
           </span>
-          <span class="mr-2 cursor-pointer " title="排序组快捷图标" @click="handleSetSortStatus(!monitorGroup.sortStatus)">
+          <span class="mr-2 cursor-pointer" @click="handleSetSortStatus(!monitorGroup.sortStatus)">
             <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
           </span>
         </div>
@@ -259,7 +259,7 @@ function handleRightMenuSelect(key: string | number) {
               <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
             </template>
             <div>
-              保存排序
+              {{ $t('common.saveSort') }}
             </div>
           </NButton>
         </div>

@@ -91,9 +91,9 @@ async function importIcons(): Promise<string | null> {
   }
   catch (error) {
     if (error instanceof Error)
-      return `发生错误: ${error.message}`
+      return `${t('common.failed')}: ${error.message}`
     else
-      return '发生未知错误'
+      return t('common.unknownError')
   }
 }
 
@@ -162,7 +162,7 @@ function handleFileChange(options: { file: UploadFileInfo; fileList: Array<Uploa
         importCheck()
       }
       else {
-        ms.error('异常请重新上传')
+        ms.error(`${t('common.failed')}: ${t('common.repeatLater')}`)
       }
       uploadLoading.value = false
     }
@@ -178,13 +178,13 @@ function importCheck() {
       importObj.value = importJsonString(jsonData.value)
       if (importObj.value) {
         if (!importObj.value.isPassCheckMd5())
-          importWarning.value.push('文件被修改过，谨慎导入')
+          importWarning.value.push(t('apps.exportImport.fileModified'))
 
         if (!importObj.value.isPassCheckConfigVersionOld())
-          importWarning.value.push('配置文件版本过低，但是兼容')
+          importWarning.value.push(t('apps.exportImport.warnConfigFileLow'))
 
         if (!importObj.value.isPassCheckConfigVersionNew())
-          importWarning.value.push('当前软件版本可能过旧，很有可能无法兼容该配置文件，请谨慎导入。推荐将软件更新到新版后再次导入')
+          importWarning.value.push(t('apps.exportImport.softwareVersionLow'))
 
         // （暂时不做）此处可以判断，当前的配置文件是否存在的导入项目（不存在隐藏importItems里面的值）操作变量：importItems
 
@@ -196,24 +196,24 @@ function importCheck() {
     }
     catch (error) {
       if (error instanceof ConfigVersionLowError) {
-        ms.error('配置文件版本过低，无法兼容')
-        console.log('配置文件版本过低')
+        ms.error(t('apps.exportImport.errorConfigFileLow'))
+        console.error('The configuration file version is too low to be compatible')
       }
       else if (error instanceof FormatError) {
-        ms.error('格式不正确，无法导入')
-        console.log('格式不正确')
+        ms.error(t('apps.exportImport.errorConfigFileFormat'))
+        console.error('The format is incorrect and cannot be imported')
       }
     }
   }
   else {
-    ms.error('数据不正确')
+    ms.error(t('apps.exportImport.errorConfigFileFormat'))
   }
 }
 
 // 开始导出
 async function handleStartExport() {
   loading.value = true
-  console.log('要导出的项目', checkedItems.value)
+  // console.log('要导出的项目', checkedItems.value)
   // 获取软件版本号
   const exportResult = exportJson(version.value)
   if (checkedItems.value.includes('icons')) {
@@ -223,7 +223,7 @@ async function handleStartExport() {
     console.log('export icons finish', iconGroups)
   }
 
-  console.log('导出结果')
+  // console.log('导出结果')
 
   jsonData.value = exportResult.string()
   exportResult.exportFile()
@@ -244,14 +244,14 @@ async function handleStartImport() {
 
   loading.value = false
   importRoundModalShow.value = false
-  ms.success(`${t('common.success')}，请手动刷新页面`)
+  ms.success(`${t('common.success')}, ${t('common.refreshPage')}`)
 }
 </script>
 
 <template>
   <div class="pt-2">
     <NAlert type="info" :bordered="false">
-      <p>导入图标配置数据不会清空现有图标数据</p>
+      <p>{{ $t('apps.exportImport.tip') }}</p>
     </NAlert>
     <div class="flex justify-center m-[50px]">
       <div class="m-[10px]">
@@ -266,7 +266,7 @@ async function handleStartImport() {
             <template #icon>
               <SvgIcon icon="fa6:solid-file-import" />
             </template>
-            导入配置
+            {{ $t('apps.exportImport.import') }}
           </NButton>
         </NUpload>
       </div>
@@ -275,7 +275,7 @@ async function handleStartImport() {
           <template #icon>
             <SvgIcon icon="fa6:solid-file-export" />
           </template>
-          导出配置
+          {{ $t('apps.exportImport.export') }}
         </NButton>
       </div>
     </div>
@@ -310,7 +310,7 @@ async function handleStartImport() {
       </div>
     </div>
 
-    <RoundCardModal v-model:show="importRoundModalShow" style="max-width: 400px;" title="导入">
+    <RoundCardModal v-model:show="importRoundModalShow" style="max-width: 400px;" :title=" $t('apps.exportImport.import')">
       <div v-if="importWarning.length > 0">
         <NAlert :title="$t('common.warning')" type="warning">
           <div v-for="(text, index) in importWarning " :key="index">
@@ -319,39 +319,39 @@ async function handleStartImport() {
         </NAlert>
       </div>
       <NDivider title-placement="left">
-        请选择要导入的配置数据
+        {{ $t('apps.exportImport.selectImportData') }}
       </NDivider>
 
       <NSpace justify="center" style="margin-top: 20px;">
         <NCheckboxGroup v-model:value="checkedItems">
-          <NCheckbox v-if="importItems.includes('icons')" value="icons" label="图标" />
-          <NCheckbox v-if="importItems.includes('style')" value="style" label="样式配置" />
+          <NCheckbox v-if="importItems.includes('icons')" value="icons" :label="$t('apps.exportImport.moduleIcon')" />
+          <NCheckbox v-if="importItems.includes('style')" value="style" :label="$t('apps.exportImport.moduleStyle')" />
         </NCheckboxGroup>
       </NSpace>
       <NSpace justify="center">
         <div class="mt-[50px]">
           <NButton type="success" :disabled="checkedItems.length === 0" :loading="loading" @click="handleStartImport">
-            继续导入
+            {{ $t('common.continue') }}
           </NButton>
         </div>
       </NSpace>
     </RoundCardModal>
 
-    <RoundCardModal v-model:show="exportRoundModalShow" style="max-width: 400px;" title="导出">
+    <RoundCardModal v-model:show="exportRoundModalShow" style="max-width: 400px;" :title=" $t('apps.exportImport.export')">
       <NDivider title-placement="left">
-        请选择要导出的配置数据
+        {{ $t('apps.exportImport.selectExportData') }}
       </NDivider>
 
       <NSpace justify="center" style="margin-top: 20px;">
         <NCheckboxGroup v-model:value="checkedItems">
-          <NCheckbox v-if="importItems.includes('icons')" value="icons" label="图标" />
-          <NCheckbox v-if="importItems.includes('style')" value="style" label="样式配置" />
+          <NCheckbox v-if="importItems.includes('icons')" value="icons" :label="$t('apps.exportImport.moduleIcon')" />
+          <NCheckbox v-if="importItems.includes('style')" value="style" :label="$t('apps.exportImport.moduleStyle')" />
         </NCheckboxGroup>
       </NSpace>
       <NSpace justify="center">
         <div class="mt-[50px]">
           <NButton type="success" :disabled="checkedItems.length === 0" :loading="loading" @click="handleStartExport">
-            继续导出
+            {{ $t('common.continue') }}
           </NButton>
         </div>
       </NSpace>

@@ -5,6 +5,7 @@ import { NButton, NForm, NFormItem, NGrid, NGridItem, NInput, NInputGroup, NModa
 import IconEditor from './IconEditor.vue'
 import { edit, getSiteFavicon } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
+import { t } from '@/locales'
 
 interface Props {
   visible: boolean
@@ -43,33 +44,33 @@ const rules: FormRules = {
   title: {
     required: true,
     trigger: 'blur',
-    message: '必填项',
+    message: t('form.required'),
   },
   url: {
     required: true,
     trigger: 'blur',
     type: 'string',
-    message: '必填项',
+    message: t('form.required'),
   },
   // itemIconGroupId: {
   //   required: true,
   //   trigger: ['blur', 'change'],
-  //   message: '必填项',
+  //   message: t('form.required'),
   // },
 }
 
 const options = [
   {
     default: true,
-    label: '当前页面打开',
+    label: t('iconItem.currentPageOpen'),
     value: 1,
   },
   {
-    label: '新窗口打开',
+    label: t('iconItem.newWindowOpen'),
     value: 2,
   },
   {
-    label: '当前页面弹窗打开',
+    label: t('iconItem.currentPageLayerOpen'),
     value: 3,
   },
 ]
@@ -89,16 +90,15 @@ async function editApi() {
     if (code === 0) {
       show.value = false
       model.value = { ...restoreDefault }
-      console.log('重置完成', model.value)
 
       emit('done', data)
     }
     else {
-      ms.error(`保存失败：${msg}`)
+      ms.error(`${t('common.saveFail')}:${msg}`)
     }
   }
   catch (error) {
-    ms.error('保存失败')
+    ms.error(t('common.saveFail'))
   }
   submitLoading.value = false
 }
@@ -122,11 +122,11 @@ async function getIconByUrl(url: string, loadingIndex: number) {
       }
     }
     else {
-      ms.error('图标获取失败')
+      ms.error(t('iconItem.geticonFail'))
     }
   }
   catch (error) {
-    ms.error('图标获取失败')
+    ms.error(t('iconItem.geticonFail'))
   }
   getIconLoading.value[loadingIndex] = false
 }
@@ -160,53 +160,53 @@ function getGroupListOptions() {
       }
     }
     else {
-      ms.error(`分组信息获取失败:${msg}`)
+      ms.error(`${t('iconItem.getGroupFail')}:${msg}`)
     }
   })
 }
 </script>
 
 <template>
-  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? '修改项目' : '添加项目'">
+  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')">
     <div class="h-[600px] overflow-auto p-[5px]">
       <NForm ref="formRef" :model="model" :rules="rules">
         <NGrid cols="2" :x-gap="10" item-responsive>
           <NGridItem span="2 500:1">
-            <NFormItem path="itemIconGroupId" label="分组">
+            <NFormItem path="itemIconGroupId" :label="t('iconItem.iconGroup')">
               <NSelect v-model:value="model.itemIconGroupId" :options="itemIconGroupOptions" />
             </NFormItem>
           </NGridItem>
           <NGridItem span="2 500:1">
-            <NFormItem path="title" label="标题">
-              <NInput v-model:value="model.title" type="text" show-count :maxlength="20" placeholder="请输入标题" />
+            <NFormItem path="title" :label="$t('common.title')">
+              <NInput v-model:value="model.title" type="text" show-count :maxlength="20" />
             </NFormItem>
           </NGridItem>
         </NGrid>
 
-        <NFormItem path="icon" label="图标">
+        <NFormItem path="icon" :label="$t('common.icon')">
           <IconEditor v-model:item-icon="model.icon" />
         </NFormItem>
-        <NFormItem path="url" label="跳转地址">
+        <NFormItem path="url" :label="$t('iconItem.url')">
           <!-- <NSelect :style="{ width: '100px' }" :options="urlProtocolOptions" /> -->
           <NInputGroup>
             <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
             <NButton :disabled="!model.url" :loading="getIconLoading[0]" @click="getIconByUrl(model.url, 0)">
-              获取图标
+              {{ $t('iconItem.getIcon') }}
             </NButton>
           </NInputGroup>
         </NFormItem>
-        <NFormItem path="lanUrl" label="局域网跳转地址">
+        <NFormItem path="lanUrl" :label="$t('iconItem.lanUrl')">
           <NInputGroup>
-            <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" placeholder="http(s)://（可以留空，切换到局域网模式，点击会使用该地址）" />
+            <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
             <NButton :disabled="!model.lanUrl" :loading="getIconLoading[1]" @click="getIconByUrl(model.lanUrl || '', 1)">
-              获取图标
+              {{ $t('iconItem.getIcon') }}
             </NButton>
           </NInputGroup>
         </NFormItem>
-        <NFormItem path="description" label="描述信息">
-          <NInput v-model:value="model.description" type="text" show-count :maxlength="100" placeholder="请填写描述信息" />
+        <NFormItem path="description" :label="$t('common.description')">
+          <NInput v-model:value="model.description" type="text" show-count :maxlength="100" />
         </NFormItem>
-        <NFormItem path="openMethod" label="打开方式">
+        <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
           <NSelect v-model:value="model.openMethod" :options="options" />
         </NFormItem>
       </NForm>
@@ -214,7 +214,7 @@ function getGroupListOptions() {
 
     <template #footer>
       <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleValidateButtonClick">
-        确定
+        {{ $t('common.save') }}
       </NButton>
     </template>
   </NModal>

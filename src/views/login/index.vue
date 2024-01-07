@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { NButton, NCard, NForm, NFormItem, NGradientText, NInput, useMessage } from 'naive-ui'
+import { NButton, NCard, NForm, NFormItem, NGradientText, NInput, NSelect, useMessage } from 'naive-ui'
 import { ref } from 'vue'
 import { login } from '@/api'
-import { useAuthStore } from '@/store'
+import { useAppStore, useAuthStore } from '@/store'
 import { SvgIcon } from '@/components/common'
 import { router } from '@/router'
 import { t } from '@/locales'
+import { languageOptions } from '@/utils/defaultData'
+import type { Language } from '@/store/modules/app/helper'
 
 // const userStore = useUserStore()
 const authStore = useAuthStore()
+const appStore = useAppStore()
 const ms = useMessage()
 const loading = ref(false)
+const languageValue = ref<Language>(appStore.language)
+
 // const isShowCaptcha = ref<boolean>(false)
 // const isShowRegister = ref<boolean>(false)
 
@@ -45,11 +50,25 @@ function handleSubmit() {
   // 点击登录按钮触发
   loginPost()
 }
+
+function handleChangeLanuage(value: Language) {
+  languageValue.value = value
+  appStore.setLanguage(value)
+}
 </script>
 
 <template>
   <div class="login-container">
     <NCard class="login-card" style="border-radius: 20px;">
+      <div class="mb-5 flex items-center justify-end">
+        <div class="mr-2">
+          <SvgIcon icon="ion-language" style="width: 20;height: 20;" />
+        </div>
+        <div class="min-w-[100px]">
+          <NSelect v-model:value="languageValue" size="small" :options="languageOptions" @update-value="handleChangeLanuage" />
+        </div>
+      </div>
+
       <div class="login-title  ">
         <NGradientText :size="30" type="success" class="!font-bold">
           {{ $t('common.appName') }}

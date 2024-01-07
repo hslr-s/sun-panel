@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { FormInst, FormRules } from 'naive-ui'
-import { NButton, NCard, NDivider, NForm, NFormItem, NInput, useDialog, useMessage } from 'naive-ui'
+import { NButton, NCard, NDivider, NForm, NFormItem, NInput, NSelect, useDialog, useMessage } from 'naive-ui'
 import { ref } from 'vue'
-import { useAuthStore, usePanelState, useUserStore } from '@/store'
+import { useAppStore, useAuthStore, usePanelState, useUserStore } from '@/store'
+import { languageOptions } from '@/utils/defaultData'
+import type { Language } from '@/store/modules/app/helper'
 import { logout } from '@/api'
-import { router } from '@/router'
 import { RoundCardModal, SvgIcon } from '@/components/common/'
 import { updateInfo, updatePassword } from '@/api/system/user'
 import { updateLocalUserInfo } from '@/utils/cmn'
@@ -12,10 +13,12 @@ import { t } from '@/locales'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
+const appStore = useAppStore()
 const panelState = usePanelState()
 const ms = useMessage()
 const dialog = useDialog()
 
+const languageValue = ref(appStore.language)
 const nickName = ref(authStore.userInfo?.name || '')
 const isEditNickNameStatus = ref(false)
 const formRef = ref<FormInst | null>(null)
@@ -59,8 +62,9 @@ async function logoutApi() {
   userStore.resetUserInfo()
   authStore.removeToken()
   panelState.removeState()
+  appStore.removeToken()
   ms.success(t('settingUserInfo.logoutSuccess'))
-  router.push({ path: '/login' })
+  // router.push({ path: '/login' })
   location.reload()// 强制刷新一下页面
 }
 
@@ -122,6 +126,12 @@ function handleLogout() {
     },
   })
 }
+
+function handleChangeLanuage(value: Language) {
+  languageValue.value = value
+  appStore.setLanguage(value)
+  location.reload()
+}
 </script>
 
 <template>
@@ -157,6 +167,14 @@ function handleLogout() {
         </div>
       </div>
 
+      <div class="mt-[10px]">
+        <div class="text-slate-500 font-bold">
+          {{ $t('common.language') }}
+        </div>
+        <div class="max-w-[200px]">
+          <NSelect v-model:value="languageValue" :options="languageOptions" @update-value="handleChangeLanuage" />
+        </div>
+      </div>
       <NDivider style="margin: 10px 0;" dashed />
       <div>
         <NButton size="small" text type="info" @click="updatePasswordModalState.show = !updatePasswordModalState.show">

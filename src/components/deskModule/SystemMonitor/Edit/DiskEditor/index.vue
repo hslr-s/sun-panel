@@ -103,19 +103,19 @@ onMounted(() => {
     </div>
 
     <NForm ref="formRef" v-model="extendParam">
-      <NFormItem label="磁盘挂载点">
+      <NFormItem :label="$t('deskModule.systemMonitor.diskMountPoint')">
         <NSelect v-model:value="extendParam.path" size="small" :options="mountPointList" />
       </NFormItem>
-      <NFormItem label="主色">
+      <NFormItem :label="$t('deskModule.systemMonitor.progressColor')">
         <NColorPicker v-model:value="extendParam.progressColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
-      <NFormItem label="副色">
+      <NFormItem :label="$t('deskModule.systemMonitor.progressRailColor')">
         <NColorPicker v-model:value="extendParam.progressRailColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
-      <NFormItem label="文字图标颜色">
+      <NFormItem :label="$t('common.textColor')">
         <NColorPicker v-model:value="extendParam.color" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
-      <NFormItem label="卡片背景色">
+      <NFormItem :label="$t('common.backgroundColor')">
         <NColorPicker v-model:value="extendParam.backgroundColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
       </NFormItem>
     </NForm>
