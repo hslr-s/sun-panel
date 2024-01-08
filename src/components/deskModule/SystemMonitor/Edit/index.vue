@@ -17,6 +17,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
+const DiskEditorRef = ref<InstanceType<typeof DiskEditor>>()
 
 // 默认通用的进度扩展参数
 const defaultGenericProgressStyleExtendParam: GenericProgressStyleExtendParam = {
@@ -78,14 +79,21 @@ function handleResetExtendParam() {
 
 // 保存提交
 async function handleSubmit() {
+  let verificationRes = true
   currentMonitorData.value.monitorType = active.value as MonitorType
-  if (currentMonitorData.value.monitorType === MonitorType.cpu || currentMonitorData.value.monitorType === MonitorType.memory)
+  if (currentMonitorData.value.monitorType === MonitorType.cpu || currentMonitorData.value.monitorType === MonitorType.memory) {
     currentMonitorData.value.extendParam = currentGenericProgressStyleExtendParam
-
-  else if (currentMonitorData.value.monitorType === MonitorType.disk)
+  }
+  else if (currentMonitorData.value.monitorType === MonitorType.disk) {
     currentMonitorData.value.extendParam = currentDiskExtendParam
+    const res = await DiskEditorRef.value?.verification()
+    if (res !== undefined)
+      verificationRes = res
+  }
 
   // console.log('保存', currentMonitorData.value.extendParam)
+  if (!verificationRes)
+    return
 
   if (props.index !== null) {
     const res = await saveByIndex(props.index, currentMonitorData.value)
@@ -125,7 +133,7 @@ async function handleSubmit() {
         <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
       </NTabPane>
       <NTabPane :name="MonitorType.disk" :tab="$t('deskModule.systemMonitor.diskState')">
-        <DiskEditor v-model:disk-extend-param="currentDiskExtendParam" />
+        <DiskEditor ref="DiskEditorRef" v-model:disk-extend-param="currentDiskExtendParam" />
       </NTabPane>
     </NTabs>
     <NButton @click="handleResetExtendParam">

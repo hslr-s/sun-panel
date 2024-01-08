@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import type { FormInst, FormRules } from 'naive-ui'
 import { NColorPicker, NForm, NFormItem, NSelect } from 'naive-ui'
 import type { DiskExtendParam } from '../../typings'
 import GenericMonitorCard from '../../components/GenericMonitorCard/index.vue'
@@ -7,6 +8,7 @@ import GenericProgress from '../../components/GenericProgress/index.vue'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { getDiskMountpoints } from '@/api/system/systemMonitor'
 import { defautSwatchesBackground } from '@/utils/defaultData'
+import { t } from '@/locales'
 
 interface Emit {
   (e: 'update:diskExtendParam', visible: DiskExtendParam): void
@@ -16,6 +18,14 @@ const props = defineProps<{
   diskExtendParam: DiskExtendParam
 }>()
 const emit = defineEmits<Emit>()
+const formRef = ref<FormInst | null>(null)
+const rules: FormRules = {
+  path: {
+    required: true,
+    message: t('form.required'),
+    trigger: 'blur',
+  },
+}
 
 const mountPointList = ref<{
   label: string
@@ -51,6 +61,26 @@ async function getMountPointList() {
 
 onMounted(() => {
   getMountPointList()
+})
+
+defineExpose({
+  async verification(): Promise<boolean> {
+    try {
+      const errors = await formRef.value?.validate()
+
+      if (!errors) {
+        return Promise.resolve(true)
+      }
+      else {
+        console.log(errors)
+        return Promise.resolve(false)
+      }
+    }
+    catch (error) {
+      console.error('An error occurred during validation:', error)
+      return Promise.resolve(false)
+    }
+  },
 })
 </script>
 
@@ -102,8 +132,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <NForm ref="formRef" v-model="extendParam">
-      <NFormItem :label="$t('deskModule.systemMonitor.diskMountPoint')">
+    <NForm ref="formRef" v-model="extendParam" :model="extendParam" :rules="rules">
+      <NFormItem :label="$t('deskModule.systemMonitor.diskMountPoint')" path="path">
         <NSelect v-model:value="extendParam.path" size="small" :options="mountPointList" />
       </NFormItem>
       <NFormItem :label="$t('deskModule.systemMonitor.progressColor')">
