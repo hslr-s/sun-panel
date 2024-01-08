@@ -5,16 +5,13 @@ import enUS from './en-US'
 import zhCN from './zh-CN'
 // import zhTW from './zh-TW'
 // import ruRU from './ru-RU'
-import { useAppStoreWithOut } from '@/store/modules/app'
-import type { Language } from '@/store/modules/app/helper'
 
-const appStore = useAppStoreWithOut()
 
-const defaultLocale = appStore.language || 'zh-CN'
+const defaultLocale = 'zh-CN'
 
 const i18n = createI18n({
   locale: defaultLocale,
-  fallbackLocale: 'en-US',
+  fallbackLocale: defaultLocale,
   allowComposition: true,
   messages: {
     'en-US': enUS,
@@ -27,7 +24,9 @@ const i18n = createI18n({
 
 export const t = i18n.global.t
 
-export function setLocale(locale: Language) {
+// 避免循环依赖appstore(authstore)language此处暂时先使用any
+// 后面有时间调整
+export function setLocale(locale: any) {
   i18n.global.locale = locale
 }
 
