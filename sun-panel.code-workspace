@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"name": "frontend",
+			"path": "src"
+		},
+		{
+			"name": "backend",
+			"path": "service"
+		},
+		{
+			"name": "root",
+			"path": "."
+		}
+	],
+	"settings": {
+		"vue.codeActions.enabled": false
+	}
+}
