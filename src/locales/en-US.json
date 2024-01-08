@@ -1,0 +1,242 @@
+{
+  "adminSettingUsers": {
+    "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
+    "alertText": "Data between accounts is not shared",
+    "appName": "User Management",
+    "currentUseUsername": "Current username",
+    "deletePromptContent": "Are you sure you want to delete {name} ({username})?",
+    "formRules": {
+      "passwordLimit": "6-20 characters",
+      "roleRequired": "Please select a role",
+      "usernameRequired": "Enter username with at least 5 characters"
+    },
+    "passwordPlaceholder": "Enter password",
+    "pblicText": "Public",
+    "role": "Role",
+    "setOrUnsetPublicMode": "Set/Unset public access",
+    "userCountText": "Total {count} users"
+  },
+  "adminSettingUsers.alertText": "Data between accounts are not interoperable",
+  "api": {
+    "loginExpires": "Login status has expired, please login again"
+  },
+  "appLauncher": {
+    "title": "System Applications & Settings"
+  },
+  "apps": {
+    "about": {
+      "QQGroup": "QQ Group:",
+      "QR": "QR Code (Recommended)",
+      "appName": "About",
+      "author": "Author:",
+      "donate": "🧧 Donate",
+      "issue": "Feedback:",
+      "viewUpdateLog": "Click here to view update log"
+    },
+    "baseSettings": {
+      "appName": "Basic Settings",
+      "bottomMargin": "Bottom margin",
+      "clock": "Clock component",
+      "clockSecondShow": "Show seconds",
+      "configFailed": "Configuration save failed, {message}",
+      "configSaved": "Configuration saved",
+      "contentArea": "Content area",
+      "customFooter": "Custom footer",
+      "detailIcon": "Detail icon",
+      "hideDescription": "Hide description information",
+      "hideTitle": "Hide title",
+      "leftRightMargin": "Left-right margin",
+      "mask": "Mask",
+      "maxWidth": "Max width",
+      "publicVisitModeShow": "Allow public mode display",
+      "resetWarnText": "Are you sure you want to reset these styles?",
+      "searchBar": "Search bar component",
+      "searchBarSearchItem": "Allow search bar to search items",
+      "searchBarShow": "Configuration saved",
+      "show": "Show",
+      "showTitle": "Show title",
+      "smallIcon": "Small icon",
+      "systemMonitorStatus": "System status component",
+      "textContent": "Text content",
+      "topMargin": "Top margin",
+      "uploadOrDragText": "Click to upload or drag and drop into the box to replace the image",
+      "vague": "Blur",
+      "wallpaper": "Wallpaper"
+    },
+    "exportImport": {
+      "appName": "Export/Import",
+      "errorConfigFileFormat": "The configuration file format is incorrect and cannot be imported",
+      "errorConfigFileLow": "The configuration file version is too low and cannot be compatible",
+      "export": "Export configuration",
+      "fileModified": "The file has been modified, import with caution",
+      "import": "Import configuration",
+      "moduleIcon": "Icon configuration",
+      "moduleStyle": "Style configuration",
+      "selectExportData": "Select the configuration data to export",
+      "selectImportData": "Select the configuration data to import",
+      "softwareVersionLow": "The current software version may be too old and may not be compatible with this configuration file. It is recommended to update the software to the latest version before importing again.",
+      "tip": "Importing icon configuration data will not clear existing icon data",
+      "warnConfigFileLow": "The configuration file version is too low but compatible"
+    },
+    "itemGroupManage": {
+      "appName": "Group Management",
+      "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
+      "groupName": "Group name"
+    },
+    "uploadsFileManager": {
+      "alertText": "Here you can manage wallpapers and icons you have uploaded.",
+      "appName": "Uploads File Management",
+      "copyFailed": "Copy failed",
+      "copyLink": "Copy link",
+      "copySuccess": "Link copied successfully. You can paste it in the address bar.",
+      "deleteWarningText": "Cannot be recovered after deletion. Are you sure you want to continue?",
+      "fileName": "Original file name",
+      "infoTitle": "File details",
+      "nothingText": "You haven't uploaded any images yet.",
+      "path": "File path",
+      "setWallpaper": "Set as wallpaper",
+      "uploadTime": "Upload time"
+    },
+    "userInfo": {
+      "appName": "My Information",
+      "theme": "Theme",
+      "themeStyle": {
+        "auto": "Follow the system ",
+        "dark": "Dark ",
+        "light": "Light "
+      }
+    }
+  },
+  "common": {
+    "action": "Action",
+    "add": "Add",
+    "addSuccess": "Added successfully",
+    "appName": "Sun-Panel",
+    "backgroundColor": "Background color",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete?",
+    "deleteConfirmByName": "Are you sure you want to delete {name}?",
+    "deleteFail": "Delete failed",
+    "deleteSuccess": "Deleted successfully",
+    "description": "Description",
+    "download": "Download",
+    "edit": "Edit",
+    "editFail": "Edit failed",
+    "editSuccess": "Edited successfully",
+    "export": "Export",
+    "exportSuccess": "Exported successfully",
+    "failed": "Operation failed",
+    "icon": "Icon",
+    "image": "Image",
+    "import": "Import",
+    "importSuccess": "Imported successfully",
+    "inputPlaceholder": "Please enter",
+    "inputPlaceholderByText": "Please enter {text}",
+    "language": "Language",
+    "leastOne": "Please keep at least one",
+    "nikeName": "Nickname",
+    "no": "No",
+    "noData": "No data available",
+    "password": "Password",
+    "refreshPage": "Please refresh the page",
+    "repeatLater": "Please try again later",
+    "reset": "Reset",
+    "role": {
+      "admin": "Admin",
+      "regularUser": "Regular"
+    },
+    "save": "Save",
+    "saveFail": "Save failed",
+    "saveSort": "Save sort",
+    "saveSuccess": "Saved successfully",
+    "serverError": "Server error",
+    "show": "Show",
+    "sort": "Sort",
+    "style": "Style",
+    "success": "Operation successful",
+    "text": "Text",
+    "textColor": "Text color",
+    "title": "Title",
+    "unknownError": "Unknown error",
+    "uploadFail": "Upload failed",
+    "username": "Username",
+    "verify": "Verify",
+    "warning": "Warning",
+    "yes": "Yes"
+  },
+  "deskModule": {
+    "clock": {
+      "fri": "Friday",
+      "mon": "Monday",
+      "sat": "Saturday",
+      "sun": "Sunday",
+      "thu": "Thursday",
+      "tue": "Tuesday",
+      "wed": "Wednesday"
+    },
+    "searchBox": {
+      "inputPlaceholder": "Enter search content",
+      "openWithNewOpen": "Open in new window"
+    },
+    "systemMonitor": {
+      "cpuState": "CPU status",
+      "diskMountPoint": "Mount point",
+      "diskState": "Disk status",
+      "memoryState": "Memory status",
+      "progressColor": "Main color",
+      "progressRailColor": "Secondary color",
+      "systemState": "System status"
+    }
+  },
+  "form": {
+    "required": "Required field"
+  },
+  "iconItem": {
+    "add": "Add item",
+    "currentPageLayerOpen": "Open in current page as layer",
+    "currentPageOpen": "Open in current page",
+    "edit": "Edit item",
+    "getGroupFail": "Failed to get group information",
+    "getIcon": "Get icon",
+    "geticonFail": "Failed to get icon",
+    "iconGroup": "Group",
+    "inputIconName": "Enter icon name",
+    "inputIconUrlOrUpload": "Enter icon URL or upload",
+    "lanUrl": "LAN URL",
+    "lanUrlInputPlaceholder": "http(s):// (LAN mode, will redirect to this address)",
+    "newWindowOpen": "Open in new window",
+    "onlineIcon": "Online icon",
+    "onlineIconLibrary": "Online icon library",
+    "openMethod": "Open method",
+    "selectUpload": "Local upload",
+    "url": "URL"
+  },
+  "login": {
+    "loginButton": "Login",
+    "passwordPlaceholder": "Enter password",
+    "usernamePlaceholder": "Enter username",
+    "welcomeMessage": "Welcome back!"
+  },
+  "panelHome": {
+    "changeToLanModel": "Switch to LAN mode",
+    "changeToLanModelSuccess": "Switched to LAN mode (mode status saved locally)",
+    "changeToWanModel": "Switch to WAN mode",
+    "changeToWanModelSuccess": "Switched to WAN mode (mode status saved locally)",
+    "goToLogin": "Go to login",
+    "openLanUrl": "Open LAN URL",
+    "openWanUrl": "Open WAN URL"
+  },
+  "settingUserInfo": {
+    "confirmLogoutText": "Are you sure you want to logout?",
+    "confirmPassword": "Confirm new password",
+    "confirmPasswordInconsistentMsg": "Passwords do not match",
+    "logout": "Logout",
+    "logoutSuccess": "You have safely logged out. Looking forward to seeing you again!",
+    "newPassword": "New password",
+    "oldPassword": "Old password",
+    "updatePassword": "Change password"
+  }
+}

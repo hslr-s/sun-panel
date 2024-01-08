@@ -1,11 +1,9 @@
 import type { App } from 'vue'
 import { createI18n } from 'vue-i18n'
-import enUS from './en-US'
+import enUS from './en-US.json'
 // import koKR from './ko-KR'
-import zhCN from './zh-CN'
-// import zhTW from './zh-TW'
+import zhCN from './zh-CN.json'
 // import ruRU from './ru-RU'
-
 
 const defaultLocale = 'zh-CN'
 
