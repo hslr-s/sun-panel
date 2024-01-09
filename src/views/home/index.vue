@@ -43,7 +43,7 @@ const dropdownShow = ref(false)
 const currentRightSelectItem = ref<Panel.ItemInfo | null>(null)
 const currentAddItenIconGroupId = ref<number | undefined>()
 
-const settingModalShow = ref(false)
+const settingModalShow = ref(true)
 
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])

@@ -139,7 +139,7 @@ onMounted(() => {
       </NButton>
     </div>
 
-    <div class=" overflow-auto w-full mt-[20px]  bg-slate-200 rounded-xl" style="height:calc(100% - 65px)">
+    <div class=" overflow-auto w-full mt-[20px]  bg-slate-200 dark:bg-zinc-900 rounded-xl" style="height:calc(100% - 65px)">
       <VueDraggable
         v-model="groups"
         item-key="sort" :animation="300"

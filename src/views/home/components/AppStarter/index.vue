@@ -11,7 +11,6 @@ interface App {
   icon: string
   auth?: number
 }
-
 const props = defineProps<{
   visible: boolean
 }>()
@@ -129,9 +128,9 @@ onUnmounted(() => {
           </div>
         </div>
       </template>
-      <div class="w-full h-full">
+      <div class="w-full h-full app-starter-modal-content">
         <NSpace vertical size="large" style="height: 100%;width: 100%;">
-          <NLayout has-sider>
+          <NLayout has-sider style="border-radius:0.75rem;">
             <NLayoutSider
               v-model:collapsed="collapsed"
               collapse-mode="width"
@@ -140,39 +139,41 @@ onUnmounted(() => {
               style="height: 100%;"
               content-style="overflow: hidden"
             >
-              <div
-                class="p-[5px] bg-slate-200 rounded-xl overflow-auto"
-                :style="{
-                  width: isSmallScreen ? '100%' : '220px',
-                  minWidth: '200px',
-                  height,
-                }"
-              >
+              <div class="w-full h-full dark:bg-[#2c2c32]">
                 <div
-                  v-for=" (item, index) in apps"
-                  :key="index"
-                  :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
-                  @click="handleClickApp(item)"
+                  class="p-[5px] bg-slate-200 dark:bg-zinc-900 rounded-xl overflow-auto"
+                  :style="{
+                    width: isSmallScreen ? '100%' : '220px',
+                    minWidth: '200px',
+                    height,
+                  }"
                 >
                   <div
-                    class="bg-white p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center"
+                    v-for=" (item, index) in apps"
+                    :key="index"
+                    :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
+                    @click="handleClickApp(item)"
                   >
-                    <div class="flex items-center justify-center">
-                      <div class="text-lg">
-                        <SvgIcon :icon="item.icon" />
+                    <div
+                      class="bg-white dark:bg-zinc-800 p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center"
+                    >
+                      <div class="flex items-center justify-center">
+                        <div class="text-lg">
+                          <SvgIcon :icon="item.icon" />
+                        </div>
+                        <span class="ml-2">{{ item.name }}</span>
                       </div>
-                      <span class="ml-2">{{ item.name }}</span>
-                    </div>
                     <!-- 更多按钮 -->
                     <!-- <div class="ml-auto">
                       <SvgIcon icon="mingcute-more-1-fill" />
                     </div> -->
+                    </div>
                   </div>
                 </div>
               </div>
             </NLayoutSider>
             <NLayoutContent :content-style="{ height }">
-              <div class="rounded-lg h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
                 <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>
@@ -186,5 +187,11 @@ onUnmounted(() => {
 <style scoped>
 .text-shadow {
   text-shadow: 0px 0px 5px gray;
+}
+</style>
+
+<style>
+.dark .app-starter-modal-content .n-layout{
+    background-color: #2c2c32;
 }
 </style>
