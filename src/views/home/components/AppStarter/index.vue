@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
 import { AppLoader, RoundCardModal, SvgIcon } from '@/components/common'
+import { t } from '@/locales'
 
 interface App {
   name: string
@@ -23,38 +24,38 @@ const componentName = ref('UserInfo')
 const collapsed = ref(false)
 const screenWidth = ref(0)
 const isSmallScreen = ref(false)
-const defaultTitle = '系统应用 & 设置'
+const defaultTitle = t('appLauncher.title')
 const title = ref('')
 const height = ref('500px')
 
 const apps = ref<App[]>([
   {
-    name: '用户信息',
+    name: t('apps.userInfo.appName'),
     componentName: 'UserInfo',
     icon: 'material-symbols-person-edit-outline-rounded',
   },
   {
-    name: '基本设置',
+    name: t('apps.baseSettings.appName'),
     componentName: 'Style',
     icon: 'ep-setting',
   },
   {
-    name: '分组管理',
+    name: t('apps.itemGroupManage.appName'),
     componentName: 'ItemGroupManage',
     icon: 'material-symbols-ad-group-outline-rounded',
   },
   {
-    name: '导入导出',
+    name: t('apps.exportImport.appName'),
     componentName: 'ImportExport',
     icon: 'icon-park-outline-import-and-export',
   },
   {
-    name: '上传文件管理',
+    name: t('apps.uploadsFileManager.appName'),
     componentName: 'UploadFileManager',
     icon: 'tabler:file-upload',
   },
   {
-    name: '关于',
+    name: t('apps.about.appName'),
     componentName: 'About',
     icon: 'lucide-info',
   },
@@ -93,7 +94,7 @@ function handleResize() {
 
 onMounted(() => {
   const adminApp: App = {
-    name: '用户管理',
+    name: t('adminSettingUsers.appName'),
     componentName: 'Users',
     icon: 'lucide-users',
     auth: 1,
@@ -116,7 +117,6 @@ onUnmounted(() => {
     <RoundCardModal
       v-model:show="show"
       style="max-width: 900px;"
-      title="应用列表"
       size="small"
     >
       <template #header>

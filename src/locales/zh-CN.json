@@ -1,0 +1,245 @@
+{
+  "adminSettingUsers": {
+    "EditpasswordPlaceholder": "请输入新密码，留空密码不变",
+    "alertText": "账号之间的数据不互通",
+    "appName": "用户管理",
+    "currentUseUsername": "当前账号",
+    "deletePromptContent": "你确定删除{name}({username})？",
+    "formRules": {
+      "passwordLimit": "6-20个字符",
+      "roleRequired": "请选择角色",
+      "usernameRequired": "请输入账号且大于5个字符"
+    },
+    "passwordPlaceholder": "请输入密码",
+    "pblicText": "公开",
+    "role": "角色",
+    "setOrUnsetPublicMode": "设置/取消公开访问",
+    "userCountText": "共{count}位用户"
+  },
+  "api": {
+    "loginExpires": "登录状态已过期，请重新登录"
+  },
+  "appLauncher": {
+    "title": "系统应用 & 设置"
+  },
+  "apps": {
+    "about": {
+      "QQGroup": "QQ交流群：",
+      "QR": "二维码(推荐)",
+      "addQQGroupUrl": "点击添加",
+      "appName": "关于",
+      "author": "作者：",
+      "checkUpdate": "检查新版本",
+      "donate": "🧧打赏",
+      "issue": "建议反馈：",
+      "viewUpdateLog": "点此查看更新说明"
+    },
+    "baseSettings": {
+      "appName": "基础设置",
+      "bottomMargin": "下边距",
+      "clock": "时钟组件",
+      "clockSecondShow": "显示秒",
+      "configFailed": "配置保存失败,{message}",
+      "configSaved": "配置已保存",
+      "contentArea": "内容区域",
+      "customFooter": "自定义footer",
+      "customImageAddress": "自定义图片地址",
+      "detailIcon": "详情图标",
+      "hideDescription": "隐藏描述信息",
+      "hideTitle": "隐藏标题",
+      "leftRightMargin": "左右边距",
+      "mask": "遮罩",
+      "maxWidth": "最大宽度",
+      "publicVisitModeShow": "公开模式允许显示",
+      "resetWarnText": "确定要重置这些样式吗？",
+      "searchBar": "搜索栏组件",
+      "searchBarSearchItem": "允许搜索栏搜索项目",
+      "searchBarShow": "配置已保存",
+      "show": "显示",
+      "showTitle": "显示标题",
+      "smallIcon": "小图标",
+      "systemMonitorStatus": "系统状态组件",
+      "textContent": "文本内容",
+      "topMargin": "上边距",
+      "uploadOrDragText": "点击上传替换图片或拖拽到框内",
+      "vague": "模糊",
+      "wallpaper": "壁纸"
+    },
+    "exportImport": {
+      "appName": "导出导入",
+      "errorConfigFileFormat": "配置文件格式不正确，无法导入",
+      "errorConfigFileLow": "配置文件版本过低，无法兼容",
+      "export": "导出配置",
+      "fileModified": "文件被修改过，谨慎导入",
+      "import": "导入配置",
+      "moduleIcon": "图标配置",
+      "moduleStyle": "样式配置",
+      "selectExportData": "请选择要导出的配置数据",
+      "selectImportData": "请选择要导入的配置数据",
+      "softwareVersionLow": "当前软件版本可能过旧，很有可能无法兼容该配置文件，请谨慎导入。推荐将软件更新到新版后再次导入",
+      "tip": "导入图标配置数据不会清空现有图标数据",
+      "transmuteStandard": "浏览器书签转换工具",
+      "warnConfigFileLow": "配置文件版本过低，但是兼容"
+    },
+    "itemGroupManage": {
+      "appName": "分组管理",
+      "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
+      "groupName": "分组名称"
+    },
+    "uploadsFileManager": {
+      "alertText": "你可以在这里管理你上传过的壁纸和图标",
+      "appName": "上传文件管理",
+      "copyFailed": "复制失败",
+      "copyLink": "复制链接",
+      "copySuccess": "链接复制成功，可以在图标地址栏",
+      "deleteWarningText": "删除后无法恢复，你确定要继续吗？",
+      "fileName": "原文件名",
+      "infoTitle": "文件详情",
+      "nothingText": "你还没有上传过任何图片",
+      "path": "文件路径",
+      "setWallpaper": "设置为壁纸",
+      "uploadTime": "上传时间"
+    },
+    "userInfo": {
+      "appName": "我的信息",
+      "theme": "主题",
+      "themeStyle": {
+        "auto": "跟随系统 ",
+        "dark": "深色 ",
+        "light": "浅色 "
+      }
+    }
+  },
+  "common": {
+    "action": "操作",
+    "add": "添加",
+    "addSuccess": "添加成功",
+    "appName": "Sun-Panel",
+    "backgroundColor": "背景颜色",
+    "cancel": "取消",
+    "confirm": "确定",
+    "continue": "继续",
+    "delete": "删除",
+    "deleteConfirm": "你确定要删除吗？",
+    "deleteConfirmByName": "你确定要删除{name}吗？",
+    "deleteFail": "删除失败",
+    "deleteSuccess": "删除成功",
+    "description": "描述信息",
+    "download": "下载",
+    "edit": "编辑",
+    "editFail": "编辑失败",
+    "editSuccess": "编辑成功",
+    "export": "导出",
+    "exportSuccess": "导出成功",
+    "failed": "操作失败",
+    "icon": "图标",
+    "image": "图片",
+    "import": "导入",
+    "importSuccess": "导入成功",
+    "inputPlaceholder": "请输入",
+    "inputPlaceholderByText": "请输入{text}",
+    "language": "语言",
+    "leastOne": "请至少保留一项",
+    "nikeName": "昵称",
+    "no": "否",
+    "noData": "暂无数据",
+    "password": "密码",
+    "refreshPage": "请刷新页面",
+    "repeatLater": "请稍后重试",
+    "reset": "重置",
+    "role": {
+      "admin": "管理",
+      "regularUser": "普通"
+    },
+    "save": "保存",
+    "saveFail": "保存成功",
+    "saveSort": "保存排序",
+    "saveSuccess": "保存成功",
+    "serverError": "服务器错误",
+    "show": "显示",
+    "sort": "排序",
+    "style": "风格",
+    "success": "操作成功",
+    "text": "文字",
+    "textColor": "文字颜色",
+    "title": "标题",
+    "unknownError": "未知错误",
+    "uploadFail": "上传失败",
+    "username": "账号",
+    "verify": "验证",
+    "warning": "警告",
+    "yes": "是"
+  },
+  "deskModule": {
+    "clock": {
+      "fri": "星期五",
+      "mon": "星期一",
+      "sat": "星期六",
+      "sun": "星期日",
+      "thu": "星期四",
+      "tue": "星期二",
+      "wed": "星期三"
+    },
+    "searchBox": {
+      "inputPlaceholder": "请输入搜索内容",
+      "openWithNewOpen": "新窗口打开"
+    },
+    "systemMonitor": {
+      "cpuState": "CPU状态",
+      "diskMountPoint": "挂载点",
+      "diskState": "磁盘状态",
+      "memoryState": "内存状态",
+      "progressColor": "主色",
+      "progressRailColor": "副色",
+      "systemState": "系统状态"
+    }
+  },
+  "form": {
+    "required": "必填项"
+  },
+  "iconItem": {
+    "add": "添加项目",
+    "currentPageLayerOpen": "当前页面弹窗打开",
+    "currentPageOpen": "当前页面打开",
+    "edit": "修改项目",
+    "getGroupFail": "分组信息获取失败",
+    "getIcon": "获取图标",
+    "geticonFail": "图标获取失败",
+    "iconGroup": "分组",
+    "inputIconName": "请输入图标名称",
+    "inputIconUrlOrUpload": "输入图标地址或上传",
+    "lanUrl": "局域网地址",
+    "lanUrlInputPlaceholder": "http(s)://（局域网模式，会跳转该地址）",
+    "newWindowOpen": "新窗口打开",
+    "onlineIcon": "在线图标",
+    "onlineIconLibrary": "在线图标库",
+    "openMethod": "打开方式",
+    "selectUpload": "本地上传",
+    "url": "地址"
+  },
+  "login": {
+    "loginButton": "登录",
+    "passwordPlaceholder": "密码",
+    "usernamePlaceholder": "账号",
+    "welcomeMessage": "欢迎回来！"
+  },
+  "panelHome": {
+    "changeToLanModel": "切换为内网模式",
+    "changeToLanModelSuccess": "已经切换到内网模式（模式状态仅保存在本地）",
+    "changeToWanModel": "切换为公网模式",
+    "changeToWanModelSuccess": "已经切换到公网模式（模式状态仅保存在本地）",
+    "goToLogin": "前往登录",
+    "openLanUrl": "打开局域网地址",
+    "openWanUrl": "打开公网地址"
+  },
+  "settingUserInfo": {
+    "confirmLogoutText": "你确定要退出登录吗？",
+    "confirmPassword": "确认新密码",
+    "confirmPasswordInconsistentMsg": "两次密码不一致",
+    "logout": "退出登录",
+    "logoutSuccess": "您已经安全退出，期待与你再次相见！",
+    "newPassword": "新密码",
+    "oldPassword": "旧密码",
+    "updatePassword": "修改密码"
+  }
+}

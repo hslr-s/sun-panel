@@ -9,4 +9,5 @@ type ApiSystem struct {
 	RegisterApi     RegisterApi
 	NoticeApi       NoticeApi
 	ModuleConfigApi ModuleConfigApi
+	MonitorApi      MonitorApi
 }

@@ -55,6 +55,10 @@ declare namespace Panel {
         maxWidth?:number
         maxWidthUnit:string
         marginX?:number
+        footerHtml?:string
+        systemMonitorShow?:boolean
+        systemMonitorShowTitle?:boolean
+        systemMonitorPublicVisitModeShow?:boolean
     }
 
     interface userConfig{

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { AppState, Language, Theme } from './helper'
-import { getLocalSetting, setLocalSetting } from './helper'
+import { defaultSetting, getLocalSetting, removeLocalState, setLocalSetting } from './helper'
 import { store } from '@/store'
 
 export const useAppStore = defineStore('app-store', {
@@ -25,6 +25,11 @@ export const useAppStore = defineStore('app-store', {
 
     recordState() {
       setLocalSetting(this.$state)
+    },
+
+    removeToken() {
+      this.$state = defaultSetting()
+      removeLocalState()
     },
   },
 })

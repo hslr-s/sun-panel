@@ -5,6 +5,7 @@ import { NButton, NCard, NForm, NFormItem, NInput, useDialog, useMessage } from 
 import { VueDraggable } from 'vue-draggable-plus'
 import { deletes, edit, getList, saveSort } from '@/api/panel/itemIconGroup'
 import { RoundCardModal, SvgIcon } from '@/components/common'
+import { t } from '@/locales'
 
 interface EditModalArg {
   show: boolean
@@ -33,7 +34,7 @@ const editModalArg = ref<EditModalArg>({
       {
         required: true,
         trigger: 'blur',
-        message: '必填项',
+        message: t('form.required'),
       },
     ],
   },
@@ -66,26 +67,26 @@ function handleSaveSort() {
   }
   saveSort(saveItems).then(({ code, msg }) => {
     if (code === 0) {
-      ms.success('保存成功')
+      ms.success(t('common.saveSuccess'))
       sortStatus.value = false
     }
     else {
-      ms.error(`保存失败:${msg}`)
+      ms.error(`${t('common.saveFail')}:${msg}`)
     }
   })
 }
 
 function handleDelete(groupInfo: Panel.ItemIconGroup) {
   dialog.warning({
-    title: '警告',
-    content: `你确定删除此分组[ ${groupInfo.title} ]，删除后此分组应用图标将丢失？`,
-    positiveText: '确定',
-    negativeText: '取消',
+    title: t('common.warning'),
+    content: t('apps.itemGroupManage.deleteWarnText', { name: groupInfo.title }),
+    positiveText: t('common.confirm'),
+    negativeText: t('common.cancel'),
     onPositiveClick: () => {
       if (groupInfo.id) {
         deletes([groupInfo.id]).then(({ code, msg }) => {
           if (code !== 0)
-            ms.error(`删除失败:${msg}`)
+            ms.error(t('common.deleteFail'))
           else
             refreshList()
         })
@@ -126,15 +127,15 @@ onMounted(() => {
   <div class="h-full">
     <div class="p-2">
       <NButton type="success" size="small" style="margin-right: 10px;" @click="handleAddGroup">
-        新增分组
+        {{ $t('common.add') }}
       </NButton>
 
       <NButton v-if="!sortStatus" size="small" @click="handleDragSort">
-        排序
+        {{ $t('common.sort') }}
       </NButton>
 
       <NButton v-else type="warning" size="small" @click="handleSaveSort">
-        保存排序
+        {{ $t('common.saveSort') }}
       </NButton>
     </div>
 
@@ -181,8 +182,8 @@ onMounted(() => {
 
     <RoundCardModal v-model:show="editModalArg.show" size="small" type="small" :title="editModalArg.editStatus === 1 ? '添加' : '编辑'" style="width: 400px;">
       <NForm ref="formRef" :model="editModalArg.model" :rules="editModalArg.rules">
-        <NFormItem path="title" label="分组名称">
-          <NInput v-model:value="editModalArg.model.title" type="text" :maxlength="20" show-count placeholder="请输入" />
+        <NFormItem path="title" :label="$t('apps.itemGroupManage.groupName')">
+          <NInput v-model:value="editModalArg.model.title" type="text" :maxlength="20" show-count />
         </NFormItem>
 
         <!-- <NFormItem path="name" label="昵称">
@@ -191,7 +192,7 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <NButton type="success" size="small" class="float-right" @click="handleSaveGroup">
-          确定
+          {{ $t('common.confirm') }}
         </NButton>
       </template>
     </RoundCardModal>

@@ -221,3 +221,11 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     }
   }
 }
+
+export function bytesToSize(bytes: number) {
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']
+  if (bytes === 0)
+    return '0B'
+  const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))))
+  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`
+}

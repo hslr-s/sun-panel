@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+const (
+	CACHE_DRIVE_REDIS  = "redis"
+	CACHE_DRIVE_MEMORY = "memory"
+)
+
 // 缓存接口-支持Redis和内存使用
 type Cacher[T any] interface {
 	// 设置

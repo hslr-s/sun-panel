@@ -1,11 +1,12 @@
 import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axios'
 import { createDiscreteApi } from 'naive-ui'
 import request from './axios'
+import { t } from '@/locales'
 import { useAuthStore } from '@/store'
 import { router } from '@/router'
 
 const { message } = createDiscreteApi(['message'])
-
+let loginMessageShow = false
 export interface HttpOption {
   url: string
   data?: any
@@ -34,7 +35,17 @@ function http<T = any>(
       return res.data
 
     if (res.data.code === 1001) {
-      message.warning('登录过期,请重新登录')
+      // 避免重复弹窗
+      if (loginMessageShow === false) {
+        loginMessageShow = true
+        message.warning(t('api.loginExpires'), {
+        // message.warning('登录过期', {
+          onLeave() {
+            loginMessageShow = false
+          },
+        })
+      }
+
       router.push({ path: '/login' })
       authStore.removeToken()
       return res.data

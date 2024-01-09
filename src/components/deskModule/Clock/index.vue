@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { t } from '@/locales'
 
 const props = defineProps<{
   hideSecond?: boolean
@@ -35,7 +36,15 @@ function updateCurrentDate() {
   const month = now.getMonth() + 1 // 月份从0开始，所以要加1
   // const year = now.getFullYear()
 
-  const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六']
+  const daysOfWeek = [
+    t('deskModule.clock.sun'),
+    t('deskModule.clock.mon'),
+    t('deskModule.clock.tue'),
+    t('deskModule.clock.wed'),
+    t('deskModule.clock.thu'),
+    t('deskModule.clock.fri'),
+    t('deskModule.clock.sat'),
+  ]
   // const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   currentDate.value.week = daysOfWeek[now.getDay()]
   currentDate.value.date = `${month}-${day}`
@@ -63,11 +72,11 @@ onBeforeUnmount(() => {
       {{ currentDate.time }}
     </span>
     <div class="hidden sm:hidden md:block">
-      <span>
+      <span class="mr-1">
         {{ currentDate.date }}
       </span>
       <span>
-        星期{{ currentDate.week }}
+        {{ currentDate.week }}
       </span>
     </div>
   </div>

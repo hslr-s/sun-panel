@@ -13,7 +13,12 @@ export interface AppState {
 }
 
 export function defaultSetting(): AppState {
-  return { siderCollapsed: false, theme: 'light', language: 'zh-CN' }
+  const lan = (navigator.language).toLowerCase()
+  let language: Language = 'en-US'
+  if (lan.includes('zh'))
+    language = 'zh-CN'
+
+  return { siderCollapsed: false, theme: 'light', language }
 }
 
 export function getLocalSetting(): AppState {
@@ -23,4 +28,8 @@ export function getLocalSetting(): AppState {
 
 export function setLocalSetting(setting: AppState): void {
   ss.set(LOCAL_NAME, setting)
+}
+
+export function removeLocalState() {
+  ss.remove(LOCAL_NAME)
 }
