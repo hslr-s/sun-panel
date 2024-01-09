@@ -43,6 +43,11 @@
 
 > 开源开发不易，如果觉得我的项目有帮到你，欢迎给我[打赏](./doc/donate.md)或者请我喝个奶茶☕（如果可以备注下您的昵称或者名字），你的支持就是我的动力，谢谢。
 
+<a href="https://www.paypal.me/hslrs">
+<img height="60" src="./doc/images/donate/paypal.png" target="_blank"></img> 
+</a>
+
+
 |   |   |
 | ------------ | ------------ |
 | <img height="300" src="./doc/images/donate/weixin.png"/> |  <img height="300" src="./doc/images/donate/alipay.png" /> |
@@ -54,10 +59,10 @@
 - [x] 增加访客账号
 - [x] 帐号解除邮箱限制
 - [x] 对上传的文件管理（针对账户增强重复利用，节省空间）
+- [x] 服务器监控
+- [x] 多国语言支持
 - [ ] 用户自定义搜索框搜索引擎
 - [ ] 搜索框样式自定义（背景颜色，文字颜色）
-- [ ] 多国语言支持
-- [ ] 服务器监控
 - [ ] docker管理器
 - [ ] 计划任务
 
@@ -150,9 +155,9 @@ hslr/sun-panel
 
 ## ❤️ 感谢
 
-- [Roc](https://github.com/RocCheng)提供自动构建多平台docker镜像[方案](https://github.com/hslr-s/sun-panel/issues/9#issuecomment-1817433439)
-- [jackloves111](https://github.com/jackloves111)帮助构建基础文档
-
+- [Roc](https://github.com/RocCheng)
+- [jackloves111](https://github.com/jackloves111)
+- [Rock.L](https://github.com/gitlyp)
 
 ## LICENSE
 [MIT](./LICENSE)
