@@ -43,9 +43,8 @@
 
 > 开源开发不易，如果觉得我的项目有帮到你，欢迎给我[打赏](./doc/donate.md)或者请我喝个奶茶☕（如果可以备注下您的昵称或者名字），你的支持就是我的动力，谢谢。
 
-<a href="https://www.paypal.me/hslrs" target="_blank">
-<div style="height:50px;width:160px;background-image:url(./doc/images/donate/paypal.png);background-size:100% 100%;"></div>
-<div>PayPal Click here</div>
+<a href="https://www.paypal.me/hslrs">
+<img height="60" src="./doc/images/donate/paypal.png" target="_blank"></img> 
 </a>
 
 
