@@ -27,8 +27,10 @@
     "about": {
       "QQGroup": "QQ Group:",
       "QR": "QR Code (Recommended)",
+      "addQQGroupUrl": "Click to add",
       "appName": "About",
       "author": "Author:",
+      "checkUpdate": "Check for new version",
       "donate": "🧧 Donate",
       "issue": "Feedback:",
       "viewUpdateLog": "Click here to view update log"
@@ -42,6 +44,7 @@
       "configSaved": "Configuration saved",
       "contentArea": "Content area",
       "customFooter": "Custom footer",
+      "customImageAddress": "Custom image address",
       "detailIcon": "Detail icon",
       "hideDescription": "Hide description information",
       "hideTitle": "Hide title",
@@ -76,6 +79,7 @@
       "selectImportData": "Select the configuration data to import",
       "softwareVersionLow": "The current software version may be too old and may not be compatible with this configuration file. It is recommended to update the software to the latest version before importing again.",
       "tip": "Importing icon configuration data will not clear existing icon data",
+      "transmuteStandard": "Transmute Standard",
       "warnConfigFileLow": "The configuration file version is too low but compatible"
     },
     "itemGroupManage": {
@@ -216,8 +220,8 @@
   },
   "login": {
     "loginButton": "Login",
-    "passwordPlaceholder": "Enter password",
-    "usernamePlaceholder": "Enter username",
+    "passwordPlaceholder": "Password",
+    "usernamePlaceholder": "Username",
     "welcomeMessage": "Welcome back!"
   },
   "panelHome": {

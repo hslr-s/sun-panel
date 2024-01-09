@@ -4,7 +4,7 @@ import { NButton, NCard, NDivider, NForm, NFormItem, NInput, NSelect, useDialog,
 import { ref } from 'vue'
 import { useAppStore, useAuthStore, usePanelState, useUserStore } from '@/store'
 import { languageOptions } from '@/utils/defaultData'
-import type { Language, Theme } from '@/store/modules/app/helper'
+import type { Language } from '@/store/modules/app/helper'
 import { logout } from '@/api'
 import { RoundCardModal, SvgIcon } from '@/components/common/'
 import { updateInfo, updatePassword } from '@/api/system/user'
@@ -19,15 +19,15 @@ const ms = useMessage()
 const dialog = useDialog()
 
 const languageValue = ref(appStore.language)
-const themeValue = ref(appStore.theme)
+// const themeValue = ref(appStore.theme)
 const nickName = ref(authStore.userInfo?.name || '')
 const isEditNickNameStatus = ref(false)
 const formRef = ref<FormInst | null>(null)
-const themeOptions: { label: string; key: string; value: Theme }[] = [
-  { label: t('apps.userInfo.themeStyle.dark'), key: 'dark', value: 'dark' },
-  { label: t('apps.userInfo.themeStyle.light'), key: 'light', value: 'light' },
-  { label: t('apps.userInfo.themeStyle.auto'), key: 'Auto', value: 'auto' },
-]
+// const themeOptions: { label: string; key: string; value: Theme }[] = [
+//   { label: t('apps.userInfo.themeStyle.dark'), key: 'dark', value: 'dark' },
+//   { label: t('apps.userInfo.themeStyle.light'), key: 'light', value: 'light' },
+//   { label: t('apps.userInfo.themeStyle.auto'), key: 'Auto', value: 'auto' },
+// ]
 const updatePasswordModalState = ref({
   show: false,
   loading: false,
@@ -138,11 +138,11 @@ function handleChangeLanuage(value: Language) {
   location.reload()
 }
 
-function handleChangeTheme(value: Theme) {
-  themeValue.value = value
-  appStore.setTheme(value)
-  // location.reload()
-}
+// function handleChangeTheme(value: Theme) {
+//   themeValue.value = value
+//   appStore.setTheme(value)
+//   // location.reload()
+// }
 </script>
 
 <template>
@@ -187,14 +187,14 @@ function handleChangeTheme(value: Theme) {
         </div>
       </div>
 
-      <div class="mt-[10px]">
+      <!-- <div class="mt-[10px]">
         <div class="text-slate-500 font-bold">
           {{ $t('apps.userInfo.theme') }}
         </div>
         <div class="max-w-[200px]">
           <NSelect v-model:value="themeValue" :options="themeOptions" @update-value="handleChangeTheme" />
         </div>
-      </div>
+      </div> -->
 
       <NDivider style="margin: 10px 0;" dashed />
       <div>

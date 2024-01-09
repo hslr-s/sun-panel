@@ -529,7 +529,7 @@ function handleAddItem(itemIconGroupId?: number) {
           </template>
         </NButton>
 
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" :title="t('panelHome.goToLogin')" @click="router.push('/login')">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" :title="$t('panelHome.goToLogin')" @click="router.push('/login')">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="material-symbols:account-circle" />
           </template>

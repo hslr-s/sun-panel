@@ -26,8 +26,10 @@
     "about": {
       "QQGroup": "QQ交流群：",
       "QR": "二维码(推荐)",
+      "addQQGroupUrl": "点击添加",
       "appName": "关于",
       "author": "作者：",
+      "checkUpdate": "检查新版本",
       "donate": "🧧打赏",
       "issue": "建议反馈：",
       "viewUpdateLog": "点此查看更新说明"
@@ -41,6 +43,7 @@
       "configSaved": "配置已保存",
       "contentArea": "内容区域",
       "customFooter": "自定义footer",
+      "customImageAddress": "自定义图片地址",
       "detailIcon": "详情图标",
       "hideDescription": "隐藏描述信息",
       "hideTitle": "隐藏标题",
@@ -75,6 +78,7 @@
       "selectImportData": "请选择要导入的配置数据",
       "softwareVersionLow": "当前软件版本可能过旧，很有可能无法兼容该配置文件，请谨慎导入。推荐将软件更新到新版后再次导入",
       "tip": "导入图标配置数据不会清空现有图标数据",
+      "transmuteStandard": "浏览器书签转换工具",
       "warnConfigFileLow": "配置文件版本过低，但是兼容"
     },
     "itemGroupManage": {
@@ -154,7 +158,7 @@
     "serverError": "服务器错误",
     "show": "显示",
     "sort": "排序",
-    "style": "样式",
+    "style": "风格",
     "success": "操作成功",
     "text": "文字",
     "textColor": "文字颜色",
@@ -215,8 +219,8 @@
   },
   "login": {
     "loginButton": "登录",
-    "passwordPlaceholder": "请输入密码",
-    "usernamePlaceholder": "请输入账号",
+    "passwordPlaceholder": "密码",
+    "usernamePlaceholder": "账号",
     "welcomeMessage": "欢迎回来！"
   },
   "panelHome": {

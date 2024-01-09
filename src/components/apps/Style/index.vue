@@ -10,6 +10,7 @@ import { t } from '@/locales'
 const authStore = useAuthStore()
 const panelState = usePanelState()
 const ms = useMessage()
+const showWallpaperInput = ref(false)
 
 const isSaveing = ref(false)
 
@@ -211,6 +212,14 @@ function resetPanelConfig() {
         </NUploadDragger>
       </NUpload>
 
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('apps.baseSettings.customImageAddress') }}</span>
+        <NSwitch v-model:value="showWallpaperInput" />
+      </div>
+      <div v-if="showWallpaperInput" class="mt-1">
+        <NInput v-model:value="panelState.panelConfig.backgroundImageSrc" type="text" size="small" clearable />
+      </div>
+
       <div class="flex items-center mt-[10px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.vague') }}</span>
         <NSlider v-model:value="panelState.panelConfig.backgroundBlur" class="max-w-[200px]" :step="2" :max="20" />
@@ -268,6 +277,7 @@ function resetPanelConfig() {
       <NInput
         v-model:value="panelState.panelConfig.footerHtml"
         type="textarea"
+        clearable
       />
     </NCard>
 

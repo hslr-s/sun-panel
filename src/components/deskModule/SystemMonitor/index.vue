@@ -275,7 +275,15 @@ function handleRightMenuSelect(key: string | number) {
   </div>
 </template>
 
-<style>
+<style scoped>
+.text-shadow {
+  text-shadow: 2px 2px 50px rgb(0, 0, 0);
+}
+
+.app-icon-text-shadow {
+  text-shadow: 2px 2px 5px rgb(0, 0, 0);
+}
+
 .icon-info-box {
   width: 100%;
   display: grid;
