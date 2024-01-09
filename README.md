@@ -155,9 +155,9 @@ hslr/sun-panel
 
 ## ❤️ 感谢
 
-- [Roc](https://github.com/RocCheng)提供自动构建多平台docker镜像[方案](https://github.com/hslr-s/sun-panel/issues/9#issuecomment-1817433439)
-- [jackloves111](https://github.com/jackloves111)帮助构建基础文档
-
+- [Roc](https://github.com/RocCheng)
+- [jackloves111](https://github.com/jackloves111)
+- [Rock.L](https://github.com/gitlyp)
 
 ## LICENSE
 [MIT](./LICENSE)
