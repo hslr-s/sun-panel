@@ -43,7 +43,7 @@ const dropdownShow = ref(false)
 const currentRightSelectItem = ref<Panel.ItemInfo | null>(null)
 const currentAddItenIconGroupId = ref<number | undefined>()
 
-const settingModalShow = ref(true)
+const settingModalShow = ref(false)
 
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
@@ -560,7 +560,7 @@ function handleAddItem(itemIconGroupId?: number) {
     <!-- 弹窗 -->
     <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
-      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="false" size="small" role="dialog"
+      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
     >
       <template #header>
@@ -572,7 +572,7 @@ function handleAddItem(itemIconGroupId?: number) {
           <NSpin v-if="windowIframeIsLoad" size="small" />
         </div>
       </template>
-      <div class="w-full h-full rounded-2xl overflow-hidden border">
+      <div class="w-full h-full rounded-2xl overflow-hidden border dark:border-zinc-700">
         <NSkeleton v-if="windowIframeIsLoad" height="100%" width="100%" />
         <iframe
           v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc"

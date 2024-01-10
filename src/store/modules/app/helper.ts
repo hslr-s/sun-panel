@@ -18,7 +18,7 @@ export function defaultSetting(): AppState {
   if (lan.includes('zh'))
     language = 'zh-CN'
 
-  return { siderCollapsed: false, theme: 'light', language }
+  return { siderCollapsed: false, theme: 'auto', language }
 }
 
 export function getLocalSetting(): AppState {
