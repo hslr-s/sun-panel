@@ -151,7 +151,12 @@ hslr/sun-panel
 
 ### 自编译运行
 
-[请参考完整文档](https://sun-panel-doc.enianteam.com/deploy/compile.html)
+[请参考完整文档](https://sun-panel-doc.enianteam.com/zh_cn/usage/compile.html)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hslr-s/sun-panel&type=Date)](https://star-history.com/#hslr-s/sun-panel&Date)
+
 
 ## ❤️ 感谢
 
