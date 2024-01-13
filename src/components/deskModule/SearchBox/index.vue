@@ -170,14 +170,17 @@ onMounted(() => {
 
 <style scoped>
 .search-container {
-  border: 1px solid #ccc;
-  transition: border-color 0.5s;
+  border: 1px solid #d5d4d4;
+  transition: box-shadow 0.5s,backdrop-filter 0.5s;
   padding: 2px 10px;
+  backdrop-filter:blur(2px)
 }
 
 .focused, .search-container:hover {
-  border:2px solid;
-  margin:-1px;
+  box-shadow: 0px 0px 30px -5px rgba(41, 41, 41, 0.45);
+  -webkit-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.45);
+  -moz-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.45);
+  backdrop-filter:blur(5px)
 }
 
 .before {
