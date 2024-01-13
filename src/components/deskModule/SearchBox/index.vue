@@ -175,14 +175,7 @@ onMounted(() => {
   padding: 2px 10px;
 }
 
-.search-container:hover{
-  border-color: white;
-  border:2px solid;
-  margin:-1px;
-}
-
-.focused {
-  border-color: white;
+.focused, .search-container:hover {
   border:2px solid;
   margin:-1px;
 }
