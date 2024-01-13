@@ -2,7 +2,7 @@ import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axio
 import { createDiscreteApi } from 'naive-ui'
 import request from './axios'
 import { t } from '@/locales'
-import { useAuthStore } from '@/store'
+import { useAppStore, useAuthStore } from '@/store'
 import { router } from '@/router'
 
 const { message } = createDiscreteApi(['message'])
@@ -30,6 +30,7 @@ function http<T = any>(
   { url, data, method, headers, onDownloadProgress, signal, beforeRequest, afterRequest }: HttpOption,
 ) {
   const authStore = useAuthStore()
+  const appStore = useAppStore()
   const successHandler = (res: AxiosResponse<Response<T>>) => {
     if (res.data.code === 0 || typeof res.data === 'string')
       return res.data
@@ -94,6 +95,7 @@ function http<T = any>(
     headers = {}
 
   headers.token = authStore.token
+  headers.lang = appStore.language
   return method === 'GET'
     ? request.get(url, { params, signal, onDownloadProgress }).then(successHandler, failHandler)
     : request.post(url, params, { headers, signal, onDownloadProgress }).then(successHandler, failHandler)
