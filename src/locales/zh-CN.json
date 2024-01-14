@@ -2,7 +2,7 @@
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "请输入新密码，留空密码不变",
     "alertText": "账号之间的数据不互通",
-    "appName": "用户管理",
+    "appName": "账号管理",
     "currentUseUsername": "当前账号",
     "deletePromptContent": "你确定删除{name}({username})？",
     "formRules": {

@@ -2,7 +2,7 @@
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
     "alertText": "Data between accounts is not shared",
-    "appName": "User Management",
+    "appName": "Account management",
     "currentUseUsername": "Current username",
     "deletePromptContent": "Are you sure you want to delete {name} ({username})?",
     "formRules": {
@@ -16,7 +16,6 @@
     "setOrUnsetPublicMode": "Set/Unset public access",
     "userCountText": "Total {count} users"
   },
-  "adminSettingUsers.alertText": "Data between accounts are not interoperable",
   "api": {
     "loginExpires": "Login status has expired, please login again"
   },

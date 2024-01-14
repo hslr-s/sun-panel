@@ -44,14 +44,14 @@ const apps = ref<App[]>([
     icon: 'material-symbols-ad-group-outline-rounded',
   },
   {
-    name: t('apps.exportImport.appName'),
-    componentName: 'ImportExport',
-    icon: 'icon-park-outline-import-and-export',
-  },
-  {
     name: t('apps.uploadsFileManager.appName'),
     componentName: 'UploadFileManager',
     icon: 'tabler:file-upload',
+  },
+  {
+    name: t('apps.exportImport.appName'),
+    componentName: 'ImportExport',
+    icon: 'icon-park-outline-import-and-export',
   },
   {
     name: t('apps.about.appName'),
