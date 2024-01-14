@@ -27,7 +27,7 @@
     "about": {
       "QQGroup": "QQ Group:",
       "QR": "QR Code (Recommended)",
-      "addQQGroupUrl": "Click to add",
+      "addQQGroupUrl": "Click to join",
       "appName": "About",
       "author": "Author:",
       "checkUpdate": "Check for new version",
@@ -89,7 +89,7 @@
     },
     "uploadsFileManager": {
       "alertText": "Here you can manage wallpapers and icons you have uploaded.",
-      "appName": "Uploads File Management",
+      "appName": "Upload File Management",
       "copyFailed": "Copy failed",
       "copyLink": "Copy link",
       "copySuccess": "Link copied successfully. You can paste it in the address bar.",

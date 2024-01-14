@@ -155,7 +155,7 @@ onUnmounted(() => {
                     @click="handleClickApp(item)"
                   >
                     <div
-                      class="bg-white dark:bg-zinc-800 p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center"
+                      class="bg-white dark:bg-zinc-800 p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center hover:bg-slate-50 focus:bg-slate-50"
                     >
                       <div class="flex items-center justify-center">
                         <div class="text-lg">
