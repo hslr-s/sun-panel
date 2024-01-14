@@ -18,7 +18,7 @@ func LoginInterceptor(c *gin.Context) {
 
 	// 没有token信息视为未登录
 	if cToken == "" {
-		apiReturn.ErrorCode(c, 1000, global.Lang.Get("login.err_not_login"), nil)
+		apiReturn.ErrorByCode(c, 1000)
 		c.Abort() // 终止执行后续的操作，一般配合return使用
 		return
 	}
@@ -29,7 +29,7 @@ func LoginInterceptor(c *gin.Context) {
 		token, ok = global.CUserToken.Get(cToken)
 		// 可能已经安全退出或者很久没有使用已过期
 		if !ok || token == "" {
-			apiReturn.ErrorCode(c, 1001, global.Lang.Get("login.err_not_login"), nil)
+			apiReturn.ErrorByCode(c, 1001)
 			c.Abort() // 终止执行后续的操作，一般配合return使用
 			return
 		}

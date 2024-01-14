@@ -1,7 +1,6 @@
 package panel
 
 import (
-	"fmt"
 	"math"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
@@ -74,8 +73,6 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 				return err
 			}
 
-			fmt.Println("创建了默认分组", defaultGroup.ID)
-
 			groups = append(groups, defaultGroup)
 		}
 
@@ -106,7 +103,7 @@ func (a *ItemIconGroup) Deletes(c *gin.Context) {
 		return
 	} else {
 		if math.Abs(float64(len(req.Ids))-float64(count)) < 1 {
-			apiReturn.Error(c, "至少要保留一个")
+			apiReturn.ErrorCode(c, 1201, "At least one must be retained", nil)
 			return
 		}
 

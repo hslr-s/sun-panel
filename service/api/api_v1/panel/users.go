@@ -36,14 +36,14 @@ func (a UsersApi) Create(c *gin.Context) {
 		return
 	}
 
-	param.Username = strings.Trim(param.Username, " ")
+	param.Username = strings.TrimSpace(param.Username)
 	if len(param.Username) < 5 {
-		apiReturn.ErrorParamFomat(c, "账号不得少于5个字符")
+		apiReturn.ErrorParamFomat(c, "The account must be no less than 5 characters long")
 		return
 	}
 
 	mUser := models.User{
-		Username:  strings.Trim(param.Username, " "),
+		Username:  strings.TrimSpace(param.Username),
 		Password:  cmn.PasswordEncryption(param.Password),
 		Name:      param.Name,
 		HeadImage: param.HeadImage,
@@ -54,7 +54,8 @@ func (a UsersApi) Create(c *gin.Context) {
 
 	// 验证账号是否存在
 	if _, err := mUser.CheckUsernameExist(param.Username); err != nil {
-		apiReturn.Error(c, global.Lang.Get("register.mail_exist"))
+		apiReturn.ErrorByCode(c, 1006)
+		// apiReturn.Error(c, global.Lang.Get("register.mail_exist"))
 		return
 	}
 
@@ -74,21 +75,10 @@ func (a UsersApi) Deletes(c *gin.Context) {
 	}
 	param := UserIds{}
 	if err := c.ShouldBindBodyWith(&param, binding.JSON); err != nil {
-		apiReturn.Error(c, global.Lang.GetAndInsert("common.api_error_param_format", "[", err.Error(), "]"))
+		apiReturn.ErrorParamFomat(c, err.Error())
 		c.Abort()
 		return
 	}
-
-	// var count int64
-	// if err := global.Db.Model(&models.User{}).Count(&count).Error; err != nil {
-	// 	apiReturn.ErrorDatabase(c, err.Error())
-	// 	return
-	// } else {
-	// 	if math.Abs(float64(len(param.UserIds))-float64(count)) < 1 {
-	// 		apiReturn.Error(c, "至少要保留一个")
-	// 		return
-	// 	}
-	// }
 
 	txErr := global.Db.Transaction(func(tx *gorm.DB) error {
 		mitemIconGroup := models.ItemIconGroup{}
@@ -132,7 +122,7 @@ func (a UsersApi) Deletes(c *gin.Context) {
 		return nil
 	})
 	if txErr == ErrUsersApiAtLeastKeepOne {
-		apiReturn.Error(c, "至少要保留一个平台管理")
+		apiReturn.ErrorByCode(c, 1201)
 		return
 	} else if txErr != nil {
 		apiReturn.ErrorDatabase(c, txErr.Error())
@@ -145,7 +135,7 @@ func (a UsersApi) Deletes(c *gin.Context) {
 func (a UsersApi) Update(c *gin.Context) {
 	param := models.User{}
 	if err := c.ShouldBindBodyWith(&param, binding.JSON); err != nil {
-		apiReturn.Error(c, global.Lang.GetAndInsert("common.api_error_param_format", "[", err.Error(), "]"))
+		apiReturn.ErrorParamFomat(c, err.Error())
 		c.Abort()
 		return
 	}
@@ -161,8 +151,9 @@ func (a UsersApi) Update(c *gin.Context) {
 	}
 
 	param.Username = strings.Trim(param.Username, " ")
-	if len(param.Username) < 5 {
-		apiReturn.ErrorParamFomat(c, "账号不得少于5个字符")
+	if len(param.Username) < 3 {
+		// 账号不得少于3个字符
+		apiReturn.ErrorParamFomat(c, "The account must be no less than 3 characters long")
 		return
 	}
 
@@ -181,7 +172,8 @@ func (a UsersApi) Update(c *gin.Context) {
 	if user, err := mUser.CheckUsernameExist(param.Username); err != nil {
 		userInfo = user
 		if user.ID != param.ID {
-			apiReturn.Error(c, global.Lang.Get("register.mail_exist"))
+			apiReturn.ErrorByCode(c, 1006)
+			// apiReturn.Error(c, global.Lang.Get("register.mail_exist"))
 			return
 		}
 	} else {
@@ -210,7 +202,7 @@ func (a UsersApi) GetList(c *gin.Context) {
 
 	param := ParamsStruct{}
 	if err := c.ShouldBindBodyWith(&param, binding.JSON); err != nil {
-		apiReturn.Error(c, global.Lang.GetAndInsert("common.api_error_param_format", "[", err.Error(), "]"))
+		apiReturn.ErrorParamFomat(c, err.Error())
 		c.Abort()
 		return
 	}

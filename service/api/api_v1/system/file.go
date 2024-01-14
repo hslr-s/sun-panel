@@ -25,7 +25,7 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 	configUpload := global.Config.GetValueString("base", "source_path")
 	f, err := c.FormFile("imgfile")
 	if err != nil {
-		apiReturn.Error(c, "上传失败")
+		apiReturn.ErrorByCode(c, 1300)
 		return
 	} else {
 		fileExt := strings.ToLower(path.Ext(f.Filename))
@@ -40,7 +40,7 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 		}
 
 		if !cmn.InArray(agreeExts, fileExt) {
-			apiReturn.Error(c, "上传失败!只允许png,jpg,gif,jpeg,svg,ico文件")
+			apiReturn.ErrorByCode(c, 1301)
 			return
 		}
 		fileName := cmn.Md5(fmt.Sprintf("%s%s", f.Filename, time.Now().String()))
@@ -67,7 +67,7 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 
 	form, err := c.MultipartForm()
 	if err != nil {
-		apiReturn.Error(c, "上传失败")
+		apiReturn.ErrorByCode(c, 1300)
 		return
 	}
 	files := form.File["files[]"]

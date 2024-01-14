@@ -3,15 +3,12 @@ package system
 import (
 	"strconv"
 	"strings"
-	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/cmn/systemSetting"
-	"sun-panel/lib/mail"
 	"sun-panel/models"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -113,88 +110,4 @@ func (l *LoginApi) Logout(c *gin.Context) {
 	cToken := c.GetHeader("token")
 	global.CUserToken.Delete(cToken)
 	apiReturn.Success(c)
-}
-
-// 获取重置密码的验证码
-func (l *LoginApi) SendResetPasswordVCode(c *gin.Context) {
-	type ResstRequest struct {
-		LoginLoginVerify
-		Verification commonApiStructs.VerificationRequest `json:"verification"`
-	}
-	req := ResstRequest{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		apiReturn.Error(c, global.Lang.Get("common.api_error_param_format"))
-		return
-	}
-
-	// 验证码验证
-	{
-		errCode, verifcationId := base.VerificationCheck(req.Verification.CodeID, req.Verification.VCode)
-		if errCode != apiReturn.ERROR_CODE_SUCCESS {
-			apiReturn.ErrorVerification(c, errCode, verifcationId)
-			return
-		}
-	}
-
-	emailVCode := cmn.BuildRandCode(6, cmn.RAND_CODE_MODE2)
-	global.VerifyCodeCachePool.Set(req.Email, emailVCode, 10*time.Minute)
-
-	userCheck := &models.User{Mail: req.Email}
-	userInfo := userCheck.GetUserInfoByMail()
-	if userInfo == nil {
-		apiReturn.Error(c, "账号不存在")
-		return
-	}
-	emailInfoConfig := systemSetting.Email{}
-	global.SystemSetting.GetValueByInterface("system_email", &emailInfoConfig)
-	emailInfo := mail.EmailInfo{
-		Username: emailInfoConfig.Mail,
-		Password: emailInfoConfig.Password,
-		Host:     emailInfoConfig.Host,
-		Port:     emailInfoConfig.Port,
-	}
-	if err := mail.SendResetPasswordVCode(mail.NewEmailer(emailInfo), req.Email, emailVCode); err != nil {
-		apiReturn.Error(c, err.Error())
-		return
-	}
-
-	apiReturn.Success(c)
-
-}
-
-// 使用邮箱验证码重置密码
-func (l *LoginApi) ResetPasswordByVCode(c *gin.Context) {
-	req := registerInfo{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		apiReturn.Error(c, global.Lang.Get("common.api_error_param_format"))
-		return
-	}
-
-	userCheck := &models.User{Mail: req.Email}
-	userInfo := userCheck.GetUserInfoByMail()
-	if userInfo == nil {
-		apiReturn.Error(c, "账号不存在")
-		return
-	}
-
-	// 校验验证码
-	{
-		if emailVCode, ok := global.VerifyCodeCachePool.Get(req.Email); !ok || req.EmailVCode != emailVCode {
-			apiReturn.Error(c, global.Lang.Get("common.captcha_code_error"))
-			return
-		}
-		global.VerifyCodeCachePool.Delete(req.Email)
-	}
-
-	updateData := map[string]interface{}{
-		"password": cmn.PasswordEncryption(req.Password),
-		"token":    "",
-	}
-	global.UserToken.Delete(userInfo.Token) // 更新用户信息
-	if err := userInfo.UpdateUserInfoByUserId(userInfo.ID, updateData); err != nil {
-		apiReturn.ErrorDatabase(c, err.Error())
-		return
-	}
-	apiReturn.Success(c)
-
 }

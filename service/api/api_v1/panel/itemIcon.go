@@ -28,7 +28,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	}
 
 	if req.ItemIconGroupId == 0 {
-		apiReturn.Error(c, "分组为必填项")
+		apiReturn.Error(c, "Group is mandatory")
 		return
 	}
 
@@ -70,7 +70,7 @@ func (a *ItemIcon) AddMultiple(c *gin.Context) {
 
 	for i := 0; i < len(req); i++ {
 		if req[i].ItemIconGroupId == 0 {
-			apiReturn.Error(c, "分组为必填项")
+			apiReturn.ErrorParamFomat(c, "Group is mandatory")
 			return
 		}
 		req[i].UserId = userInfo.ID
