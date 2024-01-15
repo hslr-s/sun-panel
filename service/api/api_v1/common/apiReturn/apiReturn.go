@@ -100,14 +100,14 @@ func ErrorParamFomat(ctx *gin.Context, errMsg string) {
 // // 返回错误 数据库
 func ErrorDatabase(ctx *gin.Context, errMsg string) {
 	// Error(ctx, global.Lang.GetAndInsert("common.db_error", "[", errMsg, "]"))
-	ErrorByCodeAndMsg(ctx, 1202, errMsg)
+	ErrorByCodeAndMsg(ctx, 1200, errMsg)
 
 }
 
 // 返回错误 数据记录未找到
 func ErrorDataNotFound(ctx *gin.Context) {
 	// ErrorCode(ctx, ERROR_CODE_DATA_RECORD_NOT_FOUND, "未找到数据记录", nil)
-	ErrorByCode(ctx, 1202)
+	ErrorByCode(ctx, -1)
 }
 
 func ErrorByCode(ctx *gin.Context, code int) {

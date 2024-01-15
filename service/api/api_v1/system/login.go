@@ -35,12 +35,12 @@ type LoginLoginVerify struct {
 func (l LoginApi) Login(c *gin.Context) {
 	param := LoginLoginVerify{}
 	if err := c.ShouldBindJSON(&param); err != nil {
-		apiReturn.Error(c, global.Lang.Get("common.api_error_param_format"))
+		apiReturn.ErrorParamFomat(c, err.Error())
 		return
 	}
 
 	if errMsg, err := base.ValidateInputStruct(param); err != nil {
-		apiReturn.Error(c, errMsg)
+		apiReturn.ErrorParamFomat(c, errMsg)
 		return
 	}
 
@@ -57,7 +57,7 @@ func (l LoginApi) Login(c *gin.Context) {
 	if info, err = mUser.GetUserInfoByUsernameAndPassword(param.Username, cmn.PasswordEncryption(param.Password)); err != nil {
 		// 未找到记录 账号或密码错误
 		if err == gorm.ErrRecordNotFound {
-			apiReturn.Error(c, global.Lang.Get("login.err_username_password"))
+			apiReturn.ErrorByCode(c, 1003)
 			return
 		} else {
 			// 未知错误
@@ -69,7 +69,7 @@ func (l LoginApi) Login(c *gin.Context) {
 
 	// 停用或未激活
 	if info.Status != 1 {
-		apiReturn.Error(c, global.Lang.Get("login.err_username_deactivation"))
+		apiReturn.ErrorByCode(c, 1004)
 		return
 	}
 
