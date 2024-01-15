@@ -9,7 +9,7 @@ const themeRef = ref<'light' | 'dark'>('light')
 const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
   theme: themeRef.value === 'light' ? lightTheme : darkTheme,
 }))
-const { message } = createDiscreteApi(['message'], { configProviderProps: configProviderPropsRef })
+export const { message } = createDiscreteApi(['message'], { configProviderProps: configProviderPropsRef })
 
 export function apiRespErrMsg(res: Response): boolean {
   const appStore = useAppStore()

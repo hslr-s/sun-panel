@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { NButton, NColorPicker, NInput, NRadio, NUpload, useMessage } from 'naive-ui'
+import { NButton, NColorPicker, NInput, NRadio, NUpload } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import { computed, defineProps } from 'vue'
 import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
-import { t } from '@/locales'
+import { apiRespErrMsg } from '@/utils/request/apiMessage'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null
@@ -13,7 +13,6 @@ const emit = defineEmits<{
   (e: 'update:itemIcon', visible: Panel.ItemIcon): void // 定义修改父组件（prop内）的值的事件
 }>()
 const authStore = useAuthStore()
-const ms = useMessage()
 
 // 默认图标背景色
 const defautSwatchesBackground = [
@@ -75,7 +74,8 @@ const handleUploadFinish = ({
     emit('update:itemIcon', itemIconInfo.value || null)
   }
   else {
-    ms.error(`${t('common.uploadFail')}:${res.msg}`)
+    apiRespErrMsg(res)
+    // ms.error(`${t('common.uploadFail')}:${res.msg}`)
   }
 
   return file

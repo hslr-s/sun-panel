@@ -29,7 +29,7 @@
     "1201": "Please keep at least one",
     "1202": "Data record not found",
     "1300": "Upload failed",
-    "1301": "Unsupported file format",
+    "1301": "Upload failed, unsupported file format",
     "1400": "Parameter format error"
   },
   "appLauncher": {
