@@ -19,8 +19,6 @@ const languageValue = ref<Language>(appStore.language)
 // const isShowCaptcha = ref<boolean>(false)
 // const isShowRegister = ref<boolean>(false)
 
-const captchaRef = ref()
-
 const form = ref<Login.LoginReqest>({
   username: '',
   password: '',
@@ -28,21 +26,27 @@ const form = ref<Login.LoginReqest>({
 
 const loginPost = async () => {
   loading.value = true
-  const res = await login<Login.LoginResponse>(form.value)
+  try {
+    const res = await login<Login.LoginResponse>(form.value)
+    if (res.code === 0) {
+      authStore.setToken(res.data.token)
+      authStore.setUserInfo(res.data)
 
-  if (res.code === 0) {
-    authStore.setToken(res.data.token)
-    authStore.setUserInfo(res.data)
-
-    setTimeout(() => {
-      ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
+      setTimeout(() => {
+        ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
+        loading.value = false
+        router.push({ path: '/' })
+      }, 500)
+    }
+    else {
       loading.value = false
-      router.push({ path: '/' })
-    }, 500)
+      // captchaRef.value.refresh()
+    }
   }
-  else {
+  catch (error) {
     loading.value = false
-    captchaRef.value.refresh()
+    // 请检查网络或者服务器错误
+    console.log(error)
   }
 }
 

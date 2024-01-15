@@ -1,11 +1,10 @@
 import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axios'
-import { createDiscreteApi } from 'naive-ui'
 import request from './axios'
+import { apiRespErrMsg } from './apiMessage'
 import { t } from '@/locales'
 import { useAppStore, useAuthStore } from '@/store'
 import { router } from '@/router'
 
-const { message } = createDiscreteApi(['message'])
 let loginMessageShow = false
 export interface HttpOption {
   url: string
@@ -32,7 +31,7 @@ function http<T = any>(
   const authStore = useAuthStore()
   const appStore = useAppStore()
   const successHandler = (res: AxiosResponse<Response<T>>) => {
-    if (res.data.code === 0 || typeof res.data === 'string')
+    if (res.data.code === 0)
       return res.data
 
     if (res.data.code === 1001) {
@@ -64,25 +63,24 @@ function http<T = any>(
     }
 
     if (res.data.code === -1) {
-      message.warning(res.data.msg)
+      // message.warning(res.data.msg)
       // router.push({ path: '/login' })
       // authStore.removeToken()
       return res.data
     }
 
-    // 验证码相关错误
-    if (res.data.code > 1100 && res.data.code < 1200)
+    if (!apiRespErrMsg(res.data))
+      return Promise.reject(res.data)
+    else
       return res.data
-
-    return Promise.reject(res.data)
   }
 
   const failHandler = (error: Response<Error>) => {
     afterRequest?.()
-    // message.error('网络错误，请稍后重试', {
-    //   duration: 50000,
-    //   closable: true,
-    // })
+    message.error(t('common.networkError'), {
+      duration: 50000,
+      closable: true,
+    })
     throw new Error(error?.msg || 'Error')
   }
 

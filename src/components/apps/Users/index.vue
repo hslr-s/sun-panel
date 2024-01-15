@@ -97,8 +97,6 @@ const createColumns = ({
                   setPublicVisitUser(row.id as number).then(({ code }) => {
                     if (code === 0)
                       publicVisitUserId.value = row.id as number
-                    else if (code === 1111)
-                      message.error('用户不存在，请刷新后再试')
                   })
                 }
                 break

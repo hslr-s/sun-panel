@@ -11,8 +11,7 @@ const noticeStore = useNoticeStore()
 const userStore = useUserStore()
 const authStore = useAuthStore()
 
-const { notification } = createDiscreteApi(['notification'])
-
+const { notification, message } = createDiscreteApi(['notification', 'message'])
 /**
  * 生成指定时间格式
  * @param format 时间格式 默认：'YYYY-MM-DD HH:mm:ss'
