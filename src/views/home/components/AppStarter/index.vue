@@ -36,7 +36,7 @@ const apps = ref<App[]>([
   {
     name: t('apps.baseSettings.appName'),
     componentName: 'Style',
-    icon: 'ep-setting',
+    icon: 'ion-color-palette-outline',
   },
   {
     name: t('apps.itemGroupManage.appName'),

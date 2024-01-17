@@ -33,7 +33,7 @@
     "1400": "参数格式错误"
   },
   "appLauncher": {
-    "title": "系统应用 & 设置"
+    "title": "系统应用"
   },
   "apps": {
     "about": {
@@ -48,7 +48,7 @@
       "viewUpdateLog": "点此查看更新说明"
     },
     "baseSettings": {
-      "appName": "基础设置",
+      "appName": "风格设置",
       "bottomMargin": "下边距",
       "clock": "时钟组件",
       "clockSecondShow": "显示秒",

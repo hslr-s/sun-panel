@@ -33,7 +33,7 @@
     "1400": "Parameter format error"
   },
   "appLauncher": {
-    "title": "System Applications & Settings"
+    "title": "System Applications"
   },
   "apps": {
     "about": {
@@ -48,7 +48,7 @@
       "viewUpdateLog": "Click here to view update log"
     },
     "baseSettings": {
-      "appName": "Basic Settings",
+      "appName": "Style Settings",
       "bottomMargin": "Bottom margin",
       "clock": "Clock component",
       "clockSecondShow": "Show seconds",
