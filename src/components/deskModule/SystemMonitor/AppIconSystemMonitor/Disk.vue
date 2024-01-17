@@ -61,7 +61,7 @@ onUnmounted(() => {
       :progress-height="5"
       :percentage="correctionNumber(diskState?.usedPercent || 0)"
       :card-type-style="cardTypeStyle"
-      :info-card-right-text="`${formatdiskSize(formatdiskToByte(diskState?.total || 0))}/${formatdiskSize(formatdiskToByte(diskState?.free || 0))}`"
+      :info-card-right-text="`${formatdiskSize(formatdiskToByte(diskState?.used || 0))}/${formatdiskSize(formatdiskToByte(diskState?.free || 0))}`"
       :info-card-left-text="diskState?.mountpoint"
       :text-color="textColor"
     />
