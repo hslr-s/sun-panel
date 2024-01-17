@@ -56,7 +56,7 @@ onUnmounted(() => {
       :progress-height="5"
       :percentage="correctionNumber(memoryState?.usedPercent || 0)"
       :card-type-style="cardTypeStyle"
-      :info-card-right-text="`${formatMemorySize(memoryState?.total || 0)}/${formatMemorySize(memoryState?.free || 0)}`"
+      :info-card-right-text="`${formatMemorySize(memoryState?.used || 0)}/${formatMemorySize((memoryState?.total || 0) - (memoryState?.used || 0) || 0)}`"
       info-card-left-text="RAM"
       :text-color="textColor"
     />
