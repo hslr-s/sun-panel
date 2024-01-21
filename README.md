@@ -1,14 +1,11 @@
 [[ 简体中文 ]](https://sun-panel-doc.enianteam.com/zh_cn/introduce/project.html) |
 [[ English ]](https://sun-panel-doc.enianteam.com/introduce/project.html)
 
-<img src="./doc/images/logo.png" align="left" width="180px" height="180px"/>
-<img align="left" width="0" height="192px" hspace="10"/>
+<div align=center>
 
+<img src="./doc/images/logo.png" width="100" height="100" />
 
 # Sun-Panel
-Server, NAS navigation panel, Homepage, Browser homepage.
-<br>
-一个服务器、NAS导航面板、Homepage、浏览器首页。
 
 [![Github](https://img.shields.io/badge/Github-123456?logo=github&labelColor=242424)](https://github.com/hslr-s/sun-panel)
 [![Gitee](https://img.shields.io/badge/Gitee-123456?logo=gitee&labelColor=c71d23)](https://gitee.com/hslr/sun-panel)
@@ -19,6 +16,25 @@ Server, NAS navigation panel, Homepage, Browser homepage.
 [![GitHub User's stars](https://img.shields.io/github/stars/hslr-s%2Fsun-panel?style=flat&logo=github)](https://github.com/hslr-s/sun-panel)
 [![github downloads](https://img.shields.io/github/downloads/hslr-s/sun-panel/total.svg?logo=github)](https://github.com/hslr-s/sun-panel/releases)
 [![docker pulls](https://img.shields.io/docker/pulls/hslr/sun-panel.svg?logo=docker)](https://hub.docker.com/r/hslr/sun-panel)
+
+[[ 中文文档 ]](https://sun-panel-doc.enianteam.com/zh_cn) |
+[[ Document ]](https://sun-panel-doc.enianteam.com) |
+[[ Demo ]](http://sunpaneldemo.enianteam.com) 
+
+Server, NAS navigation panel, Homepage, Browser homepage.
+<br>
+一个服务器、NAS导航面板、Homepage、浏览器首页。
+
+</div>
+
+<!-- <img src="./doc/images/logo.png" align="left" width="180px" height="180px"/>
+<img align="left" width="0" height="192px" hspace="10"/>
+
+# Sun-Panel
+Server, NAS navigation panel, Homepage, Browser homepage.
+<br>
+一个服务器、NAS导航面板、Homepage、浏览器首页。 -->
+
 
 
 
