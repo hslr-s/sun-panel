@@ -32,12 +32,14 @@
 
 [查看演示站](https://sun-panel-doc.enianteam.com/introduce/demo_site.html)
 
-## 🐳 联系作者&交流群
+## 🐳 交流群&社区
 开发者：**[红烧猎人](https://blog.enianteam.com/u/sun/content/11)**
 
-新建的QQ交流群，进不去可以点上方连接联系作者
+QQ交流群，进不去可以点上方连接联系作者
 
-<img src="./doc/images/qq_group_qr.jpg"  height="350" />
+<img src="./doc/images/qq_group_qr2.png"  height="350" />
+
+Github社区板块：https://github.com/hslr-s/sun-panel/discussions
 
 ## 🍵 打赏
 
