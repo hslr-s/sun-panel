@@ -1,5 +1,5 @@
-[简体中文](https://sun-panel-doc.enianteam.com/zh_cn/) |
-[English](https://sun-panel-doc.enianteam.com/)
+[[ 简体中文 ]](https://sun-panel-doc.enianteam.com/zh_cn/introduce/project.html) |
+[[ English ]](https://sun-panel-doc.enianteam.com/introduce/project.html)
 
 <img src="./doc/images/logo.png" align="left" width="180px" height="180px"/>
 <img align="left" width="0" height="192px" hspace="10"/>
