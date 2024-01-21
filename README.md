@@ -1,14 +1,20 @@
-<div align=center>
+[简体中文](https://sun-panel-doc.enianteam.com/zh_cn/) |
+[English](https://sun-panel-doc.enianteam.com/)
 
-<img src="./doc/images/logo.png" width="100" height="100" />
+<img src="./doc/images/logo.png" align="left" width="180px" height="180px"/>
+<img align="left" width="0" height="192px" hspace="10"/>
+
 
 # Sun-Panel
-
-<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">bilibili</a> | <a href="https://www.youtube.com/channel/UCKwbFmKU25R602z6P2fgPYg">YouTube</a>
-
+Server, NAS navigation panel, Homepage, Browser homepage.
+<br>
 一个服务器、NAS导航面板、Homepage、浏览器首页。
 
-</div>
+[![Github](https://img.shields.io/badge/Github-123456?logo=github)](https://github.com/hslr-s/sun-panel) [![Gitee](https://img.shields.io/badge/Gitee-123456?logo=gitee&labelColor=c71d23)](https://gitee.com/hslr/sun-panel) [![docker](https://img.shields.io/badge/docker-123456?logo=docker&logoColor=fff&labelColor=1c7aed)](https://hub.docker.com/u/hslr/sun-panel) [![Bilibili](https://img.shields.io/badge/Bilibili-123456?logo=bilibili&logoColor=fff&labelColor=fb7299)
+](https://space.bilibili.com/27407696/channel/collectiondetail?sid=2023810) [![YouTube](https://img.shields.io/badge/YouTube-123456?logo=youtube&labelColor=ff0000)
+](https://www.youtube.com/channel/UCKwbFmKU25R602z6P2fgPYg)
+
+
 
 ![](./doc/images/icon-info-new.png)
 
