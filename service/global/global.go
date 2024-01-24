@@ -35,5 +35,6 @@ var (
 	Db                  *gorm.DB
 	RedisDb             *redis.Client
 	SystemSetting       *systemSetting.SystemSettingCache
+	SystemMonitor       cache.Cacher[interface{}]
 	RateLimit           *RateLimiter
 )

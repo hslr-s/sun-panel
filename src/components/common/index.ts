@@ -8,6 +8,7 @@ import RoundCardModal from './RoundCardModal/index.vue'
 import SvgIconOnline from './SvgIconOnline/index.vue'
 import JsonImportExport from './JsonImportExport/index.vue'
 import AppLoader from './AppLoader/index.vue'
+import ItemCard from './ItemCard/index.vue'
 
 export {
   Verification,
@@ -20,4 +21,5 @@ export {
   SvgIconOnline,
   JsonImportExport,
   AppLoader,
+  ItemCard,
 }

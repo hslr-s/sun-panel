@@ -1,14 +1,42 @@
+[[ 简体中文 ]](https://sun-panel-doc.enianteam.com/zh_cn/introduce/project.html) |
+[[ English ]](https://sun-panel-doc.enianteam.com/introduce/project.html)
+
 <div align=center>
 
 <img src="./doc/images/logo.png" width="100" height="100" />
 
 # Sun-Panel
 
-<a href="https://github.com/hslr-s/sun-panel.git">Github</a> | <a href="https://gitee.com/hslr/sun-panel.git">Gitee</a> | <a href="https://hub.docker.com/r/hslr/sun-panel">Docker Hub</a> |  <a href="https://www.bilibili.com/video/BV1AC4y1U7va">B站视频</a>
+[![Github](https://img.shields.io/badge/Github-123456?logo=github&labelColor=242424)](https://github.com/hslr-s/sun-panel)
+[![Gitee](https://img.shields.io/badge/Gitee-123456?logo=gitee&labelColor=c71d23)](https://gitee.com/hslr/sun-panel)
+[![docker](https://img.shields.io/badge/docker-123456?logo=docker&logoColor=fff&labelColor=1c7aed)](https://hub.docker.com/r/hslr/sun-panel) 
+[![Bilibili](https://img.shields.io/badge/Bilibili-123456?logo=bilibili&logoColor=fff&labelColor=fb7299)](https://space.bilibili.com/27407696/channel/collectiondetail?sid=2023810)
+[![YouTube](https://img.shields.io/badge/YouTube-123456?logo=youtube&labelColor=ff0000)](https://www.youtube.com/channel/UCKwbFmKU25R602z6P2fgPYg)
+<br>
+[![GitHub User's stars](https://img.shields.io/github/stars/hslr-s%2Fsun-panel?style=flat&logo=github)](https://github.com/hslr-s/sun-panel)
+[![github downloads](https://img.shields.io/github/downloads/hslr-s/sun-panel/total.svg?logo=github)](https://github.com/hslr-s/sun-panel/releases)
+[![docker pulls](https://img.shields.io/docker/pulls/hslr/sun-panel.svg?logo=docker)](https://hub.docker.com/r/hslr/sun-panel)
 
+[[ 中文文档 ]](https://sun-panel-doc.enianteam.com/zh_cn) |
+[[ Document ]](https://sun-panel-doc.enianteam.com) |
+[[ Demo ]](http://sunpaneldemo.enianteam.com) 
+
+Server, NAS navigation panel, Homepage, Browser homepage.
+<br>
 一个服务器、NAS导航面板、Homepage、浏览器首页。
 
 </div>
+
+<!-- <img src="./doc/images/logo.png" align="left" width="180px" height="180px"/>
+<img align="left" width="0" height="192px" hspace="10"/>
+
+# Sun-Panel
+Server, NAS navigation panel, Homepage, Browser homepage.
+<br>
+一个服务器、NAS导航面板、Homepage、浏览器首页。 -->
+
+
+
 
 ![](./doc/images/icon-info-new.png)
 
@@ -23,43 +51,48 @@
 - 支持网页内置小窗口打开（部分网站屏蔽此功能）
 - 占用资源小
 
+## 🧊 最新完整文档（DOC）
+
+[最新完整文档（DOC）](https://sun-panel-doc.enianteam.com/)
+
+
 ## 🎨 演示（demo）
 
-演示站说明：
-1. 服务器资源有限请不要上传特大图片文件
-2. 方便他人访问，请不要修改主账号密码
-3. 数据不定期清理，请不要作为主力导航页使用
-4. 请不要放违规内容
+[查看演示站](https://sun-panel-doc.enianteam.com/introduce/demo_site.html)
 
-演示地址：[点此跳转](http://sunpaneldemo.enianteam.com/#/)
-
-账号密码： [默认账号密码](#默认账号密码)
-账号：admin@sun.cc 密码：12345678
-
-## 🐳 联系作者&交流群
+## 🐳 交流群&社区
 开发者：**[红烧猎人](https://blog.enianteam.com/u/sun/content/11)**
 
-新建的QQ交流群，进不去可以点上方连接联系作者
+QQ交流群，进不去可以点上方连接联系作者
 
-<img src="./doc/images/qq_group_qr.jpg"  height="350" />
+<img src="./doc/images/qq_group_qr2.png"  height="350" />
+
+Github社区板块：https://github.com/hslr-s/sun-panel/discussions
 
 ## 🍵 打赏
 
-开源不易，如果该项目对您有帮助，您可以选择对我打赏[[点此去打赏页面](./doc/donate.md)]，在寒冷的冬天让我喝上一杯热乎乎的奶茶❤️。
+> 开源开发不易，如果觉得我的项目有帮到你，欢迎给我[打赏](./doc/donate.md)或者请我喝个奶茶☕（如果可以备注下您的昵称或者名字），你的支持就是我的动力，谢谢。
 
-## 🫓 后面想做的事
+<a href="https://www.paypal.me/hslrs">
+<img height="60" src="./doc/images/donate/paypal.png" target="_blank"></img> 
+</a>
 
-先画个饼
+
+|   |   |
+| ------------ | ------------ |
+| <img height="300" src="./doc/images/donate/weixin.png"/> |  <img height="300" src="./doc/images/donate/alipay.png" /> |
+
+## 🫓 TODO
 
 - [x] 分组，拖拽排序
-- [ ] 导入导出功能
-- [ ] 增加访客账号
+- [x] 导入导出功能
+- [x] 增加访客账号
+- [x] 帐号解除邮箱限制
+- [x] 对上传的文件管理（针对账户增强重复利用，节省空间）
+- [x] 服务器监控
+- [x] 多国语言支持
 - [ ] 用户自定义搜索框搜索引擎
 - [ ] 搜索框样式自定义（背景颜色，文字颜色）
-- [ ] 帐号解除邮箱限制
-- [ ] 对上传的文件管理（针对账户增强重复利用，节省空间）
-- [ ] 多国语言支持
-- [ ] 服务器监控
 - [ ] docker管理器
 - [ ] 计划任务
 
@@ -131,12 +164,12 @@
 |/app/runtime|运行日志(不推荐挂载)|
 
 1. 拉取镜像
-```
+```sh
 docker pull hslr/sun-panel
 ```
 
 2. 直接下载运行
-```
+```sh
 docker run -d --restart=always -p 3002:3002 \
 -v ~/docker_data/sun-panel/conf:/app/conf \
 -v ~/docker_data/sun-panel/uploads:/app/uploads \
@@ -148,55 +181,18 @@ hslr/sun-panel
 
 ### 自编译运行
 
-#### 前端
-```
-# 开发运行
-pnpm dev
+[请参考完整文档](https://sun-panel-doc.enianteam.com/zh_cn/usage/compile.html)
 
-# 编译打包(打包后生成dist目录，若需要结合后端使用请改成web)
-pnpm build
-```
+## Star History
 
-#### 后端
+[![Star History Chart](https://api.star-history.com/svg?repos=hslr-s/sun-panel&type=Date)](https://star-history.com/#hslr-s/sun-panel&Date)
 
-1.正式编译程序前先进入`service`
-
-2.按照[静态资源编译教程](./service/assets/readme.md)编译后端静态文件
-
-3.正式编译
-```
-# 进入后端项目
-cd service
-
-# 开发运行
-go run main.go
-
-# 编译打包
-go build -o sun-panel main.go
-```
-
-#### docker windows本地开发编译运行
-
-```
-// 编译
-docker build -t sun-panel .
-
-// 运行 D:\docker\data\sun-panel 为本地运行的路径
-docker run --rm -d -p 3003:3002 -v  D:\docker\data\sun-panel\conf:/app/conf -v  D:\docker\data\sun-panel\runtime:/app/runtime -v D:\docker\data\sun-panel\uploads:/app/uploads -v D:\docker\data\sun-panel\database:/app/database --name sun-panel sun-panel
-```
-
-## 🎉 图标、壁纸网站推荐
-
-图标：
-- [阿里巴巴矢量图标](https://www.iconfont.cn/)
-- [Icons8](https://icons8.com/)
-- [Vectorjunky](https://www.iconfinder.com/)
-
-壁纸：
-- [Wallhaven](https://wallhaven.cc/)
-- [Wallpaperscraft](https://wallpaperscraft.com/)
-- [Wallpaper Abyss](https://wall.alphacoders.com/)
 
 ## ❤️ 感谢
 
-- [Roc](https://github.com/RocCheng)提供自动构建多平台docker镜像[方案](https://github.com/hslr-s/sun-panel/issues/9#issuecomment-1817433439)
+- [Roc](https://github.com/RocCheng)
+- [jackloves111](https://github.com/jackloves111)
+- [Rock.L](https://github.com/gitlyp)
+
+## LICENSE
+[MIT](./LICENSE)

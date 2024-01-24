@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
 import { AppLoader, RoundCardModal, SvgIcon } from '@/components/common'
+import { t } from '@/locales'
 
 interface App {
   name: string
@@ -10,7 +11,6 @@ interface App {
   icon: string
   auth?: number
 }
-
 const props = defineProps<{
   visible: boolean
 }>()
@@ -23,30 +23,38 @@ const componentName = ref('UserInfo')
 const collapsed = ref(false)
 const screenWidth = ref(0)
 const isSmallScreen = ref(false)
+const defaultTitle = t('appLauncher.title')
+const title = ref('')
+const height = ref('500px')
 
 const apps = ref<App[]>([
   {
-    name: '用户信息',
+    name: t('apps.userInfo.appName'),
     componentName: 'UserInfo',
     icon: 'material-symbols-person-edit-outline-rounded',
   },
   {
-    name: '基本设置',
+    name: t('apps.baseSettings.appName'),
     componentName: 'Style',
-    icon: 'ep-setting',
+    icon: 'ion-color-palette-outline',
   },
   {
-    name: '分组管理',
+    name: t('apps.itemGroupManage.appName'),
     componentName: 'ItemGroupManage',
     icon: 'material-symbols-ad-group-outline-rounded',
   },
   {
-    name: '导入导出',
+    name: t('apps.uploadsFileManager.appName'),
+    componentName: 'UploadFileManager',
+    icon: 'tabler:file-upload',
+  },
+  {
+    name: t('apps.exportImport.appName'),
     componentName: 'ImportExport',
     icon: 'icon-park-outline-import-and-export',
   },
   {
-    name: '关于',
+    name: t('apps.about.appName'),
     componentName: 'About',
     icon: 'lucide-info',
   },
@@ -85,7 +93,7 @@ function handleResize() {
 
 onMounted(() => {
   const adminApp: App = {
-    name: '用户管理',
+    name: t('adminSettingUsers.appName'),
     componentName: 'Users',
     icon: 'lucide-users',
     auth: 1,
@@ -108,7 +116,6 @@ onUnmounted(() => {
     <RoundCardModal
       v-model:show="show"
       style="max-width: 900px;"
-      title="应用列表"
       size="small"
     >
       <template #header>
@@ -117,13 +124,13 @@ onUnmounted(() => {
             <SvgIcon class=" transition-all duration-500" :icon="collapsed ? 'tabler-layout-sidebar-right-collapse-filled' : 'tabler-layout-sidebar-left-collapse-filled'" />
           </div>
           <div class="ml-1">
-            系统应用 & 设置
+            {{ title === '' ? defaultTitle : title }}
           </div>
         </div>
       </template>
-      <div class="w-full h-full">
+      <div class="w-full h-full app-starter-modal-content">
         <NSpace vertical size="large" style="height: 100%;width: 100%;">
-          <NLayout has-sider>
+          <NLayout has-sider style="border-radius:0.75rem;">
             <NLayoutSider
               v-model:collapsed="collapsed"
               collapse-mode="width"
@@ -132,33 +139,42 @@ onUnmounted(() => {
               style="height: 100%;"
               content-style="overflow: hidden"
             >
-              <div class="h-[500px] p-[5px] bg-slate-200 rounded-xl overflow-auto" :style="{ width: isSmallScreen ? '100%' : '220px', minWidth: '200px' }">
+              <div class="w-full h-full dark:bg-[#2c2c32]">
                 <div
-                  v-for=" (item, index) in apps"
-                  :key="index"
-                  :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
-                  @click="handleClickApp(item)"
+                  class="p-[5px] bg-slate-200 dark:bg-zinc-900 rounded-xl overflow-auto"
+                  :style="{
+                    width: isSmallScreen ? '100%' : '220px',
+                    minWidth: '200px',
+                    height,
+                  }"
                 >
                   <div
-                    class="bg-white p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center"
+                    v-for=" (item, index) in apps"
+                    :key="index"
+                    :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
+                    @click="handleClickApp(item)"
                   >
-                    <div class="flex items-center justify-center">
-                      <div class="text-lg">
-                        <SvgIcon :icon="item.icon" />
+                    <div
+                      class="bg-white dark:bg-zinc-800 p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center hover:bg-slate-50 focus:bg-slate-50"
+                    >
+                      <div class="flex items-center justify-center">
+                        <div class="text-lg">
+                          <SvgIcon :icon="item.icon" />
+                        </div>
+                        <span class="ml-2">{{ item.name }}</span>
                       </div>
-                      <span class="ml-2">{{ item.name }}</span>
-                    </div>
                     <!-- 更多按钮 -->
                     <!-- <div class="ml-auto">
                       <SvgIcon icon="mingcute-more-1-fill" />
                     </div> -->
+                    </div>
                   </div>
                 </div>
               </div>
             </NLayoutSider>
-            <NLayoutContent content-style="height:500px;overflow:hidden">
-              <div class="p-[5px] rounded-lg transition-all duration-500 min-w-[300px]" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
-                <AppLoader :component-name="componentName" />
+            <NLayoutContent :content-style="{ height }">
+              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+                <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>
           </NLayout>
@@ -171,5 +187,11 @@ onUnmounted(() => {
 <style scoped>
 .text-shadow {
   text-shadow: 0px 0px 5px gray;
+}
+</style>
+
+<style>
+.dark .app-starter-modal-content .n-layout{
+    background-color: #2c2c32;
 }
 </style>

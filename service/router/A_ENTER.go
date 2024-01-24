@@ -17,11 +17,8 @@ func InitRouters(addr string) error {
 	rootRouter := router.Group("/")
 	routerGroup := rootRouter.Group("api")
 
-	// 管理员接口
-
 	// 接口
 	system.Init(routerGroup)
-	// admin.Init(routerGroup)
 	panel.Init(routerGroup)
 	docker.Init(routerGroup)
 	openness.Init(routerGroup)
@@ -30,13 +27,15 @@ func InitRouters(addr string) error {
 	{
 		webPath := "./web"
 		router.StaticFile("/", webPath+"/index.html")
+		router.Static("/assets", webPath+"/assets")
+		router.Static("/custom", webPath+"/custom")
 		router.StaticFile("/favicon.ico", webPath+"/favicon.ico")
 		router.StaticFile("/favicon.svg", webPath+"/favicon.svg")
-		router.Static("/assets", webPath+"/assets")
 	}
 
 	// 上传的文件
-	router.Static("/uploads", "./uploads")
+	sourcePath := global.Config.GetValueString("base", "source_path")
+	router.Static(sourcePath[1:], sourcePath)
 
 	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on ", addr)
 	return router.Run(addr)

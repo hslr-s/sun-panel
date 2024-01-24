@@ -12,7 +12,5 @@ func InitLogin(router *gin.RouterGroup) {
 
 	router.POST("/login", loginApi.Login)
 	router.POST("/logout", middleware.LoginInterceptor, loginApi.Logout)
-	router.POST("/login/sendResetPasswordVCode", loginApi.SendResetPasswordVCode)
-	router.POST("/login/resetPasswordByVCode", loginApi.ResetPasswordByVCode)
 
 }

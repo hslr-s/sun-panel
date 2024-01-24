@@ -3,7 +3,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { NBackTop, NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref } from 'vue'
 import { AppIcon, AppStarter, EditItem } from './components'
-import { Clock, SearchBox } from '@/components/deskModule'
+import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
 import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
@@ -13,6 +13,7 @@ import { useAuthStore, usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { router } from '@/router'
+import { t } from '@/locales'
 
 interface ItemGroup extends Panel.ItemIconGroup {
   sortStatus?: boolean
@@ -68,8 +69,10 @@ function openPage(openMethod: number, url: string, title?: string) {
 }
 
 function handleItemClick(itemGroupIndex: number, item: Panel.ItemInfo) {
-  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus)
+  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus) {
+    handleEditItem(item)
     return
+  }
 
   let jumpUrl = ''
 
@@ -132,18 +135,18 @@ function handleRightMenuSelect(key: string | number) {
       break
     case 'delete':
       dialog.warning({
-        title: '警告',
-        content: `你确定要删除图标 ${currentRightSelectItem.value?.title} ？`,
-        positiveText: '确定',
-        negativeText: '取消',
+        title: t('common.warning'),
+        content: t('common.deleteConfirmByName', { name: currentRightSelectItem.value?.title }),
+        positiveText: t('common.confirm'),
+        negativeText: t('common.cancel'),
         onPositiveClick: () => {
           deletes([currentRightSelectItem.value?.id as number]).then(({ code, msg }) => {
             if (code === 0) {
-              ms.success('已删除')
+              ms.success(t('common.deleteSuccess'))
               getList()
             }
             else {
-              ms.error(`删除失败：${msg}`)
+              ms.error(`${t('common.deleteFail')}:${msg}`)
             }
           })
         },
@@ -181,10 +184,10 @@ function handleEditSuccess(item: Panel.ItemInfo) {
 function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
   panelState.setNetworkMode(mode)
   if (mode === PanelStateNetworkModeEnum.lan)
-    ms.success('已经切换成局域网模式(此配置仅保存在本地)')
+    ms.success(t('panelHome.changeToLanModelSuccess'))
 
   else
-    ms.success('已经切换成互联网模式(此配置仅保存在本地)')
+    ms.success(t('panelHome.changeToWanModelSuccess'))
 }
 
 // 结束拖拽
@@ -206,11 +209,11 @@ function handleSaveSort(itemGroup: ItemGroup) {
 
     saveSort({ itemIconGroupId: itemGroup.id as number, sortItems: saveItems }).then(({ code, msg }) => {
       if (code === 0) {
-        ms.success('保存成功')
+        ms.success(t('common.saveSuccess'))
         itemGroup.sortStatus = false
       }
       else {
-        ms.error(`保存失败:${msg}`)
+        ms.error(`${t('common.saveFail')}:${msg}`)
       }
     })
   }
@@ -219,7 +222,7 @@ function handleSaveSort(itemGroup: ItemGroup) {
 function getDropdownMenuOptions() {
   const dropdownMenuOptions = [
     {
-      label: '新窗口打开',
+      label: t('iconItem.newWindowOpen'),
       key: 'newWindows',
     },
 
@@ -227,24 +230,24 @@ function getDropdownMenuOptions() {
 
   if (currentRightSelectItem.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
     dropdownMenuOptions.push({
-      label: '打开局域网地址',
+      label: t('panelHome.openLanUrl'),
       key: 'openLanUrl',
     })
   }
 
   if (currentRightSelectItem.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
     dropdownMenuOptions.push({
-      label: '打开互联网地址',
+      label: t('panelHome.openWanUrl'),
       key: 'openWanUrl',
     })
   }
 
   if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
     dropdownMenuOptions.push({
-      label: '编辑',
+      label: t('common.edit'),
       key: 'edit',
     }, {
-      label: '删除',
+      label: t('common.delete'),
       key: 'delete',
     })
   }
@@ -268,7 +271,7 @@ onMounted(() => {
 // 前端搜索过滤
 function itemFrontEndSearch(keyword?: string) {
   keyword = keyword?.trim()
-  if (keyword !== '') {
+  if (keyword !== '' && panelState.panelConfig.searchBoxSearchIcon) {
     const filteredData = ref<ItemGroup[]>([])
     for (let i = 0; i < items.value.length; i++) {
       const element = items.value[i].items?.filter((item: Panel.ItemInfo) => {
@@ -332,8 +335,12 @@ function handleAddItem(itemIconGroupId?: number) {
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
     <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
       <div
-        class="p-2.5 xs:max-w-[95%] lg:max-w-[80%]  mx-auto "
-        :style="{ marginTop: `${panelState.panelConfig.marginTop}%`, marginBottom: `${panelState.panelConfig.marginBottom}%` }"
+        class="p-2.5 mx-auto"
+        :style="{
+          marginTop: `${panelState.panelConfig.marginTop}%`,
+          marginBottom: `${panelState.panelConfig.marginBottom}%`,
+          maxWidth: (panelState.panelConfig.maxWidth ?? '1200') + panelState.panelConfig.maxWidthUnit,
+        }"
       >
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
@@ -356,7 +363,20 @@ function handleAddItem(itemIconGroupId?: number) {
         </div>
 
         <!-- 应用盒子 -->
-        <div class="mt-[50px]">
+        <div :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
+          <!-- 系统监控状态 -->
+          <div
+            v-if="panelState.panelConfig.systemMonitorShow
+              && ((panelState.panelConfig.systemMonitorPublicVisitModeShow && authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC)
+                || authStore.visitMode === VisitMode.VISIT_MODE_LOGIN)"
+            class="flex mx-auto"
+          >
+            <SystemMonitor
+              :allow-edit="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+              :show-title="panelState.panelConfig.systemMonitorShowTitle"
+            />
+          </div>
+
           <!-- 组纵向排列 -->
           <div
             v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
@@ -367,7 +387,7 @@ function handleAddItem(itemIconGroupId?: number) {
           >
             <!-- 分组标题 -->
             <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
-              <span>
+              <span class="text-shadow">
                 {{ itemGroup.title }}
               </span>
               <div
@@ -375,10 +395,10 @@ function handleAddItem(itemIconGroupId?: number) {
                 class="ml-2 delay-100 transition-opacity flex"
                 :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
               >
-                <span class="mr-2 cursor-pointer" title="添加快捷图标" @click="handleAddItem(itemGroup.id)">
+                <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="handleAddItem(itemGroup.id)">
                   <SvgIcon class="text-white font-xl" icon="typcn:plus" />
                 </span>
-                <span class="mr-2 cursor-pointer " title="排序组快捷图标" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
+                <span class="mr-2 cursor-pointer " :title="t('common.sort')" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
                   <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
                 </span>
               </div>
@@ -408,7 +428,7 @@ function handleAddItem(itemIconGroupId?: number) {
                   <div v-if="itemGroup.items.length === 0" class="not-drag">
                     <AppIcon
                       :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
-                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
+                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: t('common.add'), url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
                       :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
@@ -424,7 +444,7 @@ function handleAddItem(itemIconGroupId?: number) {
             <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon">
               <div v-if="itemGroup.items">
                 <VueDraggable
-                  v-model="itemGroup.items" item-key="id" :animation="300"
+                  v-model="itemGroup.items" item-key="sort" :animation="300"
                   class="icon-small-box"
 
                   filter=".not-drag"
@@ -445,7 +465,7 @@ function handleAddItem(itemIconGroupId?: number) {
                   <div v-if="itemGroup.items.length === 0" class="not-drag">
                     <AppIcon
                       class="cursor-pointer"
-                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: '添加图标', url: '', openMethod: 0 }"
+                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: $t('common.add'), url: '', openMethod: 0 }"
                       :icon-text-color="panelState.panelConfig.iconTextColor"
                       :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
                       :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
@@ -465,13 +485,14 @@ function handleAddItem(itemIconGroupId?: number) {
                     <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
                   </template>
                   <div>
-                    保存排序
+                    {{ $t('common.saveSort') }}
                   </div>
                 </NButton>
               </div>
             </div>
           </div>
         </div>
+        <div class="mt-5 footer" v-html="panelState.panelConfig.footerHtml" />
       </div>
     </div>
 
@@ -486,7 +507,7 @@ function handleAddItem(itemIconGroupId?: number) {
       <NButtonGroup vertical>
         <NButton
           v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
-          title="当前:局域网模式，点击切换成互联网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
+          :title="t('panelHome.changeToWanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
         >
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline-rounded" />
@@ -495,7 +516,7 @@ function handleAddItem(itemIconGroupId?: number) {
 
         <NButton
           v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b"
-          title="当前:互联网模式，点击切换成局域网模式" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
+          :title="t('panelHome.changeToLanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
         >
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="mdi:wan" />
@@ -508,7 +529,7 @@ function handleAddItem(itemIconGroupId?: number) {
           </template>
         </NButton>
 
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" title="登录" @click="router.push('/login')">
+        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" :title="$t('panelHome.goToLogin')" @click="router.push('/login')">
           <template #icon>
             <SvgIcon class="text-white font-xl" icon="material-symbols:account-circle" />
           </template>
@@ -539,7 +560,7 @@ function handleAddItem(itemIconGroupId?: number) {
     <!-- 弹窗 -->
     <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
-      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="false" size="small" role="dialog"
+      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
     >
       <template #header>
@@ -551,7 +572,7 @@ function handleAddItem(itemIconGroupId?: number) {
           <NSpin v-if="windowIframeIsLoad" size="small" />
         </div>
       </template>
-      <div class="w-full h-full rounded-2xl overflow-hidden border">
+      <div class="w-full h-full rounded-2xl overflow-hidden border dark:border-zinc-700">
         <NSkeleton v-if="windowIframeIsLoad" height="100%" width="100%" />
         <iframe
           v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc"

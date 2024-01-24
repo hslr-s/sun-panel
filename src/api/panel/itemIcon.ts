@@ -41,3 +41,10 @@ export function saveSort<T>(data: Panel.ItemIconSortRequest) {
     data,
   })
 }
+
+export function getSiteFavicon<T>(url: string) {
+  return post<T>({
+    url: '/panel/itemIcon/getSiteFavicon',
+    data: { url },
+  })
+}

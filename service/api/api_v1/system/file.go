@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
 	"sun-panel/global"
@@ -13,6 +14,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 )
 
 type FileApi struct{}
@@ -22,7 +25,7 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 	configUpload := global.Config.GetValueString("base", "source_path")
 	f, err := c.FormFile("imgfile")
 	if err != nil {
-		apiReturn.Error(c, "上传失败")
+		apiReturn.ErrorByCode(c, 1300)
 		return
 	} else {
 		fileExt := strings.ToLower(path.Ext(f.Filename))
@@ -37,7 +40,7 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 		}
 
 		if !cmn.InArray(agreeExts, fileExt) {
-			apiReturn.Error(c, "上传失败!只允许png,jpg,gif,jpeg,svg,ico文件")
+			apiReturn.ErrorByCode(c, 1301)
 			return
 		}
 		fileName := cmn.Md5(fmt.Sprintf("%s%s", f.Filename, time.Now().String()))
@@ -64,7 +67,7 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 
 	form, err := c.MultipartForm()
 	if err != nil {
-		apiReturn.Error(c, "上传失败")
+		apiReturn.ErrorByCode(c, 1300)
 		return
 	}
 	files := form.File["files[]"]
@@ -94,4 +97,57 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 		"succMap":  succMap,
 		"errFiles": errFiles,
 	})
+}
+
+func (a *FileApi) GetList(c *gin.Context) {
+	list := []models.File{}
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	var count int64
+	if err := global.Db.Order("created_at desc").Find(&list, "user_id=?", userInfo.ID).Count(&count).Error; err != nil {
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
+	}
+
+	data := []map[string]interface{}{}
+	for _, v := range list {
+		data = append(data, map[string]interface{}{
+			"src":        v.Src[1:],
+			"fileName":   v.FileName,
+			"id":         v.ID,
+			"createTime": v.CreatedAt,
+			"updateTime": v.UpdatedAt,
+			"path":       v.Src,
+		})
+	}
+	apiReturn.SuccessListData(c, data, count)
+}
+
+func (a *FileApi) Deletes(c *gin.Context) {
+	req := commonApiStructs.RequestDeleteIds[uint]{}
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	global.Db.Transaction(func(tx *gorm.DB) error {
+		files := []models.File{}
+
+		if err := tx.Order("created_at desc").Find(&files, "user_id=? AND id in ?", userInfo.ID, req.Ids).Error; err != nil {
+			return err
+		}
+
+		for _, v := range files {
+			os.Remove(v.Src)
+		}
+
+		if err := tx.Order("created_at desc").Delete(&files, "user_id=? AND id in ?", userInfo.ID, req.Ids).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	apiReturn.Success(c)
+
 }

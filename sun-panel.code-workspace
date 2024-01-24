@@ -1,0 +1,84 @@
+{
+	"folders": [
+		{
+			"name": "frontend",
+			"path": "src"
+		},
+		{
+			"name": "backend",
+			"path": "service"
+		},
+		{
+			"name": "root",
+			"path": ".",
+		}
+	],
+	"settings": {
+		"prettier.enable": false,
+		"editor.formatOnSave": false,
+		"editor.codeActionsOnSave": {
+		  "source.fixAll.eslint": "explicit"
+		},
+		"eslint.validate": [
+		  "javascript",
+		  "javascriptreact",
+		  "typescript",
+		  "typescriptreact",
+		  "vue",
+		  "html",
+		  "json",
+		  "jsonc",
+		  "json5",
+		  "yaml",
+		  "yml",
+		  "markdown"
+		],
+		"cSpell.words": [
+		  "axios",
+		  "bumpp",
+		  "commitlint",
+		  "davinci",
+		  "dockerhub",
+		  "esno",
+		  "highlightjs",
+		  "hljs",
+		  "iconify",
+		  "katex",
+		  "katexmath",
+		  "linkify",
+		  "logprobs",
+		  "mdhljs",
+		  "mila",
+		  "nodata",
+		  "pinia",
+		  "Popconfirm",
+		  "rushstack",
+		  "Sider",
+		  "tailwindcss",
+		  "traptitech",
+		  "tsup",
+		  "Typecheck",
+		  "unplugin",
+		  "VITE",
+		  "vueuse",
+		],
+		"i18n-ally.sortKeys": true,
+		"i18n-ally.enabledParsers": ["ts", "js","json"],
+		"i18n-ally.enabledFrameworks": [
+			"vue"
+		],
+		"i18n-ally.dirStructure": "auto",
+		"i18n-ally.localesPaths": [
+			"locales"
+		],
+		"i18n-ally.sourceLanguage": "zh-CN",
+		"i18n-ally.keystyle": "nested",
+	  },
+	"extensions": {
+		"recommendations": [
+			"Vue.volar",
+			"dbaeumer.vscode-eslint"
+		]
+	},
+	
+}

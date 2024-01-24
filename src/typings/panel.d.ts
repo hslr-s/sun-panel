@@ -52,6 +52,13 @@ declare namespace Panel {
         searchBoxSearchIcon?:boolean
         marginTop?:number
         marginBottom?:number
+        maxWidth?:number
+        maxWidthUnit:string
+        marginX?:number
+        footerHtml?:string
+        systemMonitorShow?:boolean
+        systemMonitorShowTitle?:boolean
+        systemMonitorPublicVisitModeShow?:boolean
     }
 
     interface userConfig{

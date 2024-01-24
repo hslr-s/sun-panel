@@ -19,16 +19,12 @@
     "markdown"
   ],
   "cSpell.words": [
-    "antfu",
     "axios",
     "bumpp",
-    "chatgpt",
-    "chenzhaoyu",
     "commitlint",
     "davinci",
     "dockerhub",
     "esno",
-    "GPTAPI",
     "highlightjs",
     "hljs",
     "iconify",
@@ -39,7 +35,6 @@
     "mdhljs",
     "mila",
     "nodata",
-    "OPENAI",
     "pinia",
     "Popconfirm",
     "rushstack",
@@ -50,8 +45,7 @@
     "Typecheck",
     "unplugin",
     "VITE",
-    "vueuse",
-    "Zhao"
+    "vueuse"
   ],
   "i18n-ally.enabledParsers": [
     "ts"

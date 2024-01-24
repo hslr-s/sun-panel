@@ -97,8 +97,6 @@ const createColumns = ({
                   setPublicVisitUser(row.id as number).then(({ code }) => {
                     if (code === 0)
                       publicVisitUserId.value = row.id as number
-                    else if (code === 1111)
-                      message.error('用户不存在，请刷新后再试')
                   })
                 }
                 break
@@ -215,7 +213,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-[500px] overflow-auto">
+  <div class="overflow-auto pt-2">
     <NAlert type="info" :bordered="false">
       {{ $t('adminSettingUsers.alertText') }}
     </NAlert>

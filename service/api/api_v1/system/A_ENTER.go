@@ -5,8 +5,7 @@ type ApiSystem struct {
 	LoginApi        LoginApi
 	UserApi         UserApi
 	FileApi         FileApi
-	CaptchaApi      CaptchaApi
-	RegisterApi     RegisterApi
 	NoticeApi       NoticeApi
 	ModuleConfigApi ModuleConfigApi
+	MonitorApi      MonitorApi
 }
