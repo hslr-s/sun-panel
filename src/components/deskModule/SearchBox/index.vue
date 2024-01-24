@@ -120,18 +120,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full" @keydown.enter="handleSearchClick">
+  <div class="search-box w-full" @keydown.enter="handleSearchClick" @keydown.esc="handleClearSearchTerm">
     <div class="search-container flex rounded-2xl items-center justify-center text-white w-full" :style="{ background, color: textColor }" :class="{ focused: isFocused }">
-      <div class="w-[40px] flex justify-center cursor-pointer" @click="handleEngineClick">
+      <div class="search-box-btn-engine w-[40px] flex justify-center cursor-pointer" @click="handleEngineClick">
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>
 
       <input v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
 
-      <div v-if="searchTerm !== ''" class="w-[25px] mr-[10px] flex justify-center cursor-pointer" @click="handleClearSearchTerm">
+      <div v-if="searchTerm !== ''" class="search-box-btn-clear w-[25px] mr-[10px] flex justify-center cursor-pointer" @click="handleClearSearchTerm">
         <SvgIcon style="width: 20px;height: 20px;" icon="line-md:close-small" />
       </div>
-      <div class="w-[25px] flex justify-center cursor-pointer" @click="handleSearchClick">
+      <div class="search-box-btn-search w-[25px] flex justify-center cursor-pointer" @click="handleSearchClick">
         <SvgIcon style="width: 20px;height: 20px;" icon="iconamoon:search-fill" />
       </div>
     </div>

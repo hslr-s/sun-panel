@@ -67,15 +67,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="w-full text-center">
-    <span class="text-2xl sm:text-2xl md:text-3xl font-[600]">
+  <div class="clock w-full text-center">
+    <span class="clock-time text-2xl sm:text-2xl md:text-3xl font-[600]">
       {{ currentDate.time }}
     </span>
     <div class="hidden sm:hidden md:block">
-      <span class="mr-1">
+      <span class="clock-date mr-1">
         {{ currentDate.date }}
       </span>
-      <span>
+      <span class="clock-week">
         {{ currentDate.week }}
       </span>
     </div>
