@@ -380,19 +380,19 @@ function handleAddItem(itemIconGroupId?: number) {
           <!-- 组纵向排列 -->
           <div
             v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
-            class="mt-[50px]"
+            class="item-list mt-[50px]"
             :class="itemGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
             @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
             @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
             <!-- 分组标题 -->
             <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
-              <span class="text-shadow">
+              <span class="group-title text-shadow">
                 {{ itemGroup.title }}
               </span>
               <div
                 v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
-                class="ml-2 delay-100 transition-opacity flex"
+                class="group-buttons ml-2 delay-100 transition-opacity flex"
                 :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
               >
                 <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="handleAddItem(itemGroup.id)">
