@@ -323,9 +323,9 @@ function handleAddItem(itemIconGroupId?: number) {
 </script>
 
 <template>
-  <div class="w-full h-full sun-main ">
+  <div class="w-full h-full sun-main">
     <div
-      class="cover" :style="{
+      class="cover wallpaper" :style="{
         filter: `blur(${panelState.panelConfig.backgroundBlur}px)`,
         background: `url(${panelState.panelConfig.backgroundImageSrc}) no-repeat`,
         backgroundSize: 'cover',
@@ -345,12 +345,12 @@ function handleAddItem(itemIconGroupId?: number) {
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
-            <div>
+            <div class="logo">
               <span class="text-2xl md:text-6xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>
-            <div class="text-base lg:text-2xl mx-[10px]">
+            <div class="divider text-base lg:text-2xl mx-[10px]">
               |
             </div>
             <div class="text-shadow">

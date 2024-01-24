@@ -27,7 +27,7 @@ const propClass = ref(props.class)
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="generic-monitor-card w-full">
     <ItemCard
       :card-type-style="cardTypeStyle"
       :icon-text="iconText"
