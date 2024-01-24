@@ -59,6 +59,7 @@ declare namespace Panel {
         systemMonitorShow?:boolean
         systemMonitorShowTitle?:boolean
         systemMonitorPublicVisitModeShow?:boolean
+        netModeChangeButtonShow?:boolean
     }
 
     interface userConfig{

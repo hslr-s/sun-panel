@@ -238,6 +238,13 @@ function resetPanelConfig() {
 
       <NGrid cols="2">
         <NGridItem span="12 400:12">
+          <div class="flex items-center mt-[5px]">
+            <span class="mr-[10px]">{{ $t('apps.baseSettings.netModeChangeButtonShow') }}</span>
+            <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" />
+          </div>
+        </NGridItem>
+
+        <NGridItem span="12 400:12">
           <div class="flex items-center mt-[10px]">
             <span class="mr-[10px]">{{ $t('apps.baseSettings.maxWidth') }}</span>
             <div class="flex">

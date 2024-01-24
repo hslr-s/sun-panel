@@ -64,6 +64,7 @@
       "leftRightMargin": "左右边距",
       "mask": "遮罩",
       "maxWidth": "最大宽度",
+      "netModeChangeButtonShow": "显示网络模式切换按钮",
       "publicVisitModeShow": "公开模式允许显示",
       "resetWarnText": "确定要重置这些样式吗？",
       "searchBar": "搜索栏组件",

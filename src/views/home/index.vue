@@ -503,10 +503,11 @@ function handleAddItem(itemIconGroupId?: number) {
     />
 
     <!-- 悬浮按钮 -->
-    <div class="fixed-element  shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
+    <div class="fixed-element shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
       <NButtonGroup vertical>
+        <!-- 网络模式切换按钮组 -->
         <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
+          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
           :title="t('panelHome.changeToWanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
         >
           <template #icon>
@@ -515,7 +516,7 @@ function handleAddItem(itemIconGroupId?: number) {
         </NButton>
 
         <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b"
+          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
           :title="t('panelHome.changeToLanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
         >
           <template #icon>
@@ -536,24 +537,24 @@ function handleAddItem(itemIconGroupId?: number) {
         </NButton>
       </NButtonGroup>
 
-      <NBackTop
-        :listen-to="() => scrollContainerRef"
-        :right="10"
-        :bottom="10"
-        style="background-color:transparent;border: none;box-shadow: none;"
-      >
-        <div class="shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
-          <NButton color="#2a2a2a6b">
-            <template #icon>
-              <SvgIcon class="text-white font-xl" icon="icon-park-outline:to-top" />
-            </template>
-          </NButton>
-        </div>
-      </NBackTop>
-
       <AppStarter v-model:visible="settingModalShow" />
       <!-- <Setting v-model:visible="settingModalShow" /> -->
     </div>
+
+    <NBackTop
+      :listen-to="() => scrollContainerRef"
+      :right="10"
+      :bottom="10"
+      style="background-color:transparent;border: none;box-shadow: none;"
+    >
+      <div class="shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
+        <NButton color="#2a2a2a6b">
+          <template #icon>
+            <SvgIcon class="text-white font-xl" icon="icon-park-outline:to-top" />
+          </template>
+        </NButton>
+      </div>
+    </NBackTop>
 
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" :item-group-id="currentAddItenIconGroupId" @done="handleEditSuccess" />
 
