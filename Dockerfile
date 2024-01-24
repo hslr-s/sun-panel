@@ -55,6 +55,8 @@ COPY --from=server_image /build/sun-panel /app/sun-panel
 # 中国国内源
 # RUN sed -i "s@dl-cdn.alpinelinux.org@mirrors.aliyun.com@g" /etc/apk/repositories
 
+EXPOSE 3002
+
 RUN apk add --no-cache bash ca-certificates su-exec tzdata \
     && chmod +x ./sun-panel \
     && ./sun-panel -config
