@@ -20,6 +20,7 @@ interface Version {
 const appStore = useAppStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
+const frontVersion = import.meta.env.VITE_APP_VERSION || '未知版本'
 
 onMounted(() => {
   get<Version>().then((res) => {
@@ -32,6 +33,7 @@ onMounted(() => {
 <template>
   <div class="pt-5">
     <div class="flex flex-col items-center justify-center">
+      <div>{{ frontVersion }}</div>
       <img :src="srcSvglogo" width="100" height="100" alt="">
       <div class="text-3xl font-semibold">
         {{ $t('common.appName') }}
@@ -46,7 +48,9 @@ onMounted(() => {
       </div>
     </div>
 
-    <NDivider> • </NDivider>
+    <NDivider style="margin:10px 0">
+      •
+    </NDivider>
     <div class="flex flex-col items-center justify-center text-base">
       <div>
         {{ $t('apps.about.author') }}<a href="https://github.com/hslr-s" target="_blank" class="link">红烧猎人</a> | <a href="https://github.com/hslr-s/sun-panel/blob/master/doc/donate.md" target="_blank" class="text-red-600 hover:text-red-900">{{ $t('apps.about.donate') }}</a>

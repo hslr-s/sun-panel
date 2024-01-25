@@ -1,13 +1,11 @@
 {
   "name": "sun-panel",
-  "version": "2.10.9",
+  "version": "0.0.0",
   "private": false,
-  "description": "ChatGPT Web",
-  "author": "ChenZhaoYu <chenzhaoyu1994@gmail.com>",
+  "description": "Sun-Panel Web",
+  "author": "BraisedHunter <95302870@qq.com>",
   "keywords": [
     "Sun-Panel",
-    "chatgpt",
-    "chatbot",
     "vue"
   ],
   "scripts": {
