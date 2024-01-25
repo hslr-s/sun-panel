@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NDivider, NGradientText } from 'naive-ui'
+import { NDivider, NGradientText, NTag } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { get } from '@/api/system/about'
 import { useAppStore } from '@/store'
@@ -20,7 +20,7 @@ interface Version {
 const appStore = useAppStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
-const frontVersion = import.meta.env.VITE_APP_VERSION || '未知版本'
+const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
 
 onMounted(() => {
   get<Version>().then((res) => {
@@ -33,7 +33,6 @@ onMounted(() => {
 <template>
   <div class="pt-5">
     <div class="flex flex-col items-center justify-center">
-      <div>{{ frontVersion }}</div>
       <img :src="srcSvglogo" width="100" height="100" alt="">
       <div class="text-3xl font-semibold">
         {{ $t('common.appName') }}
@@ -91,6 +90,12 @@ onMounted(() => {
           <img class="w-[20px] h-[20px] mr-[5px]" :src="srcYoutube" alt="">
           <a href="https://www.youtube.com/channel/UCKwbFmKU25R602z6P2fgPYg" target="_blank" class="link">YouTube</a>
         </div>
+      </div>
+
+      <div class="mt-5">
+        <NTag :bordered="false" size="small">
+          {{ $t("apps.about.frontVersionText") }}: FV-{{ frontVersion }}
+        </NTag>
       </div>
 
       <RoundCardModal v-model:show="qqGroupQRShow" title="交流群二维码" style="width: 300px;">

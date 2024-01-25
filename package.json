@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build": "run-p add-version type-check build-only",
+    "add-version": "node ./add-frontend-version.js",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit",

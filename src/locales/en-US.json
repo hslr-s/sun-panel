@@ -46,6 +46,7 @@
       "checkUpdate": "Check for new version",
       "discussions": "Discussions:",
       "donate": "☕Donate",
+      "frontVersionText": "Front-end version number",
       "issue": "Feedback:",
       "viewUpdateLog": "Click here to view update log"
     },
