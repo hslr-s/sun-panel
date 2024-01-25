@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-** Version | 版本 **
+**Version | 版本**
 eg: v1.0.0
 
-** Environment | 运行环境 **
+**Environment | 运行环境**
 eg: docker / ubuntu / windows
 
-** Detailed description | 详细说明 **
+**Detailed description | 详细说明**
 ...
