@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import GenericProgress from '../components/GenericProgress/index.vue'
+import { correctionNumberByCardStyle } from './common'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { bytesToSize } from '@/utils/cmn'
 import { getDiskStateByPath } from '@/api/system/systemMonitor'
@@ -17,10 +18,6 @@ interface Prop {
 const props = defineProps<Prop>()
 let timer: NodeJS.Timer
 const diskState = ref<SystemMonitor.DiskInfo | null>(null)
-
-function correctionNumber(v: number, keepNum = 2): number {
-  return v === 0 ? 0 : Number(v.toFixed(keepNum))
-}
 
 function formatdiskSize(v: number): string {
   return bytesToSize(v)
@@ -54,16 +51,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
-    <GenericProgress
-      :progress-color="progressColor"
-      :progress-rail-color="progressRailColor"
-      :progress-height="5"
-      :percentage="correctionNumber(diskState?.usedPercent || 0)"
-      :card-type-style="cardTypeStyle"
-      :info-card-right-text="`${formatdiskSize(formatdiskToByte(diskState?.used || 0))}/${formatdiskSize(formatdiskToByte(diskState?.free || 0))}`"
-      :info-card-left-text="diskState?.mountpoint"
-      :text-color="textColor"
-    />
-  </div>
+  <GenericProgress
+    :progress-color="progressColor"
+    :progress-rail-color="progressRailColor"
+    :progress-height="5"
+    :percentage="correctionNumberByCardStyle(diskState?.usedPercent || 0, cardTypeStyle)"
+    :card-type-style="cardTypeStyle"
+    :info-card-right-text="`${formatdiskSize(formatdiskToByte(diskState?.used || 0))}/${formatdiskSize(formatdiskToByte(diskState?.free || 0))}`"
+    :info-card-left-text="diskState?.mountpoint"
+    :text-color="textColor"
+  />
 </template>

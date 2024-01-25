@@ -28,7 +28,8 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	}
 
 	if req.ItemIconGroupId == 0 {
-		apiReturn.Error(c, "Group is mandatory")
+		// apiReturn.Error(c, "Group is mandatory")
+		apiReturn.ErrorParamFomat(c, "Group is mandatory")
 		return
 	}
 

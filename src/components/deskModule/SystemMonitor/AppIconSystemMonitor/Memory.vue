@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import GenericProgress from '../components/GenericProgress/index.vue'
+import { correctionNumberByCardStyle } from './common'
 import { getMemonyState } from '@/api/system/systemMonitor'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { bytesToSize } from '@/utils/cmn'
@@ -16,10 +17,6 @@ interface Prop {
 const props = defineProps<Prop>()
 let timer: NodeJS.Timer
 const memoryState = ref<SystemMonitor.MemoryInfo | null>(null)
-
-function correctionNumber(v: number, keepNum = 2): number {
-  return v === 0 ? 0 : Number(v.toFixed(keepNum))
-}
 
 function formatMemorySize(v: number): string {
   return bytesToSize(v)
@@ -49,16 +46,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
-    <GenericProgress
-      :progress-color="progressColor"
-      :progress-rail-color="progressRailColor"
-      :progress-height="5"
-      :percentage="correctionNumber(memoryState?.usedPercent || 0)"
-      :card-type-style="cardTypeStyle"
-      :info-card-right-text="`${formatMemorySize(memoryState?.used || 0)}/${formatMemorySize((memoryState?.total || 0) - (memoryState?.used || 0) || 0)}`"
-      info-card-left-text="RAM"
-      :text-color="textColor"
-    />
-  </div>
+  <GenericProgress
+    :progress-color="progressColor"
+    :progress-rail-color="progressRailColor"
+    :progress-height="5"
+    :percentage="correctionNumberByCardStyle(memoryState?.usedPercent || 0, cardTypeStyle)"
+    :card-type-style="cardTypeStyle"
+    :info-card-right-text="`${formatMemorySize(memoryState?.used || 0)}/${formatMemorySize((memoryState?.total || 0) - (memoryState?.used || 0) || 0)}`"
+    info-card-left-text="RAM"
+    :text-color="textColor"
+  />
 </template>

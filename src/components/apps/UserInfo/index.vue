@@ -104,14 +104,6 @@ function handleUpdatePassword(e: MouseEvent) {
         updatePasswordModalState.value.show = false
         ms.success(t('common.success'))
       }
-      else if (code === 0) {
-        // 旧密码错误
-
-      }
-      else {
-        // 其他错误
-        ms.error(`${t('common.failed')}:${msg}`)
-      }
     }).finally(() => {
       updatePasswordModalState.value.loading = false
     }).catch(() => {

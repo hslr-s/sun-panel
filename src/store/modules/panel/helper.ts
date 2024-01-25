@@ -28,6 +28,7 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     systemMonitorShow: false,
     systemMonitorShowTitle: true,
     systemMonitorPublicVisitModeShow: false,
+    netModeChangeButtonShow: true,
 
   }
 }

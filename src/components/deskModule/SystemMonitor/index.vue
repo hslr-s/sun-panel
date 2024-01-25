@@ -171,7 +171,7 @@ function handleRightMenuSelect(key: string | number) {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="system-monitor w-full">
     <div
       class="mt-[50px]"
       :class="monitorGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
@@ -179,13 +179,13 @@ function handleRightMenuSelect(key: string | number) {
       @mouseleave="handleSetHoverStatus(false)"
     >
       <!-- 分组标题 -->
-      <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
+      <div class="system-monitor-header text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
         <span v-if="showTitle" class="text-shadow">
           {{ $t('deskModule.systemMonitor.systemState') }}
         </span>
         <div
           v-if="allowEdit"
-          class="ml-2 delay-100 transition-opacity flex"
+          class="system-monitor-buttons ml-2 delay-100 transition-opacity flex"
           :class="monitorGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
         >
           <span class="mr-2 cursor-pointer" @click="handleAddItem()">
@@ -198,7 +198,7 @@ function handleRightMenuSelect(key: string | number) {
       </div>
 
       <!-- 详情图标 -->
-      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info">
+      <template v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info">
         <VueDraggable
           v-model="monitorDatas" item-key="sort" :animation="300"
           class="icon-info-box"
@@ -221,39 +221,37 @@ function handleRightMenuSelect(key: string | number) {
             />
           </div>
         </VueDraggable>
-      </div>
+      </template>
 
       <!-- APP图标宫型盒子 -->
-      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon">
-        <div v-if="monitorDatas">
-          <VueDraggable
-            v-model="monitorDatas" item-key="sort" :animation="300"
-            class="icon-small-box"
-            filter=".not-drag"
-            :disabled="!monitorGroup.sortStatus"
+      <template v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon">
+        <VueDraggable
+          v-model="monitorDatas" item-key="sort" :animation="300"
+          class="icon-small-box"
+          filter=".not-drag"
+          :disabled="!monitorGroup.sortStatus"
+        >
+          <div
+            v-for="item, index in monitorDatas" :key="index"
+            :title="item.description"
+            @click="handleClick(index, item)"
+            @contextmenu="(e) => handleContextMenu(e, index, item)"
           >
-            <div
-              v-for="item, index in monitorDatas" :key="index"
-              :title="item.description"
-              @click="handleClick(index, item)"
-              @contextmenu="(e) => handleContextMenu(e, index, item)"
-            >
-              <AppIconSystemMonitor
-                :extend-param="item.extendParam"
-                :icon-text-icon-hide-title="false"
-                :card-type-style="panelState.panelConfig.iconStyle"
-                :monitor-type="item.monitorType"
-                :card-style="cardStyle"
-                :icon-text-color="panelState.panelConfig.iconTextColor"
-              />
-            </div>
-          </vuedraggable>
-        </div>
-      </div>
+            <AppIconSystemMonitor
+              :extend-param="item.extendParam"
+              :icon-text-icon-hide-title="false"
+              :card-type-style="panelState.panelConfig.iconStyle"
+              :monitor-type="item.monitorType"
+              :card-style="cardStyle"
+              :icon-text-color="panelState.panelConfig.iconTextColor"
+            />
+          </div>
+        </vuedraggable>
+      </template>
 
       <!-- 编辑栏 -->
-      <div v-if="monitorGroup.sortStatus && allowEdit" class="flex mt-[10px]">
-        <div>
+      <template v-if="monitorGroup.sortStatus && allowEdit">
+        <div class="system-monitor-edit-bar flex mt-[10px]">
           <NButton color="#2a2a2a6b" @click="handleSaveSort()">
             <template #icon>
               <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
@@ -263,7 +261,7 @@ function handleRightMenuSelect(key: string | number) {
             </div>
           </NButton>
         </div>
-      </div>
+      </template>
     </div>
 
     <Edit v-model:visible="editShowStatus" :monitor-data="editData" :index="editIndex" @done="handleSaveDone" />

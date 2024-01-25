@@ -25,6 +25,7 @@
     "1004": "Account has been deactivated or inactivated",
     "1005": "Currently no permission to operate",
     "1006": "Account does not exist",
+    "1007": "Old password error",
     "1200": "database error",
     "1201": "Please keep at least one",
     "1202": "Data record not found",
@@ -38,12 +39,14 @@
   "apps": {
     "about": {
       "QQGroup": "QQ Group:",
-      "QR": "QR Code (Recommended)",
+      "QR": "QR Code(recommend)",
       "addQQGroupUrl": "Click to join",
       "appName": "About",
       "author": "Author:",
       "checkUpdate": "Check for new version",
+      "discussions": "Discussions:",
       "donate": "☕Donate",
+      "frontVersionText": "Front-end version number",
       "issue": "Feedback:",
       "viewUpdateLog": "Click here to view update log"
     },
@@ -63,6 +66,7 @@
       "leftRightMargin": "Left-right margin",
       "mask": "Mask",
       "maxWidth": "Max width",
+      "netModeChangeButtonShow": "Show network mode switch button",
       "publicVisitModeShow": "Allow public mode display",
       "resetWarnText": "Are you sure you want to reset these styles?",
       "searchBar": "Search bar component",

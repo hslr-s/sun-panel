@@ -21,32 +21,32 @@ const iconExt = computed(() => {
 </script>
 
 <template>
-  <div :style="defaultStyle">
+  <div class="item-icon" :style="defaultStyle">
     <slot>
-      <div v-if="itemIcon">
-        <div v-if="itemIcon?.itemType === 1">
+      <template v-if="itemIcon">
+        <template v-if="itemIcon?.itemType === 1">
           <NAvatar :size="props.size" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground }">
             {{ itemIcon.text }}
           </NAvatar>
-        </div>
+        </template>
 
-        <div v-else-if="itemIcon?.itemType === 2">
+        <template v-else-if="itemIcon?.itemType === 2">
           <div v-if="iconExt === 'svg'" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground, ...defaultStyle }" class="flex justify-center items-center">
             <img :src="itemIcon?.src" class="w-[35px] h-[35px]">
           </div>
           <NImage v-else :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground, ...defaultStyle }" :src="itemIcon?.src" preview-disabled />
-        </div>
+        </template>
 
-        <div v-else-if="itemIcon?.itemType === 3">
+        <template v-else-if="itemIcon?.itemType === 3">
           <NAvatar :size="props.size" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground }">
             <SvgIconOnline style="font-size: 35px;" :icon="itemIcon.text" />
           </NAvatar>
-        </div>
-      </div>
+        </template>
+      </template>
 
-      <div v-else>
+      <template v-else>
         <NAvatar :size="props.size" />
-      </div>
+      </template>
     </slot>
   </div>
 </template>

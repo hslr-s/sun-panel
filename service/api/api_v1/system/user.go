@@ -97,7 +97,7 @@ func (a *UserApi) UpdatePasssword(c *gin.Context) {
 	} else {
 		if v.Password != cmn.PasswordEncryption(params.OldPassword) {
 			// 旧密码不正确
-			apiReturn.Error(c, global.Lang.Get("user.api_old_pass_error"))
+			apiReturn.ErrorByCode(c, 1007)
 			return
 		}
 	}

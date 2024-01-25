@@ -323,9 +323,9 @@ function handleAddItem(itemIconGroupId?: number) {
 </script>
 
 <template>
-  <div class="w-full h-full sun-main ">
+  <div class="w-full h-full sun-main">
     <div
-      class="cover" :style="{
+      class="cover wallpaper" :style="{
         filter: `blur(${panelState.panelConfig.backgroundBlur}px)`,
         background: `url(${panelState.panelConfig.backgroundImageSrc}) no-repeat`,
         backgroundSize: 'cover',
@@ -345,12 +345,12 @@ function handleAddItem(itemIconGroupId?: number) {
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
           <div class="flex mx-[auto] items-center justify-center text-white">
-            <div>
+            <div class="logo">
               <span class="text-2xl md:text-6xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>
-            <div class="text-base lg:text-2xl mx-[10px]">
+            <div class="divider text-base lg:text-2xl mx-[10px]">
               |
             </div>
             <div class="text-shadow">
@@ -380,19 +380,19 @@ function handleAddItem(itemIconGroupId?: number) {
           <!-- 组纵向排列 -->
           <div
             v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
-            class="mt-[50px]"
+            class="item-list mt-[50px]"
             :class="itemGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
             @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
             @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
             <!-- 分组标题 -->
             <div class="text-white text-xl font-extrabold mb-[20px] ml-[10px] flex items-center">
-              <span class="text-shadow">
+              <span class="group-title text-shadow">
                 {{ itemGroup.title }}
               </span>
               <div
                 v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
-                class="ml-2 delay-100 transition-opacity flex"
+                class="group-buttons ml-2 delay-100 transition-opacity flex"
                 :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
               >
                 <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="handleAddItem(itemGroup.id)">
@@ -503,10 +503,11 @@ function handleAddItem(itemIconGroupId?: number) {
     />
 
     <!-- 悬浮按钮 -->
-    <div class="fixed-element  shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
+    <div class="fixed-element shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
       <NButtonGroup vertical>
+        <!-- 网络模式切换按钮组 -->
         <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan" color="#2a2a2a6b"
+          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
           :title="t('panelHome.changeToWanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
         >
           <template #icon>
@@ -515,7 +516,7 @@ function handleAddItem(itemIconGroupId?: number) {
         </NButton>
 
         <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan" color="#2a2a2a6b"
+          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
           :title="t('panelHome.changeToLanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
         >
           <template #icon>
@@ -536,24 +537,24 @@ function handleAddItem(itemIconGroupId?: number) {
         </NButton>
       </NButtonGroup>
 
-      <NBackTop
-        :listen-to="() => scrollContainerRef"
-        :right="10"
-        :bottom="10"
-        style="background-color:transparent;border: none;box-shadow: none;"
-      >
-        <div class="shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
-          <NButton color="#2a2a2a6b">
-            <template #icon>
-              <SvgIcon class="text-white font-xl" icon="icon-park-outline:to-top" />
-            </template>
-          </NButton>
-        </div>
-      </NBackTop>
-
       <AppStarter v-model:visible="settingModalShow" />
       <!-- <Setting v-model:visible="settingModalShow" /> -->
     </div>
+
+    <NBackTop
+      :listen-to="() => scrollContainerRef"
+      :right="10"
+      :bottom="10"
+      style="background-color:transparent;border: none;box-shadow: none;"
+    >
+      <div class="shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
+        <NButton color="#2a2a2a6b">
+          <template #icon>
+            <SvgIcon class="text-white font-xl" icon="icon-park-outline:to-top" />
+          </template>
+        </NButton>
+      </div>
+    </NBackTop>
 
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" :item-group-id="currentAddItenIconGroupId" @done="handleEditSuccess" />
 

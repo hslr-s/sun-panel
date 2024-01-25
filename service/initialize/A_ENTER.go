@@ -35,7 +35,7 @@ func InitApp() error {
 
 	// 日志
 	if logger, err := runlog.InitRunlog(global.RUNCODE, "running.log"); err != nil {
-		log.Panicln("日志初始化错误", err)
+		log.Panicln("Log initialization error", err)
 		panic(err)
 	} else {
 		global.Logger = logger
@@ -47,7 +47,7 @@ func InitApp() error {
 	// 配置初始化
 	{
 		if config, err := config.ConfigInit(); err != nil {
-			global.Logger.Errorln("配置初始化错误", err)
+			global.Logger.Errorln("Configuration initialization error", err)
 			return err
 		} else {
 			global.Config = config
@@ -74,7 +74,7 @@ func InitApp() error {
 			})
 
 			if err != nil {
-				log.Panicln("Redis初始化错误", err)
+				log.Panicln("Redis initialization error", err)
 				panic(err)
 				// return err
 			}
@@ -114,7 +114,7 @@ func DatabaseConnect() {
 	}
 
 	if db, err := database.DbInit(dbClientInfo); err != nil {
-		log.Panicln("数据库初始化错误", err)
+		log.Panicln("Database initialization error", err)
 		panic(err)
 	} else {
 		global.Db = db
@@ -133,17 +133,17 @@ func CommandRun() {
 		pwd bool
 	)
 
-	flag.BoolVar(&cfg, "config", false, "生成配置文件")
-	flag.BoolVar(&pwd, "password-reset", false, "重置第一个用户的密码")
+	flag.BoolVar(&cfg, "config", false, "Generate configuration file")
+	flag.BoolVar(&pwd, "password-reset", false, "Reset the password of the first user")
 
 	flag.Parse()
 
 	if cfg {
 		// 生成配置文件
-		fmt.Println("正在生成配置文件")
+		fmt.Println("Generating configuration file")
 		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.example.ini")
 		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.ini")
-		fmt.Println("配置文件已经创建 conf/conf.ini ", "请按照自己的需求修改")
+		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
 	} else if pwd {
 		// 重置密码
@@ -171,9 +171,9 @@ func CommandRun() {
 			os.Exit(0) // 务必退出
 		}
 
-		fmt.Println("密码已经重置成功，以下是账号信息")
-		fmt.Println("用户名 ", userInfo.Username)
-		fmt.Println("密码 ", newPassword)
+		fmt.Println("The password has been successfully reset. Here is the account information")
+		fmt.Println("Username ", userInfo.Username)
+		fmt.Println("Password ", newPassword)
 		os.Exit(0) // 务必退出
 	} else {
 		return
