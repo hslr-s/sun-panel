@@ -2,11 +2,17 @@ package siteFavicon
 
 import (
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
+	"sun-panel/lib/cmn"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -20,7 +26,91 @@ func IsHTTPURL(url string) bool {
 	return match
 }
 
-func GetOneFaviconURL(urlStr string) (string, bool) {
+func GetOneFaviconURL(urlStr string) (string, error) {
+	iconURLs, err := getFaviconURL(urlStr)
+	if err != nil {
+		return "", err
+	}
+
+	for _, v := range iconURLs {
+		// 标准的路径地址
+		if IsHTTPURL(v) {
+			return v, nil
+		} else {
+			urlInfo, _ := url.Parse(urlStr)
+			fullUrl := urlInfo.Scheme + "://" + urlInfo.Host + "/" + strings.TrimPrefix(v, "/")
+			return fullUrl, nil
+		}
+	}
+	return "", fmt.Errorf("not found ico")
+}
+
+// 获取远程文件的大小
+func GetRemoteFileSize(url string) (int64, error) {
+	resp, err := http.Head(url)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	// 检查HTTP响应状态
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("HTTP request failed, status code: %d", resp.StatusCode)
+	}
+
+	// 获取Content-Length字段，即文件大小
+	size := resp.ContentLength
+	return size, nil
+}
+
+// 下载图片
+func DownloadImage(url, savePath string, maxSize int64) (*os.File, error) {
+	// 获取远程文件大小
+	fileSize, err := GetRemoteFileSize(url)
+	if err != nil {
+		return nil, err
+	}
+
+	// 判断文件大小是否在阈值内
+	if fileSize > maxSize {
+		return nil, fmt.Errorf("文件太大，不下载。大小：%d字节", fileSize)
+	}
+
+	// 发送HTTP GET请求获取图片数据
+	response, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	// 检查HTTP响应状态
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP request failed, status code: %d", response.StatusCode)
+	}
+
+	urlFileName := path.Base(url)
+	fileExt := path.Ext(url)
+	fileName := cmn.Md5(fmt.Sprintf("%s%s", urlFileName, time.Now().String())) + fileExt
+
+	destination := savePath + "/" + fileName
+
+	// 创建本地文件用于保存图片
+	file, err := os.Create(destination)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// 将图片数据写入本地文件
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+}
+
+func GetOneFaviconURLAndUpload(urlStr string) (string, bool) {
+	//www.iqiyipic.com/pcwimg/128-128-logo.png
 	iconURLs, err := getFaviconURL(urlStr)
 	if err != nil {
 		return "", false
