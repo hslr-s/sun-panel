@@ -574,7 +574,11 @@ function handleAddItem(itemIconGroupId?: number) {
         </div>
       </template>
       <div class="w-full h-full rounded-2xl overflow-hidden border dark:border-zinc-700">
-        <NSkeleton v-if="windowIframeIsLoad" height="100%" width="100%" />
+        <div v-if="windowIframeIsLoad" class="flex flex-col p-5">
+          <NSkeleton height="50px" width="100%" class="rounded-lg" />
+          <NSkeleton height="180px" width="100%" class="mt-[20px] rounded-lg" />
+          <NSkeleton height="180px" width="100%" class="mt-[20px] rounded-lg" />
+        </div>
         <iframe
           v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc"
           class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
