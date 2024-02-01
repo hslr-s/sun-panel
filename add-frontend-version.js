@@ -4,7 +4,9 @@ const moment = require('moment')
 
 // git 最新标签
 // const latestTag = execSync('git describe --tags --abbrev=0').toString().trim()
-const packDate = moment().format('YYYYMMDD-HH')
+
+// 设置默认时区为 'Asia/Shanghai'
+const packDate = moment().utc().format('YYYYMMDD')
 
 // 要追加的内容
 const contentToAppend = `\nVITE_APP_VERSION=${packDate}`

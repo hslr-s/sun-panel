@@ -41,3 +41,4 @@ service/lang
 service/database
 service/web
 service/uploads
+service/plugins
