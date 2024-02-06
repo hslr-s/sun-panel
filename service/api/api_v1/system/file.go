@@ -113,6 +113,7 @@ func (a *FileApi) GetList(c *gin.Context) {
 
 	data := []map[string]interface{}{}
 	for _, v := range list {
+		// 兼容旧版
 		if len(v.Src) >= 0 && v.Src[0] == '.' {
 			v.Src = v.Src[1:]
 		} else {
