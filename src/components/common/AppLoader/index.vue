@@ -11,7 +11,7 @@ const dynamicComponent = shallowRef('')
 function updateComponent() {
   loading.value = true
   dynamicComponent.value = defineAsyncComponent(() =>
-    import(`../../apps/${props.componentName}/i1ndex.vue`)
+    import(`../../apps/${props.componentName}/index.vue`)
       .finally(() => {
         loading.value = false
       }).catch(() => {
