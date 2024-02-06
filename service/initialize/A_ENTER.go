@@ -141,8 +141,8 @@ func CommandRun() {
 	if cfg {
 		// 生成配置文件
 		fmt.Println("Generating configuration file")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.example.ini")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.ini")
+		config.CreateConf("conf.example.ini", "conf/conf.example.ini", true)
+		config.CreateConf("conf.example.ini", "conf/conf.ini", true)
 		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
 	} else if pwd {
