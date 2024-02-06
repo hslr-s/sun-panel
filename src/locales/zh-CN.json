@@ -82,6 +82,9 @@
       "vague": "模糊",
       "wallpaper": "壁纸"
     },
+    "common": {
+      "notFound": "抱歉，应用加载失败，请尝试刷新页面或者清除浏览器缓存"
+    },
     "exportImport": {
       "appName": "导出导入",
       "errorConfigFileFormat": "配置文件格式不正确，无法导入",

@@ -82,6 +82,9 @@
       "vague": "Blur",
       "wallpaper": "Wallpaper"
     },
+    "common": {
+      "notFound": "Sorry, the application failed to load. Please try refreshing the page or clearing the browser cache."
+    },
     "exportImport": {
       "appName": "Export/Import",
       "errorConfigFileFormat": "The configuration file format is incorrect and cannot be imported",

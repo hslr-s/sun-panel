@@ -11,7 +11,7 @@ const dynamicComponent = shallowRef('')
 function updateComponent() {
   loading.value = true
   dynamicComponent.value = defineAsyncComponent(() =>
-    import(`../../apps/${props.componentName}/index.vue`)
+    import(`../../apps/${props.componentName}/i1ndex.vue`)
       .finally(() => {
         loading.value = false
       }).catch(() => {
@@ -39,7 +39,10 @@ onMounted(() => {
       <div
         v-else-if="!dynamicComponent"
       >
-        Component not found!
+        <!-- Component not found! -->
+        <div class="mt-[10px]">
+          {{ $t('apps.common.notFound') }}
+        </div>
       </div>
     </NSpin>
   </div>
