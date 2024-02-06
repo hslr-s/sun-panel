@@ -14,11 +14,10 @@ import (
 )
 
 var (
-	ISDOCKER = ""      // 是否为docker模式运行
-	RUNCODE  = "debug" // 运行模式：debug | release
-	// DB_MYSQL  = "mysql"
-	// DB_SQLITE = "sqlite"
-	DB_DRIVER = database.SQLITE
+	ISDOCKER     = ""         // 是否为docker模式运行 true | [string]
+	RUNCODE      = "debug"    // 运行模式：debug | release
+	UPLOAD_ROUTE = "/uploads" // 上传路由
+	DB_DRIVER    = database.SQLITE
 )
 
 // var Log *cmn.LogStruct

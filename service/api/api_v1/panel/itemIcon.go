@@ -245,6 +245,7 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	// 生成保存目录
 	configUpload := global.Config.GetValueString("base", "source_path")
 	savePath := fmt.Sprintf("%s/%d/%d/%d/", configUpload, time.Now().Year(), time.Now().Month(), time.Now().Day())
+	global.Logger.Debug("保存路径", savePath)
 	isExist, _ := cmn.PathExists(savePath)
 	if !isExist {
 		os.MkdirAll(savePath, os.ModePerm)
@@ -260,13 +261,14 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 		}
 	}
 
+	pureFilePath := imgInfo.Name()[len(configUpload):]
 	// 保存到数据库
 	ext := path.Ext(fullUrl)
 	mFile := models.File{}
-	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, imgInfo.Name()); err != nil {
+	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, pureFilePath); err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
-	resp.IconUrl = imgInfo.Name()[1:]
+	resp.IconUrl = global.UPLOAD_ROUTE + pureFilePath
 	apiReturn.SuccessData(c, resp)
 }
