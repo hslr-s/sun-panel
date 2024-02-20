@@ -2,6 +2,7 @@ package router
 
 import (
 	"sun-panel/global"
+
 	// "sun-panel/router/admin"
 	"sun-panel/router/openness"
 	"sun-panel/router/panel"
@@ -23,7 +24,7 @@ func InitRouters(addr string) error {
 
 	// WEB文件服务
 	{
-		webPath := "./web"
+		webPath := global.Config.GetValueStringOrDefault("base", "web_path")
 		// 上传
 		sourcePath := global.Config.GetValueString("base", "source_path")
 		router.Static("/uploads", sourcePath)

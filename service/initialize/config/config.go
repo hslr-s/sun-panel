@@ -10,20 +10,6 @@ import (
 	"sun-panel/lib/iniConfig"
 )
 
-func getDefaultConfig() map[string]map[string]string {
-	return map[string]map[string]string{
-		"base": {
-			"http_port":        "3002",
-			"source_path":      "./files",      // 存放文件的路径
-			"source_temp_path": "./files/temp", // 存放文件的缓存路径
-		},
-		"sqlite": {
-			"file_path": "./database.db",
-		},
-	}
-
-}
-
 func ConfigInit() (*iniConfig.IniConfig, error) {
 
 	confPath := "./conf"
