@@ -29,6 +29,17 @@ var DB_DRIVER = database.SQLITE
 // var RUNCODE = "debug"
 // var ISDOCER = "" // 是否为docker模式
 
+func getDefaultConfig() map[string]map[string]string {
+	return map[string]map[string]string{
+		"base": {
+			"http_port":        "3002",
+			"source_path":      "./uploads",      // 存放文件的路径
+			"source_temp_path": "./runtime/temp", // 存放文件的缓存路径
+			"web_path":         "./web",
+		},
+	}
+}
+
 func InitApp() error {
 	Logo()
 	gin.SetMode(global.RUNCODE) // GIN 运行模式
@@ -50,6 +61,7 @@ func InitApp() error {
 			global.Logger.Errorln("Configuration initialization error", err)
 			return err
 		} else {
+			config.Default = getDefaultConfig()
 			global.Config = config
 		}
 	}
@@ -141,8 +153,8 @@ func CommandRun() {
 	if cfg {
 		// 生成配置文件
 		fmt.Println("Generating configuration file")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.example.ini")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.ini")
+		config.CreateConf("conf.example.ini", "conf/conf.example.ini", true)
+		config.CreateConf("conf.example.ini", "conf/conf.ini", true)
 		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
 	} else if pwd {
