@@ -2,9 +2,10 @@ name: docker-push-beta
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
+  # 暂时取消自动编译，优化后重新开启
+  # push:
+  #   tags:
+  #     - 'v*'
 
 jobs:
   build:
