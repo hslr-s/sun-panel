@@ -2,9 +2,14 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/iniConfig"
+)
+
+var (
+	GlobalConfigPath = "conf"
 )
 
 func getDefaultConfig() map[string]map[string]string {
@@ -54,17 +59,17 @@ func ConfigInit() (*iniConfig.IniConfig, error) {
 // errCode=1 说明初始化流程
 func Conf(defaultConfig map[string]map[string]string) (config *iniConfig.IniConfig, err error, errCode int) {
 	CreateConfExample("conf.example.ini", "conf.example.ini")
-	exists, err := cmn.PathExists("conf/conf.ini")
+	exists, err := cmn.PathExists(filepath.Join(GlobalConfigPath, "conf.ini"))
 	if exists {
-		config = iniConfig.NewIniConfig("conf/conf.ini") // 读取配置
+		config = iniConfig.NewIniConfig(filepath.Join(GlobalConfigPath, "conf.ini")) // 读取配置
 		config.Default = defaultConfig
 	} else if err != nil {
 
 	} else {
 		// docker 运行模式，生成配置文件
 		if global.ISDOCKER != "" {
-			cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.ini")
-			config = iniConfig.NewIniConfig("conf/conf.ini") // 读取配置
+			cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(GlobalConfigPath, "conf.ini"))
+			config = iniConfig.NewIniConfig(filepath.Join(GlobalConfigPath, "conf.ini")) // 读取配置
 			config.Default = defaultConfig
 		} else {
 			errCode = 1
@@ -76,12 +81,12 @@ func Conf(defaultConfig map[string]map[string]string) (config *iniConfig.IniConf
 // 生成示例配置文件
 func CreateConfExample(confName string, targetName string) (err error) {
 	// 查看配置示例文件是否存在，不存在创建（分别为示例配置和配置文件）
-	exists, err := cmn.PathExists("conf/" + targetName)
+	exists, err := cmn.PathExists(filepath.Join(GlobalConfigPath, targetName))
 	if err != nil {
 		return
 	}
 	if !exists {
-		if err = cmn.AssetsTakeFileToPath(confName, "conf/"+targetName); err != nil {
+		if err = cmn.AssetsTakeFileToPath(confName, filepath.Join(GlobalConfigPath, targetName)); err != nil {
 			return
 		}
 	}

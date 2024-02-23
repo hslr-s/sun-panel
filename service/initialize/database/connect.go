@@ -8,10 +8,10 @@ import (
 	"sun-panel/models"
 	"time"
 
+	"sun-panel/sqlite"
+
 	"gorm.io/driver/mysql"
 	_ "gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
-	_ "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
