@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sun-panel/global"
 	"sun-panel/initialize/cUserToken"
 	"sun-panel/initialize/config"
@@ -129,20 +130,25 @@ func DatabaseConnect() {
 // 命令行运行
 func CommandRun() {
 	var (
-		cfg bool
-		pwd bool
+		cfgPath string
+		cfg     bool
+		pwd     bool
 	)
 
+	flag.StringVar(&cfgPath, "cfgPath", "conf", "The config path")
 	flag.BoolVar(&cfg, "config", false, "Generate configuration file")
 	flag.BoolVar(&pwd, "password-reset", false, "Reset the password of the first user")
 
 	flag.Parse()
 
+	// Set the global config path here
+	config.GlobalConfigPath = cfgPath
+
 	if cfg {
 		// 生成配置文件
 		fmt.Println("Generating configuration file")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.example.ini")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.ini")
+		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cfgPath, "conf.example.ini"))
+		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cfgPath, "conf.ini"))
 		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
 	} else if pwd {

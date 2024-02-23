@@ -23,7 +23,7 @@ func InitRouters(addr string) error {
 
 	// WEB文件服务
 	{
-		webPath := "./web"
+		webPath := global.Config.GetValueString("base", "web_path")
 		router.StaticFile("/", webPath+"/index.html")
 		router.Static("/assets", webPath+"/assets")
 		router.Static("/custom", webPath+"/custom")
