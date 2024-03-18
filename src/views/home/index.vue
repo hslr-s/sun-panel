@@ -421,6 +421,10 @@ function handleAddItem(itemIconGroupId?: number) {
                   @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
                   <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
                 </span>
+                
+              </div>
+              <div class="group-buttons  delay-100 transition-opacity flex"
+                :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'">
                 <span class="mr-2 cursor-pointer " :title="t('panelHome.ping')"
                   @click="usePing(itemGroup, itemGroupIndex)">
                   <SvgIcon class="text-white font-xl" icon="mdi-wan" />
