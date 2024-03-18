@@ -53,3 +53,36 @@ export function isMap<T extends Map<any, any>>(value: T | unknown): value is T {
 export function isFile<T extends File>(value: T | unknown): value is T {
   return Object.prototype.toString.call(value) === '[object File]'
 }
+/**
+ * @Author: wintsa
+ * @Date: 2024-03-18 16:32:53
+ * @LastEditors: wintsa
+ * @Description: 判断ip是否为局域网
+ * @return {*}
+ */
+export function isLocalUrl(url:string) {
+  // 创建一个 <a> 元素
+  var anchor = document.createElement('a');
+  // 设置其 href 属性为所检查的 URL
+  anchor.href = url;
+  // 获取主机名
+  var hostname = anchor.hostname;
+  
+  // 检查主机名是否是局域网的
+  // 这里假设局域网主机名的特征
+  var ip = hostname.split('.');
+  if (
+      // 检查是否为localhost
+      hostname === 'localhost' || 
+      // 检查是否为私有IP地址
+      (ip.length === 4 && (
+          ip[0] === '10' ||
+          (ip[0] === '172' && parseInt(ip[1]) >= 16 && parseInt(ip[1]) <= 31) ||
+          (ip[0] === '192' && ip[1] === '168')
+      ))
+  ) {
+      return true;
+  } else {
+      return false;
+  }
+}
