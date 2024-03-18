@@ -41,6 +41,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    //@ts-ignore
+
   clearInterval(timer)
 })
 </script>
