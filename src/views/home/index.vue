@@ -307,7 +307,9 @@ function handleSetSortStatus(groupIndex: number, sortStatus: boolean) {
       updateItemIconGroupByNet(groupIndex, items.value[groupIndex].id as number)
   }
 }
-
+function ping(params: any) {
+  return params
+}
 function handleEditItem(item: Panel.ItemInfo) {
   editItemInfoData.value = item
   editItemInfoShow.value = true
@@ -400,6 +402,9 @@ function handleAddItem(itemIconGroupId?: number) {
                 </span>
                 <span class="mr-2 cursor-pointer " :title="t('common.sort')" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
                   <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
+                </span>
+                <span class="mr-2 cursor-pointer " :title="t('panelHome.ping')" @click="ping(itemGroupIndex)">
+                  <SvgIcon class="text-white font-xl" icon="mdi-wan" />
                 </span>
               </div>
             </div>

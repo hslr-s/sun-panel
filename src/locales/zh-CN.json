@@ -248,7 +248,9 @@
     "changeToWanModelSuccess": "已经切换到公网模式（模式状态仅保存在本地）",
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
-    "openWanUrl": "打开公网地址"
+    "openWanUrl": "打开公网地址",
+    "ping": "延迟测试"
+
   },
   "settingUserInfo": {
     "confirmLogoutText": "你确定要退出登录吗？",
