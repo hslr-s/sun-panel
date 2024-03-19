@@ -196,7 +196,7 @@ function handleEditSuccess(item: Panel.ItemInfo) {
 function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
   panelState.setNetworkMode(mode)
   if (mode === PanelStateNetworkModeEnum.lan)
-    
+
     ms.success(t('panelHome.changeToLanModelSuccess'))
 
   else
@@ -322,19 +322,20 @@ function handleSetSortStatus(groupIndex: number, sortStatus: boolean) {
 }
 async function usePing(params: any, itemGroupIndex: any) {
   const isflag = isLocalUrl(window.location.origin)
-  const promises = params.items.map(async (e: any) => {
+  const promises = params.items.map(async (e: any, i: number) => {
     if (isflag && e.lanUrl) {
-      return ping(e.lanUrl)
-
+      const time = await ping(e.lanUrl)
+      //@ts-ignore
+      items.value[itemGroupIndex].items[i]['time'] = time && time < 2000 ? time : 'loss'
     } else {
-      return ping(e.url)
+      const time = await ping(e.url)
+      //@ts-ignore
+
+      items.value[itemGroupIndex].items[i]['time'] = time && time < 2000 ? time : 'loss'
 
     }
   })
-  const result = await Promise.all(promises)
-  items.value[itemGroupIndex].items?.forEach((e: any, i) => {
-    e['time'] = result[i]
-  })
+
   setTimeout(() => {
     items.value[itemGroupIndex].items?.forEach((e: any) => {
       delete e['time']
@@ -421,7 +422,7 @@ function handleAddItem(itemIconGroupId?: number) {
                   @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
                   <SvgIcon class="text-white font-xl" icon="ri:drag-drop-line" />
                 </span>
-                
+
               </div>
               <div class="group-buttons  delay-100 transition-opacity flex"
                 :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'">
