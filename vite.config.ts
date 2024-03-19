@@ -7,6 +7,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   return [
+    //@ts-ignore
     vue(),
     env.VITE_GLOB_APP_PWA === 'true' && VitePWA({
       injectRegister: 'auto',

@@ -322,7 +322,7 @@ function handleSetSortStatus(groupIndex: number, sortStatus: boolean) {
 }
 async function usePing(params: any, itemGroupIndex: any) {
   const isflag = isLocalUrl(window.location.origin)
-  const promises = params.items.map(async (e: any, i: number) => {
+   params.items.map(async (e: any, i: number) => {
     if (isflag && e.lanUrl) {
       const time = await ping(e.lanUrl)
       //@ts-ignore

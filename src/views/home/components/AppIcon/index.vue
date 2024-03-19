@@ -51,10 +51,10 @@ const textColor = computed(() => {
       <!-- 文字 -->
       <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
       <div class="text-white flex items-center"
-        :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)', flex: 1,position: 'relative' }">
+        :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)', flex: 1, position: 'relative' }">
         <transition name="fade">
 
-        <div class="badge" v-if="itemInfo?.time">{{ itemInfo?.time }}</div> <!-- 这里的数字表示未读数 -->
+          <div class="badge" v-if="itemInfo?.time">{{ itemInfo?.time }}</div> <!-- 这里的数字表示未读数 -->
         </transition>
         <div class="app-icon-info-text-box w-full">
           <div class="app-icon-info-text-box-title font-semibold w-full">
@@ -72,7 +72,12 @@ const textColor = computed(() => {
     </div>
 
     <!-- 极简(小)图标（APP） -->
-    <div v-if="style === PanelPanelConfigStyleEnum.icon" class="app-icon-small">
+    <div v-if="style === PanelPanelConfigStyleEnum.icon" class="app-icon-small" style="position: relative;">
+      <transition name="fade">
+
+        <div class="badge" v-if="itemInfo?.time" style="right: 12px;">{{ itemInfo?.time }}</div> <!-- 这里的数字表示未读数 -->
+      </transition>
+
       <div
         class="app-icon-small-icon overflow-hidden rounded-2xl sunpanel w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
         :title="itemInfo?.description">
@@ -101,14 +106,19 @@ const textColor = computed(() => {
   justify-content: center;
   align-items: center;
   font-size: 12px;
-  mix-blend-mode: difference; /* 设置文字与背景色反色 */
+  mix-blend-mode: difference;
+  /* 设置文字与背景色反色 */
 
   /* 设置徽章内文本的大小 */
 }
-.fade-enter-active, .fade-leave-active {
+
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

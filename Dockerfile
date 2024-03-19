@@ -2,7 +2,7 @@
 FROM node AS web_image
 
 # 华为源
-# RUN npm config set registry https://repo.huaweicloud.com/repository/npm/
+# RUN npm config set registry https://registry.npmmirror.com/
 
 RUN npm install pnpm -g
 
@@ -10,7 +10,7 @@ WORKDIR /build
 
 COPY ./package.json /build
 
-COPY ./pnpm-lock.yaml /build
+# COPY ./pnpm-lock.yaml /build
 
 RUN pnpm install
 
