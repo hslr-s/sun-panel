@@ -20,33 +20,23 @@ const propClass = ref(props.class)
 <template>
   <div class="item-card w-full">
     <!-- 详情图标 -->
-    <div
-      v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info"
-      class="item-card-info w-full rounded-2xl transition-all duration-200 flex"
-      :class="propClass"
-      :style="{ backgroundColor: backgroundColor ?? defaultBackground }"
-    >
+    <div v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info"
+      class="item-card-info w-full rounded-2xl transition-all duration-200 flex" :class="propClass"
+      :style="{ backgroundColor: backgroundColor ?? defaultBackground }">
       <slot name="info" />
     </div>
 
     <!-- 极简图标（APP） -->
-    <div
-      v-if="cardTypeStyle === PanelPanelConfigStyleEnum.icon"
-      class="item-card-small"
-    >
+    <div v-if="cardTypeStyle === PanelPanelConfigStyleEnum.icon" class="item-card-small">
       <div
         class="item-card-small-icon overflow-hidden rounded-2xl sunpanel w-[70px] h-[70px] mx-auto transition-all duration-200"
-        :class="propClass"
-        :style="{ backgroundColor: backgroundColor ?? defaultBackground }"
-      >
+        :class="propClass" :style="{ backgroundColor: backgroundColor ?? defaultBackground }">
         <slot name="small" />
       </div>
 
-      <div
-        v-if="!iconTextIconHideTitle"
+      <div v-if="!iconTextIconHideTitle"
         class="item-card-small-title text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-        :style="{ color: iconTextColor }"
-      >
+        :style="{ color: iconTextColor }">
         {{ iconText }}
       </div>
     </div>

@@ -248,7 +248,9 @@
     "changeToWanModelSuccess": "Switched to WAN mode (mode status saved locally)",
     "goToLogin": "Go to login",
     "openLanUrl": "Open LAN URL",
-    "openWanUrl": "Open WAN URL"
+    "openWanUrl": "Open WAN URL",
+    "ping": "ping test"
+
   },
   "settingUserInfo": {
     "confirmLogoutText": "Are you sure you want to logout?",
