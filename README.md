@@ -29,7 +29,7 @@ A server, NAS navigation panel, Homepage, Browser homepage.
 
 
 本项目基于原版修改，添加ping功能，更smart判断内外网。
-[![修改版docker地址](https://img.shields.io/badge/docker-123456?logo=docker&logoColor=fff&labelColor=1c7aed)]([https://hub.docker.com/r/hslr/sun-panel](https://hub.docker.com/repository/docker/wintsa/sun-panel)) 
+<a href='https://hub.docker.com/repository/docker/wintsa/sun-panel'>docker地址</a>
 由于提了pr，但原作者一直没合并，自己魔改发包吧，以后再加一些下载器监控之类的功能
 ![](./doc/images/main-dark.png)
 
