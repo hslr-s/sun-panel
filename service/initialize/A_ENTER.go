@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sun-panel/global"
 	"sun-panel/initialize/cUserToken"
 	"sun-panel/initialize/config"
@@ -24,10 +25,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var DB_DRIVER = database.SQLITE
+type CMDParams struct {
+	CfgPath  string // 配置文件目录
+	CfgInit  bool   // 配置初始化
+	PwdReset bool   // 重置密码
+}
 
-// var RUNCODE = "debug"
-// var ISDOCER = "" // 是否为docker模式
+var DB_DRIVER = database.SQLITE
+var cmdParams CMDParams
 
 func getDefaultConfig() map[string]map[string]string {
 	return map[string]map[string]string{
@@ -52,12 +57,14 @@ func InitApp() error {
 		global.Logger = logger
 	}
 
-	// 命令行运行
-	CommandRun()
+	cmdParams = CommandInit()
+
+	// 如果为命令可能会终止运行
+	CommandRun(cmdParams)
 
 	// 配置初始化
 	{
-		if config, err := config.ConfigInit(); err != nil {
+		if config, err := config.ConfigInit(cmdParams.CfgPath); err != nil {
 			global.Logger.Errorln("Configuration initialization error", err)
 			return err
 		} else {
@@ -138,30 +145,32 @@ func DatabaseConnect() {
 	database.NotFoundAndCreateUser(global.Db)
 }
 
-// 命令行运行
-func CommandRun() {
-	var (
-		cfg bool
-		pwd bool
-	)
-
-	flag.BoolVar(&cfg, "config", false, "Generate configuration file")
-	flag.BoolVar(&pwd, "password-reset", false, "Reset the password of the first user")
+// 命令行参数初始化
+func CommandInit() CMDParams {
+	// flag.StringVar(&cmdParams.CfgPath, "c", "./conf/conf.ini", "The config path")
+	flag.StringVar(&cmdParams.CfgPath, "cfgPath", "conf", "The config path")
+	flag.BoolVar(&cmdParams.CfgInit, "cfgInit", false, "Generate configuration file")
+	flag.BoolVar(&cmdParams.PwdReset, "pwdReset", false, "Reset the password of the first user")
 
 	flag.Parse()
 
-	if cfg {
+	return cmdParams
+}
+
+// 命令行运行
+func CommandRun(arg CMDParams) {
+	if cmdParams.CfgInit {
 		// 生成配置文件
 		fmt.Println("Generating configuration file")
-		config.CreateConf("conf.example.ini", "conf/conf.example.ini", true)
-		config.CreateConf("conf.example.ini", "conf/conf.ini", true)
+		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cmdParams.CfgPath, "conf.example.ini"))
+		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cmdParams.CfgPath, "conf.ini"))
 		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
-	} else if pwd {
+	} else if cmdParams.PwdReset {
 		// 重置密码
 
 		// 配置初始化
-		config, _ := config.ConfigInit()
+		config, _ := config.ConfigInit(cmdParams.CfgPath)
 		global.Config = config
 
 		DatabaseConnect()
