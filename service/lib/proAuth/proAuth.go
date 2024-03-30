@@ -47,6 +47,20 @@ func Login(req LoginReq) (loginResp LoginResp, err error) {
 	return
 }
 
+func AutoLogin(req LoginReq) (loginResp LoginResp, err error) {
+	req.Timestamp = time.Now().Unix()
+	if code, err := requestCommon(Config.Url+"/api/autoLogin", req, &loginResp); err != nil {
+		if code != 0 {
+			return loginResp, GetError(code)
+		}
+		return loginResp, err
+	}
+	if err := CheckTimestampDifference(loginResp.Timestamp); err != nil {
+		return loginResp, err
+	}
+	return
+}
+
 func RenewTempAuth(req RenewTempAuthReq) (RenewTempAuthResp RenewTempAuthResp, err error) {
 	req.Timestamp = time.Now().Unix()
 	if _, err := requestCommon(Config.Url+"/api/renewTempAuth", req, &RenewTempAuthResp); err != nil {
@@ -60,7 +74,10 @@ func RenewTempAuth(req RenewTempAuthReq) (RenewTempAuthResp RenewTempAuthResp, e
 
 func Ping(req PingReq) (pingResp PingResp, err error) {
 	req.Timestamp = time.Now().Unix()
-	if _, err := requestCommon(Config.Url+"/api/ping", req, &pingResp); err != nil {
+	if code, err := requestCommon(Config.Url+"/api/ping", req, &pingResp); err != nil {
+		if code != 0 {
+			return pingResp, GetError(code)
+		}
 		return pingResp, err
 	}
 	if err := CheckTimestampDifference(pingResp.Timestamp); err != nil {
