@@ -12,19 +12,44 @@ import (
 )
 
 type ProAuthType struct {
-	ProExpiration  *time.Time
-	TempExpiration string
-	Token          string
+	ProExpiration    *time.Time
+	TempExpiration   string
+	Token            string
+	AutoLoginDisable bool // 为true时需要手动登录
+	PingInterval     time.Duration
 }
 
-const ProAuthTypeSystemSettingKey = "clientId"
+type ProAuthAccountPassword struct {
+	Username string
+	Password string
+}
+
+var ErrAccountPasswordIncomplete = errors.New("ErrAccountPasswordIncomplete")
+
+const ProAuthTypeSystemSettingClientIdKey = "clientId"
+const ProAuthTypeSystemSettingAccountPasswordKey = "ProAuthAccountPassword"
 
 func NewProAuth() *ProAuthType {
+
 	proAuth.Config.Url = "http://127.0.0.1:3005"
 	// proAuth.Config.Url = "http://127.0.0.1:8888"
 	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN"
-	proAuth.Config.IsDebug = true
-	return &ProAuthType{}
+	// proAuth.Config.IsDebug = true
+
+	p := ProAuthType{
+		PingInterval:     30 * time.Second, // ping执行的时间间隔
+		AutoLoginDisable: false,            // 刚启动允许自动登录
+	}
+	return &p
+}
+
+func (p *ProAuthType) Start() {
+	// p.Login("95302870@qq.com", "12345678")
+	p.Ping()
+	// p.Register()
+	// p.SetAccountPassword("95302870@qq.com", "12345678")
+	// p.AutoLogin()
+	go p.timer(p.PingInterval, p.timerFunc)
 }
 
 func (p *ProAuthType) GetLocalLanIpMAC() (ip, macAddr string, resErr error) {
@@ -63,7 +88,7 @@ func (p *ProAuthType) GetLocalLanIpMAC() (ip, macAddr string, resErr error) {
 }
 
 func (p *ProAuthType) GetClientId() string {
-	s, err := global.SystemSetting.GetValueString(ProAuthTypeSystemSettingKey)
+	s, err := global.SystemSetting.GetValueString(ProAuthTypeSystemSettingClientIdKey)
 	if err != nil {
 		global.Logger.Error("get clientId by syemtem setting:", err.Error())
 		return ""
@@ -87,6 +112,7 @@ func (p *ProAuthType) GetBase() proAuth.Base {
 }
 
 func (p *ProAuthType) Register() {
+	global.Logger.Debug("API: Register")
 	param := proAuth.RegisterReq{}
 	param.Base = p.GetBase()
 	param.Code = uuid.NewString() + cmn.BuildRandCode(10, cmn.RAND_CODE_MODE1)
@@ -99,7 +125,7 @@ func (p *ProAuthType) Register() {
 
 	// 设置clientId
 	if resp.ClientId != "" {
-		global.SystemSetting.Set(ProAuthTypeSystemSettingKey, resp.ClientId)
+		global.SystemSetting.Set(ProAuthTypeSystemSettingClientIdKey, resp.ClientId)
 	}
 
 	if param.ClientId == nil && resp.ClientId == "" {
@@ -108,6 +134,7 @@ func (p *ProAuthType) Register() {
 }
 
 func (p *ProAuthType) Login(username, password string) error {
+	global.Logger.Debug("API: Login")
 	param := proAuth.LoginReq{}
 	param.Base = p.GetBase()
 	param.Username = username
@@ -123,7 +150,53 @@ func (p *ProAuthType) Login(username, password string) error {
 		return err
 	}
 
-	global.Logger.Debug("token", resp.Token)
+	global.Logger.Debug(username+" token", resp.Token)
+
+	p.Token = resp.Token
+	p.ProExpiration = resp.ProExpiration
+	return nil
+}
+
+func (p *ProAuthType) AutoLogin() error {
+	global.Logger.Debug("API: AutoLogin")
+
+	// 禁用自动登录
+	if p.AutoLoginDisable {
+		global.Logger.Info("disable auto login")
+		return errors.New("disable auto login")
+	}
+
+	accountPassword := p.GetAccountPassword()
+
+	if accountPassword.Username == "" || accountPassword.Password == "" {
+		p.AutoLoginDisable = true
+		return ErrAccountPasswordIncomplete
+	}
+
+	param := proAuth.LoginReq{}
+	param.Base = p.GetBase()
+	param.Username = accountPassword.Username
+	param.Password = accountPassword.Password
+
+	if param.ClientId == nil || *param.ClientId == "" {
+		p.Register()
+	}
+
+	resp, err := proAuth.AutoLogin(param)
+	if err != nil {
+		if errors.Is(err, proAuth.GetError(proAuth.ErrManualLogin)) {
+			p.AutoLoginDisable = true
+		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountNotExist)) {
+			p.AutoLoginDisable = true
+		} else if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
+			p.AutoLoginDisable = true
+		}
+
+		global.Logger.Error("auto login fail:", err.Error())
+		return err
+	}
+
+	global.Logger.Debug(param.Username+" token", resp.Token)
 
 	p.Token = resp.Token
 	p.ProExpiration = resp.ProExpiration
@@ -131,6 +204,7 @@ func (p *ProAuthType) Login(username, password string) error {
 }
 
 func (p *ProAuthType) RenewTempAuth() error {
+	global.Logger.Debug("API: RenewTempAuth")
 	param := proAuth.RenewTempAuthReq{}
 	param.Base = p.GetBase()
 	param.Token = &p.Token
@@ -150,21 +224,72 @@ func (p *ProAuthType) RenewTempAuth() error {
 }
 
 func (p *ProAuthType) Ping() error {
+	global.Logger.Debug("API: Ping")
 	param := proAuth.PingReq{}
 	param.Base = p.GetBase()
 	param.Token = &p.Token
 
+	// ClientId不存在将注册
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
 	}
 
 	resp, err := proAuth.Ping(param)
 	if err != nil {
-		global.Logger.Error("ping fail:", err.Error())
+		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) {
+			global.Logger.Debug("ping fail:", err.Error())
+			p.AutoLogin()
+		}
 		return err
 	}
 
 	p.ProExpiration = resp.ProExpiration
 
 	return nil
+}
+
+func (p *ProAuthType) timer(d time.Duration, function func()) {
+	// 创建一个定时器，每秒执行一次
+	ticker := time.NewTicker(d)
+
+	// 在main函数结束时停止定时器
+	defer ticker.Stop()
+
+	// 循环遍历定时器的通道
+	for {
+		select {
+		case <-ticker.C:
+			function()
+		}
+	}
+}
+
+func (p *ProAuthType) timerFunc() {
+	p.Ping()
+}
+
+// 是否过期
+func (p *ProAuthType) ProIsExpired() bool {
+	return p.ProExpiration.Before(time.Now())
+}
+
+func (p *ProAuthType) GetAccountPassword() ProAuthAccountPassword {
+	accountPassword := ProAuthAccountPassword{}
+	err := global.SystemSetting.GetValueByInterface(ProAuthTypeSystemSettingAccountPasswordKey, &accountPassword)
+	if err != nil {
+		global.Logger.Debug("GetAccountPassword error ", err.Error())
+	}
+	return accountPassword
+}
+
+func (p *ProAuthType) SetAccountPassword(username, password string) error {
+	accountPassword := ProAuthAccountPassword{
+		Username: username,
+		Password: password,
+	}
+	return global.SystemSetting.Set(ProAuthTypeSystemSettingAccountPasswordKey, accountPassword)
+}
+
+func (p *ProAuthType) UpdateLoginStatus(username, password string) {
+
 }
