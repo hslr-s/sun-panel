@@ -5,4 +5,5 @@ type ApiPanel struct {
 	UserConfig    UserConfig
 	UsersApi      UsersApi
 	ItemIconGroup ItemIconGroup
+	ProAuthApi    ProAuthApi
 }

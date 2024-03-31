@@ -38,7 +38,10 @@ func Register(req RegisterReq) (registerResp RegisterResp, err error) {
 
 func Login(req LoginReq) (loginResp LoginResp, err error) {
 	req.Timestamp = time.Now().Unix()
-	if _, err := requestCommon(Config.Url+"/api/login", req, &loginResp); err != nil {
+	if code, err := requestCommon(Config.Url+"/api/login", req, &loginResp); err != nil {
+		if code != 0 {
+			return loginResp, GetError(code)
+		}
 		return loginResp, err
 	}
 	if err := CheckTimestampDifference(loginResp.Timestamp); err != nil {

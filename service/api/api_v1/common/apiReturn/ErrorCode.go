@@ -21,4 +21,9 @@ var ErrorCodeMap = map[int]string{
 
 	1400: "Parameter format error", // 参数格式错误
 
+	1411: "incorrect username or password",    // proAuth:账号密码错误
+	1412: "account disabled or not activated", // proAuth:账号已停用
+	1413: "account does not exist",            // proAuth:账号不存在
+	1414: "server error",                      // proAuth:服务器错误
+
 }

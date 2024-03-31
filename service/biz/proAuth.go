@@ -251,6 +251,10 @@ func (p *ProAuthType) Ping() error {
 	return nil
 }
 
+func (p *ProAuthType) GetStatus() ProAuthType {
+	return *p
+}
+
 func (p *ProAuthType) timer(d time.Duration, function func()) {
 	// 创建一个定时器，每秒执行一次
 	ticker := time.NewTicker(d)
