@@ -190,6 +190,10 @@ func (p *ProAuthType) AutoLogin() error {
 			p.AutoLoginDisable = true
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
 			p.AutoLoginDisable = true
+		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountNotExist)) {
+			p.AutoLoginDisable = true
+		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
+			p.AutoLoginDisable = true
 		}
 
 		global.Logger.Error("auto login fail:", err.Error())
@@ -207,7 +211,7 @@ func (p *ProAuthType) RenewTempAuth() error {
 	global.Logger.Debug("API: RenewTempAuth")
 	param := proAuth.RenewTempAuthReq{}
 	param.Base = p.GetBase()
-	param.Token = &p.Token
+	param.Token = p.Token
 
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
@@ -227,13 +231,12 @@ func (p *ProAuthType) Ping() error {
 	global.Logger.Debug("API: Ping")
 	param := proAuth.PingReq{}
 	param.Base = p.GetBase()
-	param.Token = &p.Token
+	param.Token = p.Token
 
 	// ClientId不存在将注册
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
 	}
-
 	resp, err := proAuth.Ping(param)
 	if err != nil {
 		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) {
@@ -266,11 +269,32 @@ func (p *ProAuthType) timer(d time.Duration, function func()) {
 
 func (p *ProAuthType) timerFunc() {
 	p.Ping()
+
+	// pro授权没有过期，但是临时授权过期了
+	// 要进行续期临时授权
+	if !p.ProIsExpired() && p.TempAuthIsExpired() {
+		p.RenewTempAuth()
+	}
 }
 
 // 是否过期
 func (p *ProAuthType) ProIsExpired() bool {
+	if p.ProExpiration == nil {
+		return true
+	}
 	return p.ProExpiration.Before(time.Now())
+}
+
+func (p *ProAuthType) TempAuthIsExpired() bool {
+	if p.TempExpiration == "" {
+		return true
+	}
+	timeParse, err := time.Parse(cmn.TimeFormatMode1, p.TempExpiration)
+	if err != nil {
+		global.Logger.Error("TempAuthIsExpired:TempExpiration parse error", timeParse)
+		return true
+	}
+	return timeParse.Before(time.Now())
 }
 
 func (p *ProAuthType) GetAccountPassword() ProAuthAccountPassword {

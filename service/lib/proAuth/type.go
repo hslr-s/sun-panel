@@ -12,7 +12,7 @@ type Base struct {
 
 type TokenBase struct {
 	Base
-	Token *string
+	Token string
 }
 type RegisterReq struct {
 	Base
