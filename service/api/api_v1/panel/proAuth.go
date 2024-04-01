@@ -55,7 +55,15 @@ func (p *ProAuthApi) GetStatus(c *gin.Context) {
 	resp := panelApiStructs.GetStatusResp{
 		ProExpiration: s.ProExpiration,
 		LoginStatus:   !s.AutoLoginDisable,
+		Username:      s.UserInfo.Username,
+		NickName:      s.UserInfo.Name,
 	}
 
 	apiReturn.SuccessData(c, resp)
+}
+
+// 退出账号
+func (p *ProAuthApi) Logout(c *gin.Context) {
+	biz.ProAuth.Reset()
+	apiReturn.Success(c)
 }

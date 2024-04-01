@@ -14,16 +14,21 @@ type TokenBase struct {
 	Base
 	Token string
 }
-type RegisterReq struct {
-	Base
-	Code string // 随机码，避免重复攻击
-}
 
 type RespBase struct {
 	Token     string
 	Timestamp int64
 }
 
+type UserInfo struct {
+	Username string
+	Name     string
+}
+
+type RegisterReq struct {
+	Base
+	Code string // 随机码，避免重复攻击
+}
 type RegisterResp struct {
 	RespBase
 	ClientId string
@@ -37,6 +42,7 @@ type LoginReq struct {
 
 type LoginResp struct {
 	RespBase
+	UserInfo
 	Token         string
 	ProExpiration *time.Time // pro授权过期时间
 }

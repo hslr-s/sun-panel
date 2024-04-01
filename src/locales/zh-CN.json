@@ -106,6 +106,23 @@
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
       "groupName": "分组名称"
     },
+    "proAuth": {
+      "FAQButton": "查看常见问题",
+      "card": {
+        "expiredText": "已于{date}过期",
+        "notExpiredText": "{date}到期"
+      },
+      "goToSunPanelAuthSite": "前往Sun-Panel授权平台官网",
+      "login": "登录",
+      "loginSunPanel": "登录Sun-Panel授权平台",
+      "logout": "退出",
+      "notLogin": "未登录",
+      "password": "密码",
+      "registerAccount": "没有账号，去注册",
+      "textDescription": "因为作者需要生存，所以增加了一些Pro授权才能用的功能，您可以通过授权平台来购买授权支持作者，让作者有动力增加更多功能。全凭自愿，后期依然还会增加免费的功能，请期待...",
+      "username": "账号",
+      "usernameWithPasswordIsNotEmpty": "账号和密码不可以为空"
+    },
     "uploadsFileManager": {
       "alertText": "你可以在这里管理你上传过的壁纸和图标",
       "appName": "上传文件管理",
@@ -252,6 +269,9 @@
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
     "openWanUrl": "打开公网地址"
+  },
+  "proAuth": {
+    "appName": "Pro授权"
   },
   "settingUserInfo": {
     "confirmLogoutText": "你确定要退出登录吗？",

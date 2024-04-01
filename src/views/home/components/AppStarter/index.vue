@@ -92,15 +92,23 @@ function handleResize() {
 }
 
 onMounted(() => {
-  const adminApp: App = {
-    name: t('adminSettingUsers.appName'),
-    componentName: 'Users',
-    icon: 'lucide-users',
-    auth: 1,
-  }
+  const adminApps: App[] = [
+    {
+      name: t('adminSettingUsers.appName'),
+      componentName: 'Users',
+      icon: 'lucide-users',
+      auth: 1,
+    },
+    {
+      name: t('proAuth.appName'),
+      componentName: 'ProAuth',
+      icon: 'tabler-award',
+      auth: 1,
+    },
+  ]
   // 初始化
   if (authStore.userInfo?.role === 1)
-    apps.value.push(adminApp)
+    apps.value = apps.value.concat(adminApps)
 
   window.addEventListener('resize', handleResize)
   handleResize()

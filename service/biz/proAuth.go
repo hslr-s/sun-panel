@@ -17,6 +17,7 @@ type ProAuthType struct {
 	Token            string
 	AutoLoginDisable bool // 为true时需要手动登录
 	PingInterval     time.Duration
+	UserInfo         proAuth.UserInfo
 }
 
 type ProAuthAccountPassword struct {
@@ -154,6 +155,8 @@ func (p *ProAuthType) Login(username, password string) error {
 
 	p.Token = resp.Token
 	p.ProExpiration = resp.ProExpiration
+	p.UserInfo = resp.UserInfo
+	p.AutoLoginDisable = false
 	return nil
 }
 
@@ -204,6 +207,8 @@ func (p *ProAuthType) AutoLogin() error {
 
 	p.Token = resp.Token
 	p.ProExpiration = resp.ProExpiration
+	p.UserInfo = resp.UserInfo
+	p.AutoLoginDisable = false
 	return nil
 }
 
@@ -249,6 +254,18 @@ func (p *ProAuthType) Ping() error {
 	p.ProExpiration = resp.ProExpiration
 
 	return nil
+}
+
+func (p *ProAuthType) Reset() {
+	p.SetAccountPassword("", "")
+	p.AutoLoginDisable = true
+	p.Token = ""
+	p.TempExpiration = ""
+	p.ProExpiration = nil
+	p.UserInfo = proAuth.UserInfo{
+		Username: "",
+		Name:     "",
+	}
 }
 
 func (p *ProAuthType) GetStatus() ProAuthType {

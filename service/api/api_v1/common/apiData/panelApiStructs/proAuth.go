@@ -10,4 +10,6 @@ type LoginReq struct {
 type GetStatusResp struct {
 	ProExpiration *time.Time `json:"proExpiration"`
 	LoginStatus   bool       `json:"loginStatus"`
+	Username      string     `json:"username"`
+	NickName      string     `json:"nickName"`
 }
