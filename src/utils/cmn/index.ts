@@ -17,11 +17,11 @@ const { notification } = createDiscreteApi(['notification'])
  * @param format 时间格式 默认：'YYYY-MM-DD HH:mm:ss'
  * @returns string
  */
-export function buildTimeString(format?: string): string {
+export function buildTimeString(timeString?: string, format?: string): string {
   if (!format)
     format = 'YYYY-MM-DD HH:mm:ss'
 
-  return moment().format(format)
+  return moment(timeString).format(format)
 }
 
 export function timeFormat(timeString?: string) {
