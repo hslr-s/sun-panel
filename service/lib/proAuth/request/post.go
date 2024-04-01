@@ -54,6 +54,7 @@ func EncryptRequestData(AESKey string, param interface{}) ([]byte, error) {
 	if byt, err := json.Marshal(param); err != nil {
 		return nil, errors.New("json error:" + err.Error())
 	} else {
+		// fmt.Println("请求数据", string(byt))
 		if encrypt, err := AES.Encrypt(AESKey, string(byt)); err != nil {
 			return nil, errors.New("encrypt error:" + err.Error())
 		} else {
@@ -67,6 +68,7 @@ func DecryptResponseData(AESKey string, response string, value interface{}) erro
 	if decryptStr, err := AES.Decrypt(AESKey, response); err != nil {
 		return errors.New("decrypt error:" + err.Error())
 	} else {
+		// fmt.Println("接口返回Data数据", decryptStr)
 		if err := json.Unmarshal([]byte(decryptStr), value); err != nil {
 			return errors.New("JSON encrypted string error:" + err.Error())
 		}
@@ -93,12 +95,13 @@ func SendPostJsonAESKeyRequest(url, AESKey string, requestData interface{}, resp
 	if err != nil {
 		return 0, err
 	}
-
+	// fmt.Println("接口返回总数据", string(respContent))
 	requestResp := RequestResp{}
 	if err := json.Unmarshal(respContent, &requestResp); err != nil {
 		return requestResp.Code, errors.New("requestResp error :" + err.Error())
 	}
 
+	// fmt.Println("接口返回Data数据", requestResp.Data)
 	if requestResp.Code != 0 {
 		return requestResp.Code, errors.New(requestResp.Msg)
 	}
@@ -109,7 +112,7 @@ func SendPostJsonAESKeyRequest(url, AESKey string, requestData interface{}, resp
 func SendPostJsonRequest(url string, requestData interface{}, responseData interface{}) (int, error) {
 
 	reqByte, err := json.Marshal(requestData)
-	fmt.Println("请求数据", string(reqByte))
+	// fmt.Println("请求数据", string(reqByte))
 	if err != nil {
 		return 0, err
 	}
@@ -118,7 +121,7 @@ func SendPostJsonRequest(url string, requestData interface{}, responseData inter
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println("接口返回总数据", string(respContent))
+	// fmt.Println("接口返回总数据", string(respContent))
 
 	// 第一轮解析
 	requestResp := RequestRespDebug{}
@@ -131,7 +134,7 @@ func SendPostJsonRequest(url string, requestData interface{}, responseData inter
 	}
 
 	requestRespData, _ := json.Marshal(requestResp.Data)
-	fmt.Println("data数据", string(requestRespData))
+	// fmt.Println("data数据", string(requestRespData))
 	// 第二轮解析
 	if err := json.Unmarshal(requestRespData, &responseData); err != nil {
 		return requestResp.Code, errors.New("requestResp data error :" + err.Error())
