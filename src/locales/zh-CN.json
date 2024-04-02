@@ -101,6 +101,20 @@
       "transmuteStandard": "浏览器书签转换工具",
       "warnConfigFileLow": "配置文件版本过低，但是兼容"
     },
+    "globalSetting": {
+      "appName": "全局设置",
+      "clearIcoImage": "清除图像",
+      "customDanger": "危险警告",
+      "customDangerAlert": "这是一个危险的操作，请不要填入不被信任的代码，这样会导致隐私泄露、布局错乱或者攻击等",
+      "customImageAddress": "自定义图片地址",
+      "customJSAndCss": "自定义JS和CSS文件",
+      "customJSAndCssAlert": "如果您没有PRO授权，是不能在线编辑保存的，不过您可以进入到安装Sun-Panel的NAS或服务器，找到“自定义”的路径（{path}）直接修改和保存文件，仍然是生效的",
+      "favicon": "站点图标",
+      "loginBackgroundImage": "登录页背景图片",
+      "personalise": "站点设置",
+      "selectIcoImage": "选择ICO图像",
+      "title": "站点标题"
+    },
     "itemGroupManage": {
       "appName": "分组管理",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
@@ -190,7 +204,7 @@
       "regularUser": "普通"
     },
     "save": "保存",
-    "saveFail": "保存成功",
+    "saveFail": "保存失败",
     "saveSort": "保存排序",
     "saveSuccess": "保存成功",
     "serverError": "服务器错误",

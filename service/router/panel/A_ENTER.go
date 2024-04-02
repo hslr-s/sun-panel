@@ -8,4 +8,5 @@ func Init(routerGroup *gin.RouterGroup) {
 	InitUsersRouter(routerGroup)
 	InitItemIconGroup(routerGroup)
 	InitProAuthRouter(routerGroup)
+	InitGetSiteStting(routerGroup)
 }

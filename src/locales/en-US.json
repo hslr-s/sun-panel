@@ -101,6 +101,20 @@
       "transmuteStandard": "Transmute Standard",
       "warnConfigFileLow": "The configuration file version is too low but compatible"
     },
+    "globalSetting": {
+      "appName": "Global Setting",
+      "clearIcoImage": "Clear image",
+      "customDanger": "Danger warning",
+      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code. This may lead to privacy leaks, layout confusion, or attacks.",
+      "customImageAddress": "Custom image address",
+      "customJSAndCss": "Custom JS and CSS files",
+      "customJSAndCssAlert": "If you do not have PRO authorization, you cannot edit and save online. However, you can enter the NAS or server where Sun-Panel is installed and find the \"custom\" path ({path}) to directly modify and save the file. It will still be effective.",
+      "favicon": "site icon",
+      "loginBackgroundImage": "Login page background image",
+      "personalise": "Site settings",
+      "selectIcoImage": "Select ICO image",
+      "title": "Site title"
+    },
     "itemGroupManage": {
       "appName": "Group Management",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",

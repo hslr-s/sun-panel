@@ -51,6 +51,11 @@ export default defineConfig((env) => {
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/uploads/', '/uploads/'),
         },
+        '/custom': {
+          target: viteEnv.VITE_APP_API_BASE_URL,
+          changeOrigin: true, // 允许跨域
+          rewrite: path => path.replace('/custom/', '/custom/'),
+        },
       },
     },
     build: {

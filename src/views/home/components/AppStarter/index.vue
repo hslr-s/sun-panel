@@ -105,6 +105,12 @@ onMounted(() => {
       icon: 'tabler-award',
       auth: 1,
     },
+    {
+      name: t('apps.globalSetting.appName'),
+      componentName: 'GlobalSetting',
+      icon: 'ic-outline-build-circle',
+      auth: 1,
+    },
   ]
   // 初始化
   if (authStore.userInfo?.role === 1)
