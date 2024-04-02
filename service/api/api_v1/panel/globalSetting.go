@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
 
@@ -24,14 +25,14 @@ func (a *GlobalSettingApi) SaveSiteStting(c *gin.Context) {
 		return
 	}
 
-	global.SystemSetting.Set("global_setting_site", req)
+	biz.GlobalSetting.SaveSiteStting(req.GlobalSettingSiteSetting)
 	apiReturn.Success(c)
 }
 
 func (a *GlobalSettingApi) GetSiteStting(c *gin.Context) {
 	resp := panelApiStructs.GlobalSettingSite{}
 
-	global.SystemSetting.GetValueByInterface("global_setting_site", &resp)
+	biz.GlobalSetting.GetSiteStting(&resp)
 	apiReturn.SuccessData(c, resp)
 }
 

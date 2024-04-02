@@ -4,6 +4,7 @@ import {
   NAlert, NButton, NCard, NDivider, NH3,
   NInput, NPopconfirm, useMessage,
 } from 'naive-ui'
+import { ProTag, SvgIconOnline } from '@/components/common'
 
 import {
   getCustomJsAndCssCode as getCustomJsAndCssCodeApi,
@@ -11,7 +12,6 @@ import {
   saveCustomJsAndCssCode as saveCustomJsAndCssCodeApi,
 } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
-import { SvgIconOnline } from '@/components/common'
 
 const ms = useMessage()
 const customPath = ref('')
@@ -74,6 +74,7 @@ onMounted(() => {
   <NCard style="border-radius:10px" class="mt-[10px]" size="small">
     <NH3>
       {{ t("apps.globalSetting.customJSAndCss") }}
+      <ProTag />
     </NH3>
 
     <NAlert type="info" :bordered="false">

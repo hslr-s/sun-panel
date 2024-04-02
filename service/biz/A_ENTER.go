@@ -1,5 +1,6 @@
 package biz
 
 var (
-	ProAuth = NewProAuth()
+	ProAuth       = NewProAuth()
+	GlobalSetting = GlobalSettingType{}
 )

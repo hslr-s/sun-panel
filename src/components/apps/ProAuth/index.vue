@@ -140,7 +140,7 @@ onMounted(() => {
           </div>
         </template>
         <template #proFlag>
-          Pro
+          PRO
         </template>
         <template #username>
           <template v-if="loginStatus">

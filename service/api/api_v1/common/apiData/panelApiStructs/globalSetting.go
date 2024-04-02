@@ -1,9 +1,9 @@
 package panelApiStructs
 
+import "sun-panel/biz"
+
 type GlobalSettingSite struct {
-	FaviconUrl         string `json:"favicoUrl"`
-	Title              string `json:"title"`
-	LoginBackgroundUrl string `json:"loginBackgroundUrl"`
+	biz.GlobalSettingSiteSetting
 }
 
 type GlobalSettingCustomJsAndCss struct {

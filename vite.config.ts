@@ -56,6 +56,12 @@ export default defineConfig((env) => {
           changeOrigin: true, // 允许跨域
           rewrite: path => path.replace('/custom/', '/custom/'),
         },
+        '/favicon.ico': {
+          target: viteEnv.VITE_APP_API_BASE_URL,
+          changeOrigin: true, // 允许跨域
+          rewrite: path => path.replace('/favicon.ico', '/favicon.ico'),
+        },
+
       },
     },
     build: {

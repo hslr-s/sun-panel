@@ -7,6 +7,7 @@ import {
   NInput, NPopconfirm, NUpload, NUploadDragger, useMessage,
 } from 'naive-ui'
 import Custom from './Custom.vue'
+import { ProTag } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
@@ -143,6 +144,7 @@ onMounted(() => {
       <div>
         <div class="text-slate-500 mb-[5px] font-bold">
           {{ $t('apps.globalSetting.title') }}
+          <ProTag />
         </div>
         <div class="flex items-center mt-[5px]">
           <NInput v-model:value="siteSetting.title" type="text" show-count :maxlength="20" :placeholder="t('common.inputPlaceholder')" />
@@ -152,6 +154,7 @@ onMounted(() => {
       <div>
         <div class="text-slate-500 mb-[5px] font-bold">
           {{ $t('apps.globalSetting.favicon') }}
+          <ProTag />
         </div>
 
         <div>
