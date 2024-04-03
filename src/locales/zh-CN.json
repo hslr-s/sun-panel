@@ -270,7 +270,8 @@
     "onlineIconLibrary": "在线图标库",
     "openMethod": "打开方式",
     "selectUpload": "本地上传",
-    "url": "地址"
+    "url": "地址",
+    "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },
   "login": {
     "loginButton": "登录",
