@@ -83,10 +83,9 @@ async function login(username: string, password: string) {
 
 async function logout() {
   try {
-    const { msg } = await logoutApi()
+    await logoutApi()
     getStatus()
     loginModalShow.value = false
-    ms.error(msg)
   }
   catch (error) {
     apiRespErrMsg(error)
@@ -227,7 +226,7 @@ onMounted(() => {
             <NInput v-model:value="loginModalForm.username" :placeholder="t('apps.proAuth.username')" />
           </NFormItemRow>
           <NFormItemRow>
-            <NInput v-model:value="loginModalForm.password" :placeholder="t('apps.proAuth.password')" />
+            <NInput v-model:value="loginModalForm.password" type="password" :placeholder="t('apps.proAuth.password')" />
           </NFormItemRow>
         </NForm>
         <NButton type="primary" block secondary strong @click="handleSubmit">

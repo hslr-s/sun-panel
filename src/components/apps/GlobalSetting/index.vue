@@ -59,6 +59,7 @@ async function saveSiteSetting() {
   }
   catch (error) {
     ms.error(t('common.saveFail'))
+    console.error(error)
   }
 }
 
@@ -67,10 +68,10 @@ function handleFileIcoUploadChange(event: Event) {
   console.log(target)
 
   if (target.files && target.files[0]) {
-    console.log(target.files)
+    // console.log(target.files)
     const imageFile = target.files[0]
     const imageUrl = URL.createObjectURL(imageFile)
-    console.log(imageUrl)
+    // console.log(imageUrl)
     icoThumbnailUrl.value = imageUrl
     icoImageFile.value = imageFile
   }
@@ -162,8 +163,8 @@ onMounted(() => {
           <ProTag />
         </div>
 
-        <NAlert type="warning" style="border-radius: 5px;" :bordered="false">
-          <p>
+        <NAlert type="info" style="border-radius: 5px;" :bordered="false">
+          <p class="text-sm">
             {{ t("apps.globalSetting.iconChangeClearCache") }}
           </p>
         </NAlert>

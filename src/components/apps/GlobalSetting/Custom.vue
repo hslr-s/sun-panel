@@ -37,7 +37,7 @@ async function save() {
     ms.success(t('common.saveSuccess'))
   }
   catch (error) {
-    ms.success(t('common.saveFail'))
+    apiRespErrMsg(error)
     console.log(error)
   }
 }
@@ -82,16 +82,16 @@ onMounted(() => {
     </NH3>
 
     <NAlert type="info" :bordered="false" style="border-radius: 5px;margin-bottom: 5px;">
-      <span class="text-xs">
+      <span class="text-sm">
         {{ t("apps.globalSetting.customJSAndCssAlert", { path: customPath }) }}
       </span>
     </NAlert>
 
-    <NAlert type="error" :title="t('apps.globalSetting.customDanger')" :bordered="false" style="border-radius: 5px;">
+    <NAlert type="error" :bordered="false" style="border-radius: 5px;">
       <template #icon>
         <SvgIconOnline icon="gg:danger" />
       </template>
-      <span class="text-xs">
+      <span class="text-sm">
         {{ t("apps.globalSetting.customDangerAlert") }}
       </span>
     </NAlert>

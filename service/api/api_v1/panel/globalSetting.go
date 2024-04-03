@@ -112,6 +112,11 @@ func (a *GlobalSettingApi) SaveCustomJsAndCssCode(c *gin.Context) {
 		return
 	}
 
+	if biz.ProAuth.ProIsExpired() {
+		apiReturn.ErrorByCode(c, apiReturn.ErrCodeNoPROAuthorization)
+		return
+	}
+
 	cssFilePath := customPath + "/index.css"
 	// cssIsExist, _ := cmn.PathExists(customPath)
 	if err := createAndWriteFile(cssFilePath, req.CssContent); err != nil {

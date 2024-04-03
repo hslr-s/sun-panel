@@ -3,17 +3,21 @@ package apiReturn
 import "errors"
 
 const (
-	ErrCodeNotLoggedIn                           = 1000
-	ErrCodeIncorrectUsernameOrPassword           = 1003
-	ErrCodeAccountDisabledOrNotActivated         = 1004
-	ErrCodeNoCurrentPermission                   = 1005
-	ErrCodeAccountDoesNotExist                   = 1006
-	ErrCodeOldPasswordError                      = 1007
-	ErrCodeDatabaseError                         = 1200
-	ErrCodePleaseKeepAtLeastOne                  = 1201
-	ErrCodeNoDataRecordFound                     = 1202
-	ErrCodeUploadFailed                          = 1300
-	ErrCodeUnsupportedFileFormat                 = 1301
+	ErrCodeNotLoggedIn                   = 1000
+	ErrCodeIncorrectUsernameOrPassword   = 1003
+	ErrCodeAccountDisabledOrNotActivated = 1004
+	ErrCodeNoCurrentPermission           = 1005
+	ErrCodeAccountDoesNotExist           = 1006
+	ErrCodeOldPasswordError              = 1007
+	ErrCodeNoPROAuthorization            = 1008
+
+	ErrCodeDatabaseError        = 1200
+	ErrCodePleaseKeepAtLeastOne = 1201
+	ErrCodeNoDataRecordFound    = 1202
+
+	ErrCodeUploadFailed          = 1300
+	ErrCodeUnsupportedFileFormat = 1301
+
 	ErrCodeParameterFormatError                  = 1400
 	ErrCodeProAuthIncorrectUsernameOrPassword    = 1411
 	ErrCodeProAuthAccountDisabledOrNotActivated  = 1412
@@ -29,6 +33,7 @@ var ErrorCodeMap = map[int]error{
 	ErrCodeNoCurrentPermission:           errors.New("no current permission for operation"), // 当前无权限操作
 	ErrCodeAccountDoesNotExist:           errors.New("account does not exist"),              // 账号不存在
 	ErrCodeOldPasswordError:              errors.New("old password error"),                  // 旧密码不正确
+	ErrCodeNoPROAuthorization:            errors.New("no PRO authorization"),                // 没有PRO授权
 
 	// 数据类
 	ErrCodeDatabaseError:        errors.New("database error"),           // 数据库错误

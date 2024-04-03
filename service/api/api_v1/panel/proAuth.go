@@ -25,19 +25,19 @@ func (p *ProAuthApi) Login(c *gin.Context) {
 	}
 
 	if err := biz.ProAuth.Login(req.Username, req.Password); err != nil {
-		// 账号已停用
+		// 账号已停用，避免被破解统一密码或者账号错误
 		if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
-			apiReturn.ErrorByCode(c, 1411)
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeIncorrectUsernameOrPassword)
 			return
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
-			apiReturn.ErrorByCode(c, 1412)
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeIncorrectUsernameOrPassword)
 			return
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountNotExist)) {
-			apiReturn.ErrorByCode(c, 1413)
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeIncorrectUsernameOrPassword)
 			return
 		} else {
 			global.Logger.Error("biz.ProAuth.Login:", err.Error())
-			apiReturn.ErrorByCode(c, 1414)
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeProAuthServerError)
 			return
 		}
 	}

@@ -65,6 +65,9 @@ function handleChangeLanuage(value: Language) {
 async function getConfig() {
   try {
     const { data } = await getSiteStting<GlobalSetting.SiteSetting>()
+    if (data.title === '')
+      data.title = 'Sun-Panel'
+
     appStore.setSiteSetting(data)
     siteSetting.value = data
     setTitle(data.title)

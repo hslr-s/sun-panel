@@ -5,6 +5,7 @@ export enum ErrorCode {
   NoCurrentPermission = 1005,
   AccountDoesNotExist = 1006,
   OldPasswordError = 1007,
+  NoPROAuthorization = 1008,
   DatabaseError = 1200,
   PleaseKeepAtLeastOne = 1201,
   NoDataRecordFound = 1202,
@@ -12,5 +13,4 @@ export enum ErrorCode {
   UnsupportedFileFormat = 1301,
   ParameterFormatError = 1400,
 
-  CustomJSAndCSSFilePreservationFailure = 1430,
 }

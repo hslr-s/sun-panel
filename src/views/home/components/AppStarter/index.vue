@@ -58,18 +58,6 @@ const apps = ref<App[]>([
     componentName: 'About',
     icon: 'lucide-info',
   },
-  {
-    name: t('proAuth.appName'),
-    componentName: 'ProAuth',
-    icon: 'tabler-award',
-    auth: 1,
-  },
-  {
-    name: t('apps.globalSetting.appName'),
-    componentName: 'GlobalSetting',
-    icon: 'ic-outline-build-circle',
-    auth: 1,
-  },
 ])
 
 const authStore = useAuthStore()
