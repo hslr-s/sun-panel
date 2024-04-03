@@ -2,6 +2,7 @@ import moment from 'moment'
 import { h } from 'vue'
 import type { NotificationReactive } from 'naive-ui'
 import { NButton, createDiscreteApi } from 'naive-ui'
+import { apiRespErrMsg as apiRespErrMsgApiMessage } from './apiMessage'
 import { useAuthStore, useNoticeStore, useUserStore } from '@/store'
 import { getAuthInfo } from '@/api/system/user'
 import type { VisitMode } from '@/enums/auth'
@@ -228,3 +229,5 @@ export function bytesToSize(bytes: number) {
   const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))))
   return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`
 }
+
+export const apiRespErrMsg = apiRespErrMsgApiMessage

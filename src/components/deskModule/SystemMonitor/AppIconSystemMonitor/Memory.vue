@@ -29,7 +29,7 @@ async function getData() {
       memoryState.value = data
   }
   catch (error) {
-
+    console.error(error)
   }
 }
 

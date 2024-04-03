@@ -1,6 +1,6 @@
 import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axios'
 import request from './axios'
-import { apiRespErrMsg, message } from './apiMessage'
+import { message } from './apiMessage'
 import { t } from '@/locales'
 import { useAppStore, useAuthStore } from '@/store'
 import { router } from '@/router'
@@ -62,25 +62,32 @@ function http<T = any>(
       return res.data
     }
 
-    if (res.data.code === -1) {
-      // message.warning(res.data.msg)
-      // router.push({ path: '/login' })
-      // authStore.removeToken()
-      return res.data
-    }
+    return Promise.reject(res.data)
 
-    if (!apiRespErrMsg(res.data))
-      return Promise.reject(res.data)
-    else
-      return res.data
+    // if (res.data.code === -1) {
+    //   // message.warning(res.data.msg)
+    //   // router.push({ path: '/login' })
+    //   // authStore.removeToken()
+    //   return res.data
+    // }
+
+    // if (!apiRespErrMsg(res.data)) {
+    //   console.log(6666)
+    //   return Promise.reject(res.data)
+    // }
+    // else {
+    //   console.log(7777)
+    //   return res.data
+    // }
   }
 
   const failHandler = (error: Response<Error>) => {
     afterRequest?.()
-    message.error(t('common.networkError'), {
-      duration: 50000,
-      closable: true,
-    })
+    console.error(error)
+    // message.error(t('common.networkError'), {
+    //   duration: 50000,
+    //   closable: true,
+    // })
     throw new Error(error?.msg || 'Error')
   }
 

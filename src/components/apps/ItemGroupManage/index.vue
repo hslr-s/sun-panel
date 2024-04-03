@@ -66,13 +66,10 @@ function handleSaveSort() {
     })
   }
   saveSort(saveItems).then(({ code, msg }) => {
-    if (code === 0) {
-      ms.success(t('common.saveSuccess'))
-      sortStatus.value = false
-    }
-    else {
-      ms.error(`${t('common.saveFail')}:${msg}`)
-    }
+    ms.success(t('common.saveSuccess'))
+    sortStatus.value = false
+  }).catch(() => {
+    ms.error(t('common.saveFail'))
   })
 }
 
@@ -89,6 +86,8 @@ function handleDelete(groupInfo: Panel.ItemIconGroup) {
             ms.error(t('common.deleteFail'))
           else
             refreshList()
+        }).catch(() => {
+          ms.error(t('common.deleteFail'))
         })
       }
     },
@@ -101,11 +100,13 @@ function handleSaveGroup() {
     if (!errors) {
       edit(editModalArg.value.model).then(({ code, msg }) => {
         if (code !== 0)
-          ms.error(msg)
+          ms.error(t('common.saveFail'))
 
         refreshList()
         editModalArg.value.show = false
         editModalArg.value.model = { ...defaultMNodal }
+      }).catch(() => {
+        ms.error(t('common.saveFail'))
       })
     }
     else { console.log(errors) }

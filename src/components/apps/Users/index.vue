@@ -90,6 +90,8 @@ const createColumns = ({
                   setPublicVisitUser(null).then(({ code }) => {
                     if (code === 0)
                       publicVisitUserId.value = null
+                  }).catch((error) => {
+                    message.error(`${t('common.failed')}:${error.msg}`)
                   })
                 }
                 else {
@@ -97,6 +99,8 @@ const createColumns = ({
                   setPublicVisitUser(row.id as number).then(({ code }) => {
                     if (code === 0)
                       publicVisitUserId.value = row.id as number
+                  }).catch((error) => {
+                    message.error(`${t('common.failed')}:${error.msg}`)
                   })
                 }
                 break
@@ -189,18 +193,27 @@ async function getList(page: number | null) {
   if (keyWord.value !== '')
     req.keyWord = keyWord.value
 
-  const { data } = await usersGetList<Common.ListResponse<User.Info[]>>(req)
-  pagination.itemCount = data.count
-  if (data.list)
-    userList.value = data.list
-  tableIsLoading.value = false
+  try {
+    const { data } = await usersGetList<Common.ListResponse<User.Info[]>>(req)
+    pagination.itemCount = data.count
+    if (data.list)
+      userList.value = data.list
+    tableIsLoading.value = false
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 
 async function deletes(ids: number[]) {
-  const { code } = await usersDeletes(ids)
-  if (code === 0) {
+  try {
+    await usersDeletes(ids)
     message.success(t('common.deleteSuccess'))
     getList(null)
+  }
+  catch (error) {
+    const err = error as Common.Response
+    message.error(`${t('common.deleteSuccess')}:${err.msg}`)
   }
 }
 

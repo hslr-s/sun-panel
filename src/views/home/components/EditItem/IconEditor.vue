@@ -4,7 +4,7 @@ import type { UploadFileInfo } from 'naive-ui'
 import { computed, defineProps } from 'vue'
 import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg } from '@/utils/cmn'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null

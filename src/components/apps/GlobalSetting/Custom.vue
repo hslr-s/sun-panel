@@ -6,6 +6,7 @@ import {
 } from 'naive-ui'
 import { useGlobalSitesettingStore } from './store'
 import { ProAuthOverlay, ProTag, SvgIconOnline } from '@/components/common'
+import { apiRespErrMsg } from '@/utils/cmn'
 
 import {
   getCustomJsAndCssCode as getCustomJsAndCssCodeApi,
@@ -52,6 +53,7 @@ async function getCustomJsAndCssCode() {
     siteSetting.value = data
   }
   catch (error) {
+    apiRespErrMsg(error)
     console.log(error)
   }
 }
@@ -118,7 +120,7 @@ onMounted(() => {
           {{ t('apps.baseSettings.resetWarnText') }}
         </NPopconfirm>
 
-        <NButton size="small" :disabled="globalSitesettingStore.proIsExpired" type="success" class="ml-[10px]" style="margin-left: 5px;" @click="handleSaveSiteSetting">
+        <NButton size="small" type="success" class="ml-[10px]" style="margin-left: 5px;" @click="handleSaveSiteSetting">
           {{ t('common.save') }}
         </NButton>
       </div>

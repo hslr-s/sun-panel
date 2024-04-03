@@ -162,6 +162,8 @@ function getGroupListOptions() {
     else {
       ms.error(`${t('iconItem.getGroupFail')}:${msg}`)
     }
+  }).catch(() => {
+    ms.error(t('iconItem.getGroupFail'))
   })
 }
 </script>

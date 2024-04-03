@@ -24,7 +24,7 @@ async function getData() {
       cpuState.value = data
   }
   catch (error) {
-
+    console.error(error)
   }
 }
 

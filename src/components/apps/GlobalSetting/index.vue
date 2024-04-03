@@ -12,6 +12,7 @@ import { ProAuthOverlay, ProTag } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
+import { apiRespErrMsg } from '@/utils/cmn'
 
 const authStore = useAuthStore()
 const globalSitesettingStore = useGlobalSitesettingStore()
@@ -127,7 +128,7 @@ async function getSiteSetting() {
     icoThumbnailUrl.value = data.favicoUrl
   }
   catch (error) {
-
+    apiRespErrMsg(error)
   }
 }
 

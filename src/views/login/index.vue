@@ -9,7 +9,7 @@ import { t } from '@/locales'
 import { languageOptions } from '@/utils/defaultData'
 import type { Language } from '@/store/modules/app/helper'
 import { getSiteStting } from '@/api/openness'
-import { setTitle } from '@/utils/cmn'
+import { apiRespErrMsg, setTitle } from '@/utils/cmn'
 
 // const userStore = useUserStore()
 const authStore = useAuthStore()
@@ -44,13 +44,11 @@ const loginPost = async () => {
     }
     else {
       loading.value = false
-      // captchaRef.value.refresh()
     }
   }
   catch (error) {
+    apiRespErrMsg(error)
     loading.value = false
-    // 请检查网络或者服务器错误
-    console.log(error)
   }
 }
 
@@ -72,7 +70,7 @@ async function getConfig() {
     setTitle(data.title)
   }
   catch (error) {
-
+    apiRespErrMsg(error)
   }
 }
 

@@ -3,7 +3,7 @@ import moment from 'moment'
 import { onMounted, ref } from 'vue'
 import { NAlert, NButton, NEllipsis, NForm, NFormItemRow, NInput, useMessage } from 'naive-ui'
 import { getStatus as getStatusApi, login as loginApi, logout as logoutApi } from '@/api/panel/proAuth'
-import { buildTimeString } from '@/utils/cmn'
+import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
 
@@ -49,17 +49,22 @@ const cardStyleExpired = {
 const cardStyle = ref(cardStyleExpired)
 
 async function getStatus() {
-  const { data } = await getStatusApi<ProAuth.GetStatusResp>()
-  loginStatus.value = data.loginStatus
-  proExpiration.value = data.proExpiration || ''
-  if (isExpired(proExpiration.value))
-    cardStyle.value = cardStyleExpired
-  else
-    cardStyle.value = cardStyleSuccess
+  try {
+    const { data } = await getStatusApi<ProAuth.GetStatusResp>()
+    loginStatus.value = data.loginStatus
+    proExpiration.value = data.proExpiration || ''
+    if (isExpired(proExpiration.value))
+      cardStyle.value = cardStyleExpired
+    else
+      cardStyle.value = cardStyleSuccess
 
-  proCardParam.value = {
-    username: data.username,
-    nickName: data.nickName,
+    proCardParam.value = {
+      username: data.username,
+      nickName: data.nickName,
+    }
+  }
+  catch (error) {
+    console.error(error)
   }
 }
 
@@ -72,20 +77,19 @@ async function login(username: string, password: string) {
       ms.error(msg)
   }
   catch (error) {
-    ms.error(error as string)
+    apiRespErrMsg(error)
   }
 }
 
 async function logout() {
   try {
-    const { code, msg } = await logoutApi()
+    const { msg } = await logoutApi()
     getStatus()
     loginModalShow.value = false
-    if (code !== 0)
-      ms.error(msg)
+    ms.error(msg)
   }
   catch (error) {
-    ms.error(error as string)
+    apiRespErrMsg(error)
   }
 }
 
