@@ -11,3 +11,9 @@ export function getSiteStting<T>() {
     url: '/panel/globalSetting/getSiteStting',
   })
 }
+
+export function proIsExpired<T>() {
+  return post<T>({
+    url: '/openness/proIsExpired',
+  })
+}

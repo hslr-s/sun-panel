@@ -67,6 +67,7 @@ function handleChangeLanuage(value: Language) {
 async function getConfig() {
   try {
     const { data } = await getSiteStting<GlobalSetting.SiteSetting>()
+    appStore.setSiteSetting(data)
     siteSetting.value = data
     setTitle(data.title)
   }
@@ -76,13 +77,14 @@ async function getConfig() {
 }
 
 onMounted(() => {
+  setTitle(appStore.siteSetting.title)
   getConfig()
 })
 </script>
 
 <template>
   <div>
-    <div class="background" :style="{ backgroundImage: `url('${siteSetting.loginBackgroundUrl}')` }" />
+    <div class="background" :style="{ backgroundImage: `url('${appStore.siteSetting.loginBackgroundUrl}')` }" />
     <div class="login-container">
       <NCard class="login-card" style="border-radius: 20px;">
         <div class="mb-5 flex items-center justify-end">
@@ -99,7 +101,7 @@ onMounted(() => {
 
         <div class="login-title  ">
           <NGradientText :size="30" type="success" class="!font-bold">
-            {{ siteSetting.title }}
+            {{ appStore.siteSetting.title }}
           </NGradientText>
         </div>
         <NForm :model="form" label-width="100px" @keydown.enter="handleSubmit">

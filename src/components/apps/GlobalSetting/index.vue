@@ -3,16 +3,18 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import type { UploadFileInfo } from 'naive-ui'
 import {
-  NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
+  NAlert, NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
   NInput, NPopconfirm, NUpload, NUploadDragger, useMessage,
 } from 'naive-ui'
 import Custom from './Custom.vue'
-import { ProTag } from '@/components/common'
+import { useGlobalSitesettingStore } from './store'
+import { ProAuthOverlay, ProTag } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
 
 const authStore = useAuthStore()
+const globalSitesettingStore = useGlobalSitesettingStore()
 const ms = useMessage()
 const icoThumbnailUrl = ref('')
 const icoImageFile = ref<File | null>(null)
@@ -146,9 +148,11 @@ onMounted(() => {
           {{ $t('apps.globalSetting.title') }}
           <ProTag />
         </div>
-        <div class="flex items-center mt-[5px]">
-          <NInput v-model:value="siteSetting.title" type="text" show-count :maxlength="20" :placeholder="t('common.inputPlaceholder')" />
-        </div>
+        <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
+          <div class="flex items-center mt-[5px]">
+            <NInput v-model:value="siteSetting.title" type="text" show-count :maxlength="20" :placeholder="t('common.inputPlaceholder')" />
+          </div>
+        </ProAuthOverlay>
       </div>
       <NDivider />
       <div>
@@ -157,22 +161,30 @@ onMounted(() => {
           <ProTag />
         </div>
 
-        <div>
-          <NImage
-            width="100"
-            :src="icoThumbnailUrl"
-          />
-          <br>
-          <NButtonGroup size="small">
-            <NButton for="fileIcoUpload" @click="handleSelectIcoFile">
-              {{ t('apps.globalSetting.selectIcoImage') }}
-            </NButton>
-            <NButton for="fileIcoUpload" @click="handleDeleteIcoFile">
-              {{ t('apps.globalSetting.clearIcoImage') }}
-            </NButton>
-          </NButtonGroup>
-          <input id="fileIcoUpload" type="file" accept="image/*" style="display: none;" @change="handleFileIcoUploadChange">
-        </div>
+        <NAlert type="warning" style="border-radius: 5px;" :bordered="false">
+          <p>
+            {{ t("apps.globalSetting.iconChangeClearCache") }}
+          </p>
+        </NAlert>
+        <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
+          <div>
+            <NImage
+              width="100"
+              :src="icoThumbnailUrl"
+              preview-disabled
+            />
+            <br>
+            <NButtonGroup size="small">
+              <NButton for="fileIcoUpload" @click="handleSelectIcoFile">
+                {{ t('apps.globalSetting.selectIcoImage') }}
+              </NButton>
+              <NButton for="fileIcoUpload" @click="handleDeleteIcoFile">
+                {{ t('apps.globalSetting.clearIcoImage') }}
+              </NButton>
+            </NButtonGroup>
+            <input id="fileIcoUpload" type="file" accept="image/*" style="display: none;" @change="handleFileIcoUploadChange">
+          </div>
+        </ProAuthOverlay>
       </div>
 
       <NDivider />

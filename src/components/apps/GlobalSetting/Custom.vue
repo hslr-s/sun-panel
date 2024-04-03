@@ -4,7 +4,8 @@ import {
   NAlert, NButton, NCard, NDivider, NH3,
   NInput, NPopconfirm, useMessage,
 } from 'naive-ui'
-import { ProTag, SvgIconOnline } from '@/components/common'
+import { useGlobalSitesettingStore } from './store'
+import { ProAuthOverlay, ProTag, SvgIconOnline } from '@/components/common'
 
 import {
   getCustomJsAndCssCode as getCustomJsAndCssCodeApi,
@@ -13,6 +14,7 @@ import {
 } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
 
+const globalSitesettingStore = useGlobalSitesettingStore()
 const ms = useMessage()
 const customPath = ref('')
 
@@ -77,43 +79,49 @@ onMounted(() => {
       <ProTag />
     </NH3>
 
-    <NAlert type="info" :bordered="false">
-      {{ t("apps.globalSetting.customJSAndCssAlert", { path: customPath }) }}
+    <NAlert type="info" :bordered="false" style="border-radius: 5px;margin-bottom: 5px;">
+      <span class="text-xs">
+        {{ t("apps.globalSetting.customJSAndCssAlert", { path: customPath }) }}
+      </span>
     </NAlert>
-    <br>
-    <NAlert type="error" :title="t('apps.globalSetting.customDanger')" :bordered="false">
+
+    <NAlert type="error" :title="t('apps.globalSetting.customDanger')" :bordered="false" style="border-radius: 5px;">
       <template #icon>
         <SvgIconOnline icon="gg:danger" />
       </template>
-      {{ t("apps.globalSetting.customDangerAlert") }}
+      <span class="text-xs">
+        {{ t("apps.globalSetting.customDangerAlert") }}
+      </span>
     </NAlert>
-    <div class="text-slate-500 my-[5px] font-bold">
-      JS ({{ `${customPath}/index.js` }})
-    </div>
-    <div class="flex items-center mt-[5px]">
-      <NInput v-model:value="siteSetting.jsContent" type="textarea" clearable />
-    </div>
-    <NDivider />
-    <div class="text-slate-500 my-[5px] font-bold">
-      CSS ({{ `${customPath}/index.css` }})
-    </div>
-    <div class="flex items-center mt-[5px]">
-      <NInput v-model:value="siteSetting.cssContent" type="textarea" clearable />
-    </div>
+    <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
+      <div class="text-slate-500 my-[5px] font-bold">
+        JS ({{ `${customPath}/index.js` }})
+      </div>
+      <div class="flex items-center mt-[5px]">
+        <NInput v-model:value="siteSetting.jsContent" type="textarea" clearable />
+      </div>
+      <NDivider />
+      <div class="text-slate-500 my-[5px] font-bold">
+        CSS ({{ `${customPath}/index.css` }})
+      </div>
+      <div class="flex items-center mt-[5px]">
+        <NInput v-model:value="siteSetting.cssContent" type="textarea" clearable />
+      </div>
 
-    <div class="mt-5 flex justify-end">
-      <NPopconfirm @positive-click="resetSetting">
-        <template #trigger>
-          <NButton size="small" type="error">
-            {{ t('common.reset') }}
-          </NButton>
-        </template>
-        {{ t('apps.baseSettings.resetWarnText') }}
-      </NPopconfirm>
+      <div class="mt-5 flex justify-end">
+        <NPopconfirm @positive-click="resetSetting">
+          <template #trigger>
+            <NButton size="small" type="error">
+              {{ t('common.reset') }}
+            </NButton>
+          </template>
+          {{ t('apps.baseSettings.resetWarnText') }}
+        </NPopconfirm>
 
-      <NButton size="small" type="success" class="ml-[10px]" style="margin-left: 5px;" @click="handleSaveSiteSetting">
-        {{ t('common.save') }}
-      </NButton>
-    </div>
+        <NButton size="small" :disabled="globalSitesettingStore.proIsExpired" type="success" class="ml-[10px]" style="margin-left: 5px;" @click="handleSaveSiteSetting">
+          {{ t('common.save') }}
+        </NButton>
+      </div>
+    </ProAuthOverlay>
   </NCard>
 </template>

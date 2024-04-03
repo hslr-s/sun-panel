@@ -9,7 +9,7 @@ import (
 
 func InitGetSiteStting(router *gin.RouterGroup) {
 	api := api_v1.ApiGroupApp.ApiPanel.GlobalSettingApi
-	r := router.Group("", middleware.LoginInterceptor)
+	r := router.Group("", middleware.LoginInterceptor, middleware.AdminInterceptor)
 	{
 		r.POST("/panel/globalSetting/saveSiteStting", api.SaveSiteStting)
 		r.POST("/panel/globalSetting/uploadFaviconImage", api.UploadFaviconImage)
