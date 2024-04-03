@@ -91,7 +91,7 @@ func Ping(req PingReq) (pingResp PingResp, err error) {
 
 func CheckTimestampDifference(timestamp int64) error {
 	currentTimestamp := time.Now().Unix()
-	fmt.Println(currentTimestamp, timestamp, currentTimestamp-timestamp)
+	// fmt.Println(currentTimestamp, timestamp, currentTimestamp-timestamp)
 	if math.Abs(float64(currentTimestamp)-float64(timestamp)) > float64(Config.TimeDifference) {
 		return errors.New("request expire")
 	}
