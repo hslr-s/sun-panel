@@ -26,6 +26,7 @@
     "1005": "当前无权限操作",
     "1006": "账号不存在",
     "1007": "旧密码错误",
+    "1008": "没有PRO授权",
     "1200": "数据库出错",
     "1201": "请至少保留一个",
     "1202": "未找到数据记录",
@@ -101,10 +102,42 @@
       "transmuteStandard": "浏览器书签转换工具",
       "warnConfigFileLow": "配置文件版本过低，但是兼容"
     },
+    "globalSetting": {
+      "appName": "全局设置",
+      "clearIcoImage": "清除图像",
+      "customDanger": "危险警告",
+      "customDangerAlert": "这是一个危险的操作，请不要填入不被信任的代码，这样可能会导致隐私泄露、布局错乱或者攻击等",
+      "customImageAddress": "自定义图片地址",
+      "customJSAndCss": "自定义JS和CSS文件",
+      "customJSAndCssAlert": "如果您没有PRO授权，是不能在线编辑保存的，不过您可以进入到安装Sun-Panel的NAS或服务器，找到“自定义”的路径（{path}）直接修改和保存文件，仍然是生效的",
+      "favicon": "站点图标",
+      "iconChangeClearCache": "保存后，清理浏览器缓存后可见效果",
+      "loginBackgroundImage": "登录页背景图片",
+      "personalise": "站点设置",
+      "selectIcoImage": "选择ICO图像",
+      "title": "站点标题"
+    },
     "itemGroupManage": {
       "appName": "分组管理",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
       "groupName": "分组名称"
+    },
+    "proAuth": {
+      "FAQButton": "查看常见问题",
+      "card": {
+        "expiredText": "已于{date}过期",
+        "notExpiredText": "{date}到期"
+      },
+      "goToSunPanelAuthSite": "前往Sun-Panel授权平台官网",
+      "login": "登录",
+      "loginSunPanel": "登录Sun-Panel授权平台",
+      "logout": "退出",
+      "notLogin": "未登录",
+      "password": "密码",
+      "registerAccount": "没有账号，去注册",
+      "textDescription": "因为作者需要生存，所以增加了一些Pro授权才能用的功能，您可以通过授权平台来购买授权支持作者，让作者有动力增加更多功能。全凭自愿，后期依然还会增加免费的功能，请期待...",
+      "username": "账号",
+      "usernameWithPasswordIsNotEmpty": "账号和密码不可以为空"
     },
     "uploadsFileManager": {
       "alertText": "你可以在这里管理你上传过的壁纸和图标",
@@ -164,6 +197,7 @@
     "nikeName": "昵称",
     "no": "否",
     "noData": "暂无数据",
+    "noPorAuth": "您还没有PRO授权功能，授权后才能使用此功能",
     "password": "密码",
     "refreshPage": "请刷新页面",
     "repeatLater": "请稍后重试",
@@ -173,7 +207,7 @@
       "regularUser": "普通"
     },
     "save": "保存",
-    "saveFail": "保存成功",
+    "saveFail": "保存失败",
     "saveSort": "保存排序",
     "saveSuccess": "保存成功",
     "serverError": "服务器错误",
@@ -236,7 +270,8 @@
     "onlineIconLibrary": "在线图标库",
     "openMethod": "打开方式",
     "selectUpload": "本地上传",
-    "url": "地址"
+    "url": "地址",
+    "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },
   "login": {
     "loginButton": "登录",
@@ -252,6 +287,9 @@
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
     "openWanUrl": "打开公网地址"
+  },
+  "proAuth": {
+    "appName": "Pro授权"
   },
   "settingUserInfo": {
     "confirmLogoutText": "你确定要退出登录吗？",

@@ -7,8 +7,8 @@ import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
 import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
+import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
 
-import { setTitle, updateLocalUserInfo } from '@/utils/cmn'
 import { useAuthStore, usePanelState } from '@/store'
 import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
@@ -100,6 +100,8 @@ function getList() {
     }
     filterItems.value = items.value
     // console.log(items)
+  }).catch((error) => {
+    apiRespErrMsg(error)
   })
 }
 
@@ -108,6 +110,8 @@ function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: n
   getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
     if (res.code === 0)
       items.value[itemIconGroupIndex].items = res.data.list
+  }).catch((error) => {
+    apiRespErrMsg(error)
   })
 }
 
@@ -148,6 +152,8 @@ function handleRightMenuSelect(key: string | number) {
             else {
               ms.error(`${t('common.deleteFail')}:${msg}`)
             }
+          }).catch((error) => {
+            apiRespErrMsg(error)
           })
         },
       })
@@ -215,6 +221,8 @@ function handleSaveSort(itemGroup: ItemGroup) {
       else {
         ms.error(`${t('common.saveFail')}:${msg}`)
       }
+    }).catch((error) => {
+      apiRespErrMsg(error)
     })
   }
 }

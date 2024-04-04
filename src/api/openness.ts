@@ -1,4 +1,4 @@
-import { get } from '@/utils/request'
+import { get, post } from '@/utils/request'
 
 export function getLoginConfig<T>() {
   return get<T>({
@@ -6,16 +6,14 @@ export function getLoginConfig<T>() {
   })
 }
 
-// 获取免责声明
-export function getDisclaimer<T>() {
-  return get<T>({
-    url: '/openness/getDisclaimer',
+export function getSiteStting<T>() {
+  return post<T>({
+    url: '/panel/globalSetting/getSiteStting',
   })
 }
 
-// 获取关于的描述信息
-export function getAboutDescription<T>() {
-  return get<T>({
-    url: '/openness/getAboutDescription',
+export function proIsExpired<T>() {
+  return post<T>({
+    url: '/openness/proIsExpired',
   })
 }

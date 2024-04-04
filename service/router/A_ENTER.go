@@ -1,6 +1,7 @@
 package router
 
 import (
+	"sun-panel/biz"
 	"sun-panel/global"
 
 	// "sun-panel/router/admin"
@@ -38,8 +39,18 @@ func InitRouters(addr string) error {
 		}
 		router.StaticFile("/", webPath+"/index.html")
 		router.Static("/assets", webPath+"/assets")
-		router.StaticFile("/favicon.ico", webPath+"/favicon.ico")
-		router.StaticFile("/favicon.svg", webPath+"/favicon.svg")
+		// router.StaticFile("/favicon.ico", webPath+"/favicon.ico")
+		// router.StaticFile("/favicon.svg", webPath+"/favicon.svg")
+
+		// 动态返回favicon
+		router.Any("/favicon.ico", func(c *gin.Context) {
+			setting := biz.GlobalSettingSiteSetting{}
+			biz.GlobalSetting.GetSiteStting(&setting)
+			if setting.FaviconUrl == "" || setting.FaviconUrl == "favicon.ico" || setting.FaviconUrl == "./favicon.ico" {
+				setting.FaviconUrl = webPath + "/favicon.ico"
+			}
+			c.File(setting.FaviconUrl)
+		})
 	}
 
 	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on 0.0.0.0", addr)

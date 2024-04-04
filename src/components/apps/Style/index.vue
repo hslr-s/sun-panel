@@ -62,10 +62,9 @@ function handleUploadBackgroundFinish({
 
 function uploadCloud() {
   setUserConfig({ panel: panelState.panelConfig }).then((res) => {
-    if (res.code === 0)
-      ms.success(t('apps.baseSettings.configSaved'))
-    else
-      ms.error(t('apps.baseSettings.configFailed', { message: res.msg }))
+    ms.success(t('apps.baseSettings.configSaved'))
+  }).catch((error) => {
+    ms.error(t('apps.baseSettings.configFailed', { message: error.msg }))
   })
 }
 

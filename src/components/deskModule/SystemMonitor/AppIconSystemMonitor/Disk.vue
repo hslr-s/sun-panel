@@ -34,7 +34,7 @@ async function getData() {
       diskState.value = data
   }
   catch (error) {
-
+    console.error(error)
   }
 }
 

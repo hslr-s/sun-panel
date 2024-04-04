@@ -129,7 +129,7 @@ func ErrorByCodeAndMsg(ctx *gin.Context, code int, msg string) {
 
 func GetErrorMsgByCode(code int) (string, bool) {
 	if v, ok := ErrorCodeMap[code]; ok {
-		return v, true
+		return v.Error(), true
 	} else {
 		return "", false
 	}

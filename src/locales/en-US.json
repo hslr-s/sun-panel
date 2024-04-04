@@ -26,6 +26,7 @@
     "1005": "Currently no permission to operate",
     "1006": "Account does not exist",
     "1007": "Old password error",
+    "1008": "No PRO authorization",
     "1200": "database error",
     "1201": "Please keep at least one",
     "1202": "Data record not found",
@@ -101,10 +102,42 @@
       "transmuteStandard": "Transmute Standard",
       "warnConfigFileLow": "The configuration file version is too low but compatible"
     },
+    "globalSetting": {
+      "appName": "Global Setting",
+      "clearIcoImage": "Clear image",
+      "customDanger": "Danger warning",
+      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code. This may lead to privacy leaks, layout confusion, or attacks.",
+      "customImageAddress": "Custom image address",
+      "customJSAndCss": "Custom JS and CSS files",
+      "customJSAndCssAlert": "If you do not have PRO authorization, you cannot edit and save online. However, you can enter the NAS or server where Sun-Panel is installed and find the \"custom\" path ({path}) to directly modify and save the file. It will still be effective.",
+      "favicon": "site icon",
+      "iconChangeClearCache": "After saving, clear the browser cache to see the effect.",
+      "loginBackgroundImage": "Login page background image",
+      "personalise": "Site settings",
+      "selectIcoImage": "Select ICO image",
+      "title": "Site title"
+    },
     "itemGroupManage": {
       "appName": "Group Management",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
       "groupName": "Group name"
+    },
+    "proAuth": {
+      "FAQButton": "View FAQ",
+      "card": {
+        "expiredText": "Expired on {date}",
+        "notExpiredText": "{date} expires"
+      },
+      "goToSunPanelAuthSite": "Go to the official website of Sun-Panel authorized platform",
+      "login": "Log in",
+      "loginSunPanel": "Log in to the Sun-Panel authorization platform",
+      "logout": "logout",
+      "notLogin": "Not logged in",
+      "password": "Password",
+      "registerAccount": "No account, please register",
+      "textDescription": "Because the author needs to survive, some features that can only be used with Pro license have been added. You can purchase the license through the authorization platform to support the author, giving the author the motivation to add more features. \nIt's all voluntary, and free features will be added in the future, so please stay tuned...",
+      "username": "Account",
+      "usernameWithPasswordIsNotEmpty": "Account and password cannot be empty"
     },
     "uploadsFileManager": {
       "alertText": "Here you can manage wallpapers and icons you have uploaded.",
@@ -164,6 +197,7 @@
     "nikeName": "Nickname",
     "no": "No",
     "noData": "No data available",
+    "noPorAuth": "You do not have the PRO authorized function yet. This function can only be used after authorization.",
     "password": "Password",
     "refreshPage": "Please refresh the page",
     "repeatLater": "Please try again later",
@@ -236,7 +270,8 @@
     "onlineIconLibrary": "Online icon library",
     "openMethod": "Open method",
     "selectUpload": "Local upload",
-    "url": "URL"
+    "url": "URL",
+    "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },
   "login": {
     "loginButton": "Login",
@@ -252,6 +287,9 @@
     "goToLogin": "Go to login",
     "openLanUrl": "Open LAN URL",
     "openWanUrl": "Open WAN URL"
+  },
+  "proAuth": {
+    "appName": "Pro authorization"
   },
   "settingUserInfo": {
     "confirmLogoutText": "Are you sure you want to logout?",

@@ -10,6 +10,7 @@ export interface AppState {
   siderCollapsed: boolean
   theme: Theme
   language: Language
+  siteSetting: GlobalSetting.SiteSetting
 }
 
 export function defaultSetting(): AppState {
@@ -18,7 +19,13 @@ export function defaultSetting(): AppState {
   if (lan.includes('zh'))
     language = 'zh-CN'
 
-  return { siderCollapsed: false, theme: 'auto', language }
+  const siteSetting: GlobalSetting.SiteSetting = {
+    title: 'Sun-Panel',
+    favicoUrl: '/favicon.ico',
+    loginBackgroundUrl: '',
+  }
+
+  return { siderCollapsed: false, theme: 'auto', language, siteSetting }
 }
 
 export function getLocalSetting(): AppState {
