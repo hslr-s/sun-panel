@@ -23,7 +23,9 @@ func InitRouters(addr string) error {
 	system.Init(routerGroup)
 	panel.Init(routerGroup)
 	openness.Init(routerGroup)
-	openApi.Init(routerGroup)
+
+	// 开放API
+	openApi.Init(rootRouter)
 
 	// WEB文件服务
 	{

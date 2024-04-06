@@ -122,6 +122,18 @@
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
       "groupName": "Group name"
     },
+    "openApi": {
+      "alertText": "Sun-Panel provides an open interface that can be used to add projects and other operations through development. For details, please refer to:",
+      "apiUrl": "API Url",
+      "autoDomainWarning": "The domain name here is automatically obtained. Please fill it in according to the actual situation during development.",
+      "deactivate": "Deactivate",
+      "docTitle": "OpenAPI documentation",
+      "enable": "Enable",
+      "refreshToken": "RefreshToken",
+      "state": "State",
+      "stopOpenApi": "DisableOpenAPI",
+      "updateTokenDialogText": "Are you sure you want to continue? Token will become invalid if you continue to operate."
+    },
     "proAuth": {
       "FAQButton": "View FAQ",
       "card": {

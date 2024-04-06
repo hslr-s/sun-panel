@@ -54,6 +54,11 @@ const apps = ref<App[]>([
     icon: 'icon-park-outline-import-and-export',
   },
   {
+    name: 'Open API',
+    componentName: 'OpenApi',
+    icon: 'tabler:api',
+  },
+  {
     name: t('apps.about.appName'),
     componentName: 'About',
     icon: 'lucide-info',

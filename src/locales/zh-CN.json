@@ -122,6 +122,18 @@
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
       "groupName": "分组名称"
     },
+    "openApi": {
+      "alertText": "Sun-Panel提供了开放接口，可以通过开发来实现添加项目等操作，具体请参考：",
+      "apiUrl": "接口地址",
+      "autoDomainWarning": "这里的域名是自动获取的，开发时请根据实际情况填写",
+      "deactivate": "停用",
+      "docTitle": "OpenAPI文档",
+      "enable": "启用",
+      "refreshToken": "刷新Token",
+      "state": "状态",
+      "stopOpenApi": "停用OpenAPI",
+      "updateTokenDialogText": "你确定要继续操作吗，继续操作Token将失效"
+    },
     "proAuth": {
       "FAQButton": "查看常见问题",
       "card": {
