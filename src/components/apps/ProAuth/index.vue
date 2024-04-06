@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import moment from 'moment'
 import { onMounted, ref } from 'vue'
-import { NAlert, NButton, NEllipsis, NForm, NFormItemRow, NInput, useMessage } from 'naive-ui'
+import { NAlert, NButton, NCard, NEllipsis, NForm, NFormItemRow, NInput, useMessage } from 'naive-ui'
 import { getStatus as getStatusApi, login as loginApi, logout as logoutApi } from '@/api/panel/proAuth'
 import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
@@ -131,71 +131,74 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="m-2">
-    <div class="m-5 w-[300px]">
-      <ProCard :card-style="cardStyle">
-        <template #nickName>
-          <template v-if="loginStatus">
-            {{ proCardParam?.nickName }}
-          </template>
-          <div v-else class="cursor-pointer">
-            <span @click="handleLogin">{{ t("apps.proAuth.notLogin") }}</span>
-          </div>
-        </template>
-        <template #proFlag>
-          PRO
-        </template>
-        <template #username>
-          <template v-if="loginStatus">
-            <div class="flex items-center">
-              <span>
-                {{ proCardParam?.username }}
-              </span>
-              <span class="cursor-pointer ml-2" :title="t('apps.proAuth.logout')" @click="logout">
-                <SvgIconOnline icon="tabler:logout" class="w-[20px] h-[20px]" :title="t('apps.proAuth.logout')" />
-              </span>
-            </div>
-          </template>
-          <template v-else>
-            <NButton size="small">
-              <NEllipsis style="max-width: 200px">
-                <span class="text-white" @click="handleLogin">
-                  {{ t("apps.proAuth.loginSunPanel") }}
-                </span>
-              </NEllipsis>
+  <div class="bg-slate-200 dark:bg-zinc-900 p-2 h-full">
+    <NCard style="border-radius:10px" size="small">
+      <div class="flex justify-center">
+        <div class="m-5 w-[300px]">
+          <ProCard :card-style="cardStyle">
+            <template #nickName>
+              <template v-if="loginStatus">
+                {{ proCardParam?.nickName }}
+              </template>
+              <div v-else class="cursor-pointer">
+                <span @click="handleLogin">{{ t("apps.proAuth.notLogin") }}</span>
+              </div>
+            </template>
+            <template #proFlag>
+              PRO
+            </template>
+            <template #username>
+              <template v-if="loginStatus">
+                <div class="flex items-center">
+                  <span>
+                    {{ proCardParam?.username }}
+                  </span>
+                  <span class="cursor-pointer ml-2" :title="t('apps.proAuth.logout')" @click="logout">
+                    <SvgIconOnline icon="tabler:logout" class="w-[20px] h-[20px]" :title="t('apps.proAuth.logout')" />
+                  </span>
+                </div>
+              </template>
+              <template v-else>
+                <NButton size="small">
+                  <NEllipsis style="max-width: 200px">
+                    <span class="text-white" @click="handleLogin">
+                      {{ t("apps.proAuth.loginSunPanel") }}
+                    </span>
+                  </NEllipsis>
+                </NButton>
+              </template>
+            </template>
+            <template #expired>
+              <template v-if="loginStatus">
+                <template v-if="isExpired(proExpiration)">
+                  {{ t("apps.proAuth.card.expiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD HH:mm') }) }}
+                </template>
+                <template v-else>
+                  {{ t("apps.proAuth.card.notExpiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD HH:mm') }) }}
+                </template>
+              </template>
+            </template>
+          </ProCard>
+
+          <div class="mt-2 flex">
+            <NButton type="success" size="small" @click="openToLink('proAuthSite')">
+              {{ t("apps.proAuth.goToSunPanelAuthSite") }}
             </NButton>
-          </template>
-        </template>
-        <template #expired>
-          <template v-if="loginStatus">
-            <template v-if="isExpired(proExpiration)">
-              {{ t("apps.proAuth.card.expiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD HH:mm') }) }}
-            </template>
-            <template v-else>
-              {{ t("apps.proAuth.card.notExpiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD HH:mm') }) }}
-            </template>
-          </template>
-        </template>
-      </ProCard>
 
-      <div class="m-2 flex">
-        <NButton type="success" size="small" @click="openToLink('proAuthSite')">
-          {{ t("apps.proAuth.goToSunPanelAuthSite") }}
-        </NButton>
-
-        <NButton size="small" style="margin-left: 5px;" @click="openToLink('proAuthSiteFAQ')">
-          {{ t("apps.proAuth.FAQButton") }}
-        </NButton>
+            <NButton size="small" style="margin-left: 5px;" @click="openToLink('proAuthSiteFAQ')">
+              {{ t("apps.proAuth.FAQButton") }}
+            </NButton>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <NAlert :bordered="false" :show-icon="false">
-      {{ t("apps.proAuth.textDescription") }}
-    </NAlert>
+      <NAlert :bordered="false" :show-icon="false">
+        {{ t("apps.proAuth.textDescription") }}
+      </NAlert>
 
-    <br>
+      <br>
 
-    <!-- <NAlert type="info" title="常见问题" :bordered="false">
+      <!-- <NAlert type="info" title="常见问题" :bordered="false">
       <p>
         Q：为什么会频繁让我手动登录
       </p>
@@ -211,28 +214,29 @@ onMounted(() => {
       </p>
     </NAlert> -->
 
-    <RoundCardModal v-model:show="loginModalShow" style="width:400px" :title="t('apps.proAuth.loginSunPanel')">
-      <div class="flex items-center">
+      <RoundCardModal v-model:show="loginModalShow" style="width:400px" :title="t('apps.proAuth.loginSunPanel')">
+        <div class="flex items-center">
+          <div>
+            <NButton size="tiny" type="info" @click="openToLink('proAuthSiteRegister')">
+              {{ t("apps.proAuth.registerAccount") }}
+            </NButton>
+          </div>
+        </div>
+
         <div>
-          <NButton size="tiny" type="info" @click="openToLink('proAuthSiteRegister')">
-            {{ t("apps.proAuth.registerAccount") }}
+          <NForm>
+            <NFormItemRow>
+              <NInput v-model:value="loginModalForm.username" :placeholder="t('apps.proAuth.username')" />
+            </NFormItemRow>
+            <NFormItemRow>
+              <NInput v-model:value="loginModalForm.password" type="password" :placeholder="t('apps.proAuth.password')" />
+            </NFormItemRow>
+          </NForm>
+          <NButton type="primary" block secondary strong @click="handleSubmit">
+            {{ t("apps.proAuth.login") }}
           </NButton>
         </div>
-      </div>
-
-      <div>
-        <NForm>
-          <NFormItemRow>
-            <NInput v-model:value="loginModalForm.username" :placeholder="t('apps.proAuth.username')" />
-          </NFormItemRow>
-          <NFormItemRow>
-            <NInput v-model:value="loginModalForm.password" type="password" :placeholder="t('apps.proAuth.password')" />
-          </NFormItemRow>
-        </NForm>
-        <NButton type="primary" block secondary strong @click="handleSubmit">
-          {{ t("apps.proAuth.login") }}
-        </NButton>
-      </div>
-    </RoundCardModal>
+      </RoundCardModal>
+    </NCard>
   </div>
 </template>
