@@ -180,12 +180,12 @@ onMounted(() => {
             </template>
           </ProCard>
 
-          <div class="mt-2 flex">
-            <NButton type="success" size="small" @click="openToLink('proAuthSite')">
+          <div class="mt-2 flex justify-center">
+            <NButton type="success" size="small" ghost @click="openToLink('proAuthSite')">
               {{ t("apps.proAuth.goToSunPanelAuthSite") }}
             </NButton>
 
-            <NButton size="small" style="margin-left: 5px;" @click="openToLink('proAuthSiteFAQ')">
+            <NButton size="small" style="margin-left: 5px;" ghost @click="openToLink('proAuthSiteFAQ')">
               {{ t("apps.proAuth.FAQButton") }}
             </NButton>
           </div>

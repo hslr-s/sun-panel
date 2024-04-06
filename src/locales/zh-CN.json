@@ -140,14 +140,14 @@
         "expiredText": "已于{date}过期",
         "notExpiredText": "{date}到期"
       },
-      "goToSunPanelAuthSite": "前往Sun-Panel授权平台官网",
+      "goToSunPanelAuthSite": "前往授权平台",
       "login": "登录",
       "loginSunPanel": "登录Sun-Panel授权平台",
       "logout": "退出",
       "notLogin": "未登录",
       "password": "密码",
       "registerAccount": "没有账号，去注册",
-      "textDescription": "因为作者需要生存，所以增加了一些Pro授权才能用的功能，您可以通过授权平台来购买授权支持作者，让作者有动力增加更多功能。全凭自愿，后期依然还会增加免费的功能，请期待...",
+      "textDescription": "由于作者需要维持生计，故而在项目中增添了一些仅限Pro授权用户享有的特色功能。若您愿意，可以通过授权平台购买支持，这不仅是对作者辛勤开发的认可，更是激励作者继续探索、增添更多精彩功能的动力源泉。此项支持完全基于您的自愿，作者深知您的慷慨与信任，因此，即便在未来增加更多优秀Pro功能的同时，也依然会不断推出免费的功能，敬请期待...❤️❤️❤️",
       "username": "账号",
       "usernameWithPasswordIsNotEmpty": "账号和密码不可以为空"
     },
