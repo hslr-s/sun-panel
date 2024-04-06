@@ -5,6 +5,7 @@ import (
 	"sun-panel/global"
 
 	// "sun-panel/router/admin"
+	"sun-panel/router/openApi"
 	"sun-panel/router/openness"
 	"sun-panel/router/panel"
 	"sun-panel/router/system"
@@ -22,6 +23,7 @@ func InitRouters(addr string) error {
 	system.Init(routerGroup)
 	panel.Init(routerGroup)
 	openness.Init(routerGroup)
+	openApi.Init(routerGroup)
 
 	// WEB文件服务
 	{
