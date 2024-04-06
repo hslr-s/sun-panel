@@ -10,7 +10,7 @@ const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
 }))
 export const { message } = createDiscreteApi(['message'], { configProviderProps: configProviderPropsRef })
 
-export function apiRespErrMsg(res: any): boolean {
+export function apiRespErrMsg(res: any) {
   const appStore = useAppStore()
   const osTheme = useOsTheme()
   if (appStore.theme === 'auto')
@@ -18,15 +18,20 @@ export function apiRespErrMsg(res: any): boolean {
   else
     themeRef.value = appStore.theme as 'dark' | 'light'
 
-  const apiErrorCodeName = `apiErrorCode.${res.code}`
-  const getI18nValue = t(apiErrorCodeName)
-  if (apiErrorCodeName === getI18nValue) {
-    message.error(t('common.unknownError'))
-    console.error(res.msg)
-    return false
+  if (res.code) {
+    const apiErrorCodeName = `apiErrorCode.${res.code}`
+    const getI18nValue = t(apiErrorCodeName)
+    console.log(apiErrorCodeName)
+    if (apiErrorCodeName === getI18nValue && apiErrorCodeName !== undefined) {
+      message.error(t('common.unknownError'))
+      console.error(res.msg)
+    }
+    else {
+      message.error(t(`apiErrorCode.${res.code}`))
+    }
   }
   else {
-    message.error(t(`apiErrorCode.${res.code}`))
-    return true
+    // 其他错误（可能非API返回的错误）
+    console.error(res.msg)
   }
 }
