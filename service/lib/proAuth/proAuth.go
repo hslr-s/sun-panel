@@ -91,11 +91,11 @@ func Ping(req PingReq) (pingResp PingResp, err error) {
 
 func CheckTimestampDifference(timestamp int64) error {
 	currentTimestamp := time.Now().Unix()
-	// fmt.Println(currentTimestamp, timestamp, currentTimestamp-timestamp)
-	if math.Abs(float64(currentTimestamp)-float64(timestamp)) > float64(Config.TimeDifference) {
-		return errors.New("request expire")
+	TimeDifference := math.Abs(float64(currentTimestamp) - float64(timestamp))
+	if TimeDifference < float64(Config.TimeDifference) {
+		return nil
 	}
-	return nil
+	return errors.New("request expire")
 }
 
 func requestCommon(url string, requestData interface{}, responseData interface{}) (code int, err error) {

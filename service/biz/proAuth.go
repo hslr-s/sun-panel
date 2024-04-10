@@ -32,21 +32,22 @@ const ProAuthTypeSystemSettingAccountPasswordKey = "ProAuthAccountPassword"
 
 func NewProAuth() *ProAuthType {
 
-	proAuth.Config.Url = "http://127.0.0.1:3005"
-	// proAuth.Config.Url = "http://127.0.0.1:8888"
+	// proAuth.Config.Url = "http://127.0.0.1:3005"
+	proAuth.Config.Url = "https://auth.sun-panel.top"
 	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN"
+	proAuth.Config.TimeDifference = 3600
 	// proAuth.Config.IsDebug = true
 
 	p := ProAuthType{
-		PingInterval:     30 * time.Second, // ping执行的时间间隔
-		AutoLoginDisable: false,            // 刚启动允许自动登录
+		PingInterval:     6 * time.Hour, // ping执行的时间间隔
+		AutoLoginDisable: false,         // 刚启动允许自动登录
 	}
 	return &p
 }
 
 func (p *ProAuthType) Start() {
 	// p.Login("95302870@qq.com", "12345678")
-	p.Ping()
+	go p.Ping()
 	// p.Register()
 	// p.SetAccountPassword("95302870@qq.com", "12345678")
 	// p.AutoLogin()
