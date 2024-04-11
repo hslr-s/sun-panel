@@ -138,18 +138,20 @@ buildReleaseLinuxMusl() {
 
     go build -o "${outname}" -ldflags="$muslflags" main.go
     # go build -o "${outname}" -ldflags="$muslflags" -tags=jsoniter main.go
+
+    cd $pathRelease
+    # copy front file
+    cp -r "${REPO}/dist" "${outname}/web"
+
+    echo "Release ${outPath}"
+
+    mv $outname $outPath/sun-panel
+    tar -zcvf "${outname}.tar.gz" $outPath
+    
+    rm -rf "${outname}"
   done
 
-  cd $pathRelease
-  # copy front file
-  cp -r "${REPO}/dist" "${pathRelease}/${outPath}/web"
 
-  echo "Release ${outPath}"
-
-  mv $outname $outPath/sun-panel
-  tar -zcvf "${pathRelease}/${outPath}.tar.gz" $outPath
-  
-  rm -rf "${pathRelease}/${outPath}"
 }
 
 release() {
