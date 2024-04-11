@@ -42,6 +42,7 @@ func NewProAuth() *ProAuthType {
 		PingInterval:     6 * time.Hour, // ping执行的时间间隔
 		AutoLoginDisable: false,         // 刚启动允许自动登录
 	}
+	// p.PingInterval = 30 * time.Second // 测试使用，正式环境注释掉
 	return &p
 }
 
