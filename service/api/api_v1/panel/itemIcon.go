@@ -194,8 +194,16 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	resp := panelApiStructs.ItemIconGetSiteFaviconResp{}
 	fullUrl := ""
 	if iconUrl, err := siteFavicon.GetOneFaviconURL(req.Url); err != nil {
-		apiReturn.Error(c, "acquisition failed: get ico error:"+err.Error())
-		return
+		// 尝试使用最原始的方式获取图标 https://域名/favicon.ico
+		if urlInfo, err := url.Parse(req.Url); err != nil {
+			errMsg := "acquisition failed: get ico error:" + err.Error()
+			global.Logger.Error(errMsg)
+			apiReturn.Error(c, errMsg)
+			return
+		} else {
+			fullUrl = urlInfo.Scheme + "://" + urlInfo.Host + "/favicon.ico"
+		}
+
 	} else {
 		fullUrl = iconUrl
 	}
