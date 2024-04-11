@@ -21,6 +21,18 @@ const appStore = useAppStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
 const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
+const linksDomain = 'http://links.sun-panel.top'
+
+function getLangeuageSimple() {
+  if (appStore.language === 'zh-CN')
+    return 'zh_cn'
+
+  return 'en'
+}
+
+function link(c: string): string {
+  return `${linksDomain}/${c}_${getLangeuageSimple()}`
+}
 
 onMounted(() => {
   get<Version>().then((res) => {
@@ -39,7 +51,7 @@ onMounted(() => {
       </div>
       <div class="text-xl">
         <NGradientText type="info">
-          <a href="https://github.com/hslr-s/sun-panel/releases" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
+          <a :href="link('update_log')" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
         </NGradientText>
       </div>
       <div class="mt-2">
@@ -52,20 +64,21 @@ onMounted(() => {
     </NDivider>
     <div class="flex flex-col items-center justify-center text-base">
       <div>
-        {{ $t('apps.about.author') }}<a href="https://github.com/hslr-s" target="_blank" class="link">红烧猎人</a> | <a href="https://github.com/hslr-s/sun-panel/blob/master/doc/donate.md" target="_blank" class="text-red-600 hover:text-red-900">{{ $t('apps.about.donate') }}</a>
-      </div>
-      <div>
-        {{ $t('apps.about.issue') }}<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link">Github Issues</a>
-      </div>
-      <div>
-        {{ $t('apps.about.discussions') }}<a href="https://github.com/hslr-s/sun-panel/discussions" target="_blank" class="link">Github Discussions</a>
-      </div>
-      <div>
-        {{ $t('apps.about.QQGroup') }}<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=K6UII6aEPZUeDRIPOEpOSJZH-Vmr_RPu&authKey=jEXhnVekLbDDx5UkQzKtd3bRmhZggkGBxmvW4NT5LLIAFP7toMmqABwvkANGHbLb&noverify=0&group_code=831615449" target="_blank" class="link">{{ $t("apps.about.addQQGroupUrl") }}</a>
+        {{ $t('apps.about.author') }}
+        <a href="https://github.com/hslr-s" target="_blank" class="link"> 红烧猎人 </a>
         |
-        <span class="link cursor-pointer" @click="qqGroupQRShow = !qqGroupQRShow">
-          {{ $t('apps.about.QR') }}
-        </span>
+        <a :href="link('donate')" target="_blank" class="text-red-600 hover:text-red-900">
+          {{ $t('apps.about.donate') }}
+        </a>
+      </div>
+      <div>
+        {{ $t('apps.about.issue') }}<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link"> Github Issues</a>
+      </div>
+      <div>
+        {{ $t('apps.about.discussions') }}<a href="https://github.com/hslr-s/sun-panel/discussions" target="_blank" class="link"> Github Discussions</a>
+      </div>
+      <div>
+        {{ $t('apps.about.communicationGroup') }} <a :href="link('groupChat')" target="_blank" class="link"> {{ $t("apps.about.groupChat") }}</a>
       </div>
 
       <div class="flex mt-[10px] flex-wrap justify-center">
