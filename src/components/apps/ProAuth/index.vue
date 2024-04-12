@@ -33,6 +33,7 @@ const loginModalForm = ref<LoginModalForm>({
 
 const ms = useMessage()
 
+const loginLoading = ref(false)
 const loginStatus = ref(false)
 const proExpiration = ref('')
 const proCardParam = ref<ProCardParam>()
@@ -69,6 +70,7 @@ async function getStatus() {
 }
 
 async function login(username: string, password: string) {
+  loginLoading.value = true
   try {
     const { code, msg } = await loginApi(username, password)
     getStatus()
@@ -79,6 +81,7 @@ async function login(username: string, password: string) {
   catch (error) {
     apiRespErrMsg(error)
   }
+  loginLoading.value = false
 }
 
 async function logout() {
@@ -97,7 +100,6 @@ function handleLogin() {
 }
 
 function handleSubmit() {
-  console.log(loginModalForm.value)
   if (loginModalForm.value.username === '' || loginModalForm.value.password === '') {
     ms.error(t('apps.proAuth.usernameWithPasswordIsNotEmpty'))
     return
@@ -232,7 +234,7 @@ onMounted(() => {
               <NInput v-model:value="loginModalForm.password" type="password" :placeholder="t('apps.proAuth.password')" />
             </NFormItemRow>
           </NForm>
-          <NButton type="primary" block secondary strong @click="handleSubmit">
+          <NButton type="primary" :loading="loginLoading" block secondary strong @click="handleSubmit">
             {{ t("apps.proAuth.login") }}
           </NButton>
         </div>
