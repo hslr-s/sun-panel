@@ -150,9 +150,9 @@ func DatabaseConnect() {
 
 // 命令行参数初始化
 func CommandInit() CMDParams {
-	flag.StringVar(&cmdParams.CfgPath, "cfgPath", "./conf", "The config path")
-	flag.BoolVar(&cmdParams.CfgInit, "cfgInit", false, "Generate configuration file")
-	flag.BoolVar(&cmdParams.PwdReset, "pwdReset", false, "Reset the password of the first user")
+	flag.StringVar(&cmdParams.CfgPath, "config-path", "./conf", "Configuration file directory")
+	flag.BoolVar(&cmdParams.CfgInit, "config-reset", false, "Create or reset the configuration file")
+	flag.BoolVar(&cmdParams.PwdReset, "password-reset", false, "Reset the password of the first admin account")
 	flag.Parse()
 	return cmdParams
 }
