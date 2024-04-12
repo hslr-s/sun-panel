@@ -93,7 +93,7 @@ func (p *ProAuthType) GetLocalLanIpMAC() (ip, macAddr string, resErr error) {
 func (p *ProAuthType) GetClientId() string {
 	s, err := global.SystemSetting.GetValueString(ProAuthTypeSystemSettingClientIdKey)
 	if err != nil {
-		global.Logger.Error("get clientId by syemtem setting:", err.Error())
+		global.Logger.Debug("get clientId by syemtem setting:", err.Error())
 		return ""
 	}
 	return s
