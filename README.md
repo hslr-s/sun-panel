@@ -1,6 +1,13 @@
 [[ 简体中文 ]](https://sun-panel-doc.enianteam.com/zh_cn/introduce/project.html) |
 [[ English ]](https://sun-panel-doc.enianteam.com/introduce/project.html)
 
+
+
+bing的壁纸api可以直接写入背景url里，提供两个bing背景api供使用
+bing的随机壁纸：https://bing.img.run/rand.php
+bing的每日壁纸：https://myhkw.cn/open/img/bing
+
+
 <div align=center>
 
 <img src="./doc/images/logo.png" width="100" height="100" />
