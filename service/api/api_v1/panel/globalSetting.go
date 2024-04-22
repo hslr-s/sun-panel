@@ -38,7 +38,11 @@ func (a *GlobalSettingApi) GetSiteStting(c *gin.Context) {
 
 // 获取全局站点设置
 func (a *GlobalSettingApi) UploadFaviconImage(c *gin.Context) {
+	webPath := global.Config.GetValueStringOrDefault("base", "web_path")
 	customPath := global.Config.GetValueString("base", "custom_style_path")
+	if customPath == "" {
+		customPath = webPath + "/custom"
+	}
 	f, err := c.FormFile("imgfile")
 	if err != nil {
 		apiReturn.ErrorByCode(c, 1300)
