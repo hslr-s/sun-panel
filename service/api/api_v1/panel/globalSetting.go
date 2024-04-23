@@ -1,6 +1,7 @@
 package panel
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -15,6 +16,18 @@ import (
 )
 
 type GlobalSettingApi struct {
+}
+
+func (a *GlobalSettingApi) getCustomPath() string {
+	webPath := global.Config.GetValueStringOrDefault("base", "web_path")
+	customPath := global.Config.GetValueString("base", "custom_style_path")
+	if customPath == "" {
+		customPath = webPath + "/custom"
+	}
+
+	fmt.Println("自定义路径", customPath)
+
+	return customPath
 }
 
 // 保存全局站点设置
@@ -38,11 +51,8 @@ func (a *GlobalSettingApi) GetSiteStting(c *gin.Context) {
 
 // 获取全局站点设置
 func (a *GlobalSettingApi) UploadFaviconImage(c *gin.Context) {
-	webPath := global.Config.GetValueStringOrDefault("base", "web_path")
-	customPath := global.Config.GetValueString("base", "custom_style_path")
-	if customPath == "" {
-		customPath = webPath + "/custom"
-	}
+	customPath := a.getCustomPath()
+	// fmt.Println("自定义", customPath)
 	f, err := c.FormFile("imgfile")
 	if err != nil {
 		apiReturn.ErrorByCode(c, 1300)
@@ -78,15 +88,14 @@ func (a *GlobalSettingApi) UploadFaviconImage(c *gin.Context) {
 }
 
 func (a *GlobalSettingApi) GetCustomStylePath(c *gin.Context) {
-	customPath := global.Config.GetValueString("base", "custom_style_path")
+	customPath := a.getCustomPath()
 	apiReturn.SuccessData(c, gin.H{
 		"customPath": customPath,
 	})
 }
 
 func (a *GlobalSettingApi) GetCustomJsAndCssCode(c *gin.Context) {
-	customPath := global.Config.GetValueString("base", "custom_style_path")
-
+	customPath := a.getCustomPath()
 	resp := panelApiStructs.GlobalSettingCustomJsAndCss{}
 
 	cssFilePath := customPath + "/index.css"
@@ -108,7 +117,7 @@ func (a *GlobalSettingApi) GetCustomJsAndCssCode(c *gin.Context) {
 }
 
 func (a *GlobalSettingApi) SaveCustomJsAndCssCode(c *gin.Context) {
-	customPath := global.Config.GetValueString("base", "custom_style_path")
+	customPath := a.getCustomPath()
 
 	req := panelApiStructs.GlobalSettingCustomJsAndCss{}
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
