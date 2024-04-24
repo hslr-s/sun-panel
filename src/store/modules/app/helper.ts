@@ -1,4 +1,5 @@
 import { ss } from '@/utils/storage'
+import loginDefaultBackgroundUrl from '@/assets/loginDefaultBackground.webp'
 
 const LOCAL_NAME = 'appSetting'
 
@@ -22,7 +23,7 @@ export function defaultSetting(): AppState {
   const siteSetting: GlobalSetting.SiteSetting = {
     title: 'Sun-Panel',
     favicoUrl: '/favicon.ico',
-    loginBackgroundUrl: '',
+    loginBackgroundUrl: loginDefaultBackgroundUrl,
   }
 
   return { siderCollapsed: false, theme: 'auto', language, siteSetting }

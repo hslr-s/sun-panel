@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { NButton, NCard, NForm, NFormItem, NGradientText, NInput, NSelect, useMessage } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { NButton, NCard, NForm, NFormItem, NInput, NSelect, NSwitch, useMessage, useOsTheme } from 'naive-ui'
+import { computed, onMounted, ref } from 'vue'
 import { login } from '@/api'
 import { useAppStore, useAuthStore } from '@/store'
 import { SvgIcon } from '@/components/common'
@@ -10,18 +10,22 @@ import { languageOptions } from '@/utils/defaultData'
 import type { Language } from '@/store/modules/app/helper'
 import { getSiteStting } from '@/api/openness'
 import { apiRespErrMsg, setTitle } from '@/utils/cmn'
+import { defaultSetting } from '@/store/modules/app/helper'
 
 // const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
+const osTheme = useOsTheme()
 const ms = useMessage()
 const loading = ref(false)
-const languageValue = ref<Language>(appStore.language)
-const siteSetting = ref<GlobalSetting.SiteSetting>({
-  favicoUrl: '',
-  title: 'Sun-Panel',
-  loginBackgroundUrl: '',
+const isDark = computed(() => {
+  if (appStore.theme === 'auto')
+    return osTheme.value === 'dark'
+  else
+    return appStore.theme === 'dark'
 })
+const languageValue = ref<Language>(appStore.language)
+const siteSetting = ref<GlobalSetting.SiteSetting>(defaultSetting().siteSetting)
 
 const form = ref<Login.LoginReqest>({
   username: '',
@@ -77,6 +81,10 @@ async function getConfig() {
   }
 }
 
+function handleTheme(value: boolean) {
+  appStore.setTheme(value ? 'dark' : 'light')
+}
+
 onMounted(() => {
   setTitle(appStore.siteSetting.title)
   getConfig()
@@ -89,8 +97,23 @@ onMounted(() => {
     <div class="login-container">
       <NCard class="login-card" style="border-radius: 20px;">
         <div class="mb-5 flex items-center justify-end">
-          <div class="mr-2">
-            <SvgIcon icon="ion-language" style="width: 20;height: 20;" />
+          <div class="w-full">
+            <NSwitch v-model:value="isDark" @update:value="handleTheme">
+              <template #checked-icon>
+                <SvgIcon icon="mingcute:moon-fog-line" />
+              </template>
+              <SvgIcon icon="tabler-sun-filled" />
+              <template #unchecked-icon>
+                <SvgIcon icon="mingcute:sun-fog-line" />
+              </template>
+            </NSwitch>
+          </div>
+          <div class="mr-1">
+            <SvgIcon
+              icon="flowbite-language-outline"
+              style="width: 22px;height: 22px;"
+              class="language-text-style"
+            />
           </div>
           <div class="min-w-[100px]">
             <NSelect
@@ -100,10 +123,10 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="login-title  ">
-          <NGradientText :size="30" type="success" class="!font-bold">
-            {{ appStore.siteSetting.title }}
-          </NGradientText>
+        <div class="login-title">
+          <!-- <NGradientText :size="30" type="success" class="!font-bold"> -->
+          {{ appStore.siteSetting.title }}
+          <!-- </NGradientText> -->
         </div>
         <NForm :model="form" label-width="100px" @keydown.enter="handleSubmit">
           <NFormItem>
@@ -122,31 +145,16 @@ onMounted(() => {
             </NInput>
           </NFormItem>
 
-          <!-- <NFormItem v-if="isShowCaptcha">
-          <div class="w-[120px] h-[34px] mr-[20px] rounded border flex cursor-pointer">
-            <Captcha ref="captchaRef" src="/api/captcha/getImage" />
-          </div>
-          <NInput v-model:value="form.vcode" type="text" placeholder="请输入图像验证码" />
-        </NFormItem> -->
           <NFormItem style="margin-top: 10px">
-            <NButton type="primary" block :loading="loading" @click="handleSubmit">
+            <NButton :loading="loading" class="login-button" @click="handleSubmit">
               {{ $t('login.loginButton') }}
             </NButton>
           </NFormItem>
 
-          <!-- <div class="flex justify-end">
-          <NButton v-if="isShowRegister" quaternary type="info" class="flex" @click="$router.push({ path: '/register' })">
-            注册
-          </NButton>
-          <NButton quaternary type="info" class="flex" @click="$router.push({ path: '/resetPassword' })">
-            忘记密码?
-          </NButton>
-        </div> -->
-
-          <div class="flex justify-center text-slate-300">
+          <div class="copyright flex justify-center text-current">
             Powered By <a
               href="https://github.com/hslr-s/sun-panel" target="_blank"
-              class="ml-[5px] text-slate-500"
+              class="ml-[5px]"
             >Sun-Panel</a>
           </div>
         </NForm>
@@ -155,7 +163,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .background {
   position: absolute;
   width: 100%;
@@ -166,8 +174,8 @@ onMounted(() => {
 }
 
 .dark .background {
-  filter: brightness(50%);
-  background-color: rgb(82, 82, 82);
+  filter: brightness(80%);
+  background-color: #18181b;
 }
 
 .login-container {
@@ -178,24 +186,45 @@ onMounted(() => {
   height: 100vh;
 }
 
+.login-title {
+  font-size: 30px;
+  font-weight: 900;
+  text-align: center;
+  margin: 20px;
+}
+
 @media (min-width: 600px) {
   .login-card {
     width: auto;
     margin: 0px 10px;
   }
+}
 
-  .login-button {
-    width: 100%;
-  }
+.login-button {
+  width: 100%;
+  color: var(--n-text-color);
+  background-color: white;
+  font-weight: 900 !important;
+}
+
+.dark .login-button {
+  background-color: transparent;
 }
 
 .login-card {
   margin: 20px;
   min-width: 400px;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
 }
 
-.login-title {
-  text-align: center;
-  margin: 20px;
+.dark .login-card {
+  filter: brightness(90%);
+  background-color: rgba(72, 72, 72, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.language-text-style{
+ color: var(--n-text-color);
 }
 </style>

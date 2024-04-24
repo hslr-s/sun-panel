@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store'
 import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn'
+import { defaultSetting } from '@/store/modules/app/helper'
 
 const authStore = useAuthStore()
 const globalSitesettingStore = useGlobalSitesettingStore()
@@ -20,11 +21,7 @@ const ms = useMessage()
 const icoThumbnailUrl = ref('')
 const icoImageFile = ref<File | null>(null)
 const icoIsNeedUpload = ref(false)
-const defaultSiteSetting: GlobalSetting.SiteSetting = {
-  favicoUrl: 'favicon.ico',
-  title: 'Sun-Panel',
-  loginBackgroundUrl: '',
-}
+const defaultSiteSetting: GlobalSetting.SiteSetting = defaultSetting().siteSetting
 
 const siteSetting = ref<GlobalSetting.SiteSetting>({ ...defaultSiteSetting })
 
