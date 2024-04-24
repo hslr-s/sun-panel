@@ -1,7 +1,7 @@
 {
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "请输入新密码，留空密码不变",
-    "alertText": "账号之间的数据不互通",
+    "alertText": "账号之间的数据不互通，非PRO用户最多只能创建两个，旧版创建的不受影响",
     "appName": "账号管理",
     "currentUseUsername": "当前账号",
     "deletePromptContent": "你确定删除{name}({username})？",
@@ -10,6 +10,7 @@
       "roleRequired": "请选择角色",
       "usernameRequired": "请输入账号且大于5个字符"
     },
+    "noProCreateLimitWarning": "非 PRO 最多只能创建两个账号",
     "passwordPlaceholder": "请输入密码",
     "pblicText": "公开",
     "role": "角色",

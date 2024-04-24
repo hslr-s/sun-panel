@@ -1,7 +1,7 @@
 {
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
-    "alertText": "Data between accounts is not shared",
+    "alertText": "Data between accounts are not interoperable. Non-PRO users can only create two at most. Those created in the old version will not be affected.",
     "appName": "Account management",
     "currentUseUsername": "Current username",
     "deletePromptContent": "Are you sure you want to delete {name} ({username})?",
@@ -10,6 +10,7 @@
       "roleRequired": "Please select a role",
       "usernameRequired": "Enter username with at least 5 characters"
     },
+    "noProCreateLimitWarning": "Non-PRO users can only create up to two accounts.",
     "passwordPlaceholder": "Enter password",
     "pblicText": "Public",
     "role": "Role",

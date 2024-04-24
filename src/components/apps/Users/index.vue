@@ -5,12 +5,14 @@ import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
 import { getPublicVisitUser, setPublicVisitUser, deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
 import { SvgIcon } from '@/components/common'
-import { useAuthStore } from '@/store'
+import { useAuthStore, useProAuthorizeStore } from '@/store'
 import { t } from '@/locales'
 import { AdminAuthRole } from '@/enums/admin'
 
 const message = useMessage()
 const authStore = useAuthStore()
+const proAuth = useProAuthorizeStore()
+
 const tableIsLoading = ref<boolean>(false)
 const editUserDialogShow = ref<boolean>(false)
 const keyWord = ref<string>()
@@ -174,6 +176,10 @@ function handlePageChange(page: number) {
 
 // 添加
 function handleAdd() {
+  if (proAuth.isExpired && userList.value && userList.value.length >= 2) {
+    message.warning(t('adminSettingUsers.noProCreateLimitWarning'))
+    return
+  }
   editUserDialogShow.value = true
   editUserUserInfo.value = {}
 }

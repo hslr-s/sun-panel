@@ -8,9 +8,6 @@ interface ProIsExpired {
 
 export const useGlobalSitesettingStore = defineStore('globalSitesetting', () => {
   const proIsExpired = ref(true)
-
-  console.log('cccc')
-
   async function getIsExpired() {
     try {
       const { data } = await proIsExpiredApi<ProIsExpired>()
