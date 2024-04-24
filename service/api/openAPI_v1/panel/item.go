@@ -2,6 +2,7 @@ package panel
 
 import (
 	"errors"
+	"strings"
 	"sun-panel/api/openAPI_v1/common/apiReturn"
 	"sun-panel/api/openAPI_v1/common/base"
 	"sun-panel/api/openAPI_v1/common/types"
@@ -35,8 +36,8 @@ func (a *Item) Create(c *gin.Context) {
 			ItemType: datatype.ItemIconItemTypeImageUrl,
 			Src:      req.IconUrl,
 		},
-		OnlyName:    req.OnlyName,
-		Title:       req.Title,
+		OnlyName:    strings.TrimSpace(req.OnlyName),
+		Title:       strings.TrimSpace(req.Title),
 		Url:         req.Url,
 		LanUrl:      req.LanUrl,
 		Description: req.Description,
@@ -85,8 +86,8 @@ func (a *Item) Update(c *gin.Context) {
 			ItemType: datatype.ItemIconItemTypeImageUrl,
 			Src:      req.IconUrl,
 		},
-		OnlyName:    req.OnlyName,
-		Title:       req.Title,
+		OnlyName:    strings.TrimSpace(req.OnlyName),
+		Title:       strings.TrimSpace(req.Title),
 		Url:         req.Url,
 		LanUrl:      req.LanUrl,
 		Description: req.Description,
@@ -119,6 +120,8 @@ func (a *Item) GetInfoByOnlyName(c *gin.Context) {
 	// 获取用户的ID
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	userId := userInfo.ID
+
+	req.OnlyName = strings.TrimSpace(req.OnlyName)
 
 	info, gormErr := biz.Item.FindByOnlyName(userId, req.OnlyName)
 
