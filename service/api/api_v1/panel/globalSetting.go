@@ -42,7 +42,7 @@ func (a *GlobalSettingApi) SaveSiteStting(c *gin.Context) {
 func (a *GlobalSettingApi) GetSiteStting(c *gin.Context) {
 	resp := panelApiStructs.GlobalSettingSite{}
 
-	biz.GlobalSetting.GetSiteStting(&resp)
+	biz.GlobalSetting.GetSiteSttingNoCheckExpired(&resp)
 	apiReturn.SuccessData(c, resp)
 }
 

@@ -4,7 +4,7 @@ import { NAlert, NButton, NDataTable, NDropdown, NTag, useDialog, useMessage } f
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
 import { getPublicVisitUser, setPublicVisitUser, deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
-import { SvgIcon } from '@/components/common'
+import { ProTag, SvgIcon } from '@/components/common'
 import { useAuthStore, useProAuthorizeStore } from '@/store'
 import { t } from '@/locales'
 import { AdminAuthRole } from '@/enums/admin'
@@ -237,9 +237,10 @@ onMounted(() => {
       {{ $t('adminSettingUsers.alertText') }}
     </NAlert>
     <div class="my-[10px]">
-      <NButton type="primary" size="small" ghost @click="handleAdd">
+      <NButton type="primary" size="small" @click="handleAdd">
         {{ $t('common.add') }}
       </NButton>
+      <ProTag class="ml-2" />
     </div>
 
     <NDataTable
