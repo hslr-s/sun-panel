@@ -1,7 +1,6 @@
 package panel
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -24,8 +23,6 @@ func (a *GlobalSettingApi) getCustomPath() string {
 	if customPath == "" {
 		customPath = webPath + "/custom"
 	}
-
-	fmt.Println("自定义路径", customPath)
 
 	return customPath
 }

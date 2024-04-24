@@ -40,7 +40,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 
 	if v, err := biz.Item.Edit(userInfo.ID, req); err != nil {
 		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
-			apiReturn.ErrorByCodeAndMsg(c, -1, err.Error())
+			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
 			return
 		}
 		apiReturn.ErrorDatabase(c, err.Error())

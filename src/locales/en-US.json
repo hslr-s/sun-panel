@@ -266,6 +266,7 @@
   },
   "iconItem": {
     "add": "Add item",
+    "advancedFeatures": "Advanced Features",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",
     "edit": "Edit item",
@@ -280,6 +281,8 @@
     "newWindowOpen": "Open in new window",
     "onlineIcon": "Online icon",
     "onlineIconLibrary": "Online icon library",
+    "onlyName": "Unique identifier (English identifier, used as OpenAPI, corresponding field: 'onlyName')",
+    "onlyNameExisted": "The unique identifier is already occupied",
     "openMethod": "Open method",
     "selectUpload": "Local upload",
     "url": "URL",

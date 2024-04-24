@@ -2,13 +2,15 @@
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
-  NButton, NForm, NFormItem, NGrid, NGridItem, NInput,
-  NInputGroup, NModal, NSelect, useMessage,
+  NButton, NCheckbox, NForm, NFormItem, NGrid, NGridItem,
+  NInput, NInputGroup, NModal, NSelect,
+  useMessage,
 } from 'naive-ui'
 import IconEditor from './IconEditor.vue'
 import { edit, getSiteFavicon } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { t } from '@/locales'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 
 interface Props {
   visible: boolean
@@ -21,6 +23,7 @@ const emit = defineEmits<Emit>()
 const ms = useMessage()
 const submitLoading = ref(false)
 const getIconLoading = ref([false, false])
+const expandAdvancedFeatures = ref(false)
 const itemIconGroupOptions = ref<{
   label: string
   value: number
@@ -57,11 +60,12 @@ const rules: FormRules = {
       message: t('form.required'),
     },
   ],
-  // itemIconGroupId: {
-  //   required: true,
-  //   trigger: ['blur', 'change'],
-  //   message: t('form.required'),
-  // },
+  itemIconGroupId: {
+    required: true,
+    trigger: ['blur', 'change'],
+    message: t('form.required'),
+    type: 'number',
+  },
 }
 
 const options = [
@@ -90,21 +94,20 @@ const show = computed({
 
 async function editApi() {
   submitLoading.value = true
-  try {
-    const { code, data, msg } = await edit<Panel.ItemInfo>(model.value)
-    if (code === 0) {
-      show.value = false
-      model.value = { ...restoreDefault }
 
-      emit('done', data)
-    }
-    else {
-      ms.error(`${t('common.saveFail')}:${msg}`)
-    }
-  }
-  catch (error) {
-    ms.error(t('common.saveFail'))
-  }
+  await edit<Panel.ItemInfo>(model.value).then(({ data }) => {
+    show.value = false
+    model.value = { ...restoreDefault }
+    emit('done', data)
+  }).catch((error) => {
+    if (error.code === -2)
+      ms.error(`${t('common.saveFail')}: ${t('iconItem.onlyNameExisted')}`)
+    else if (error.code === -1)
+      ms.error(t('common.saveFail'))
+    else
+      apiRespErrMsg(error)
+  })
+
   submitLoading.value = false
 }
 
@@ -232,6 +235,16 @@ function getGroupListOptions() {
         <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
           <NSelect v-model:value="model.openMethod" :options="options" />
         </NFormItem>
+        <hr>
+        <NCheckbox v-model:checked="expandAdvancedFeatures" class="my-2">
+          {{ $t('iconItem.advancedFeatures') }}
+        </NCheckbox>
+
+        <div v-if="expandAdvancedFeatures">
+          <NFormItem path="onlyName" :label="$t('iconItem.onlyName')">
+            <NInput v-model:value="model.onlyName" type="text" show-count :maxlength="20" />
+          </NFormItem>
+        </div>
       </NForm>
     </div>
 

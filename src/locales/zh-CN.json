@@ -266,6 +266,7 @@
   },
   "iconItem": {
     "add": "添加项目",
+    "advancedFeatures": "高级功能",
     "currentPageLayerOpen": "当前页面弹窗打开",
     "currentPageOpen": "当前页面打开",
     "edit": "修改项目",
@@ -280,6 +281,8 @@
     "newWindowOpen": "新窗口打开",
     "onlineIcon": "在线图标",
     "onlineIconLibrary": "在线图标库",
+    "onlyName": "唯一标识 (英文标识，用作OpenAPI，对应字段：\"onlyName\")",
+    "onlyNameExisted": "唯一标识已被占用",
     "openMethod": "打开方式",
     "selectUpload": "本地上传",
     "url": "地址",
