@@ -33,6 +33,7 @@ func (a *Item) Create(c *gin.Context) {
 	item := models.ItemIcon{
 		Icon: datatype.ItemIconIconInfo{
 			ItemType: datatype.ItemIconItemTypeImageUrl,
+			Src:      req.IconUrl,
 		},
 		OnlyName:    req.OnlyName,
 		Title:       req.Title,
@@ -41,6 +42,58 @@ func (a *Item) Create(c *gin.Context) {
 		Description: req.Description,
 		OpenMethod:  2,
 	}
+
+	if _, err := biz.Item.Edit(userId, item); err != nil {
+		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeOnlyNameExisted)
+			return
+		}
+		apiReturn.ErrorWithNum(c, err)
+		return
+	}
+
+	apiReturn.Success(c)
+}
+
+func (a *Item) Update(c *gin.Context) {
+
+	req := types.IconItem{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	// 获取用户的ID
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	userId := userInfo.ID
+
+	// 查询有没有该项目
+	itemInfo, gormErr := biz.Item.FindByOnlyName(userId, req.OnlyName)
+
+	if gormErr != nil {
+		if errors.Is(gormErr, gorm.ErrRecordNotFound) {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeNoRecord)
+			return
+		}
+		apiReturn.ErrorWithNum(c, gormErr)
+		return
+	}
+
+	item := models.ItemIcon{
+		Icon: datatype.ItemIconIconInfo{
+			ItemType: datatype.ItemIconItemTypeImageUrl,
+			Src:      req.IconUrl,
+		},
+		OnlyName:    req.OnlyName,
+		Title:       req.Title,
+		Url:         req.Url,
+		LanUrl:      req.LanUrl,
+		Description: req.Description,
+		OpenMethod:  2,
+	}
+
+	item.ID = itemInfo.ID
 
 	if _, err := biz.Item.Edit(userId, item); err != nil {
 		if errors.Is(err, biz.ErrItemOnlyNameExisted) {

@@ -12,6 +12,7 @@ func InitItemRouter(routerGroup *gin.RouterGroup) {
 	r := routerGroup.Group("/item", middleware.LoginInterceptor)
 	{
 		r.POST("create", api.Create)
+		r.POST("update", api.Update)
 		r.POST("getInfoByOnlyName", api.GetInfoByOnlyName)
 	}
 }
