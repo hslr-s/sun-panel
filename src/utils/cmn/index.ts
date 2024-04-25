@@ -109,10 +109,13 @@ export async function updateLocalUserInfo() {
     visitMode: VisitMode
   }
 
-  const { data } = await getAuthInfo<Req>()
-  userStore.updateUserInfo({ headImage: data.user.headImage, name: data.user.name })
-  authStore.setUserInfo(data.user)
-  authStore.setVisitMode(data.visitMode)
+  await getAuthInfo<Req>().then(({ data }) => {
+    if (data.user) {
+      userStore.updateUserInfo({ headImage: data?.user.headImage, name: data?.user.name })
+      authStore.setUserInfo(data.user)
+      authStore.setVisitMode(data.visitMode)
+    }
+  })
 }
 
 export async function getNotice(displayType: number | number[]) {
