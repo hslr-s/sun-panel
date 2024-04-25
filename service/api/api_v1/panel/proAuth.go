@@ -54,7 +54,7 @@ func (p *ProAuthApi) GetStatus(c *gin.Context) {
 
 	resp := panelApiStructs.GetStatusResp{
 		ProExpiration: s.ProExpiration,
-		LoginStatus:   !s.AutoLoginDisable,
+		LoginStatus:   s.LoginStatus,
 		Username:      s.UserInfo.Username,
 		NickName:      s.UserInfo.Name,
 	}

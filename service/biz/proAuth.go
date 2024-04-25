@@ -16,6 +16,7 @@ import (
 type ProAuthType struct {
 	ProAuthDataShortTerm *ProAuthDataShortTerm // 短期授权数据，为nil，视为未登录
 	AutoLoginDisable     bool                  // 为true时需要手动登录
+	LoginStatus          bool                  // 登录状态
 	PingInterval         time.Duration
 
 	// ProExpiration        *time.Time
@@ -56,8 +57,9 @@ func NewProAuth() *ProAuthType {
 	p := ProAuthType{
 		PingInterval:     6 * time.Hour, // ping执行的时间间隔
 		AutoLoginDisable: false,         // 刚启动允许自动登录
+		LoginStatus:      false,
 	}
-
+	// debug模式连接本地授权平台
 	if global.RUNCODE == "debug" {
 		proAuth.Config.Url = "http://127.0.0.1:3005"
 		p.PingInterval = 30 * time.Second
@@ -163,6 +165,7 @@ func (p *ProAuthType) Login(username, password string) error {
 	param.Base = p.GetBase()
 	param.Username = username
 	param.Password = password
+	p.LoginStatus = false
 
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
@@ -185,6 +188,7 @@ func (p *ProAuthType) Login(username, password string) error {
 	p.SaveAuthDataShortTerm(*p.ProAuthDataShortTerm)
 
 	p.AutoLoginDisable = false
+	p.LoginStatus = true
 	return nil
 }
 
@@ -215,16 +219,16 @@ func (p *ProAuthType) AutoLogin() error {
 
 	resp, err := proAuth.AutoLogin(param)
 	if err != nil {
+		// p.LoginStatus = false
 		if errors.Is(err, proAuth.GetError(proAuth.ErrManualLogin)) {
-			p.AutoLoginDisable = true
-		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountNotExist)) {
 			p.AutoLoginDisable = true
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
 			p.AutoLoginDisable = true
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
 			p.AutoLoginDisable = true
 		}
-
+		// p.AutoLoginDisable = true
+		// 在授权期内，忽略其他错误
 		global.Logger.Error("auto login fail:", err.Error())
 		return err
 	}
@@ -240,6 +244,7 @@ func (p *ProAuthType) AutoLogin() error {
 	p.SaveAuthDataShortTerm(*p.ProAuthDataShortTerm)
 
 	p.AutoLoginDisable = false
+	p.LoginStatus = true
 	return nil
 }
 
@@ -296,6 +301,7 @@ func (p *ProAuthType) Ping() error {
 			global.Logger.Debug("ping fail:", err.Error())
 			p.AutoLogin()
 		}
+		// 其他错误不处理
 		return err
 	}
 
@@ -310,6 +316,7 @@ func (p *ProAuthType) Reset() {
 	p.Token = ""
 	p.TempExpiration = ""
 	p.ProExpiration = nil
+	p.LoginStatus = false
 	p.UserInfo = proAuth.UserInfo{
 		Username: "",
 		Name:     "",
