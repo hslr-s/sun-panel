@@ -139,7 +139,8 @@
       "FAQButton": "View FAQ",
       "card": {
         "expiredText": "Expired on {date}",
-        "notExpiredText": "{date} expires"
+        "notExpiredText": "{date} expires",
+        "upgradePRO": "Upgrade to PRO"
       },
       "goToSunPanelAuthSite": "Go to the authorized platform",
       "login": "Log in",
@@ -148,6 +149,7 @@
       "notLogin": "Not logged in",
       "password": "Password",
       "registerAccount": "No account, please register",
+      "serverError": "An error occurred with the authorization server, please try again later.",
       "textDescription": "Since the author needs to make a living, some special features that are only available to Pro authorized users have been added to the project. \nIf you are willing, you can purchase support through the authorization platform. This is not only recognition of the author's hard development, but also a source of motivation to encourage the author to continue exploring and add more exciting features. \nThis support is entirely based on your volition. The author is fully aware of your generosity and trust. Therefore, even if more excellent Pro functions are added in the future, free functions will continue to be introduced, so stay tuned...❤️❤️❤️",
       "username": "Account",
       "usernameWithPasswordIsNotEmpty": "Account and password cannot be empty"

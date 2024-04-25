@@ -71,16 +71,18 @@ async function getStatus() {
 
 async function login(username: string, password: string) {
   loginLoading.value = true
-  try {
-    const { code, msg } = await loginApi(username, password)
+
+  await loginApi(username, password).then(() => {
     getStatus()
     loginModalShow.value = false
-    if (code !== 0)
-      ms.error(msg)
-  }
-  catch (error) {
+  }).catch((error) => {
+    if (error.code === 1414) {
+      ms.error(t('apps.proAuth.serverError'))
+      return
+    }
     apiRespErrMsg(error)
-  }
+  })
+
   loginLoading.value = false
 }
 
@@ -137,7 +139,7 @@ onMounted(() => {
     <NCard style="border-radius:10px" size="small">
       <div class="flex justify-center">
         <div class="m-5 w-[300px]">
-          <ProCard :card-style="cardStyle">
+          <ProCard :card-style="cardStyle" class="dark:brightness-90">
             <template #nickName>
               <template v-if="loginStatus">
                 {{ proCardParam?.nickName }}
@@ -161,9 +163,9 @@ onMounted(() => {
                 </div>
               </template>
               <template v-else>
-                <NButton size="small">
+                <NButton size="small" @click="handleLogin">
                   <NEllipsis style="max-width: 200px">
-                    <span class="text-white" @click="handleLogin">
+                    <span class="text-white">
                       {{ t("apps.proAuth.loginSunPanel") }}
                     </span>
                   </NEllipsis>
@@ -172,11 +174,16 @@ onMounted(() => {
             </template>
             <template #expired>
               <template v-if="loginStatus">
-                <template v-if="isExpired(proExpiration)">
-                  {{ t("apps.proAuth.card.expiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD HH:mm') }) }}
+                <template v-if="!proExpiration || proExpiration === ''">
+                  <NButton type="primary" dashed size="tiny" @click="openToLink('proAuthSite')">
+                    {{ t("apps.proAuth.card.upgradePRO") }}
+                  </NButton>
+                </template>
+                <template v-else-if="isExpired(proExpiration)">
+                  {{ t("apps.proAuth.card.expiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD') }) }}
                 </template>
                 <template v-else>
-                  {{ t("apps.proAuth.card.notExpiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD HH:mm') }) }}
+                  {{ t("apps.proAuth.card.notExpiredText", { date: buildTimeString(proExpiration, 'YYYY-MM-DD') }) }}
                 </template>
               </template>
             </template>
@@ -225,7 +232,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div>
+        <div @keydown.enter="handleSubmit">
           <NForm>
             <NFormItemRow>
               <NInput v-model:value="loginModalForm.username" :placeholder="t('apps.proAuth.username')" />
