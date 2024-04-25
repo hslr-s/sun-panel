@@ -47,10 +47,11 @@
       "communicationGroup": "交流群：",
       "discussions": "交流社区：",
       "donate": "🧧打赏",
-      "frontVersionText": "前端版本号",
+      "frontVersionText": "前端编译时间",
       "groupChat": "QQ、TG交流群",
       "issue": "建议反馈：",
-      "viewUpdateLog": "点此查看更新说明"
+      "viewUpdateLog": "点此查看更新说明",
+      "website": "网站："
     },
     "baseSettings": {
       "appName": "风格设置",

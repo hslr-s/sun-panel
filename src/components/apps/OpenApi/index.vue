@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { NAlert, NButton, NCard, NDivider, NH4, NTag, useDialog, useMessage } from 'naive-ui'
 import { t } from '@/locales'
+import { useAppStore } from '@/store'
 import {
   deleteToken as deleteTokenApi,
   getTokenStatusInfo as getTokenStatusInfoApi,
@@ -10,7 +11,14 @@ import {
 
 const ms = useMessage()
 const dialog = useDialog()
-const openApiLink = ref('http://links.sun-panel.top/openApiDoc')
+const appStore = useAppStore()
+const openApiLink = computed(() => {
+  const url = 'http://links.sun-panel.top/openApiDoc_'
+  if (appStore.language === 'zh-CN')
+    return `${url}zh_cn`
+
+  return `${url}en`
+})
 const tokenInfo = ref<OpenApi.GetTokenStatusInfoResp>({
   status: false,
   token: '',

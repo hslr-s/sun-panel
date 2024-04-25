@@ -47,10 +47,11 @@
       "communicationGroup": "Communication group:",
       "discussions": "Discussions:",
       "donate": "☕Donate",
-      "frontVersionText": "Front-end version number",
+      "frontVersionText": "Front-end compile time",
       "groupChat": "QQ, TG communication group",
       "issue": "Feedback:",
-      "viewUpdateLog": "Click here to view update log"
+      "viewUpdateLog": "Click here to view update log",
+      "website": "Website:"
     },
     "baseSettings": {
       "appName": "Style Settings",

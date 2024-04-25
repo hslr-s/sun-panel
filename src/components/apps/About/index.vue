@@ -34,6 +34,13 @@ function link(c: string): string {
   return `${linksDomain}/${c}_${getLangeuageSimple()}`
 }
 
+function getWebsiteUrl(): string {
+  if (appStore.language === 'zh-CN')
+    return 'https://doc.sun-panel.top/zh_cn/'
+
+  return 'http://doc.sun-panel.top'
+}
+
 onMounted(() => {
   get<Version>().then((res) => {
     if (res.code === 0)
@@ -63,6 +70,10 @@ onMounted(() => {
       •
     </NDivider>
     <div class="flex flex-col items-center justify-center text-base">
+      <div>
+        {{ $t('apps.about.website') }}
+        <a :href="getWebsiteUrl()" target="_blank" class="link"> sun-panel.top </a>
+      </div>
       <div>
         {{ $t('apps.about.author') }}
         <a href="https://github.com/hslr-s" target="_blank" class="link"> 红烧猎人 </a>
