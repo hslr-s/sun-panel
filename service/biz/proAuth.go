@@ -70,6 +70,13 @@ func NewProAuth() *ProAuthType {
 }
 
 func (p *ProAuthType) Start() {
+
+	// 读取数据库/缓存中的token等短期授权的数据
+	if v := p.GetAuthDataShortTerm(); v != nil {
+		p.LoginStatus = true
+		p.ProAuthDataShortTerm = v
+	}
+
 	// p.Login("95302870@qq.com", "12345678")
 	go p.Ping()
 	// p.Register()
@@ -185,7 +192,7 @@ func (p *ProAuthType) Login(username, password string) error {
 	p.ProAuthDataShortTerm.Token = resp.Token
 	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
 	p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
-	p.SaveAuthDataShortTerm(*p.ProAuthDataShortTerm)
+	p.AuthDataShortTermSyncToSysntemSetting()
 
 	p.AutoLoginDisable = false
 	p.LoginStatus = true
@@ -241,7 +248,7 @@ func (p *ProAuthType) AutoLogin() error {
 	p.ProAuthDataShortTerm.Token = resp.Token
 	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
 	p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
-	p.SaveAuthDataShortTerm(*p.ProAuthDataShortTerm)
+	p.AuthDataShortTermSyncToSysntemSetting()
 
 	p.AutoLoginDisable = false
 	p.LoginStatus = true
@@ -255,9 +262,10 @@ func (p *ProAuthType) RenewTempAuth() error {
 
 	// 读取授权信息
 	{
-		shortAuth, err := p.GetAuthDataShortTerm()
-		if err != nil {
-			return err
+		shortAuth := p.GetAuthDataShortTerm()
+		if shortAuth == nil {
+			p.AutoLogin()
+			return errors.New("need login")
 		}
 		param.Token = shortAuth.Token
 	}
@@ -269,19 +277,29 @@ func (p *ProAuthType) RenewTempAuth() error {
 	resp, err := proAuth.RenewTempAuth(param)
 	if err != nil {
 		global.Logger.Error("renewTempAuth fail:", err.Error())
+
+		// token过期
+		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) {
+			p.AutoLogin()
+			return nil
+		}
+		// 临时授权过期并连不上授权服务器，退出登录
+		global.Logger.Info("LOGOUT:Short -term authorization expires and cannot be connected to the server, logout")
+		p.Reset()
 		return err
 	}
-	p.ProExpiration = resp.ProExpiration
-	p.TempExpiration = resp.TempExpiration
-
-	// 保存授权信息
-	shortAuth := ProAuthDataShortTerm{
-		Token:               resp.Token,
-		UserInfo:            p.UserInfo,
-		ProExpiration:       resp.ProExpiration,
-		ShortTermExpiration: resp.TempExpiration,
+	if p.ProAuthDataShortTerm == nil {
+		p.ProAuthDataShortTerm = &ProAuthDataShortTerm{}
 	}
-	p.SaveAuthDataShortTerm(shortAuth)
+	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
+	p.ProAuthDataShortTerm.ShortTermExpiration = nil
+	if resp.TempExpiration != "" {
+		if t, err := time.Parse(cmn.TimeFormatMode1, resp.TempExpiration); err == nil {
+			p.ProAuthDataShortTerm.ShortTermExpiration = &t
+		}
+	}
+
+	p.AuthDataShortTermSyncToSysntemSetting()
 	return nil
 }
 
@@ -289,7 +307,13 @@ func (p *ProAuthType) Ping() error {
 	global.Logger.Debug("API: Ping")
 	param := proAuth.PingReq{}
 	param.Base = p.GetBase()
-	param.Token = p.Token
+
+	// 没有授权
+	if p.ProAuthDataShortTerm == nil {
+		p.AutoLogin()
+		return nil
+	}
+	param.Token = p.ProAuthDataShortTerm.Token
 
 	// ClientId不存在将注册
 	if param.ClientId == nil || *param.ClientId == "" {
@@ -305,22 +329,18 @@ func (p *ProAuthType) Ping() error {
 		return err
 	}
 
-	p.ProExpiration = resp.ProExpiration
+	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
 
 	return nil
 }
 
+// 退出登录
 func (p *ProAuthType) Reset() {
 	p.SetAccountPassword("", "")
 	p.AutoLoginDisable = true
-	p.Token = ""
-	p.TempExpiration = ""
-	p.ProExpiration = nil
+	p.ProAuthDataShortTerm = nil
 	p.LoginStatus = false
-	p.UserInfo = proAuth.UserInfo{
-		Username: "",
-		Name:     "",
-	}
+	p.AuthDataShortTermSyncToSysntemSetting()
 }
 
 func (p *ProAuthType) GetStatus() ProAuthType {
@@ -348,29 +368,42 @@ func (p *ProAuthType) timerFunc() {
 
 	// pro授权没有过期，但是临时授权过期了
 	// 要进行续期临时授权
-	if !p.ProIsExpired() && p.TempAuthIsExpired() {
+
+	proExpired := p.ProIsExpired()
+	shortTermExpired := p.TempAuthIsExpired()
+
+	if !proExpired && shortTermExpired {
 		p.RenewTempAuth()
+	} else if proExpired && shortTermExpired {
+		global.Logger.Debug("PRO已过期")
 	}
 }
 
 // 是否过期
 func (p *ProAuthType) ProIsExpired() bool {
-	if p.ProExpiration == nil {
+	global.Logger.Debug("检查是否过期 ProIsExpired")
+	if p.ProAuthDataShortTerm == nil {
 		return true
 	}
-	return p.ProExpiration.Before(time.Now())
+	if p.ProAuthDataShortTerm.ProExpiration == nil {
+		return true
+	}
+	return p.ProAuthDataShortTerm.ProExpiration.Before(time.Now())
 }
 
 func (p *ProAuthType) TempAuthIsExpired() bool {
-	if p.TempExpiration == "" {
+	global.Logger.Debug("检查是否过期 TempAuthIsExpired")
+	if p.ProIsExpired() {
 		return true
 	}
-	timeParse, err := time.Parse(cmn.TimeFormatMode1, p.TempExpiration)
-	if err != nil {
-		global.Logger.Error("TempAuthIsExpired:TempExpiration parse error", timeParse)
+	if p.ProAuthDataShortTerm == nil {
+		return false
+	}
+	if p.ProAuthDataShortTerm.ShortTermExpiration == nil {
 		return true
 	}
-	return timeParse.Before(time.Now())
+
+	return p.ProAuthDataShortTerm.ShortTermExpiration.Before(time.Now())
 }
 
 func (p *ProAuthType) GetAccountPassword() ProAuthAccountPassword {
@@ -391,32 +424,54 @@ func (p *ProAuthType) SetAccountPassword(username, password string) error {
 }
 
 // 保存临时（短期）授权数据
-func (p *ProAuthType) SaveAuthDataShortTerm(proAuthDataShortTerm ProAuthDataShortTerm) {
-	dataByte, _ := json.Marshal(proAuthDataShortTerm)
+func (p *ProAuthType) SaveAuthDataShortTerm(proAuthDataShortTerm *ProAuthDataShortTerm) {
+	d := ProAuthDataShortTerm{}
+	if proAuthDataShortTerm != nil {
+		d = *proAuthDataShortTerm
+	}
+	dataByte, _ := json.Marshal(d)
 	dStr := string(dataByte)
 	global.Logger.Debugln("AuthDataShortTerm JSON数据", dStr)
+
+	// 明文
+	// global.SystemSetting.Set(ProAuthTypeSystemSettingProAuthDataShortTermKey, dStr)
+
+	// 加密
 	aesStr, _ := AES.Encrypt(proAuth.Config.AESKey, dStr)
-	global.SystemSetting.Set(ProAuthTypeSystemSettingAccountPasswordKey, aesStr)
+	global.SystemSetting.Set(ProAuthTypeSystemSettingProAuthDataShortTermKey, aesStr)
+
 }
 
 // 读取临时（短期）授权数据
-func (p *ProAuthType) GetAuthDataShortTerm() (ProAuthDataShortTerm, error) {
+func (p *ProAuthType) GetAuthDataShortTerm() *ProAuthDataShortTerm {
 	d := ProAuthDataShortTerm{}
 	dJsonStr := ""
 
-	dEncryptedText, err := global.SystemSetting.GetValueString(ProAuthTypeSystemSettingAccountPasswordKey)
+	dEncryptedText, err := global.SystemSetting.GetValueString(ProAuthTypeSystemSettingProAuthDataShortTermKey)
 	if err != nil {
-		return d, err
+		return nil
 	}
 
+	// 解密
 	if dJsonStr, err = AES.Decrypt(proAuth.Config.AESKey, dEncryptedText); err != nil {
-		return d, err
+		return nil
 	}
+
+	// 明文
+	// dJsonStr = dEncryptedText
 
 	global.Logger.Debugln("AuthDataShortTerm 解密JSON数据", dJsonStr)
 
-	json.Unmarshal([]byte(dJsonStr), &d)
+	err = json.Unmarshal([]byte(dJsonStr), &d)
 
-	return d, err
+	if d.Token == "" || err != nil {
+		return nil
+	}
 
+	return &d
+
+}
+
+func (p *ProAuthType) AuthDataShortTermSyncToSysntemSetting() {
+	p.SaveAuthDataShortTerm(p.ProAuthDataShortTerm)
 }

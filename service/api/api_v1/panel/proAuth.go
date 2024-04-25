@@ -52,11 +52,16 @@ func (p *ProAuthApi) GetStatus(c *gin.Context) {
 
 	s := biz.ProAuth.GetStatus()
 
+	shortAuthData := &biz.ProAuthDataShortTerm{}
+	if s.ProAuthDataShortTerm != nil {
+		shortAuthData = s.ProAuthDataShortTerm
+	}
+
 	resp := panelApiStructs.GetStatusResp{
-		ProExpiration: s.ProExpiration,
+		ProExpiration: shortAuthData.ProExpiration,
 		LoginStatus:   s.LoginStatus,
-		Username:      s.UserInfo.Username,
-		NickName:      s.UserInfo.Name,
+		Username:      shortAuthData.UserInfo.Username,
+		NickName:      shortAuthData.UserInfo.Name,
 	}
 
 	apiReturn.SuccessData(c, resp)
