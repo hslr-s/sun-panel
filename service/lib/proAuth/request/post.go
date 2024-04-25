@@ -77,6 +77,10 @@ func DecryptResponseData(AESKey string, response string, value interface{}) erro
 }
 
 func SendPostJsonAESKeyRequest(url, AESKey string, requestData interface{}, responseData interface{}) (int, error) {
+
+	// reqByte, _ := json.Marshal(requestData)
+	// fmt.Println("接口返回请求数据", string(reqByte))
+
 	reqBytes, err := EncryptRequestData(AESKey, requestData)
 	if err != nil {
 		return 0, errors.New("Encrypt request fail:" + err.Error())

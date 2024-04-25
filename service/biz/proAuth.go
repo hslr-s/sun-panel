@@ -1,23 +1,27 @@
 package biz
 
 import (
+	"encoding/json"
 	"errors"
 	"net"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/proAuth"
+	"sun-panel/lib/proAuth/AES"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type ProAuthType struct {
-	ProExpiration    *time.Time
-	TempExpiration   string
-	Token            string
-	AutoLoginDisable bool // 为true时需要手动登录
-	PingInterval     time.Duration
-	UserInfo         proAuth.UserInfo
+	ProAuthDataShortTerm *ProAuthDataShortTerm // 短期授权数据，为nil，视为未登录
+	AutoLoginDisable     bool                  // 为true时需要手动登录
+	PingInterval         time.Duration
+
+	// ProExpiration        *time.Time
+	// UserInfo             proAuth.UserInfo
+	// Token  string
+	// Status bool // 登录状态
 }
 
 type ProAuthAccountPassword struct {
@@ -25,24 +29,41 @@ type ProAuthAccountPassword struct {
 	Password string
 }
 
+type ProAuthDataShortTerm struct {
+	// ProAuthAccountPassword
+	ShortTermExpiration *time.Time // 短期授权
+	ProExpiration       *time.Time // 最终PRO授权
+	Token               string
+	UserInfo            proAuth.UserInfo // 昵称
+}
+
 var ErrAccountPasswordIncomplete = errors.New("ErrAccountPasswordIncomplete")
 
 const ProAuthTypeSystemSettingClientIdKey = "clientId"
+
+// 短期授权的key
+const ProAuthTypeSystemSettingProAuthDataShortTermKey = "pro_auth_data_short_term"
+
+// 将废弃 (1.4.0-beta24-04-12添加的此项)
 const ProAuthTypeSystemSettingAccountPasswordKey = "ProAuthAccountPassword"
 
 func NewProAuth() *ProAuthType {
 
-	// proAuth.Config.Url = "http://127.0.0.1:3005"
 	proAuth.Config.Url = "https://auth.sun-panel.top"
 	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN"
 	proAuth.Config.TimeDifference = 3600
-	// proAuth.Config.IsDebug = true
 
 	p := ProAuthType{
 		PingInterval:     6 * time.Hour, // ping执行的时间间隔
 		AutoLoginDisable: false,         // 刚启动允许自动登录
 	}
-	// p.PingInterval = 30 * time.Second // 测试使用，正式环境注释掉
+
+	if global.RUNCODE == "debug" {
+		proAuth.Config.Url = "http://127.0.0.1:3005"
+		p.PingInterval = 30 * time.Second
+		// proAuth.Config.IsDebug = true // 明文传输
+	}
+
 	return &p
 }
 
@@ -155,9 +176,14 @@ func (p *ProAuthType) Login(username, password string) error {
 
 	global.Logger.Debug(username+" token", resp.Token)
 
-	p.Token = resp.Token
-	p.ProExpiration = resp.ProExpiration
-	p.UserInfo = resp.UserInfo
+	if p.ProAuthDataShortTerm == nil {
+		p.ProAuthDataShortTerm = &ProAuthDataShortTerm{}
+	}
+	p.ProAuthDataShortTerm.Token = resp.Token
+	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
+	p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
+	p.SaveAuthDataShortTerm(*p.ProAuthDataShortTerm)
+
 	p.AutoLoginDisable = false
 	return nil
 }
@@ -195,8 +221,6 @@ func (p *ProAuthType) AutoLogin() error {
 			p.AutoLoginDisable = true
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
 			p.AutoLoginDisable = true
-		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountNotExist)) {
-			p.AutoLoginDisable = true
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
 			p.AutoLoginDisable = true
 		}
@@ -207,9 +231,14 @@ func (p *ProAuthType) AutoLogin() error {
 
 	global.Logger.Debug(param.Username+" token", resp.Token)
 
-	p.Token = resp.Token
-	p.ProExpiration = resp.ProExpiration
-	p.UserInfo = resp.UserInfo
+	if p.ProAuthDataShortTerm == nil {
+		p.ProAuthDataShortTerm = &ProAuthDataShortTerm{}
+	}
+	p.ProAuthDataShortTerm.Token = resp.Token
+	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
+	p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
+	p.SaveAuthDataShortTerm(*p.ProAuthDataShortTerm)
+
 	p.AutoLoginDisable = false
 	return nil
 }
@@ -218,7 +247,15 @@ func (p *ProAuthType) RenewTempAuth() error {
 	global.Logger.Debug("API: RenewTempAuth")
 	param := proAuth.RenewTempAuthReq{}
 	param.Base = p.GetBase()
-	param.Token = p.Token
+
+	// 读取授权信息
+	{
+		shortAuth, err := p.GetAuthDataShortTerm()
+		if err != nil {
+			return err
+		}
+		param.Token = shortAuth.Token
+	}
 
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
@@ -231,6 +268,15 @@ func (p *ProAuthType) RenewTempAuth() error {
 	}
 	p.ProExpiration = resp.ProExpiration
 	p.TempExpiration = resp.TempExpiration
+
+	// 保存授权信息
+	shortAuth := ProAuthDataShortTerm{
+		Token:               resp.Token,
+		UserInfo:            p.UserInfo,
+		ProExpiration:       resp.ProExpiration,
+		ShortTermExpiration: resp.TempExpiration,
+	}
+	p.SaveAuthDataShortTerm(shortAuth)
 	return nil
 }
 
@@ -337,6 +383,33 @@ func (p *ProAuthType) SetAccountPassword(username, password string) error {
 	return global.SystemSetting.Set(ProAuthTypeSystemSettingAccountPasswordKey, accountPassword)
 }
 
-func (p *ProAuthType) UpdateLoginStatus(username, password string) {
+// 保存临时（短期）授权数据
+func (p *ProAuthType) SaveAuthDataShortTerm(proAuthDataShortTerm ProAuthDataShortTerm) {
+	dataByte, _ := json.Marshal(proAuthDataShortTerm)
+	dStr := string(dataByte)
+	global.Logger.Debugln("AuthDataShortTerm JSON数据", dStr)
+	aesStr, _ := AES.Encrypt(proAuth.Config.AESKey, dStr)
+	global.SystemSetting.Set(ProAuthTypeSystemSettingAccountPasswordKey, aesStr)
+}
+
+// 读取临时（短期）授权数据
+func (p *ProAuthType) GetAuthDataShortTerm() (ProAuthDataShortTerm, error) {
+	d := ProAuthDataShortTerm{}
+	dJsonStr := ""
+
+	dEncryptedText, err := global.SystemSetting.GetValueString(ProAuthTypeSystemSettingAccountPasswordKey)
+	if err != nil {
+		return d, err
+	}
+
+	if dJsonStr, err = AES.Decrypt(proAuth.Config.AESKey, dEncryptedText); err != nil {
+		return d, err
+	}
+
+	global.Logger.Debugln("AuthDataShortTerm 解密JSON数据", dJsonStr)
+
+	json.Unmarshal([]byte(dJsonStr), &d)
+
+	return d, err
 
 }
