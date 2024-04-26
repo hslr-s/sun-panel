@@ -9,6 +9,10 @@ import SvgIconOnline from './SvgIconOnline/index.vue'
 import JsonImportExport from './JsonImportExport/index.vue'
 import AppLoader from './AppLoader/index.vue'
 import ItemCard from './ItemCard/index.vue'
+import ProCard from './ProCard/index.vue'
+import ProTag from './ProTag/index.vue'
+import Overlay from './Overlay/index.vue'
+import ProAuthOverlay from './ProAuthOverlay/index.vue'
 
 export {
   Verification,
@@ -22,4 +26,8 @@ export {
   JsonImportExport,
   AppLoader,
   ItemCard,
+  ProCard,
+  ProTag,
+  Overlay,
+  ProAuthOverlay,
 }

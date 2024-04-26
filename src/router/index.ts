@@ -44,6 +44,12 @@ const routes: RouteRecordRaw[] = [
 
   dockerRouter,
 
+  {
+    path: '/test/demo',
+    name: 'test-demo',
+    component: () => import('@/views/exception/test/demo.vue'),
+  },
+
   // adminRouter,
 ]
 

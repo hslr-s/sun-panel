@@ -18,11 +18,11 @@ const propClass = ref(props.class)
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="item-card w-full">
     <!-- 详情图标 -->
     <div
       v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info"
-      class="w-full rounded-2xl transition-all duration-200 flex"
+      class="item-card-info w-full rounded-2xl transition-all duration-200 flex"
       :class="propClass"
       :style="{ backgroundColor: backgroundColor ?? defaultBackground }"
     >
@@ -32,9 +32,10 @@ const propClass = ref(props.class)
     <!-- 极简图标（APP） -->
     <div
       v-if="cardTypeStyle === PanelPanelConfigStyleEnum.icon"
+      class="item-card-small"
     >
       <div
-        class="overflow-hidden rounded-2xl sunpanel w-[70px] h-[70px] mx-auto transition-all duration-200"
+        class="item-card-small-icon overflow-hidden rounded-2xl sunpanel w-[70px] h-[70px] mx-auto transition-all duration-200"
         :class="propClass"
         :style="{ backgroundColor: backgroundColor ?? defaultBackground }"
       >
@@ -43,7 +44,7 @@ const propClass = ref(props.class)
 
       <div
         v-if="!iconTextIconHideTitle"
-        class="text-center app-icon-text-shadow cursor-pointer mt-[2px]"
+        class="item-card-small-title text-center app-icon-text-shadow cursor-pointer mt-[2px]"
         :style="{ color: iconTextColor }"
       >
         {{ iconText }}

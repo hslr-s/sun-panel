@@ -37,6 +37,8 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 			".webp",
 			".svg",
 			".ico",
+			".avif",
+			".heic",
 		}
 
 		if !cmn.InArray(agreeExts, fileExt) {
@@ -52,15 +54,17 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 		filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
 		c.SaveUploadedFile(f, filepath)
 
-		// 像数据库添加记录
+		pureFilePath := filepath[len(configUpload):]
+		// 向数据库添加记录
 		mFile := models.File{}
-		mFile.AddFile(userInfo.ID, f.Filename, fileExt, filepath)
+		mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath)
 		apiReturn.SuccessData(c, gin.H{
-			"imageUrl": filepath[1:],
+			"imageUrl": global.UPLOAD_ROUTE + pureFilePath,
 		})
 	}
 }
 
+// 一直未使用有待测试
 func (a *FileApi) UploadFiles(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	configUpload := global.Config.GetValueString("base", "source_path")
@@ -86,10 +90,11 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 			errFiles = append(errFiles, f.Filename)
 		} else {
 			// 成功
-			// 像数据库添加记录
+			pureFilePath := filepath[len(configUpload):]
+			// 向数据库添加记录
 			mFile := models.File{}
-			mFile.AddFile(userInfo.ID, f.Filename, fileExt, filepath)
-			succMap[f.Filename] = filepath[1:]
+			mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath)
+			succMap[f.Filename] = global.UPLOAD_ROUTE + pureFilePath
 		}
 	}
 
@@ -110,8 +115,14 @@ func (a *FileApi) GetList(c *gin.Context) {
 
 	data := []map[string]interface{}{}
 	for _, v := range list {
+		// 兼容旧版
+		if len(v.Src) >= 0 && v.Src[0] == '.' {
+			v.Src = v.Src[1:]
+		} else {
+			v.Src = global.UPLOAD_ROUTE + v.Src
+		}
 		data = append(data, map[string]interface{}{
-			"src":        v.Src[1:],
+			"src":        v.Src,
 			"fileName":   v.FileName,
 			"id":         v.ID,
 			"createTime": v.CreatedAt,

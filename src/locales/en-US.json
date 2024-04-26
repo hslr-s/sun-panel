@@ -1,7 +1,7 @@
 {
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
-    "alertText": "Data between accounts is not shared",
+    "alertText": "Data between accounts are not interoperable. Non-PRO users can only create two at most. Those created in the old version will not be affected.",
     "appName": "Account management",
     "currentUseUsername": "Current username",
     "deletePromptContent": "Are you sure you want to delete {name} ({username})?",
@@ -10,6 +10,7 @@
       "roleRequired": "Please select a role",
       "usernameRequired": "Enter username with at least 5 characters"
     },
+    "noProCreateLimitWarning": "Non-PRO users can only create up to two accounts.",
     "passwordPlaceholder": "Enter password",
     "pblicText": "Public",
     "role": "Role",
@@ -25,6 +26,8 @@
     "1004": "Account has been deactivated or inactivated",
     "1005": "Currently no permission to operate",
     "1006": "Account does not exist",
+    "1007": "Old password error",
+    "1008": "No PRO authorization",
     "1200": "database error",
     "1201": "Please keep at least one",
     "1202": "Data record not found",
@@ -37,15 +40,18 @@
   },
   "apps": {
     "about": {
-      "QQGroup": "QQ Group:",
-      "QR": "QR Code (Recommended)",
-      "addQQGroupUrl": "Click to join",
+      "QR": "QR Code(recommend)",
       "appName": "About",
       "author": "Author:",
       "checkUpdate": "Check for new version",
+      "communicationGroup": "Communication group:",
+      "discussions": "Discussions:",
       "donate": "☕Donate",
+      "frontVersionText": "Front-end compile time",
+      "groupChat": "QQ, TG communication group",
       "issue": "Feedback:",
-      "viewUpdateLog": "Click here to view update log"
+      "viewUpdateLog": "Click here to view update log",
+      "website": "Website:"
     },
     "baseSettings": {
       "appName": "Style Settings",
@@ -63,6 +69,7 @@
       "leftRightMargin": "Left-right margin",
       "mask": "Mask",
       "maxWidth": "Max width",
+      "netModeChangeButtonShow": "Show network mode switch button",
       "publicVisitModeShow": "Allow public mode display",
       "resetWarnText": "Are you sure you want to reset these styles?",
       "searchBar": "Search bar component",
@@ -77,6 +84,9 @@
       "uploadOrDragText": "Click to upload or drag and drop into the box to replace the image",
       "vague": "Blur",
       "wallpaper": "Wallpaper"
+    },
+    "common": {
+      "notFound": "Sorry, the application failed to load. Please try refreshing the page or clearing the browser cache."
     },
     "exportImport": {
       "appName": "Export/Import",
@@ -94,10 +104,57 @@
       "transmuteStandard": "Transmute Standard",
       "warnConfigFileLow": "The configuration file version is too low but compatible"
     },
+    "globalSetting": {
+      "appName": "Global Setting",
+      "clearIcoImage": "Clear image",
+      "customDanger": "Danger warning",
+      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code. This may lead to privacy leaks, layout confusion, or attacks.",
+      "customImageAddress": "Custom image address",
+      "customJSAndCss": "Custom JS and CSS files",
+      "customJSAndCssAlert": "If you do not have PRO authorization, you can enter the NAS or server where Sun-Panel is installed, find the \"custom\" path ({path}), modify and save the file directly, and it will still be effective.",
+      "favicon": "site icon",
+      "iconChangeClearCache": "After saving, clear the browser cache or restart the browser to see the effect.",
+      "loginBackgroundImage": "Login page background image",
+      "personalise": "Site settings",
+      "resetWarnText": "Are you sure you want to reset these data?",
+      "selectIcoImage": "Select ICO image",
+      "title": "Site title"
+    },
     "itemGroupManage": {
       "appName": "Group Management",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
       "groupName": "Group name"
+    },
+    "openApi": {
+      "alertText": "Sun-Panel provides an open interface that can be used to add projects and other operations through development. For details, please refer to:",
+      "apiUrl": "API Url",
+      "autoDomainWarning": "The domain name here is automatically obtained. Please fill it in according to the actual situation during development.",
+      "deactivate": "Deactivate",
+      "docTitle": "OpenAPI documentation",
+      "enable": "Enable",
+      "refreshToken": "RefreshToken",
+      "state": "State",
+      "stopOpenApi": "DisableOpenAPI",
+      "updateTokenDialogText": "Are you sure you want to continue? Token will become invalid if you continue to operate."
+    },
+    "proAuth": {
+      "FAQButton": "View FAQ",
+      "card": {
+        "expiredText": "Expired on {date}",
+        "notExpiredText": "{date} expires",
+        "upgradePRO": "Upgrade to PRO"
+      },
+      "goToSunPanelAuthSite": "Go to the authorized platform",
+      "login": "Log in",
+      "loginSunPanel": "Log in to the Sun-Panel authorization platform",
+      "logout": "logout",
+      "notLogin": "Not logged in",
+      "password": "Password",
+      "registerAccount": "No account, please register",
+      "serverError": "An error occurred with the authorization server, please try again later.",
+      "textDescription": "Since the author needs to make a living, some special features that are only available to Pro authorized users have been added to the project. \nIf you are willing, you can purchase support through the authorization platform. This is not only recognition of the author's hard development, but also a source of motivation to encourage the author to continue exploring and add more exciting features. \nThis support is entirely based on your volition. The author is fully aware of your generosity and trust. Therefore, even if more excellent Pro functions are added in the future, free functions will continue to be introduced, so stay tuned...❤️❤️❤️",
+      "username": "Account",
+      "usernameWithPasswordIsNotEmpty": "Account and password cannot be empty"
     },
     "uploadsFileManager": {
       "alertText": "Here you can manage wallpapers and icons you have uploaded.",
@@ -157,6 +214,7 @@
     "nikeName": "Nickname",
     "no": "No",
     "noData": "No data available",
+    "noPorAuth": "You do not have the PRO authorized function yet. This function can only be used after authorization.",
     "password": "Password",
     "refreshPage": "Please refresh the page",
     "repeatLater": "Please try again later",
@@ -213,6 +271,7 @@
   },
   "iconItem": {
     "add": "Add item",
+    "advancedFeatures": "Advanced Features",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",
     "edit": "Edit item",
@@ -227,9 +286,12 @@
     "newWindowOpen": "Open in new window",
     "onlineIcon": "Online icon",
     "onlineIconLibrary": "Online icon library",
+    "onlyName": "Unique identifier (English identifier, used as OpenAPI, corresponding field: 'onlyName')",
+    "onlyNameExisted": "The unique identifier is already occupied",
     "openMethod": "Open method",
     "selectUpload": "Local upload",
-    "url": "URL"
+    "url": "URL",
+    "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },
   "login": {
     "loginButton": "Login",
@@ -245,6 +307,9 @@
     "goToLogin": "Go to login",
     "openLanUrl": "Open LAN URL",
     "openWanUrl": "Open WAN URL"
+  },
+  "proAuth": {
+    "appName": "Pro authorization"
   },
   "settingUserInfo": {
     "confirmLogoutText": "Are you sure you want to logout?",

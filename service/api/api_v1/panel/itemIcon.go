@@ -2,13 +2,22 @@ package panel
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"net/url"
+	"os"
+	"path"
+	"strings"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
+	"sun-panel/biz"
 	"sun-panel/global"
+	"sun-panel/lib/cmn"
 	"sun-panel/lib/siteFavicon"
 	"sun-panel/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -27,31 +36,17 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 		return
 	}
 
-	if req.ItemIconGroupId == 0 {
-		apiReturn.Error(c, "Group is mandatory")
-		return
-	}
-
 	req.UserId = userInfo.ID
 
-	// json转字符串
-	if j, err := json.Marshal(req.Icon); err == nil {
-		req.IconJson = string(j)
-	}
-
-	if req.ID != 0 {
-		// 修改
-		updateField := []string{"IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "GroupId", "UserId", "ItemIconGroupId"}
-		if req.Sort != 0 {
-			updateField = append(updateField, "Sort")
+	if v, err := biz.Item.Edit(userInfo.ID, req); err != nil {
+		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
+			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
+			return
 		}
-		global.Db.Model(&models.ItemIcon{}).
-			Select(updateField).
-			Where("id=?", req.ID).Updates(&req)
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
 	} else {
-		req.Sort = 9999
-		// 创建
-		global.Db.Create(&req)
+		req = v
 	}
 
 	apiReturn.SuccessData(c, req)
@@ -187,7 +182,9 @@ func (a *ItemIcon) SaveSort(c *gin.Context) {
 	apiReturn.Success(c)
 }
 
+// 支持获取并直接下载对方网站图标到服务器
 func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
+	userInfo, _ := base.GetCurrentUserInfo(c)
 	req := panelApiStructs.ItemIconGetSiteFaviconReq{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
@@ -195,10 +192,78 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 		return
 	}
 	resp := panelApiStructs.ItemIconGetSiteFaviconResp{}
-	if iconUrl, ok := siteFavicon.GetOneFaviconURL(req.Url); ok {
-		resp.IconUrl = iconUrl
-		apiReturn.SuccessData(c, resp)
+	fullUrl := ""
+	if iconUrl, err := siteFavicon.GetOneFaviconURL(req.Url); err != nil {
+		// 尝试使用最原始的方式获取图标 https://域名/favicon.ico
+		if urlInfo, err := url.Parse(req.Url); err != nil {
+			errMsg := "acquisition failed: get ico error:" + err.Error()
+			global.Logger.Error(errMsg)
+			apiReturn.Error(c, errMsg)
+			return
+		} else {
+			fullUrl = urlInfo.Scheme + "://" + urlInfo.Host + "/favicon.ico"
+		}
+
+	} else {
+		fullUrl = iconUrl
+	}
+
+	parsedURL, err := url.Parse(req.Url)
+	if err != nil {
+		apiReturn.Error(c, "acquisition failed:"+err.Error())
 		return
 	}
-	apiReturn.Error(c, "acquisition failed")
+
+	protocol := parsedURL.Scheme
+	global.Logger.Debug("protocol:", protocol)
+	global.Logger.Debug("fullUrl:", fullUrl)
+
+	// 如果URL以双斜杠（//）开头，则使用当前页面协议
+	if strings.HasPrefix(fullUrl, "//") {
+		fullUrl = protocol + "://" + fullUrl[2:]
+	} else if !strings.HasPrefix(fullUrl, "http://") && !strings.HasPrefix(fullUrl, "https://") {
+		// 如果URL既不以http://开头也不以https://开头，则默认为http协议
+		fullUrl = "http://" + fullUrl
+	}
+	global.Logger.Debug("fullUrl:", fullUrl)
+	// 去除图标的get参数
+	{
+		parsedIcoURL, err := url.Parse(fullUrl)
+		if err != nil {
+			apiReturn.Error(c, "acquisition failed: parsed ico URL :"+err.Error())
+			return
+		}
+		fullUrl = parsedIcoURL.Scheme + "://" + parsedIcoURL.Host + parsedIcoURL.Path
+	}
+	global.Logger.Debug("fullUrl:", fullUrl)
+
+	// 生成保存目录
+	configUpload := global.Config.GetValueString("base", "source_path")
+	savePath := fmt.Sprintf("%s/%d/%d/%d/", configUpload, time.Now().Year(), time.Now().Month(), time.Now().Day())
+	global.Logger.Debug("保存路径", savePath)
+	isExist, _ := cmn.PathExists(savePath)
+	if !isExist {
+		os.MkdirAll(savePath, os.ModePerm)
+	}
+
+	// 下载
+	var imgInfo *os.File
+	{
+		var err error
+		if imgInfo, err = siteFavicon.DownloadImage(fullUrl, savePath, 1024*1024); err != nil {
+			apiReturn.Error(c, "acquisition failed: download"+err.Error())
+			return
+		}
+	}
+
+	pureFilePath := imgInfo.Name()[len(configUpload):]
+	// 保存到数据库
+	ext := path.Ext(fullUrl)
+	mFile := models.File{}
+	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, pureFilePath); err != nil {
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
+	}
+	resp.IconUrl = global.UPLOAD_ROUTE + pureFilePath
+	apiReturn.SuccessData(c, resp)
 }

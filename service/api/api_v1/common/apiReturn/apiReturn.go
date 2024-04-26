@@ -2,6 +2,8 @@ package apiReturn
 
 import (
 	"sun-panel/global"
+	"sun-panel/lib/cmn"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -58,23 +60,32 @@ func ListData(ctx *gin.Context, list interface{}, count int64) {
 	ApiReturn(ctx, 0, "OK", data)
 }
 
-// 返回错误 验证码相关错误错误
-// func ErrorVerification(ctx *gin.Context, errCode int, codeID string) {
-// 	msg := ""
-// 	switch errCode {
-// 	case ERROR_CODE_VERIFICATION_FAIL:
-// 		msg = "验证失败，请重新验证"
-// 	case ERROR_CODE_VERIFICATION_MUST:
-// 		msg = "需要进一步验证"
-// 	}
-// 	ApiReturn(ctx, errCode, msg, gin.H{
-// 		"verification": commonApiStructs.VerificationResponse{
-// 			CodeID:  codeID,
-// 			Result:  false,
-// 			Message: msg,
-// 		},
-// 	})
-// }
+func ErrorWithLogErrNum(ctx *gin.Context, err error) {
+	errNum := time.Now().Format("20060102150405") + cmn.BuildRandCode(5, "0123456789")
+
+	returnData := map[string]interface{}{
+		"code": -1,
+		"msg":  "ErrNum:" + errNum,
+	}
+	// global.Logger.Errorln("ErrNum:"+errNum, "-", err)
+	global.Logger.Errorw("ErrNum:"+errNum, "skip", 1)
+	ctx.JSON(200, returnData)
+}
+
+// 错误 并获取错误码详情
+// 搭配
+// global.Logger.Error(apiReturn.ErrorAndGetLogErrNum(c, err))
+func ErrorAndGetLogErrNum(ctx *gin.Context, err error) string {
+	errNum := time.Now().Format("20060102150405") + cmn.BuildRandCode(5, "0123456789")
+
+	returnData := map[string]interface{}{
+		"code": -1,
+		"msg":  "ErrNum:" + errNum,
+	}
+
+	ctx.JSON(200, returnData)
+	return "ErrNum:" + errNum + " | " + err.Error()
+}
 
 // 返回错误 需要个性化定义的错误|带返回数据的错误
 func ErrorCode(ctx *gin.Context, code int, errMsg string, data interface{}) {
@@ -129,7 +140,7 @@ func ErrorByCodeAndMsg(ctx *gin.Context, code int, msg string) {
 
 func GetErrorMsgByCode(code int) (string, bool) {
 	if v, ok := ErrorCodeMap[code]; ok {
-		return v, true
+		return v.Error(), true
 	} else {
 		return "", false
 	}

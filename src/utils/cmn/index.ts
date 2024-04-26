@@ -2,6 +2,7 @@ import moment from 'moment'
 import { h } from 'vue'
 import type { NotificationReactive } from 'naive-ui'
 import { NButton, createDiscreteApi } from 'naive-ui'
+import { apiRespErrMsg as apiRespErrMsgApiMessage } from './apiMessage'
 import { useAuthStore, useNoticeStore, useUserStore } from '@/store'
 import { getAuthInfo } from '@/api/system/user'
 import type { VisitMode } from '@/enums/auth'
@@ -17,11 +18,11 @@ const { notification } = createDiscreteApi(['notification'])
  * @param format 时间格式 默认：'YYYY-MM-DD HH:mm:ss'
  * @returns string
  */
-export function buildTimeString(format?: string): string {
+export function buildTimeString(timeString?: string, format?: string): string {
   if (!format)
     format = 'YYYY-MM-DD HH:mm:ss'
 
-  return moment().format(format)
+  return moment(timeString).format(format)
 }
 
 export function timeFormat(timeString?: string) {
@@ -108,10 +109,13 @@ export async function updateLocalUserInfo() {
     visitMode: VisitMode
   }
 
-  const { data } = await getAuthInfo<Req>()
-  userStore.updateUserInfo({ headImage: data.user.headImage, name: data.user.name })
-  authStore.setUserInfo(data.user)
-  authStore.setVisitMode(data.visitMode)
+  await getAuthInfo<Req>().then(({ data }) => {
+    if (data.user) {
+      userStore.updateUserInfo({ headImage: data?.user.headImage, name: data?.user.name })
+      authStore.setUserInfo(data.user)
+      authStore.setVisitMode(data.visitMode)
+    }
+  })
 }
 
 export async function getNotice(displayType: number | number[]) {
@@ -129,35 +133,6 @@ export async function getNotice(displayType: number | number[]) {
       noticeCreate(element)
   }
 }
-
-// 权限受限暂时不用
-// export async function getFaviconUrl(url: string, extName = 'ico'): Promise<string | null> {
-//   try {
-//     // 获取网址的域名
-//     const { protocol, host } = new URL(url)
-//     const domain = `${protocol}//${host}`
-
-//     // 构建 favicon URL
-//     const faviconUrl = `${domain}/favicon.${extName}`
-
-//     // 检查 favicon 是否存在，包含 CORS 头部
-//     const response = await fetch(faviconUrl, { method: 'HEAD', mode: 'cors' })
-
-//     // 如果请求成功，返回 favicon URL
-//     if (response.ok) {
-//       return faviconUrl
-//     }
-//     else {
-//       console.log('Favicon not found.')
-//       return null
-//     }
-//   }
-//   catch (error) {
-//     // 如果出现错误，返回 null，表示找不到 favicon
-//     console.error('Error:', error)
-//     return null
-//   }
-// }
 
 export function getFaviconUrl(url: string): string {
   // 获取网址的域名
@@ -228,3 +203,5 @@ export function bytesToSize(bytes: number) {
   const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))))
   return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`
 }
+
+export const apiRespErrMsg = apiRespErrMsgApiMessage

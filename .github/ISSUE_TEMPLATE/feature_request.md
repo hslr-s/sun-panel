@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: "[Feature] Short description | 简短说明，每条issue最好写一个建议，不要重复提出"
+title: "[Feature] Short description | 简短说明"
 labels: enhancement
 assignees: ''
 

@@ -17,8 +17,8 @@ defineProps<Prop>()
 </script>
 
 <template>
-  <div class="w-full">
-    <div v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info">
+  <template v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info">
+    <div class="w-full">
       <div class="mb-1 text-xs" :style="{ color: textColor }">
         <span>
           {{ infoCardLeftText }}
@@ -38,20 +38,20 @@ defineProps<Prop>()
         style="max-width: 135px;"
       />
     </div>
-    <div v-else>
-      <div class="flex justify-center h-full w-full mt-3">
-        <NProgress
-          :color="progressColor"
-          :rail-color="progressRailColor"
-          type="dashboard"
-          :percentage="percentage" :stroke-width="15"
-          style="width: 50px;"
-        >
-          <div class="text-white" style="font-size: 8px;" :style="{ color: textColor }">
-            {{ percentage }}%
-          </div>
-        </NProgress>
-      </div>
+  </template>
+  <template v-else>
+    <div class="w-full flex justify-center h-full w-full mt-3">
+      <NProgress
+        :color="progressColor"
+        :rail-color="progressRailColor"
+        type="dashboard"
+        :percentage="percentage" :stroke-width="15"
+        style="width: 50px;"
+      >
+        <div class="text-white" style="font-size: 8px;" :style="{ color: textColor }">
+          {{ percentage }}%
+        </div>
+      </NProgress>
     </div>
-  </div>
+  </template>
 </template>

@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { NButton, NForm, NFormItem, NGrid, NGridItem, NInput, NInputGroup, NModal, NSelect, useMessage } from 'naive-ui'
+import {
+  NButton, NCheckbox, NForm, NFormItem, NGrid, NGridItem,
+  NInput, NInputGroup, NModal, NSelect,
+  useMessage,
+} from 'naive-ui'
 import IconEditor from './IconEditor.vue'
 import { edit, getSiteFavicon } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { t } from '@/locales'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 
 interface Props {
   visible: boolean
@@ -18,6 +23,7 @@ const emit = defineEmits<Emit>()
 const ms = useMessage()
 const submitLoading = ref(false)
 const getIconLoading = ref([false, false])
+const expandAdvancedFeatures = ref(false)
 const itemIconGroupOptions = ref<{
   label: string
   value: number
@@ -46,17 +52,20 @@ const rules: FormRules = {
     trigger: 'blur',
     message: t('form.required'),
   },
-  url: {
+  url: [
+    {
+      required: true,
+      trigger: 'blur',
+      type: 'string',
+      message: t('form.required'),
+    },
+  ],
+  itemIconGroupId: {
     required: true,
-    trigger: 'blur',
-    type: 'string',
+    trigger: ['blur', 'change'],
     message: t('form.required'),
+    type: 'number',
   },
-  // itemIconGroupId: {
-  //   required: true,
-  //   trigger: ['blur', 'change'],
-  //   message: t('form.required'),
-  // },
 }
 
 const options = [
@@ -85,21 +94,20 @@ const show = computed({
 
 async function editApi() {
   submitLoading.value = true
-  try {
-    const { code, data, msg } = await edit<Panel.ItemInfo>(model.value)
-    if (code === 0) {
-      show.value = false
-      model.value = { ...restoreDefault }
 
-      emit('done', data)
-    }
-    else {
-      ms.error(`${t('common.saveFail')}:${msg}`)
-    }
-  }
-  catch (error) {
-    ms.error(t('common.saveFail'))
-  }
+  await edit<Panel.ItemInfo>(model.value).then(({ data }) => {
+    show.value = false
+    model.value = { ...restoreDefault }
+    emit('done', data)
+  }).catch((error) => {
+    if (error.code === -2)
+      ms.error(`${t('common.saveFail')}: ${t('iconItem.onlyNameExisted')}`)
+    else if (error.code === -1)
+      ms.error(t('common.saveFail'))
+    else
+      apiRespErrMsg(error)
+  })
+
   submitLoading.value = false
 }
 
@@ -109,6 +117,13 @@ const handleValidateButtonClick = (e: MouseEvent) => {
     if (!errors)
       editApi()
   })
+}
+
+function verifyUrlHttp(url: string): boolean {
+  if (url === '')
+    return true
+
+  return url.startsWith('https://') || url.startsWith('http://')
 }
 
 async function getIconByUrl(url: string, loadingIndex: number) {
@@ -162,6 +177,8 @@ function getGroupListOptions() {
     else {
       ms.error(`${t('iconItem.getGroupFail')}:${msg}`)
     }
+  }).catch(() => {
+    ms.error(t('iconItem.getGroupFail'))
   })
 }
 </script>
@@ -187,21 +204,30 @@ function getGroupListOptions() {
           <IconEditor v-model:item-icon="model.icon" />
         </NFormItem>
         <NFormItem path="url" :label="$t('iconItem.url')">
-          <!-- <NSelect :style="{ width: '100px' }" :options="urlProtocolOptions" /> -->
-          <NInputGroup>
-            <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
-            <NButton :disabled="!model.url" :loading="getIconLoading[0]" @click="getIconByUrl(model.url, 0)">
-              {{ $t('iconItem.getIcon') }}
-            </NButton>
-          </NInputGroup>
+          <div class="w-full">
+            <NInputGroup>
+              <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
+              <NButton :disabled="!model.url" :loading="getIconLoading[0]" @click="getIconByUrl(model.url, 0)">
+                {{ $t('iconItem.getIcon') }}
+              </NButton>
+            </NInputGroup>
+            <span v-if="!verifyUrlHttp(model.url)" class="text-xs text-orange-400">
+              {{ t("iconItem.urlNoHttpStartWarn") }}
+            </span>
+          </div>
         </NFormItem>
         <NFormItem path="lanUrl" :label="$t('iconItem.lanUrl')">
-          <NInputGroup>
-            <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
-            <NButton :disabled="!model.lanUrl" :loading="getIconLoading[1]" @click="getIconByUrl(model.lanUrl || '', 1)">
-              {{ $t('iconItem.getIcon') }}
-            </NButton>
-          </NInputGroup>
+          <div class="w-full">
+            <NInputGroup>
+              <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
+              <NButton :disabled="!model.lanUrl" :loading="getIconLoading[1]" @click="getIconByUrl(model.lanUrl || '', 1)">
+                {{ $t('iconItem.getIcon') }}
+              </NButton>
+            </NInputGroup>
+            <span v-if="!verifyUrlHttp(model.lanUrl || '')" class="text-xs text-orange-400">
+              {{ t("iconItem.urlNoHttpStartWarn") }}
+            </span>
+          </div>
         </NFormItem>
         <NFormItem path="description" :label="$t('common.description')">
           <NInput v-model:value="model.description" type="text" show-count :maxlength="100" />
@@ -209,6 +235,16 @@ function getGroupListOptions() {
         <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
           <NSelect v-model:value="model.openMethod" :options="options" />
         </NFormItem>
+        <hr>
+        <NCheckbox v-model:checked="expandAdvancedFeatures" class="my-2">
+          {{ $t('iconItem.advancedFeatures') }}
+        </NCheckbox>
+
+        <div v-if="expandAdvancedFeatures">
+          <NFormItem path="onlyName" :label="$t('iconItem.onlyName')">
+            <NInput v-model:value="model.onlyName" type="text" show-count :maxlength="20" />
+          </NFormItem>
+        </div>
       </NForm>
     </div>
 

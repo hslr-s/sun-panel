@@ -13,6 +13,7 @@ declare namespace Panel {
         description?: string
         openMethod: number
         itemIconGroupId ?:number
+        onlyName?:string
     }
 
     interface ItemIconGroup extends Common.InfoBase {
@@ -59,6 +60,7 @@ declare namespace Panel {
         systemMonitorShow?:boolean
         systemMonitorShowTitle?:boolean
         systemMonitorPublicVisitModeShow?:boolean
+        netModeChangeButtonShow?:boolean
     }
 
     interface userConfig{

@@ -39,7 +39,7 @@ RUN go env -w GO111MODULE=on \
     && go install -a -v github.com/go-bindata/go-bindata/...@latest \
     && go install -a -v github.com/elazarl/go-bindata-assetfs/...@latest \
     && go-bindata-assetfs -o=assets/bindata.go -pkg=assets assets/... \
-    && go build -o sun-panel --ldflags="-X sun-panel/global.RUNCODE=release -X sun-panel/global.ISDOCKER=docker" main.go
+    && go build -o sun-panel --ldflags="-X sun-panel/global.RUNCODE=release -X sun-panel/global.ISDOCKER=true" main.go
 
 
 
@@ -55,8 +55,10 @@ COPY --from=server_image /build/sun-panel /app/sun-panel
 # 中国国内源
 # RUN sed -i "s@dl-cdn.alpinelinux.org@mirrors.aliyun.com@g" /etc/apk/repositories
 
+EXPOSE 3002
+
 RUN apk add --no-cache bash ca-certificates su-exec tzdata \
     && chmod +x ./sun-panel \
-    && ./sun-panel -config
+    && ./sun-panel -config-reset
 
 CMD ./sun-panel

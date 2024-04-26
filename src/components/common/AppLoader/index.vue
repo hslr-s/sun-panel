@@ -39,7 +39,10 @@ onMounted(() => {
       <div
         v-else-if="!dynamicComponent"
       >
-        Component not found!
+        <!-- Component not found! -->
+        <div class="mt-[10px]">
+          {{ $t('apps.common.notFound') }}
+        </div>
       </div>
     </NSpin>
   </div>
