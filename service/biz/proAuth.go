@@ -196,6 +196,10 @@ func (p *ProAuthType) Login(username, password string) error {
 
 	p.AutoLoginDisable = false
 	p.LoginStatus = true
+
+	// 登录后 获取临时授权
+	p.RenewTempAuth()
+
 	return nil
 }
 
@@ -204,7 +208,7 @@ func (p *ProAuthType) AutoLogin() error {
 
 	// 禁用自动登录
 	if p.AutoLoginDisable {
-		global.Logger.Info("disable auto login")
+		global.Logger.Debug("disable auto login")
 		return errors.New("disable auto login")
 	}
 
@@ -228,11 +232,11 @@ func (p *ProAuthType) AutoLogin() error {
 	if err != nil {
 		// p.LoginStatus = false
 		if errors.Is(err, proAuth.GetError(proAuth.ErrManualLogin)) {
-			p.AutoLoginDisable = true
+			p.Reset()
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
-			p.AutoLoginDisable = true
+			p.Reset()
 		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
-			p.AutoLoginDisable = true
+			p.Reset()
 		}
 		// p.AutoLoginDisable = true
 		// 在授权期内，忽略其他错误
@@ -278,8 +282,8 @@ func (p *ProAuthType) RenewTempAuth() error {
 	if err != nil {
 		global.Logger.Error("renewTempAuth fail:", err.Error())
 
-		// token过期
-		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) {
+		// token过期,并且允许自动登录
+		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) && !p.AutoLoginDisable {
 			p.AutoLogin()
 			return nil
 		}
@@ -308,14 +312,13 @@ func (p *ProAuthType) Ping() error {
 	param := proAuth.PingReq{}
 	param.Base = p.GetBase()
 
-	// 没有授权
+	// 无需验证授权，正常是统计接口
 	if p.ProAuthDataShortTerm == nil {
-		p.AutoLogin()
-		return nil
+		p.ProAuthDataShortTerm = &ProAuthDataShortTerm{}
 	}
 	param.Token = p.ProAuthDataShortTerm.Token
 
-	// ClientId不存在将注册
+	// ClientId不存在将注册设备
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
 	}
