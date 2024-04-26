@@ -99,6 +99,12 @@ function handleResize() {
 onMounted(() => {
   const adminApps: App[] = [
     {
+      name: 'Docker',
+      componentName: 'DockerManage',
+      icon: 'tabler-brand-docker',
+      auth: 1,
+    },
+    {
       name: t('adminSettingUsers.appName'),
       componentName: 'Users',
       icon: 'lucide-users',
