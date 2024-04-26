@@ -1,7 +1,7 @@
 {
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "请输入新密码，留空密码不变",
-    "alertText": "账号之间的数据不互通",
+    "alertText": "账号之间的数据不互通，非PRO用户最多只能创建两个，旧版创建的不受影响",
     "appName": "账号管理",
     "currentUseUsername": "当前账号",
     "deletePromptContent": "你确定删除{name}({username})？",
@@ -10,6 +10,7 @@
       "roleRequired": "请选择角色",
       "usernameRequired": "请输入账号且大于5个字符"
     },
+    "noProCreateLimitWarning": "非 PRO 最多只能创建两个账号",
     "passwordPlaceholder": "请输入密码",
     "pblicText": "公开",
     "role": "角色",
@@ -26,6 +27,7 @@
     "1005": "当前无权限操作",
     "1006": "账号不存在",
     "1007": "旧密码错误",
+    "1008": "没有PRO授权",
     "1200": "数据库出错",
     "1201": "请至少保留一个",
     "1202": "未找到数据记录",
@@ -38,17 +40,18 @@
   },
   "apps": {
     "about": {
-      "QQGroup": "QQ交流群：",
       "QR": "二维码(推荐)",
-      "addQQGroupUrl": "点击添加",
       "appName": "关于",
       "author": "作者：",
       "checkUpdate": "检查新版本",
+      "communicationGroup": "交流群：",
       "discussions": "交流社区：",
       "donate": "🧧打赏",
-      "frontVersionText": "前端版本号",
+      "frontVersionText": "前端编译时间",
+      "groupChat": "QQ、TG交流群",
       "issue": "建议反馈：",
-      "viewUpdateLog": "点此查看更新说明"
+      "viewUpdateLog": "点此查看更新说明",
+      "website": "网站："
     },
     "baseSettings": {
       "appName": "风格设置",
@@ -101,10 +104,57 @@
       "transmuteStandard": "浏览器书签转换工具",
       "warnConfigFileLow": "配置文件版本过低，但是兼容"
     },
+    "globalSetting": {
+      "appName": "全局设置",
+      "clearIcoImage": "清除图像",
+      "customDanger": "危险警告",
+      "customDangerAlert": "这是一个危险的操作，请不要填入不被信任的代码，这样可能会导致隐私泄露、布局错乱或者被攻击等",
+      "customImageAddress": "自定义图片地址",
+      "customJSAndCss": "自定义JS和CSS文件",
+      "customJSAndCssAlert": "如果没有PRO授权，可以进入到安装Sun-Panel的NAS或服务器，找到“自定义”的路径（{path}）直接修改和保存文件，仍然是生效的",
+      "favicon": "站点图标",
+      "iconChangeClearCache": "保存后，清理浏览器缓存或重启浏览器后可见效果",
+      "loginBackgroundImage": "登录页背景图片",
+      "personalise": "站点设置",
+      "resetWarnText": "确定要重置这些数据吗？",
+      "selectIcoImage": "选择ICO图像",
+      "title": "站点标题"
+    },
     "itemGroupManage": {
       "appName": "分组管理",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
       "groupName": "分组名称"
+    },
+    "openApi": {
+      "alertText": "Sun-Panel提供了开放接口，可以通过开发来实现添加项目等操作，具体请参考：",
+      "apiUrl": "接口地址",
+      "autoDomainWarning": "这里的域名是自动获取的，开发时请根据实际情况填写",
+      "deactivate": "停用",
+      "docTitle": "OpenAPI文档",
+      "enable": "启用",
+      "refreshToken": "刷新Token",
+      "state": "状态",
+      "stopOpenApi": "停用OpenAPI",
+      "updateTokenDialogText": "你确定要继续操作吗，继续操作Token将失效"
+    },
+    "proAuth": {
+      "FAQButton": "查看常见问题",
+      "card": {
+        "expiredText": "已于{date}过期",
+        "notExpiredText": "{date}到期",
+        "upgradePRO": "升级为PRO"
+      },
+      "goToSunPanelAuthSite": "前往授权平台",
+      "login": "登录",
+      "loginSunPanel": "登录Sun-Panel授权平台",
+      "logout": "退出",
+      "notLogin": "未登录",
+      "password": "密码",
+      "registerAccount": "没有账号，去注册",
+      "serverError": "授权服务器出错了，请稍后再试",
+      "textDescription": "由于作者需要维持生计，故而在项目中增添了一些仅限Pro授权用户享有的特色功能。若您愿意，可以通过授权平台购买支持，这不仅是对作者辛勤开发的认可，更是激励作者继续探索、增添更多精彩功能的动力源泉。此项支持完全基于您的自愿，作者深知您的慷慨与信任，因此，即便在未来增加更多优秀Pro功能的同时，也依然会不断推出免费的功能，敬请期待...❤️❤️❤️",
+      "username": "账号",
+      "usernameWithPasswordIsNotEmpty": "账号和密码不可以为空"
     },
     "uploadsFileManager": {
       "alertText": "你可以在这里管理你上传过的壁纸和图标",
@@ -164,6 +214,7 @@
     "nikeName": "昵称",
     "no": "否",
     "noData": "暂无数据",
+    "noPorAuth": "您还没有PRO授权功能，授权后才能使用此功能",
     "password": "密码",
     "refreshPage": "请刷新页面",
     "repeatLater": "请稍后重试",
@@ -173,7 +224,7 @@
       "regularUser": "普通"
     },
     "save": "保存",
-    "saveFail": "保存成功",
+    "saveFail": "保存失败",
     "saveSort": "保存排序",
     "saveSuccess": "保存成功",
     "serverError": "服务器错误",
@@ -220,6 +271,7 @@
   },
   "iconItem": {
     "add": "添加项目",
+    "advancedFeatures": "高级功能",
     "currentPageLayerOpen": "当前页面弹窗打开",
     "currentPageOpen": "当前页面打开",
     "edit": "修改项目",
@@ -234,9 +286,12 @@
     "newWindowOpen": "新窗口打开",
     "onlineIcon": "在线图标",
     "onlineIconLibrary": "在线图标库",
+    "onlyName": "唯一标识 (英文标识，用作OpenAPI，对应字段：\"onlyName\")",
+    "onlyNameExisted": "唯一标识已被占用",
     "openMethod": "打开方式",
     "selectUpload": "本地上传",
-    "url": "地址"
+    "url": "地址",
+    "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },
   "login": {
     "loginButton": "登录",
@@ -252,6 +307,9 @@
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
     "openWanUrl": "打开公网地址"
+  },
+  "proAuth": {
+    "appName": "Pro授权"
   },
   "settingUserInfo": {
     "confirmLogoutText": "你确定要退出登录吗？",

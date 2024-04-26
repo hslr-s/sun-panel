@@ -59,6 +59,6 @@ EXPOSE 3002
 
 RUN apk add --no-cache bash ca-certificates su-exec tzdata \
     && chmod +x ./sun-panel \
-    && ./sun-panel -config
+    && ./sun-panel -config-reset
 
 CMD ./sun-panel

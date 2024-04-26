@@ -118,6 +118,7 @@ buildReleaseLinuxMusl() {
   
 
   for i in "${!OS_ARCHES[@]}"; do
+    cd $REPO/service
     os_arch=${OS_ARCHES[$i]}
     cgo_cc=${CGO_ARGS[$i]}
     echo building for ${os_arch}
@@ -134,22 +135,30 @@ buildReleaseLinuxMusl() {
       outPath="sun-panel_${COMMIT_SHA}_${GOOS}_musl_${GOARCH}"
     fi
 
-    outname="${pathRelease}/${outPath}/sun-panel"
+    packagePath="${pathRelease}/${outPath}"
 
-    go build -o "${outname}" -ldflags="$muslflags" main.go
-    # go build -o "${outname}" -ldflags="$muslflags" -tags=jsoniter main.go
+    echo "Package Path: ${packagePath}"
+
+    outFileName="${packagePath}/sun-panel"
+
+    go build -o "${outFileName}" -ldflags="$muslflags" main.go
+    # go build -o "${outFileName}" -ldflags="$muslflags" -tags=jsoniter main.go
+
+    # cd $pathRelease
+    # copy front file
+    cp -r "${REPO}/dist" "${packagePath}/web"
+
+    echo "Release ${outPath}"
+
+    mv $outFileName $packagePath/sun-panel
+
+    cd $pathRelease
+    tar -zcvf "${outPath}.tar.gz" $outPath
+    
+    rm -rf "${packagePath}"
   done
 
-  cd $pathRelease
-  # copy front file
-  cp -r "${REPO}/dist" "${pathRelease}/${outPath}/web"
 
-  echo "Release ${outPath}"
-
-  mv $outname $outPath/sun-panel
-  tar -zcvf "${pathRelease}/${outPath}.tar.gz" $outPath
-  
-  rm -rf "${pathRelease}/${outPath}"
 }
 
 release() {

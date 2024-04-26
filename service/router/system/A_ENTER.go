@@ -10,4 +10,5 @@ func Init(routerGroup *gin.RouterGroup) {
 	InitNoticeRouter(routerGroup)
 	InitModuleConfigRouter(routerGroup)
 	InitMonitorRouter(routerGroup)
+	InitOpenApiRouter(routerGroup)
 }

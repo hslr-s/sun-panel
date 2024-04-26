@@ -13,6 +13,7 @@ declare namespace Panel {
         description?: string
         openMethod: number
         itemIconGroupId ?:number
+        onlyName?:string
     }
 
     interface ItemIconGroup extends Common.InfoBase {

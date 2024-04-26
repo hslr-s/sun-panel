@@ -40,6 +40,11 @@ export const useAppStore = defineStore('app-store', {
       //   return darkTheme
     },
 
+    setSiteSetting(SiteSetting: GlobalSetting.SiteSetting) {
+      this.siteSetting = SiteSetting
+      this.recordState()
+    },
+
     recordState() {
       setLocalSetting(this.$state)
     },

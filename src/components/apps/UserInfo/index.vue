@@ -75,13 +75,10 @@ async function logoutApi() {
 
 function handleSaveInfo() {
   updateInfo(nickName.value).then(({ code, msg }) => {
-    if (code === 0) {
-      updateLocalUserInfo()
-      isEditNickNameStatus.value = false
-    }
-    else {
-      ms.error(`${t('common.editFail')}:${msg}`)
-    }
+    updateLocalUserInfo()
+    isEditNickNameStatus.value = false
+  }).catch((error) => {
+    ms.error(`${t('common.editFail')}:${error.msg}`)
   })
 }
 
@@ -99,15 +96,13 @@ function handleUpdatePassword(e: MouseEvent) {
     }
     updatePasswordModalState.value.loading = true
     updatePassword(updatePasswordModalState.value.form.oldPassword, updatePasswordModalState.value.form.password).then(({ code, msg }) => {
-      if (code === 0) {
-        // 成功
-        updatePasswordModalState.value.show = false
-        ms.success(t('common.success'))
-      }
+      // 成功
+      updatePasswordModalState.value.show = false
+      ms.success(t('common.success'))
     }).finally(() => {
       updatePasswordModalState.value.loading = false
-    }).catch(() => {
-      ms.error(t('common.serverError'))
+    }).catch((error) => {
+      ms.error(`${t('common.serverError')}:${error.msg}`)
     })
   })
 }

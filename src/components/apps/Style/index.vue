@@ -6,6 +6,7 @@ import { useAuthStore, usePanelState } from '@/store'
 import { set as setUserConfig } from '@/api/panel/userConfig'
 import { PanelPanelConfigStyleEnum } from '@/enums/panel'
 import { t } from '@/locales'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 
 const authStore = useAuthStore()
 const panelState = usePanelState()
@@ -56,16 +57,20 @@ function handleUploadBackgroundFinish({
   event?: ProgressEvent
 }) {
   const res = JSON.parse((event?.target as XMLHttpRequest).response)
-  panelState.panelConfig.backgroundImageSrc = res.data.imageUrl
+  if (res.code === 0)
+    panelState.panelConfig.backgroundImageSrc = res.data.imageUrl
+
+  else
+    apiRespErrMsg(res)
+
   return file
 }
 
 function uploadCloud() {
   setUserConfig({ panel: panelState.panelConfig }).then((res) => {
-    if (res.code === 0)
-      ms.success(t('apps.baseSettings.configSaved'))
-    else
-      ms.error(t('apps.baseSettings.configFailed', { message: res.msg }))
+    ms.success(t('apps.baseSettings.configSaved'))
+  }).catch((error) => {
+    ms.error(t('apps.baseSettings.configFailed', { message: error.msg }))
   })
 }
 

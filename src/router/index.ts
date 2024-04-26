@@ -40,6 +40,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/exception/test/index.vue'),
   },
 
+  {
+    path: '/test/demo',
+    name: 'test-demo',
+    component: () => import('@/views/exception/test/demo.vue'),
+  },
+
   // adminRouter,
 ]
 

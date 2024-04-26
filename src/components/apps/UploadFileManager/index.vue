@@ -75,7 +75,9 @@ function handleInfoClick(fileInfo: File.Info) {
 
 function handleSetWallpaper(imgSrc: string) {
   panelStore.panelConfig.backgroundImageSrc = imgSrc
-  savePanelConfig({ panel: panelStore.panelConfig })
+  savePanelConfig({ panel: panelStore.panelConfig }).catch((error) => {
+    ms.error(`${t('common.failed')}:${error.msg}`)
+  })
 }
 
 onMounted(() => {

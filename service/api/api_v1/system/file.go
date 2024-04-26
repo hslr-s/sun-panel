@@ -37,6 +37,8 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 			".webp",
 			".svg",
 			".ico",
+			".avif",
+			".heic",
 		}
 
 		if !cmn.InArray(agreeExts, fileExt) {

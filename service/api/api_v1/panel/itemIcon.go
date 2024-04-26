@@ -2,6 +2,7 @@ package panel
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/siteFavicon"
@@ -34,32 +36,17 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 		return
 	}
 
-	if req.ItemIconGroupId == 0 {
-		// apiReturn.Error(c, "Group is mandatory")
-		apiReturn.ErrorParamFomat(c, "Group is mandatory")
-		return
-	}
-
 	req.UserId = userInfo.ID
 
-	// json转字符串
-	if j, err := json.Marshal(req.Icon); err == nil {
-		req.IconJson = string(j)
-	}
-
-	if req.ID != 0 {
-		// 修改
-		updateField := []string{"IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "GroupId", "UserId", "ItemIconGroupId"}
-		if req.Sort != 0 {
-			updateField = append(updateField, "Sort")
+	if v, err := biz.Item.Edit(userInfo.ID, req); err != nil {
+		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
+			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
+			return
 		}
-		global.Db.Model(&models.ItemIcon{}).
-			Select(updateField).
-			Where("id=?", req.ID).Updates(&req)
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
 	} else {
-		req.Sort = 9999
-		// 创建
-		global.Db.Create(&req)
+		req = v
 	}
 
 	apiReturn.SuccessData(c, req)
@@ -207,8 +194,16 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	resp := panelApiStructs.ItemIconGetSiteFaviconResp{}
 	fullUrl := ""
 	if iconUrl, err := siteFavicon.GetOneFaviconURL(req.Url); err != nil {
-		apiReturn.Error(c, "acquisition failed: get ico error:"+err.Error())
-		return
+		// 尝试使用最原始的方式获取图标 https://域名/favicon.ico
+		if urlInfo, err := url.Parse(req.Url); err != nil {
+			errMsg := "acquisition failed: get ico error:" + err.Error()
+			global.Logger.Error(errMsg)
+			apiReturn.Error(c, errMsg)
+			return
+		} else {
+			fullUrl = urlInfo.Scheme + "://" + urlInfo.Host + "/favicon.ico"
+		}
+
 	} else {
 		fullUrl = iconUrl
 	}

@@ -55,7 +55,7 @@ async function getMountPointList() {
     }
   }
   catch (error) {
-
+    console.error(error)
   }
 }
 

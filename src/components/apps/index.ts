@@ -4,6 +4,8 @@ import ItemGroupManage from './ItemGroupManage/index.vue'
 import Style from './Style/index.vue'
 import UserInfo from './UserInfo/index.vue'
 import Users from './Users/index.vue'
+import ProAuth from './ProAuth/index.vue'
+import GlobalSetting from './GlobalSetting/index.vue'
 
 export {
   About,
@@ -12,4 +14,6 @@ export {
   Style,
   UserInfo,
   Users,
+  ProAuth,
+  GlobalSetting,
 }

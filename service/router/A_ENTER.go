@@ -1,9 +1,11 @@
 package router
 
 import (
+	"sun-panel/biz"
 	"sun-panel/global"
 
 	// "sun-panel/router/admin"
+	"sun-panel/router/openApi"
 	"sun-panel/router/openness"
 	"sun-panel/router/panel"
 	"sun-panel/router/system"
@@ -22,6 +24,9 @@ func InitRouters(addr string) error {
 	panel.Init(routerGroup)
 	openness.Init(routerGroup)
 
+	// 开放API
+	openApi.Init(rootRouter)
+
 	// WEB文件服务
 	{
 		webPath := global.Config.GetValueStringOrDefault("base", "web_path")
@@ -38,8 +43,18 @@ func InitRouters(addr string) error {
 		}
 		router.StaticFile("/", webPath+"/index.html")
 		router.Static("/assets", webPath+"/assets")
-		router.StaticFile("/favicon.ico", webPath+"/favicon.ico")
-		router.StaticFile("/favicon.svg", webPath+"/favicon.svg")
+		// router.StaticFile("/favicon.ico", webPath+"/favicon.ico")
+		// router.StaticFile("/favicon.svg", webPath+"/favicon.svg")
+
+		// 动态返回favicon
+		router.Any("/favicon.ico", func(c *gin.Context) {
+			setting := biz.GlobalSettingSiteSetting{}
+			biz.GlobalSetting.GetSiteStting(&setting)
+			if setting.FaviconUrl == "" || setting.FaviconUrl == "favicon.ico" || setting.FaviconUrl == "./favicon.ico" {
+				setting.FaviconUrl = webPath + "/favicon.ico"
+			}
+			c.File(setting.FaviconUrl)
+		})
 	}
 
 	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on 0.0.0.0", addr)
