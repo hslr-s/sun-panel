@@ -116,6 +116,14 @@ func (a *GlobalSettingApi) GetCustomJsAndCssCode(c *gin.Context) {
 func (a *GlobalSettingApi) SaveCustomJsAndCssCode(c *gin.Context) {
 	customPath := a.getCustomPath()
 
+	if ok, err := cmn.PathExists(customPath); err != nil || !ok {
+		err := os.MkdirAll(customPath, os.ModePerm)
+		if err != nil {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeCustomJSAndCSSFilePreservationFailure)
+			global.Logger.Errorln("failure to create a custom directory failed:", customPath, " - ", err.Error())
+		}
+	}
+
 	req := panelApiStructs.GlobalSettingCustomJsAndCss{}
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
@@ -131,7 +139,7 @@ func (a *GlobalSettingApi) SaveCustomJsAndCssCode(c *gin.Context) {
 	// cssIsExist, _ := cmn.PathExists(customPath)
 	if err := createAndWriteFile(cssFilePath, req.CssContent); err != nil {
 		apiReturn.ErrorByCode(c, apiReturn.ErrCodeCustomJSAndCSSFilePreservationFailure)
-		global.Logger.Error("createAndWriteFile:", cssFilePath, "-", err.Error())
+		global.Logger.Errorln("createAndWriteFile:", cssFilePath, " - ", err.Error())
 		return
 	}
 
@@ -139,7 +147,7 @@ func (a *GlobalSettingApi) SaveCustomJsAndCssCode(c *gin.Context) {
 	// cssIsExist, _ := cmn.PathExists(customPath)
 	if err := createAndWriteFile(jsFilePath, req.JsContent); err != nil {
 		apiReturn.ErrorByCode(c, apiReturn.ErrCodeCustomJSAndCSSFilePreservationFailure)
-		global.Logger.Error("createAndWriteFile:", cssFilePath, "-", err.Error())
+		global.Logger.Errorln("createAndWriteFile:", cssFilePath, " - ", err.Error())
 		return
 	}
 

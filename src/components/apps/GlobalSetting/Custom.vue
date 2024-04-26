@@ -117,7 +117,7 @@ onMounted(() => {
               {{ t('common.reset') }}
             </NButton>
           </template>
-          {{ t('apps.baseSettings.resetWarnText') }}
+          {{ $t('apps.globalSetting.resetWarnText') }}
         </NPopconfirm>
 
         <NButton size="small" type="success" class="ml-[10px]" style="margin-left: 5px;" @click="handleSaveSiteSetting">
