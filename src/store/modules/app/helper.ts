@@ -22,7 +22,7 @@ export function defaultSetting(): AppState {
 
   const siteSetting: GlobalSetting.SiteSetting = {
     title: 'Sun-Panel',
-    favicoUrl: '/favicon.ico',
+    favicoUrl: '',
     loginBackgroundUrl: loginDefaultBackgroundUrl,
   }
 
