@@ -10,3 +10,9 @@ export enum PanelPanelConfigStyleEnum {
   'info' = 0, // 详情风格
   'small' = 1, // 同icon
 }
+
+// 卡片类型
+export enum PanelCardType {
+  Standard = 0, // 标准卡片
+
+}

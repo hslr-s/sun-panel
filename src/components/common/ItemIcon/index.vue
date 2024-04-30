@@ -10,7 +10,7 @@ interface Prop {
 }
 
 const props = withDefaults(defineProps<Prop>(), { size: 70 })
-const defaultBackground = '#2a2a2a6b'
+const defaultBackground = 'transparent'
 const defaultStyle = ref({
   width: `${props.size}px`,
   height: `${props.size}px`,
@@ -25,20 +25,20 @@ const iconExt = computed(() => {
     <slot>
       <template v-if="itemIcon">
         <template v-if="itemIcon?.itemType === 1">
-          <NAvatar :size="props.size" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground }">
+          <NAvatar :size="props.size" :style="{ backgroundColor: defaultBackground }">
             {{ itemIcon.text }}
           </NAvatar>
         </template>
 
         <template v-else-if="itemIcon?.itemType === 2">
-          <div v-if="iconExt === 'svg'" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground, ...defaultStyle }" class="flex justify-center items-center">
+          <div v-if="iconExt === 'svg'" :style="{ backgroundColor: defaultBackground, ...defaultStyle }" class="flex justify-center items-center">
             <img :src="itemIcon?.src" class="w-[35px] h-[35px]">
           </div>
-          <NImage v-else :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground, ...defaultStyle }" :src="itemIcon?.src" preview-disabled />
+          <NImage v-else :style="{ backgroundColor: defaultBackground, ...defaultStyle }" :src="itemIcon?.src" preview-disabled />
         </template>
 
         <template v-else-if="itemIcon?.itemType === 3">
-          <NAvatar :size="props.size" :style="{ backgroundColor: (forceBackground ?? itemIcon?.backgroundColor) || defaultBackground }">
+          <NAvatar :size="props.size" :style="{ backgroundColor: defaultBackground }">
             <SvgIconOnline style="font-size: 35px;" :icon="itemIcon.text" />
           </NAvatar>
         </template>
