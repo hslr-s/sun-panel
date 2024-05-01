@@ -1,6 +1,7 @@
 package base
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -115,4 +116,17 @@ func VerificationCheck(verificationId, vCode string) (errCode int, verificationI
 	}
 	errCode = apiReturn.ERROR_CODE_SUCCESS
 	return
+}
+
+func AnyToJsonStr(d interface{}) string {
+	b, err := json.Marshal(d)
+	bs := string(b)
+	if err != nil {
+		bs = "{}"
+	}
+	return bs
+}
+
+func JsonStrToAny(s string, value interface{}) error {
+	return json.Unmarshal([]byte(s), value)
 }
