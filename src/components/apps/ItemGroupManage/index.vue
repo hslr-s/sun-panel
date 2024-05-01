@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { NButton, NCard, NForm, NFormItem, NInput, useDialog, useMessage } from 'naive-ui'
+import {
+  NButton, NCard, NColorPicker, NDivider,
+  NForm, NFormItem, NInput, NSelect, NSwitch,
+  useDialog,
+  useMessage,
+} from 'naive-ui'
 import { VueDraggable } from 'vue-draggable-plus'
 import { deletes, edit, getList, saveSort } from '@/api/panel/itemIconGroup'
 import { RoundCardModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
+import { PanelPanelConfigStyleEnum } from '@/enums'
+import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
 
 interface EditModalArg {
   show: boolean
   editStatus: number // 1.添加 2.编辑
-  model: Panel.ItemIconGroup
+  model: Panel.ItemGroupInfo
   rules: FormRules
 }
 
@@ -19,16 +26,26 @@ const ms = useMessage()
 const dialog = useDialog()
 const sortStatus = ref(false)
 
-const defaultMNodal = {
+const defaultItemGroupInfo: Panel.ItemGroupInfo = {
   title: '',
-  icon: 'material-symbols:folder-outline',
-  sort: 9999,
+  cardStyle: defaultItemGroupInfoCardStyle,
 }
+
+const iconTypeOptions = [
+  {
+    label: t('apps.baseSettings.detailIcon'),
+    value: PanelPanelConfigStyleEnum.info,
+  },
+  {
+    label: t('apps.baseSettings.smallIcon'),
+    value: PanelPanelConfigStyleEnum.icon,
+  },
+]
 
 const editModalArg = ref<EditModalArg>({
   show: false,
   editStatus: 1,
-  model: defaultMNodal,
+  model: defaultItemGroupInfo,
   rules: {
     title: [
       {
@@ -40,16 +57,19 @@ const editModalArg = ref<EditModalArg>({
   },
 })
 
-const groups = ref<Panel.ItemIconGroup[]>([])
+const groups = ref<Panel.ItemGroupInfo[]>([])
 
 function handleAddGroup() {
   editModalArg.value.show = !editModalArg.value.show
 }
 
-function handleEditGroup(groupInfo: Panel.ItemIconGroup) {
+function handleEditGroup(groupInfo: Panel.ItemGroupInfo) {
   editModalArg.value.show = true
-  editModalArg.value.model = groupInfo
+  editModalArg.value.model = groupInfo || defaultItemGroupInfo
   editModalArg.value.editStatus = 2
+
+  if (editModalArg.value.model.cardStyle.textColor === '')
+    editModalArg.value.model.cardStyle.textColor = defaultItemGroupInfoCardStyle.textColor
 }
 
 function handleDragSort() {
@@ -73,7 +93,7 @@ function handleSaveSort() {
   })
 }
 
-function handleDelete(groupInfo: Panel.ItemIconGroup) {
+function handleDelete(groupInfo: Panel.ItemGroupInfo) {
   dialog.warning({
     title: t('common.warning'),
     content: t('apps.itemGroupManage.deleteWarnText', { name: groupInfo.title }),
@@ -104,7 +124,7 @@ function handleSaveGroup() {
 
         refreshList()
         editModalArg.value.show = false
-        editModalArg.value.model = { ...defaultMNodal }
+        editModalArg.value.model = { ...defaultItemGroupInfo }
       }).catch(() => {
         ms.error(t('common.saveFail'))
       })
@@ -114,13 +134,19 @@ function handleSaveGroup() {
 }
 
 function refreshList() {
-  getList<Common.ListResponse<Panel.ItemIconGroup[]>>().then(({ code, data }) => {
+  getList<Common.ListResponse<Panel.ItemGroupInfo[]>>().then(({ code, data }) => {
     groups.value = data.list
   })
 }
 
 onMounted(() => {
   refreshList()
+})
+
+watch(() => editModalArg.value.show, (v) => {
+  console.log(v)
+  if (!v)
+    editModalArg.value.model = { ...defaultItemGroupInfo }
 })
 </script>
 
@@ -181,15 +207,41 @@ onMounted(() => {
       </VueDraggable>
     </div>
 
-    <RoundCardModal v-model:show="editModalArg.show" size="small" type="small" :title="editModalArg.editStatus === 1 ? '添加' : '编辑'" style="width: 400px;">
+    <RoundCardModal v-model:show="editModalArg.show" size="small" type="small" :title="editModalArg.editStatus === 1 ? t('common.add') : t('common.edit')" style="width: 400px;">
       <NForm ref="formRef" :model="editModalArg.model" :rules="editModalArg.rules">
         <NFormItem path="title" :label="$t('apps.itemGroupManage.groupName')">
           <NInput v-model:value="editModalArg.model.title" type="text" :maxlength="20" show-count />
         </NFormItem>
 
-        <!-- <NFormItem path="name" label="昵称">
-          <NInput v-model:value="editModalArg.model" type="text" placeholder="请输入昵称" />
-        </NFormItem> -->
+        <NDivider style="margin-top:5px" />
+
+        <NFormItem :label="t('apps.itemGroupManage.cardStyle')">
+          <NSelect v-model:value="editModalArg.model.cardStyle.style" :options="iconTypeOptions" />
+        </NFormItem>
+
+        <NFormItem v-if="editModalArg.model.cardStyle.style === PanelPanelConfigStyleEnum.info" :label="t('apps.baseSettings.hideDescription')">
+          <NSwitch v-model:value="editModalArg.model.cardStyle.textInfoHideDescription" />
+        </NFormItem>
+
+        <NFormItem v-if="editModalArg.model.cardStyle.style === PanelPanelConfigStyleEnum.icon" :label="t('apps.baseSettings.hideTitle')">
+          <NSwitch v-model:value="editModalArg.model.cardStyle.textIconHideTitle" />
+        </NFormItem>
+
+        <NFormItem :label="t('common.textColor')">
+          <NColorPicker
+            v-model:value="editModalArg.model.cardStyle.textColor"
+            :show-alpha="false"
+            size="small"
+            :modes="['hex']"
+            :swatches="[
+              '#000000',
+              '#ffffff',
+              '#18A058',
+              '#2080F0',
+              '#F0A020',
+            ]"
+          />
+        </NFormItem>
       </NForm>
       <template #footer>
         <NButton type="success" size="small" class="float-right" @click="handleSaveGroup">

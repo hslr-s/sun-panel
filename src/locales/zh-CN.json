@@ -66,6 +66,7 @@
       "detailIcon": "详情图标",
       "hideDescription": "隐藏描述信息",
       "hideTitle": "隐藏标题",
+      "iconMigrateDescribe": "图标样式已经迁移到分组设置，并支持按分组单独设置样式",
       "leftRightMargin": "左右边距",
       "mask": "遮罩",
       "maxWidth": "最大宽度",
@@ -122,6 +123,7 @@
     },
     "itemGroupManage": {
       "appName": "分组管理",
+      "cardStyle": "卡片风格",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
       "groupName": "分组名称"
     },

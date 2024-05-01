@@ -14,6 +14,8 @@ declare namespace Panel {
         openMethod: number
         itemIconGroupId ?:number
         onlyName?:string
+        backgroundColor?:string
+        expandParam?:any
     }
 
     interface ItemIconGroup extends Common.InfoBase {
@@ -41,10 +43,10 @@ declare namespace Panel {
         backgroundImageSrc?:string
         backgroundBlur?:number
         backgroundMaskNumber?:number
-        iconStyle?:PanelPanelConfigStyleEnum
-        iconTextColor?:string
-        iconTextInfoHideDescription?:boolean
-        iconTextIconHideTitle?:boolean
+        iconStyle?:PanelPanelConfigStyleEnum    // 1.5.0+ 弃用、迁移至单独分组设置
+        iconTextColor?:string   // 1.5.0+ 弃用、迁移至单独分组设置
+        iconTextInfoHideDescription?:boolean    // 1.5.0+ 弃用、迁移至单独分组设置
+        iconTextIconHideTitle?:boolean  // 1.5.0+ 弃用、迁移至单独分组设置
         logoText?:string
         logoImageSrc?:string
         clockShowSecond?:boolean
@@ -72,5 +74,40 @@ declare namespace Panel {
         sortItems:Common.SortItemRequest[]
         itemIconGroupId:number
     }
+
+    interface ItemGroupInfoCardStyle {
+        style: number;
+        textColor: string;
+        textInfoHideDescription: boolean;
+        textIconHideTitle: boolean;
+    }
+
+    interface ItemGroupInfo extends ItemIconGroup{
+        cardStyle:ItemGroupInfoCardStyle
+    }
 }
 
+declare namespace Panel.ItemCard {
+    interface CardInfo extends Panel.ItemInfo {
+
+    }
+
+    // 普通
+    interface Standard extends Panel.ItemInfo {
+
+    }
+
+    // docker
+    interface Docker extends Panel.ItemInfo {
+        containerName:string // 容器名称
+        imageName:string // 镜像名称
+
+    }
+
+    // iframe
+    interface iframe extends Panel.ItemInfo {
+        url:string // iframe 地址
+
+    }
+
+}

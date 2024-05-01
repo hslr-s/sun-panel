@@ -66,6 +66,7 @@
       "detailIcon": "Detail icon",
       "hideDescription": "Hide description information",
       "hideTitle": "Hide title",
+      "iconMigrateDescribe": "Icon styles have been migrated to group settings and support setting styles individually by group",
       "leftRightMargin": "Left-right margin",
       "mask": "Mask",
       "maxWidth": "Max width",
@@ -122,6 +123,7 @@
     },
     "itemGroupManage": {
       "appName": "Group Management",
+      "cardStyle": "Card style",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
       "groupName": "Group name"
     },
