@@ -12,6 +12,7 @@ type ItemIconGroup struct {
 	Sort        int    `gorm:"type:int(11)" json:"sort"`
 	UserId      uint   `json:"userId"`
 	User        User   `json:"user"`
+	CardStyle   string `json:"cardStyle"`
 }
 
 func (m *ItemIconGroup) DeleteByUserId(db *gorm.DB, userId uint) (err error) {
