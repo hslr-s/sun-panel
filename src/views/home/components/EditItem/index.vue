@@ -2,15 +2,17 @@
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
-  NButton, NCheckbox, NForm, NFormItem, NGrid, NGridItem,
-  NInput, NInputGroup, NModal, NSelect,
+  NButton, NCheckbox, NColorPicker, NForm, NFormItem, NGrid,
+  NGridItem, NInput, NModal, NSelect,
   useMessage,
 } from 'naive-ui'
-import IconEditor from './IconEditor.vue'
+import { ItemCards } from '@/views/home/components'
 import { edit, getSiteFavicon } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
+import { PanelCardType, PanelPanelConfigStyleEnum } from '@/enums'
+import { defaultItemCardBackgroundColor } from '@/utils/defaultData'
 
 interface Props {
   visible: boolean
@@ -24,6 +26,7 @@ const ms = useMessage()
 const submitLoading = ref(false)
 const getIconLoading = ref([false, false])
 const expandAdvancedFeatures = ref(false)
+const showPreview = ref(true)
 const itemIconGroupOptions = ref<{
   label: string
   value: number
@@ -36,6 +39,7 @@ const restoreDefault: Panel.Info = {
   lanUrl: '',
   description: '',
   openMethod: 2,
+  cardType: 1,
 }
 
 interface Emit {
@@ -68,6 +72,24 @@ const rules: FormRules = {
   },
 }
 
+// 卡片类型
+const optionsCardType = [
+  {
+    default: true,
+    label: t('iconItem.ordinaryIcon'),
+    value: 1,
+  },
+  {
+    label: t('iconItem.dockerStatusCard'),
+    value: 2,
+  },
+  {
+    label: t('iconItem.iframeCard'),
+    value: 3,
+  },
+]
+
+// 打开方式
 const options = [
   {
     default: true,
@@ -151,13 +173,18 @@ watch(() => props.visible, (newValue) => {
     model.value = props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault }
     if (props.itemGroupId)
       model.value.itemIconGroupId = props.itemGroupId
+
+    if (!model.value.backgroundColor || model.value.backgroundColor === '')
+      model.value.backgroundColor = defaultItemCardBackgroundColor
+    if (!model.value.cardType || model.value.cardType === 0)
+      model.value.cardType = 1
   }
 
   getGroupListOptions()
 })
 
 function getGroupListOptions() {
-  getGroupList<Common.ListResponse<Panel.ItemIconGroup[]>>().then(({ data, code, msg }) => {
+  getGroupList<Common.ListResponse<Panel.ItemGroupInfo[]>>().then(({ data, code, msg }) => {
     if (code === 0) {
       itemIconGroupOptions.value = []
 
@@ -185,8 +212,42 @@ function getGroupListOptions() {
 
 <template>
   <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')">
-    <div class="h-[600px] overflow-auto p-[5px]">
-      <NForm ref="formRef" :model="model" :rules="rules">
+    <div class="mb-2">
+      <span class="flex justify-center mb-1">
+        <NCheckbox v-model:checked="showPreview" size="small">
+          {{ t('iconItem.preview') }}
+        </NCheckbox>
+      </span>
+      <div v-if="showPreview" class="flex justify-center transparent-grid preview-box p-2 rounded-xl border">
+        <div class="mr-5">
+          <ItemCards
+            :sort-status="false"
+            class="cursor-pointer"
+            :card-info="model"
+            icon-text-color="#000"
+            :icon-text-info-hide-description="false"
+            :icon-text-icon-hide-title="false"
+            :card-style="PanelPanelConfigStyleEnum.small"
+            :card-type="PanelCardType.Standard"
+          />
+        </div>
+        <div class="w-[210px]">
+          <ItemCards
+            :sort-status="false"
+            class="cursor-pointer"
+            :card-info="model"
+            icon-text-color="#fff"
+            :icon-text-info-hide-description="false"
+            :icon-text-icon-hide-title="false"
+            :card-style="PanelPanelConfigStyleEnum.info"
+            :card-type="PanelCardType.Standard"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="h-[500px] overflow-auto p-[5px]">
+      <NForm ref="formRef" :model="model" :rules="rules" size="small">
         <NGrid cols="2" :x-gap="10" item-responsive>
           <NGridItem span="2 500:1">
             <NFormItem path="itemIconGroupId" :label="t('iconItem.iconGroup')">
@@ -200,7 +261,40 @@ function getGroupListOptions() {
           </NGridItem>
         </NGrid>
 
-        <NFormItem path="icon" :label="$t('common.icon')">
+        <NGrid cols="2" :x-gap="10" item-responsive>
+          <NGridItem span="2 500:1">
+            <NFormItem :label="t('iconItem.cardBackground')">
+              <div class="flex w-full mr-1">
+                <NColorPicker
+                  v-model:value="model.backgroundColor"
+                  size="small"
+                  :modes="['hex']"
+                  :swatches="[
+                    '#000000',
+                    '#ffffff',
+                    '#18A058',
+                    '#2080F0',
+                    '#F0A020',
+                  ]"
+                />
+              </div>
+              <div v-if="model.backgroundColor !== defaultItemCardBackgroundColor" class="ml-auto">
+                <NButton @click="model.backgroundColor = defaultItemCardBackgroundColor">
+                  {{ t('iconItem.resetBackground') }}
+                </NButton>
+              </div>
+            </NFormItem>
+          </NGridItem>
+          <NGridItem span="2 500:1">
+            <NFormItem :label="$t('iconItem.cardType')">
+              <NSelect v-model:value="model.cardType" :options="optionsCardType" />
+            </NFormItem>
+          </NGridItem>
+        </NGrid>
+
+        <!-- 个性化卡片的设置了 -->
+
+        <!-- <NFormItem v-show="false" path="icon" :label="$t('common.icon')">
           <IconEditor v-model:item-icon="model.icon" />
         </NFormItem>
         <NFormItem path="url" :label="$t('iconItem.url')">
@@ -234,7 +328,7 @@ function getGroupListOptions() {
         </NFormItem>
         <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
           <NSelect v-model:value="model.openMethod" :options="options" />
-        </NFormItem>
+        </NFormItem> -->
         <hr>
         <NCheckbox v-model:checked="expandAdvancedFeatures" class="my-2">
           {{ $t('iconItem.advancedFeatures') }}
@@ -255,3 +349,9 @@ function getGroupListOptions() {
     </template>
   </NModal>
 </template>
+
+<style scoped>
+.preview-box{
+  pointer-events: none;
+}
+</style>
