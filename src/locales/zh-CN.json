@@ -274,6 +274,8 @@
   "iconItem": {
     "add": "添加项目",
     "advancedFeatures": "高级功能",
+    "builtInApp": "内置应用",
+    "builtInAppOpen": "内置应用",
     "builtinApp": "内置应用",
     "cardBackground": "卡片背景色",
     "cardType": "卡片类型",
@@ -307,7 +309,6 @@
     "resetBackground": "重置",
     "selectUpload": "本地上传",
     "systemApp": "系统应用",
-    "systemAppCard": "系统应用",
     "url": "地址",
     "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },

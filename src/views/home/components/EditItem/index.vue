@@ -78,7 +78,7 @@ const optionsCardType = [
   //   value: 2,
   // },
   {
-    label: t('iconItem.systemAppCard'),
+    label: t('iconItem.builtInApp'),
     value: PanelCardType.BuiltInApp,
   },
   // {

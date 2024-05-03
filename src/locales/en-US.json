@@ -274,6 +274,8 @@
   "iconItem": {
     "add": "Add item",
     "advancedFeatures": "Advanced Features",
+    "builtInApp": "Built-in app",
+    "builtInAppOpen": "Built-in app",
     "builtinApp": "Built-in app",
     "cardBackground": "Card background color",
     "cardType": "Card type",
@@ -307,7 +309,6 @@
     "resetBackground": "Reset",
     "selectUpload": "Local upload",
     "systemApp": "system applications",
-    "systemAppCard": "System applications",
     "url": "URL",
     "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },

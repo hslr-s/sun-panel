@@ -81,7 +81,7 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
   <div>
     <NGrid cols="2" :x-gap="10" item-responsive>
       <NGridItem span="2 500:1">
-        <NFormItem path="expandParam.systemAppName" :label="$t('iconItem.systemApp')">
+        <NFormItem path="expandParam.systemAppName" :label="$t('iconItem.builtInAppOpen')">
           <NSelect
             v-model:value="model.expandParam.systemAppName"
             label-field="name"
