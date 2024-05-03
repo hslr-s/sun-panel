@@ -2,12 +2,13 @@
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
-  NButton, NCheckbox, NColorPicker, NForm, NFormItem, NGrid,
-  NGridItem, NInput, NModal, NSelect,
+  NButton, NCheckbox, NColorPicker, NDivider, NForm, NFormItem,
+  NGrid, NGridItem, NInput, NModal, NSelect,
   useMessage,
 } from 'naive-ui'
+import NormalCard from './itemCards/Normal/index.vue'
 import { ItemCards } from '@/views/home/components'
-import { edit, getSiteFavicon } from '@/api/panel/itemIcon'
+import { edit } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
@@ -50,20 +51,12 @@ interface Emit {
 const model = ref<Panel.Info>(props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault })
 const formRef = ref<FormInst | null>(null)
 
-const rules: FormRules = {
+const defaultRules: FormRules = {
   title: {
     required: true,
     trigger: 'blur',
     message: t('form.required'),
   },
-  url: [
-    {
-      required: true,
-      trigger: 'blur',
-      type: 'string',
-      message: t('form.required'),
-    },
-  ],
   itemIconGroupId: {
     required: true,
     trigger: ['blur', 'change'],
@@ -71,6 +64,7 @@ const rules: FormRules = {
     type: 'number',
   },
 }
+const rules = ref<FormRules>(defaultRules)
 
 // 卡片类型
 const optionsCardType = [
@@ -85,23 +79,6 @@ const optionsCardType = [
   },
   {
     label: t('iconItem.iframeCard'),
-    value: 3,
-  },
-]
-
-// 打开方式
-const options = [
-  {
-    default: true,
-    label: t('iconItem.currentPageOpen'),
-    value: 1,
-  },
-  {
-    label: t('iconItem.newWindowOpen'),
-    value: 2,
-  },
-  {
-    label: t('iconItem.currentPageLayerOpen'),
     value: 3,
   },
 ]
@@ -139,33 +116,6 @@ const handleValidateButtonClick = (e: MouseEvent) => {
     if (!errors)
       editApi()
   })
-}
-
-function verifyUrlHttp(url: string): boolean {
-  if (url === '')
-    return true
-
-  return url.startsWith('https://') || url.startsWith('http://')
-}
-
-async function getIconByUrl(url: string, loadingIndex: number) {
-  getIconLoading.value[loadingIndex] = true
-  try {
-    const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-    if (code === 0) {
-      model.value.icon = {
-        itemType: 2,
-        src: data.iconUrl,
-      }
-    }
-    else {
-      ms.error(t('iconItem.geticonFail'))
-    }
-  }
-  catch (error) {
-    ms.error(t('iconItem.geticonFail'))
-  }
-  getIconLoading.value[loadingIndex] = false
 }
 
 watch(() => props.visible, (newValue) => {
@@ -208,10 +158,15 @@ function getGroupListOptions() {
     ms.error(t('iconItem.getGroupFail'))
   })
 }
+
+function handleUpdateCardType() {
+  rules.value = { ...defaultRules }
+}
 </script>
 
 <template>
   <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')">
+    <!-- 卡片预览 -->
     <div class="mb-2">
       <span class="flex justify-center mb-1">
         <NCheckbox v-model:checked="showPreview" size="small">
@@ -219,19 +174,7 @@ function getGroupListOptions() {
         </NCheckbox>
       </span>
       <div v-if="showPreview" class="flex justify-center transparent-grid preview-box p-2 rounded-xl border">
-        <div class="mr-5">
-          <ItemCards
-            :sort-status="false"
-            class="cursor-pointer"
-            :card-info="model"
-            icon-text-color="#000"
-            :icon-text-info-hide-description="false"
-            :icon-text-icon-hide-title="false"
-            :card-style="PanelPanelConfigStyleEnum.small"
-            :card-type="PanelCardType.Standard"
-          />
-        </div>
-        <div class="w-[210px]">
+        <div class="w-[210px] mr-4">
           <ItemCards
             :sort-status="false"
             class="cursor-pointer"
@@ -243,26 +186,40 @@ function getGroupListOptions() {
             :card-type="PanelCardType.Standard"
           />
         </div>
+
+        <div>
+          <ItemCards
+            :sort-status="false"
+            class="cursor-pointer"
+            :card-info="model"
+            icon-text-color="#000"
+            :icon-text-info-hide-description="false"
+            :icon-text-icon-hide-title="false"
+            :card-style="PanelPanelConfigStyleEnum.small"
+            :card-type="PanelCardType.Standard"
+          />
+        </div>
       </div>
     </div>
 
+    <NDivider class="!my-2" />
+    <!-- {{ JSON.stringify(rules) }} -->
+
+    <!-- 基础设置 -->
     <div class="h-[500px] overflow-auto p-[5px]">
       <NForm ref="formRef" :model="model" :rules="rules" size="small">
-        <NGrid cols="2" :x-gap="10" item-responsive>
-          <NGridItem span="2 500:1">
+        <NGrid cols="3" :x-gap="10" item-responsive>
+          <NGridItem span="3 500:1">
             <NFormItem path="itemIconGroupId" :label="t('iconItem.iconGroup')">
               <NSelect v-model:value="model.itemIconGroupId" :options="itemIconGroupOptions" />
             </NFormItem>
           </NGridItem>
-          <NGridItem span="2 500:1">
-            <NFormItem path="title" :label="$t('common.title')">
-              <NInput v-model:value="model.title" type="text" show-count :maxlength="20" />
+          <NGridItem span="3 500:1">
+            <NFormItem :label="$t('iconItem.cardType')">
+              <NSelect v-model:value="model.cardType" :options="optionsCardType" @update:value="handleUpdateCardType" />
             </NFormItem>
           </NGridItem>
-        </NGrid>
-
-        <NGrid cols="2" :x-gap="10" item-responsive>
-          <NGridItem span="2 500:1">
+          <NGridItem span="3 500:1">
             <NFormItem :label="t('iconItem.cardBackground')">
               <div class="flex w-full mr-1">
                 <NColorPicker
@@ -270,11 +227,14 @@ function getGroupListOptions() {
                   size="small"
                   :modes="['hex']"
                   :swatches="[
+                    '#00000000',
                     '#000000',
                     '#ffffff',
                     '#18A058',
                     '#2080F0',
                     '#F0A020',
+                    '#D03050',
+                    '#C418D1',
                   ]"
                 />
               </div>
@@ -285,51 +245,17 @@ function getGroupListOptions() {
               </div>
             </NFormItem>
           </NGridItem>
-          <NGridItem span="2 500:1">
-            <NFormItem :label="$t('iconItem.cardType')">
-              <NSelect v-model:value="model.cardType" :options="optionsCardType" />
-            </NFormItem>
-          </NGridItem>
         </NGrid>
 
+        <NDivider class="!my-2" />
         <!-- 个性化卡片的设置了 -->
+        <template v-if="model.cardType === 1">
+          <NormalCard v-model:itemInfo="model" v-model:rules="rules" />
+        </template>
 
-        <!-- <NFormItem v-show="false" path="icon" :label="$t('common.icon')">
-          <IconEditor v-model:item-icon="model.icon" />
-        </NFormItem>
-        <NFormItem path="url" :label="$t('iconItem.url')">
-          <div class="w-full">
-            <NInputGroup>
-              <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
-              <NButton :disabled="!model.url" :loading="getIconLoading[0]" @click="getIconByUrl(model.url, 0)">
-                {{ $t('iconItem.getIcon') }}
-              </NButton>
-            </NInputGroup>
-            <span v-if="!verifyUrlHttp(model.url)" class="text-xs text-orange-400">
-              {{ t("iconItem.urlNoHttpStartWarn") }}
-            </span>
-          </div>
-        </NFormItem>
-        <NFormItem path="lanUrl" :label="$t('iconItem.lanUrl')">
-          <div class="w-full">
-            <NInputGroup>
-              <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
-              <NButton :disabled="!model.lanUrl" :loading="getIconLoading[1]" @click="getIconByUrl(model.lanUrl || '', 1)">
-                {{ $t('iconItem.getIcon') }}
-              </NButton>
-            </NInputGroup>
-            <span v-if="!verifyUrlHttp(model.lanUrl || '')" class="text-xs text-orange-400">
-              {{ t("iconItem.urlNoHttpStartWarn") }}
-            </span>
-          </div>
-        </NFormItem>
-        <NFormItem path="description" :label="$t('common.description')">
-          <NInput v-model:value="model.description" type="text" show-count :maxlength="100" />
-        </NFormItem>
-        <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
-          <NSelect v-model:value="model.openMethod" :options="options" />
-        </NFormItem> -->
-        <hr>
+        <NDivider class="!my-2" />
+
+        <!-- 高级功能 -->
         <NCheckbox v-model:checked="expandAdvancedFeatures" class="my-2">
           {{ $t('iconItem.advancedFeatures') }}
         </NCheckbox>
@@ -353,5 +279,9 @@ function getGroupListOptions() {
 <style scoped>
 .preview-box{
   pointer-events: none;
+}
+
+.dark .preview-box{
+  filter: brightness(80%)
 }
 </style>
