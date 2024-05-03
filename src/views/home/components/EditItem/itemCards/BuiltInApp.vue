@@ -2,9 +2,9 @@
 import { NCard, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
-import IconEditor from '../../IconEditor.vue'
-import type { SystemApp } from '@/utils/cmn/systemApps'
-import { systemApps } from '@/utils/cmn/systemApps'
+import IconEditor from '../IconEditor.vue'
+import type { SystemApp } from '@/utils/cmn/builtInApps'
+import { systemApps } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
 import { AppLoader, RoundCardModal } from '@/components/common/'
 
@@ -54,20 +54,26 @@ watch(model.value, () => {
 onMounted(() => {
   const r = { ...props.rules, ...rulesExtends }
   emit('update:rules', r)
-  if (!props.itemInfo.expandParam)
-    model.value.expandParam = { ...extendParam }
 
-  // console.log('卡片信息', model.value)
+  // 设置默认值
+  if (!props.itemInfo.expandParam) {
+    model.value.expandParam = { ...extendParam }
+  }
+  else {
+    const ep = { ...extendParam }
+    // 给子字段赋值，防止无用的字段
+    ep.systemAppName = props.itemInfo.expandParam.systemAppName
+    model.value.expandParam = ep
+  }
 })
 
 function handleSystemChange(value: string, appInfo: SystemApp) {
   model.value.title = appInfo.name
   model.value.icon = {
-    src: appInfo.iconSrc,
-    itemType: 2,
+    text: appInfo.icon,
+    itemType: 3,
   }
   model.value.description = t('iconItem.builtinApp')
-  console.log(appInfo)
 }
 </script>
 

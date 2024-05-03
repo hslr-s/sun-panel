@@ -19,7 +19,7 @@ type ItemIcon struct {
 	Description     string                    `gorm:"type:varchar(1000)" json:"description"`
 	OpenMethod      int                       `gorm:"type:tinyint(1)" json:"openMethod"`
 	Sort            int                       `gorm:"type:int(11)" json:"sort"`
-	Background      string                    `gorm:"type:varchar(20)" json:"background"` // 背景色 1.5.0
+	BackgroundColor string                    `gorm:"type:varchar(20)" json:"backgroundColor"` // 背景色 1.5.0
 	ItemIconGroupId int                       `json:"itemIconGroupId"`
 	ExpandParam     string                    `json:"expandParam"`
 	UserId          uint                      `json:"userId"`

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import NormalCard from './NormalCard.vue'
 import BuiltInApp from './BuiltInApp.vue'
 import { PanelCardType } from '@/enums'
@@ -21,8 +21,10 @@ const emit = defineEmits<{
   (e: 'delete'): void
   (e: 'edit'): void
 }>()
+
+const itemInfo = ref(props.cardInfo)
 const backgroundColor = computed(() => {
-  return (props.cardInfo?.backgroundColor ? props.cardInfo.backgroundColor : props.cardInfo?.icon?.backgroundColor) || '#2a2a2a6b'
+  return (itemInfo.value?.backgroundColor ? itemInfo.value.backgroundColor : itemInfo.value?.icon?.backgroundColor) || '#2a2a2a6b'
 })
 
 function deleteItem() {
@@ -32,15 +34,12 @@ function deleteItem() {
 function editItem() {
   emit('edit')
 }
-onMounted(() => {
-  console.log('卡片数据', props.cardInfo)
-})
 </script>
 
 <template>
   <div class="item-card-container w-full">
     <!-- 普通图标 -->
-    <template v-if="cardInfo.cardType === PanelCardType.Normal || !cardInfo.cardType">
+    <template v-if="itemInfo.cardType === PanelCardType.Normal || !itemInfo.cardType">
       <NormalCard
         :sort-status="sortStatus"
         :card-type-style="cardStyle"
@@ -48,8 +47,8 @@ onMounted(() => {
         :icon-text-icon-hide-title="iconTextIconHideTitle || false"
         :icon-text-color="iconTextColor"
         :icon-text-info-hide-description="iconTextInfoHideDescription || false"
-        :icon-text="cardInfo?.title"
-        :item-info="cardInfo"
+        :icon-text="itemInfo?.title"
+        :item-info="itemInfo"
         :card-style="cardStyle"
         @delete="deleteItem"
         @edit="editItem"
@@ -57,7 +56,7 @@ onMounted(() => {
     </template>
 
     <!-- 内置应用 -->
-    <template v-else-if="cardInfo.cardType === PanelCardType.BuiltInApp">
+    <template v-else-if="itemInfo.cardType === PanelCardType.BuiltInApp">
       <BuiltInApp
         :sort-status="sortStatus"
         :card-type-style="cardStyle"
@@ -65,8 +64,8 @@ onMounted(() => {
         :icon-text-icon-hide-title="iconTextIconHideTitle || false"
         :icon-text-color="iconTextColor"
         :icon-text-info-hide-description="iconTextInfoHideDescription || false"
-        :icon-text="cardInfo?.title"
-        :item-info="cardInfo"
+        :icon-text="itemInfo?.title"
+        :item-info="itemInfo"
         :card-style="cardStyle"
         @delete="deleteItem"
         @edit="editItem"

@@ -15,26 +15,26 @@ export interface SystemApp {
   componentName: string
   icon: string
   auth?: number
-  iconSrc: string
+  iconSrc?: string
 }
 
 export const systemApps: SystemApp[] = [
   {
     name: t('apps.userInfo.appName'),
     componentName: 'UserInfo',
-    icon: 'material-symbols-person-edit-outline-rounded',
+    icon: 'material-symbols:person-edit-outline-rounded',
     iconSrc: UserInfoSvg,
   },
   {
     name: t('apps.baseSettings.appName'),
     componentName: 'Style',
-    icon: 'ion-color-palette-outline',
+    icon: 'ion:color-palette-outline',
     iconSrc: StyleSvg,
   },
   {
     name: t('apps.itemGroupManage.appName'),
     componentName: 'ItemGroupManage',
-    icon: 'material-symbols-ad-group-outline-rounded',
+    icon: 'material-symbols:ad-group-outline-rounded',
     iconSrc: ItemGroupManageSvg,
   },
   {
@@ -46,7 +46,7 @@ export const systemApps: SystemApp[] = [
   {
     name: t('apps.exportImport.appName'),
     componentName: 'ImportExport',
-    icon: 'icon-park-outline-import-and-export',
+    icon: 'icon-park-outline:import-and-export',
     iconSrc: ImportExportSvg,
   },
   {
@@ -58,9 +58,8 @@ export const systemApps: SystemApp[] = [
   {
     name: t('apps.about.appName'),
     componentName: 'About',
-    icon: 'lucide-info',
+    icon: 'lucide:info',
     iconSrc: AboutSvg,
-
   },
 ]
 
@@ -69,7 +68,7 @@ export const adminSystemApps: SystemApp[] = [
   {
     name: t('adminSettingUsers.appName'),
     componentName: 'Users',
-    icon: 'lucide-users',
+    icon: 'lucide:users',
     auth: 1,
     iconSrc: OpenAPISvg,
 
@@ -77,7 +76,7 @@ export const adminSystemApps: SystemApp[] = [
   {
     name: t('proAuth.appName'),
     componentName: 'ProAuth',
-    icon: 'tabler-award',
+    icon: 'tabler:award',
     auth: 1,
     iconSrc: ProAuthSvg,
 
@@ -85,7 +84,7 @@ export const adminSystemApps: SystemApp[] = [
   {
     name: t('apps.globalSetting.appName'),
     componentName: 'GlobalSetting',
-    icon: 'ic-outline-build-circle',
+    icon: 'ic:outline-build-circle',
     auth: 1,
     iconSrc: OpenAPISvg,
 

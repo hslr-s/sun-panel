@@ -130,3 +130,9 @@ func AnyToJsonStr(d interface{}) string {
 func JsonStrToAny(s string, value interface{}) error {
 	return json.Unmarshal([]byte(s), value)
 }
+
+func JsonStrToMap(s string) map[string]interface{} {
+	data := map[string]any{}
+	JsonStrToAny(s, &data)
+	return data
+}

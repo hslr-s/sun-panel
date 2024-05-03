@@ -6,8 +6,8 @@ import {
   NGrid, NGridItem, NInput, NModal, NSelect,
   useMessage,
 } from 'naive-ui'
-import NormalCard from './itemCards/Normal/index.vue'
-import SystemAppCard from './itemCards/BuiltIn/index.vue'
+import NormalCard from './itemCards/Normal.vue'
+import SystemAppCard from './itemCards/BuiltInApp.vue'
 import { ItemCards } from '@/views/home/components'
 import { edit } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
@@ -132,6 +132,9 @@ watch(() => props.visible, (newValue) => {
       model.value.backgroundColor = defaultItemCardBackgroundColor
     if (!model.value.cardType || model.value.cardType === 0)
       model.value.cardType = 1
+
+    if (!model.value.expandParam)
+      model.value.expandParam = {}
   }
 
   getGroupListOptions()
@@ -184,7 +187,6 @@ function handleUpdateCardType() {
             :sort-status="false"
             class="cursor-pointer"
             :card-info="model"
-            icon-text-color="#fff"
             :icon-text-info-hide-description="false"
             :icon-text-icon-hide-title="false"
             :card-style="PanelPanelConfigStyleEnum.info"

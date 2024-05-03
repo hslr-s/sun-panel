@@ -4,8 +4,8 @@ import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
 import { AppLoader, RoundCardModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
-import type { SystemApp } from '@/utils/cmn/systemApps'
-import { adminSystemApps, systemApps } from '@/utils/cmn/systemApps'
+import type { SystemApp } from '@/utils/cmn/builtInApps'
+import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
 
 const props = defineProps<{
   visible: boolean

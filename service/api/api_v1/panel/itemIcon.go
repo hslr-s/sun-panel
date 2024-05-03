@@ -50,7 +50,7 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 	saveData.Description = req.Description
 	saveData.OpenMethod = req.OpenMethod
 	saveData.Sort = req.Sort
-	saveData.Background = req.Background
+	saveData.BackgroundColor = req.BackgroundColor
 	saveData.ItemIconGroupId = req.ItemIconGroupId
 	saveData.ExpandParam = base.AnyToJsonStr(req.ExpandParam)
 	saveData.UserId = userInfo.ID
@@ -138,16 +138,36 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	itemIcons := []models.ItemIcon{}
 
+	resp := []panelApiStructs.ItemInfo{}
+
 	if err := global.Db.Order("sort ,created_at").Find(&itemIcons, "item_icon_group_id = ? AND user_id=?", req.ItemIconGroupId, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
 
-	for k, v := range itemIcons {
-		json.Unmarshal([]byte(v.IconJson), &itemIcons[k].Icon)
+	for _, v := range itemIcons {
+		json.Unmarshal([]byte(v.IconJson), &v.Icon)
+		temp := panelApiStructs.ItemInfo{}
+
+		temp.ID = v.ID
+		temp.CardType = v.CardType
+		temp.Icon = v.Icon
+		temp.Title = v.Title
+		temp.OnlyName = v.OnlyName
+		temp.Url = v.Url
+		temp.LanUrl = v.LanUrl
+		temp.Description = v.Description
+		temp.OpenMethod = v.OpenMethod
+		temp.Sort = v.Sort
+		temp.BackgroundColor = v.BackgroundColor
+		temp.ItemIconGroupId = v.ItemIconGroupId
+		temp.UserId = userInfo.ID
+		temp.ExpandParam = base.JsonStrToMap(v.ExpandParam)
+
+		resp = append(resp, temp)
 	}
 
-	apiReturn.SuccessListData(c, itemIcons, 0)
+	apiReturn.SuccessListData(c, resp, 0)
 }
 
 func (a *ItemIcon) Deletes(c *gin.Context) {

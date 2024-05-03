@@ -5,7 +5,7 @@ import {
   NInputGroup, NSelect, useMessage,
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
-import IconEditor from '../../IconEditor.vue'
+import IconEditor from '../IconEditor.vue'
 import { t } from '@/locales'
 import { getSiteFavicon } from '@/api/panel/itemIcon'
 

@@ -136,14 +136,17 @@ func DatabaseConnect() {
 	}
 
 	if db, err := database.DbInit(dbClientInfo); err != nil {
-		log.Panicln("Database initialization error", err)
+		log.Panicln("Database initialization error:", err)
 		panic(err)
 	} else {
 		global.Db = db
 		models.Db = global.Db
 	}
 
-	database.CreateDatabase(databaseDrive, global.Db)
+	if err := database.CreateDatabase(databaseDrive, global.Db); err != nil {
+		log.Println("Database initialization error:", err)
+		log.Panicln("Database initialization error", err)
+	}
 
 	database.NotFoundAndCreateUser(global.Db)
 }

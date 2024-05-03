@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { NEllipsis } from 'naive-ui'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
@@ -17,6 +17,7 @@ interface Prop {
 const props = defineProps<Prop>()
 
 const defaultBackground = defaultItemCardBackgroundColor
+const backgroundRef = computed(() => props.backgroundColor || defaultBackground)
 
 const calculateLuminance = (color: string) => {
   const hex = color.replace(/^#/, '')
@@ -26,9 +27,15 @@ const calculateLuminance = (color: string) => {
   return (0.299 * r + 0.587 * g + 0.114 * b) / 255
 }
 
-const textColor = computed(() => {
-  const luminance = calculateLuminance(props.backgroundColor || defaultBackground)
+const textColor = ref('')
+
+function autoColor() {
+  const luminance = calculateLuminance(backgroundRef.value || '')
   return luminance > 0.5 ? 'black' : 'white'
+}
+
+watch(() => backgroundRef.value, () => {
+  textColor.value = autoColor()
 })
 </script>
 
@@ -68,7 +75,7 @@ const textColor = computed(() => {
 
         <!-- 文字 -->
         <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
-        <div class="text-white flex items-center" :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }">
+        <div class="text-white flex items-center" :style="{ color: (!iconTextColor || iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }">
           <div class="app-icon-info-text-box w-full">
             <div class="app-icon-info-text-box-title font-semibold w-full">
               <NEllipsis>
