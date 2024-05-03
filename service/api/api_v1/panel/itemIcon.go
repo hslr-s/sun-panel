@@ -29,7 +29,7 @@ type ItemIcon struct {
 
 func (a *ItemIcon) Edit(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
-	req := models.ItemIcon{}
+	req := panelApiStructs.ItemInfo{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
@@ -38,7 +38,24 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 
 	req.UserId = userInfo.ID
 
-	if v, err := biz.Item.Edit(userInfo.ID, req); err != nil {
+	saveData := models.ItemIcon{}
+	saveData.ID = req.ID
+	saveData.CardType = req.CardType
+	saveData.IconJson = req.IconJson
+	saveData.Icon = req.Icon
+	saveData.Title = req.Title
+	saveData.OnlyName = req.OnlyName
+	saveData.Url = req.Url
+	saveData.LanUrl = req.LanUrl
+	saveData.Description = req.Description
+	saveData.OpenMethod = req.OpenMethod
+	saveData.Sort = req.Sort
+	saveData.Background = req.Background
+	saveData.ItemIconGroupId = req.ItemIconGroupId
+	saveData.ExpandParam = base.AnyToJsonStr(req.ExpandParam)
+	saveData.UserId = userInfo.ID
+
+	if v, err := biz.Item.Edit(userInfo.ID, saveData); err != nil {
 		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
 			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
 			return
@@ -46,10 +63,10 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	} else {
-		req = v
+		saveData = v
 	}
 
-	apiReturn.SuccessData(c, req)
+	apiReturn.SuccessData(c, saveData)
 }
 
 // 添加多个图标
