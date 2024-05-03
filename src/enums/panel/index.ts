@@ -13,6 +13,7 @@ export enum PanelPanelConfigStyleEnum {
 
 // 卡片类型
 export enum PanelCardType {
-  Standard = 0, // 标准卡片
+  Normal = 1, // 标准卡片
+  BuiltInApp = 3, // 内置应用
 
 }

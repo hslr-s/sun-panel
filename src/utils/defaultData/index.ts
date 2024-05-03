@@ -23,3 +23,5 @@ export const defaultItemGroupInfoCardStyle: Panel.ItemGroupInfoCardStyle = {
   textInfoHideDescription: false,
   textIconHideTitle: false,
 }
+
+export const defaultItemCardBackgroundColor = '#2a2a2a6b'

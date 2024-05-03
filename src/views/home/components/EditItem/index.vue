@@ -7,6 +7,7 @@ import {
   useMessage,
 } from 'naive-ui'
 import NormalCard from './itemCards/Normal/index.vue'
+import SystemAppCard from './itemCards/BuiltIn/index.vue'
 import { ItemCards } from '@/views/home/components'
 import { edit } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
@@ -25,7 +26,6 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 const ms = useMessage()
 const submitLoading = ref(false)
-const getIconLoading = ref([false, false])
 const expandAdvancedFeatures = ref(false)
 const showPreview = ref(true)
 const itemIconGroupOptions = ref<{
@@ -71,16 +71,20 @@ const optionsCardType = [
   {
     default: true,
     label: t('iconItem.ordinaryIcon'),
-    value: 1,
+    value: PanelCardType.Normal,
   },
+  // {
+  //   label: t('iconItem.dockerStatusCard'),
+  //   value: 2,
+  // },
   {
-    label: t('iconItem.dockerStatusCard'),
-    value: 2,
+    label: t('iconItem.systemAppCard'),
+    value: PanelCardType.BuiltInApp,
   },
-  {
-    label: t('iconItem.iframeCard'),
-    value: 3,
-  },
+  // {
+  //   label: t('iconItem.iframeCard'),
+  //   value: 4,
+  // },
 ]
 
 // 更新值父组件传来的值
@@ -161,6 +165,7 @@ function getGroupListOptions() {
 
 function handleUpdateCardType() {
   rules.value = { ...defaultRules }
+  // model.value.expandParam = undefined
 }
 </script>
 
@@ -183,7 +188,7 @@ function handleUpdateCardType() {
             :icon-text-info-hide-description="false"
             :icon-text-icon-hide-title="false"
             :card-style="PanelPanelConfigStyleEnum.info"
-            :card-type="PanelCardType.Standard"
+            :card-type="PanelCardType.Normal"
           />
         </div>
 
@@ -196,7 +201,7 @@ function handleUpdateCardType() {
             :icon-text-info-hide-description="false"
             :icon-text-icon-hide-title="false"
             :card-style="PanelPanelConfigStyleEnum.small"
-            :card-type="PanelCardType.Standard"
+            :card-type="PanelCardType.Normal"
           />
         </div>
       </div>
@@ -251,6 +256,9 @@ function handleUpdateCardType() {
         <!-- 个性化卡片的设置了 -->
         <template v-if="model.cardType === 1">
           <NormalCard v-model:itemInfo="model" v-model:rules="rules" />
+        </template>
+        <template v-if="model.cardType === 3">
+          <SystemAppCard v-model:itemInfo="model" v-model:rules="rules" />
         </template>
 
         <NDivider class="!my-2" />

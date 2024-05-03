@@ -1,0 +1,110 @@
+<script setup lang="ts">
+import { NCard, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
+import type { FormRules } from 'naive-ui'
+import { onMounted, ref, watch } from 'vue'
+import IconEditor from '../../IconEditor.vue'
+import type { SystemApp } from '@/utils/cmn/systemApps'
+import { systemApps } from '@/utils/cmn/systemApps'
+import { t } from '@/locales'
+import { AppLoader, RoundCardModal } from '@/components/common/'
+
+const props = defineProps<{
+  itemInfo: Panel.Info
+  rules: FormRules
+}>()
+
+const emit = defineEmits<{
+
+  (e: 'update:itemInfo', info?: Panel.Info): void
+  (e: 'update:rules', info?: FormRules): void
+}>()
+
+const item = ref(props.itemInfo)
+const builtinAppModalShow = ref(false)
+const apps = ref(systemApps)
+const rulesExtends: FormRules = {
+  url: [
+    {
+      required: true,
+      trigger: 'blur',
+      type: 'string',
+      message: t('form.required'),
+    },
+  ],
+  expandParam: {
+    systemAppName: {
+      required: true,
+      trigger: 'blur',
+      type: 'string',
+      message: t('form.required'),
+    },
+  },
+}
+
+const extendParam: Panel.ItemCardExpandParam.SystemApp = {
+  systemAppName: '',
+}
+
+const model = ref(props.itemInfo)
+
+watch(model.value, () => {
+  emit('update:itemInfo', model.value)
+})
+
+onMounted(() => {
+  const r = { ...props.rules, ...rulesExtends }
+  emit('update:rules', r)
+  if (!props.itemInfo.expandParam)
+    model.value.expandParam = { ...extendParam }
+
+  // console.log('卡片信息', model.value)
+})
+
+function handleSystemChange(value: string, appInfo: SystemApp) {
+  model.value.title = appInfo.name
+  model.value.icon = {
+    src: appInfo.iconSrc,
+    itemType: 2,
+  }
+  model.value.description = t('iconItem.builtinApp')
+  console.log(appInfo)
+}
+</script>
+
+<template>
+  <div>
+    <NGrid cols="2" :x-gap="10" item-responsive>
+      <NGridItem span="2 500:1">
+        <NFormItem path="expandParam.systemAppName" :label="$t('iconItem.systemApp')">
+          <NSelect
+            v-model:value="model.expandParam.systemAppName"
+            label-field="name"
+            value-field="componentName"
+            :options="apps"
+            @update:value="handleSystemChange"
+          />
+        </NFormItem>
+      </NGridItem>
+      <NGridItem span="2 500:1">
+        <NFormItem path="title" :label="$t('common.title')">
+          <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
+        </NFormItem>
+      </NGridItem>
+    </NGrid>
+
+    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
+      <NCard size="small">
+        <IconEditor v-model:item-icon="model.icon" />
+      </NCard>
+    </NFormItem>
+
+    <NFormItem path="description" :label="$t('common.description')">
+      <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
+    </NFormItem>
+
+    <RoundCardModal v-model:show="builtinAppModalShow">
+      <AppLoader :component-name="item.expandParam.systemAppName" />
+      <!--  -->
+    </RoundCardModal>
+  </div>
+</template>

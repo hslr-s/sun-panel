@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import Standard from './Standard.vue'
+import { computed, onMounted } from 'vue'
+import NormalCard from './NormalCard.vue'
+import BuiltInApp from './BuiltInApp.vue'
 import { PanelCardType } from '@/enums'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 
 interface Prop {
-  cardInfo: Panel.ItemCard.CardInfo
+  cardInfo: Panel.ItemInfo
   forceBackground?: string // 强制背景色
   iconTextColor?: string
   iconTextInfoHideDescription?: boolean
@@ -31,13 +32,33 @@ function deleteItem() {
 function editItem() {
   emit('edit')
 }
+onMounted(() => {
+  console.log('卡片数据', props.cardInfo)
+})
 </script>
 
 <template>
   <div class="item-card-container w-full">
-    <!-- 标准/普通图标 -->
-    <template v-if="cardType === PanelCardType.Standard">
-      <Standard
+    <!-- 普通图标 -->
+    <template v-if="cardInfo.cardType === PanelCardType.Normal || !cardInfo.cardType">
+      <NormalCard
+        :sort-status="sortStatus"
+        :card-type-style="cardStyle"
+        :background-color="backgroundColor"
+        :icon-text-icon-hide-title="iconTextIconHideTitle || false"
+        :icon-text-color="iconTextColor"
+        :icon-text-info-hide-description="iconTextInfoHideDescription || false"
+        :icon-text="cardInfo?.title"
+        :item-info="cardInfo"
+        :card-style="cardStyle"
+        @delete="deleteItem"
+        @edit="editItem"
+      />
+    </template>
+
+    <!-- 内置应用 -->
+    <template v-else-if="cardInfo.cardType === PanelCardType.BuiltInApp">
+      <BuiltInApp
         :sort-status="sortStatus"
         :card-type-style="cardStyle"
         :background-color="backgroundColor"

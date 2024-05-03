@@ -15,6 +15,7 @@ declare namespace Panel {
         itemIconGroupId ?:number
         onlyName?:string
         backgroundColor?:string
+        cardType:number
         expandParam?:any
     }
 
@@ -87,27 +88,34 @@ declare namespace Panel {
     }
 }
 
-declare namespace Panel.ItemCard {
-    interface CardInfo extends Panel.ItemInfo {
+declare namespace Panel.ItemCardExpandParam {
+    // interface CardInfo extends Panel.ItemInfo {
+
+    // }
+
+    // // 普通
+    // interface Standard extends Panel.ItemInfo {
+
+    // }
+
+    // 系统应用
+    interface SystemApp {
+        systemAppName:string
 
     }
 
-    // 普通
-    interface Standard extends Panel.ItemInfo {
-
-    }
 
     // docker
-    interface Docker extends Panel.ItemInfo {
-        containerName:string // 容器名称
-        imageName:string // 镜像名称
+    // interface Docker extends Panel.ItemInfo {
+    //     containerName:string // 容器名称
+    //     imageName:string // 镜像名称
 
-    }
+    // }
 
-    // iframe
-    interface iframe extends Panel.ItemInfo {
-        url:string // iframe 地址
+    // // iframe
+    // interface iframe extends Panel.ItemInfo {
+    //     url:string // iframe 地址
 
-    }
+    // }
 
 }
