@@ -1,6 +1,6 @@
 import { post } from '@/utils/request'
 
-export function edit<T>(req: Panel.ItemIconGroup) {
+export function edit<T>(req: Panel.ItemGroupInfo) {
   return post<T>({
     url: '/panel/itemIconGroup/edit',
     data: req,

@@ -11,7 +11,7 @@ import { PanelPanelConfigStyleEnum } from '@/enums'
 import { SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 
-interface MonitorGroup extends Panel.ItemIconGroup {
+interface MonitorGroup extends Panel.ItemGroupInfo {
   sortStatus?: boolean
   hoverStatus: boolean
   items?: Panel.ItemInfo[]
