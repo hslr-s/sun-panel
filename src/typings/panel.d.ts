@@ -1,3 +1,14 @@
+enum DockerContainerInfoState {
+    created = 'created',
+    restarting = 'restarting',
+    removing = 'removing',
+    running = 'running',
+    paused = 'paused',
+    exited = 'exited',
+    dead = 'dead',
+}
+
+
 declare namespace Panel {
 
     interface Info extends ItemInfo {
@@ -5,75 +16,75 @@ declare namespace Panel {
     }
 
     interface ItemInfo extends Common.InfoBase {
-        icon: ItemIcon |null
+        icon: ItemIcon | null
         title: string
         url: string
         sort?: number
         lanUrl?: string
         description?: string
         openMethod: number
-        itemIconGroupId ?:number
-        onlyName?:string
-        backgroundColor?:string
-        cardType:number
-        expandParam?:any
+        itemIconGroupId?: number
+        onlyName?: string
+        backgroundColor?: string
+        cardType: number
+        expandParam?: any
     }
 
     interface ItemIconGroup extends Common.InfoBase {
         icon?: string
         title?: string
-        sort?:number
+        sort?: number
     }
 
     interface ItemIcon {
         itemType: number
-        src ?: string
-        text ?: string
+        src?: string
+        text?: string
         // bgColor ?: string
-        backgroundColor ?: string
+        backgroundColor?: string
     }
 
     interface State {
         rightSiderCollapsed: boolean
         leftSiderCollapsed: boolean
-        networkMode:PanelStateNetworkModeEnum | null
-        panelConfig:panelConfig
+        networkMode: PanelStateNetworkModeEnum | null
+        panelConfig: panelConfig
     }
 
-    interface panelConfig{
-        backgroundImageSrc?:string
-        backgroundBlur?:number
-        backgroundMaskNumber?:number
-        iconStyle?:PanelPanelConfigStyleEnum    // 1.5.0+ 弃用、迁移至单独分组设置
-        iconTextColor?:string   // 1.5.0+ 弃用、迁移至单独分组设置
-        iconTextInfoHideDescription?:boolean    // 1.5.0+ 弃用、迁移至单独分组设置
-        iconTextIconHideTitle?:boolean  // 1.5.0+ 弃用、迁移至单独分组设置
-        logoText?:string
-        logoImageSrc?:string
-        clockShowSecond?:boolean
-        clockColor?:string
-        searchBoxShow?:boolean
-        searchBoxSearchIcon?:boolean
-        marginTop?:number
-        marginBottom?:number
-        maxWidth?:number
-        maxWidthUnit:string
-        marginX?:number
-        footerHtml?:string
-        systemMonitorShow?:boolean
-        systemMonitorShowTitle?:boolean
-        systemMonitorPublicVisitModeShow?:boolean
-        netModeChangeButtonShow?:boolean
+    interface panelConfig {
+        backgroundImageSrc?: string
+        backgroundBlur?: number
+        backgroundMaskNumber?: number
+        iconStyle?: PanelPanelConfigStyleEnum    // 1.5.0+ 弃用、迁移至单独分组设置
+        iconTextColor?: string   // 1.5.0+ 弃用、迁移至单独分组设置
+        iconTextInfoHideDescription?: boolean    // 1.5.0+ 弃用、迁移至单独分组设置
+        iconTextIconHideTitle?: boolean  // 1.5.0+ 弃用、迁移至单独分组设置
+        logoText?: string
+        logoImageSrc?: string
+        clockShowSecond?: boolean
+        clockColor?: string
+        searchBoxShow?: boolean
+        searchBoxSearchIcon?: boolean
+        marginTop?: number
+        marginBottom?: number
+        maxWidth?: number
+        maxWidthUnit: string
+        marginX?: number
+        footerHtml?: string
+        systemMonitorShow?: boolean
+        systemMonitorShowTitle?: boolean
+        systemMonitorPublicVisitModeShow?: boolean
+        netModeChangeButtonShow?: boolean
     }
 
-    interface userConfig{
-        panel:panelConfig
-        searchEngine?:any
+    interface userConfig {
+        panel: panelConfig
+        searchEngine?: any
     }
 
-    interface ItemIconSortRequest{
-        sortItems:Common.SortItemRequest[]
-        itemIconGroupId:number
+    interface ItemIconSortRequest {
+        sortItems: Common.SortItemRequest[]
+        itemIconGroupId: number
     }
 
     interface ItemGroupInfoCardStyle {
@@ -83,12 +94,14 @@ declare namespace Panel {
         textIconHideTitle: boolean;
     }
 
-    interface ItemGroupInfo extends ItemIconGroup{
-        cardStyle:ItemGroupInfoCardStyle
+    interface ItemGroupInfo extends ItemIconGroup {
+        cardStyle: ItemGroupInfoCardStyle
     }
 }
 
 declare namespace Panel.ItemCardExpandParam {
+
+
     // interface CardInfo extends Panel.ItemInfo {
 
     // }
@@ -98,9 +111,17 @@ declare namespace Panel.ItemCardExpandParam {
 
     // }
 
-    // 系统应用
+    // 系统/内置应用
     interface SystemApp {
-        systemAppName:string
+        systemAppName: string
+
+    }
+
+    interface Docker {
+        containerId: string
+        openPageAndStart: bool
+        cardType: string
+        showBadgeStatus?: DockerContainerInfoState[]
 
     }
 

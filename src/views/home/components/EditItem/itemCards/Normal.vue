@@ -6,6 +6,7 @@ import {
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import IconEditor from '../IconEditor.vue'
+import { verifyUrlHttp } from './common'
 import { t } from '@/locales'
 import { getSiteFavicon } from '@/api/panel/itemIcon'
 
@@ -48,13 +49,6 @@ const rulesExtends: FormRules = {
       message: t('form.required'),
     },
   ],
-}
-
-function verifyUrlHttp(url: string): boolean {
-  if (url === '')
-    return true
-
-  return url.startsWith('https://') || url.startsWith('http://')
 }
 
 async function getIconByUrl(url: string, loadingIndex: number) {

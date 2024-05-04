@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+// 卡片列表
 import NormalCard from './NormalCard.vue'
 import BuiltInApp from './BuiltInApp.vue'
+import DockerCard from './DockerCard.vue'
+
 import { PanelCardType } from '@/enums'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 
@@ -58,6 +61,23 @@ function editItem() {
     <!-- 内置应用 -->
     <template v-else-if="itemInfo.cardType === PanelCardType.BuiltInApp">
       <BuiltInApp
+        :sort-status="sortStatus"
+        :card-type-style="cardStyle"
+        :background-color="backgroundColor"
+        :icon-text-icon-hide-title="iconTextIconHideTitle || false"
+        :icon-text-color="iconTextColor"
+        :icon-text-info-hide-description="iconTextInfoHideDescription || false"
+        :icon-text="itemInfo?.title"
+        :item-info="itemInfo"
+        :card-style="cardStyle"
+        @delete="deleteItem"
+        @edit="editItem"
+      />
+    </template>
+
+    <!-- docker -->
+    <template v-else-if="itemInfo.cardType === PanelCardType.Docker">
+      <DockerCard
         :sort-status="sortStatus"
         :card-type-style="cardStyle"
         :background-color="backgroundColor"

@@ -2,11 +2,10 @@ package docker
 
 import (
 	"context"
-	"encoding/json"
-	"io"
 	"strings"
 	"sun-panel/api/api_v1/common/apiData/dockerApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
+	"sun-panel/biz"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/docker"
 	"time"
@@ -58,13 +57,15 @@ func (a *Container) GetList(c *gin.Context) {
 				})
 			}
 			resp = append(resp, dockerApiStructs.ContainerInfoResp{
-				ID:         v.ID,
-				Name:       v.Names[0][1:],
-				Image:      v.Image,
-				State:      v.State,
-				Status:     v.Status,
-				CreateTime: time.Unix(v.Created, 0).Format(cmn.TimeFormatMode1),
-				Ports:      ports,
+				ContainerInfo: dockerApiStructs.ContainerInfo{
+					ID:         v.ID,
+					Name:       v.Names[0][1:],
+					Image:      v.Image,
+					State:      v.State,
+					Status:     v.Status,
+					CreateTime: time.Unix(v.Created, 0).Format(cmn.TimeFormatMode1),
+					Ports:      ports,
+				},
 			})
 		}
 		apiReturn.SuccessListData(c, resp, 0)
@@ -117,50 +118,28 @@ func (a *Container) GetContainerStatus(c *gin.Context) {
 		return
 	}
 
-	var (
-		client *client.Client
-		err    error
-	)
-	client, err = docker.NewDockerClient()
-	if err != nil {
-		apiReturn.ErrorDockerClientFail(c, err.Error())
-		return
-	}
-	defer client.Close()
+	resp := dockerApiStructs.ContainerStats{}
 
-	ctx := context.Background()
-
-	res, err := client.ContainerStats(ctx, req.ID, false)
+	inspectData, err := biz.Docker.GetContainerInspect(req.ID)
 	if err != nil {
 		apiReturn.ErrorDocker(c, err.Error())
 		return
 	}
-	defer res.Body.Close()
+	resp.RunStatus = inspectData.Status
 
-	body, err := io.ReadAll(res.Body)
+	stateData, err := biz.Docker.GetContainerState(req.ID)
 	if err != nil {
-		res.Body.Close()
 		apiReturn.ErrorDocker(c, err.Error())
 		return
 	}
-	res.Body.Close()
-	var stats *types.StatsJSON
-	if err := json.Unmarshal(body, &stats); err != nil {
-		apiReturn.ErrorDocker(c, err.Error())
-		return
-	}
-	var data dockerApiStructs.ContainerStatsRespItem
-	data.CPUPercent = calculateCPUPercentUnix(stats)
-	data.IORead, data.IOWrite = calculateBlockIO(stats.BlkioStats)
-	data.Memory = float64(stats.MemoryStats.Usage) / 1024 / 1024
-	if cache, ok := stats.MemoryStats.Stats["cache"]; ok {
-		data.Cache = float64(cache) / 1024 / 1024
-	}
-	data.Memory = data.Memory - data.Cache
-	data.NetworkRX, data.NetworkTX = calculateNetwork(stats.Networks)
-	data.ShotTime = stats.Read
-
-	apiReturn.SuccessData(c, data)
+	resp.CPUPercent = stateData.CPUPercent
+	resp.Memory = stateData.Memory
+	resp.Cache = stateData.Cache
+	resp.IORead = stateData.IORead
+	resp.IOWrite = stateData.IOWrite
+	resp.NetworkRX = stateData.NetworkRX
+	resp.NetworkTX = stateData.NetworkTX
+	apiReturn.SuccessData(c, resp)
 
 }
 

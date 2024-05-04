@@ -12,3 +12,10 @@ export function execSwitchAction<T>(param: Docker.Container.ExecSwitchActionReq)
     data: param,
   })
 }
+
+export function getContainerStatus<T>(containerId: string) {
+  return post<T>({
+    url: '/docker/container/getContainerStatus',
+    data: { id: containerId },
+  })
+}

@@ -6,8 +6,11 @@ import {
   NGrid, NGridItem, NInput, NModal, NSelect,
   useMessage,
 } from 'naive-ui'
+
 import NormalCard from './itemCards/Normal.vue'
 import SystemAppCard from './itemCards/BuiltInApp.vue'
+import DockerCard from './itemCards/Docker.vue'
+
 import { ItemCards } from '@/views/home/components'
 import { edit } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
@@ -73,10 +76,10 @@ const optionsCardType = [
     label: t('iconItem.ordinaryIcon'),
     value: PanelCardType.Normal,
   },
-  // {
-  //   label: t('iconItem.dockerStatusCard'),
-  //   value: 2,
-  // },
+  {
+    label: t('iconItem.dockerStatusCard'),
+    value: PanelCardType.Docker,
+  },
   {
     label: t('iconItem.builtInApp'),
     value: PanelCardType.BuiltInApp,
@@ -256,10 +259,13 @@ function handleUpdateCardType() {
 
         <NDivider class="!my-2" />
         <!-- 个性化卡片的设置了 -->
-        <template v-if="model.cardType === 1">
+        <template v-if="model.cardType === PanelCardType.Normal">
           <NormalCard v-model:itemInfo="model" v-model:rules="rules" />
         </template>
-        <template v-if="model.cardType === 3">
+        <template v-if="model.cardType === PanelCardType.Docker">
+          <DockerCard v-model:itemInfo="model" v-model:rules="rules" />
+        </template>
+        <template v-if="model.cardType === PanelCardType.BuiltInApp">
           <SystemAppCard v-model:itemInfo="model" v-model:rules="rules" />
         </template>
 

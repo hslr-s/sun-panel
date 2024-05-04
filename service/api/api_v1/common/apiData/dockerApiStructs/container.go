@@ -17,7 +17,7 @@ type ContainerPort struct {
 	Type        PostType `json:"type"`
 }
 
-type ContainerInfoResp struct {
+type ContainerInfo struct {
 	ID         string          `json:"id"`
 	Name       string          `json:"name"`
 	Image      string          `json:"image"`
@@ -28,13 +28,16 @@ type ContainerInfoResp struct {
 	State      string          `json:"state"`
 	Status     string          `json:"status"`
 }
+type ContainerInfoResp struct {
+	ContainerInfo
+}
 
 type ExecSwitchActionByContainerIDReq struct {
 	ID     string `json:"id"`
 	Action bool   `json:"action"`
 }
 
-type ContainerStatsRespItem struct {
+type ContainerStats struct {
 	CPUPercent float64 `json:"cpuPercent"`
 	Memory     float64 `json:"memory"`
 	Cache      float64 `json:"cache"`
@@ -42,6 +45,7 @@ type ContainerStatsRespItem struct {
 	IOWrite    float64 `json:"ioWrite"`
 	NetworkRX  float64 `json:"networkRX"`
 	NetworkTX  float64 `json:"networkTX"`
+	RunStatus  string  `json:"runStatus"`
 
 	ShotTime time.Time `json:"shotTime"`
 }

@@ -2,14 +2,13 @@ package docker
 
 import (
 	"sun-panel/api/api_v1"
-	"sun-panel/api/api_v1/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func InitContainer(router *gin.RouterGroup) {
 	apiDocker := api_v1.ApiGroupApp.ApiDocker
-	r := router.Group("", middleware.LoginInterceptor)
+	r := router.Group("")
 
 	// r := router.Group("", middleware.LoginInterceptor)
 	{

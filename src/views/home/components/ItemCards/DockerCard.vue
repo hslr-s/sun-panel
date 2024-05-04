@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
-import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin } from 'naive-ui'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
+import { DockerContainerInfoState } from '@/enums/docker'
 import { useAuthStore, usePanelState } from '@/store'
+import { getContainerStatus as getContainerStatusApi } from '@/api/docker/container'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
-  itemInfo: Panel.ItemCard.CardInfo
+  itemInfo: Panel.ItemInfo
   backgroundColor?: string
   iconTextColor?: string
   iconTextInfoHideDescription: boolean
@@ -24,7 +26,8 @@ const emit = defineEmits<{
 }>()
 const panelState = usePanelState()
 const authStore = useAuthStore()
-const dialog = useDialog()
+let intervalId: any
+const showBadgeStatus = ref<DockerContainerInfoState[]>([])
 
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
@@ -35,8 +38,18 @@ const windowIframeIsLoad = ref<boolean>(false)
 const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
+const badgeStatusColor = ref('')
 
-const ms = useMessage()
+const containerState = ref<Docker.Container.Stats>({
+  cpuPercent: 0,
+  memory: 0,
+  cache: 0,
+  ioRead: 0,
+  ioWrite: 0,
+  networkRX: 0,
+  networkTX: 0,
+  runStatus: DockerContainerInfoState.exited,
+})
 const defaultBackground = '#2a2a2a6b'
 
 const calculateLuminance = (color: string) => {
@@ -180,6 +193,59 @@ function onClickoutside() {
   // message.info('clickoutside')
   dropdownShow.value = false
 }
+
+function getContainerStatus() {
+  getContainerStatusApi<Docker.Container.Stats>(props.itemInfo.expandParam.containerId).then(({ data }) => {
+    containerState.value = data
+
+    // 设置徽章的颜色
+    switch (containerState.value.runStatus) {
+      case DockerContainerInfoState.running:
+        badgeStatusColor.value = '#18A058'
+        break
+      case DockerContainerInfoState.restarting:
+        badgeStatusColor.value = '#F0A020FF'
+        break
+
+      default:
+        badgeStatusColor.value = '#7B7B7B'
+        break
+    }
+  }).catch(() => {
+
+  })
+}
+
+function roundNumberToTwoDecimalPlaces(num: number): number {
+  return Number(num.toFixed(2))
+}
+
+function inShowBadgeStatus(value: DockerContainerInfoState): boolean {
+  // 检查 arr 是否为数组
+  if (!Array.isArray(showBadgeStatus.value))
+    throw new Error('The first argument must be an array')
+
+  return showBadgeStatus.value.includes(value)
+}
+
+function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
+  return inShowBadgeStatus(value) && containerState.value.runStatus === value
+}
+
+onMounted(() => {
+  getContainerStatus()
+
+  if (props.itemInfo.expandParam.showBadgeStatus)
+    showBadgeStatus.value = props.itemInfo.expandParam.showBadgeStatus
+
+  intervalId = setInterval(() => {
+    getContainerStatus()
+  }, 5000) // 5000毫秒，即5秒
+})
+
+onUnmounted(() => {
+  clearInterval(intervalId)
+})
 </script>
 
 <template>
@@ -190,14 +256,20 @@ function onClickoutside() {
       :icon-text-icon-hide-title="iconTextIconHideTitle"
       :icon-text-color="iconTextColor"
       :icon-text="itemInfo?.title"
-      class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+      class="hover:shadow-[0_0_10px_5px_rgba(0,0,0,0.2)] transition-all duration-300 backdrop-blur-[2px] hover:backdrop-blur-[10px]"
     >
       <template #small>
         <div
-          class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl transition-all duration-200 hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
-          :title="itemInfo?.description"
+          class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative"
         >
-          <ItemIcon :item-icon="itemInfo?.icon" />
+          <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
+          <div
+            v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
+            class="dot dot-small flex items-center justify-center border"
+            :style="{ backgroundColor: badgeStatusColor }"
+          >
+            <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
+          </div>
         </div>
         <div
           v-if="!iconTextIconHideTitle"
@@ -211,14 +283,25 @@ function onClickoutside() {
       <template #info>
         <!-- 图标 -->
         <div class="app-icon-info-icon w-[70px] h-[70px]">
-          <div class="w-[70px] h-full flex items-center justify-center ">
-            <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" />
+          <div class="w-[70px] h-full flex items-center justify-center">
+            <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" :color="textColor" />
           </div>
+        </div>
+
+        <div
+          v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
+          class="dot dot-info flex items-center justify-center border"
+          :style="{ backgroundColor: badgeStatusColor }"
+        >
+          <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
         </div>
 
         <!-- 文字 -->
         <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
-        <div class="text-white flex items-center" :style="{ color: (iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }">
+        <div
+          class="text-white flex items-center"
+          :style="{ color: (!iconTextColor || iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }"
+        >
           <div class="app-icon-info-text-box w-full">
             <div class="app-icon-info-text-box-title font-semibold w-full">
               <NEllipsis>
@@ -226,8 +309,15 @@ function onClickoutside() {
               </NEllipsis>
             </div>
             <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
-              <NEllipsis :line-clamp="2" class="text-xs">
-                {{ itemInfo?.description }}
+              <NEllipsis v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2" class="text-xs">
+                CPU:{{ roundNumberToTwoDecimalPlaces(containerState.cpuPercent) }}%
+                RAM:{{ roundNumberToTwoDecimalPlaces(containerState.memory) }} MB
+              </NEllipsis>
+              <NEllipsis v-else-if="containerState.runStatus === DockerContainerInfoState.restarting" :line-clamp="2" class="text-xs">
+                {{ t('iconItem.showBadgeStatusRestarting') }}
+              </NEllipsis>
+              <NEllipsis v-else :line-clamp="2" class="text-xs">
+                {{ t('iconItem.showBadgeStatusExited') }}
               </NEllipsis>
             </div>
           </div>
@@ -270,3 +360,26 @@ function onClickoutside() {
     </NModal>
   </div>
 </template>
+
+<style scoped>
+.dot {
+  position: absolute;
+  color: white;
+  border-radius: 50%;
+}
+
+.dot-small{
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  font-size: 10px;
+}
+
+.dot-info{
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+}
+</style>

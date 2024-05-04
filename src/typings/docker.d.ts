@@ -11,7 +11,6 @@ declare namespace Docker {
 }
 
 declare namespace Docker.Container {
-
     interface Port {
         ip: string;
         privatePort: number;
@@ -35,6 +34,19 @@ declare namespace Docker.Container {
         id :string
         action:boolean
     }
+
+    interface Stats {
+        cpuPercent: number;
+        memory: number;
+        cache: number;
+        ioRead: number;
+        ioWrite: number;
+        networkRX: number;
+        networkTX: number;
+        shotTime?: string; // 时间戳字符串
+        runStatus:string
+    }
+    
     
 
 }
