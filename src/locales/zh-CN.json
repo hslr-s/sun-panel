@@ -89,6 +89,18 @@
     "common": {
       "notFound": "抱歉，应用加载失败，请尝试刷新页面或者清除浏览器缓存"
     },
+    "dockerManage": {
+      "action": "操作",
+      "containerName": "容器名称",
+      "created": "已创建",
+      "dead": "已终止",
+      "exited": "已停止",
+      "paused": "已暂停",
+      "restarting": "移出中",
+      "running": "运行中",
+      "state": "状态",
+      "unknown": "未知"
+    },
     "exportImport": {
       "appName": "导出导入",
       "errorConfigFileFormat": "配置文件格式不正确，无法导入",

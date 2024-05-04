@@ -89,6 +89,18 @@
     "common": {
       "notFound": "Sorry, the application failed to load. Please try refreshing the page or clearing the browser cache."
     },
+    "dockerManage": {
+      "action": "Action",
+      "containerName": "Container name",
+      "created": "Created",
+      "dead": "Dead",
+      "exited": "Exited",
+      "paused": "Paused",
+      "restarting": "Removing",
+      "running": "Running",
+      "state": "State",
+      "unknown": "unknown"
+    },
     "exportImport": {
       "appName": "Export/Import",
       "errorConfigFileFormat": "The configuration file format is incorrect and cannot be imported",

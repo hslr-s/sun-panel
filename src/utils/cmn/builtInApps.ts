@@ -66,6 +66,12 @@ export const systemApps: SystemApp[] = [
 // 管理账号的应用
 export const adminSystemApps: SystemApp[] = [
   {
+    name: 'Docker',
+    componentName: 'DockerManage',
+    icon: 'tabler-brand-docker',
+    auth: 1,
+  },
+  {
     name: t('adminSettingUsers.appName'),
     componentName: 'Users',
     icon: 'lucide:users',

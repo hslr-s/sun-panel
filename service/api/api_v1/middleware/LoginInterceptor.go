@@ -76,3 +76,18 @@ func LoginInterceptorDev(c *gin.Context) {
 		c.Set("userInfo", info)
 	}
 }
+
+// 调试模式登录-直接输入用户id模拟登录（不安全）
+func LoginInterceptorDebug(c *gin.Context) {
+	mUser := models.User{}
+	// 去库中查询是否存在该用户；否则返回错误
+	if info, err := mUser.GetUserInfoByUid(1); err != nil || info.ID == 0 {
+		apiReturn.ErrorCode(c, 1001, global.Lang.Get("login.err_token_expire"), nil)
+		c.Abort()
+		return
+	} else {
+		// 通过
+		// 设置当前用户信息
+		c.Set("userInfo", info)
+	}
+}
