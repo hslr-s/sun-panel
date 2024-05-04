@@ -7,6 +7,7 @@ interface Prop {
   itemIcon?: Panel.ItemIcon | null
   size?: number // 默认70
   forceBackground?: string // 强制背景色
+  color?: string
 }
 
 const props = withDefaults(defineProps<Prop>(), { size: 70 })
@@ -38,7 +39,7 @@ const iconExt = computed(() => {
         </template>
 
         <template v-else-if="itemIcon?.itemType === 3">
-          <NAvatar :size="props.size" :style="{ backgroundColor: defaultBackground }">
+          <NAvatar :size="props.size" :style="{ backgroundColor: defaultBackground, color: props.color }">
             <SvgIconOnline style="font-size: 35px;" :icon="itemIcon.text" />
           </NAvatar>
         </template>

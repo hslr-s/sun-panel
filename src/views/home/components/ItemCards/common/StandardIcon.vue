@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { NEllipsis } from 'naive-ui'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
@@ -37,6 +37,10 @@ function autoColor() {
 watch(() => backgroundRef.value, () => {
   textColor.value = autoColor()
 })
+
+onMounted(() => {
+  textColor.value = autoColor()
+})
 </script>
 
 <template>
@@ -54,7 +58,7 @@ watch(() => backgroundRef.value, () => {
           class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl"
           :title="itemInfo?.description"
         >
-          <ItemIcon :item-icon="itemInfo?.icon" />
+          <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
         </div>
         <div
           v-if="!iconTextIconHideTitle"
@@ -69,7 +73,7 @@ watch(() => backgroundRef.value, () => {
         <!-- 图标 -->
         <div class="app-icon-info-icon w-[70px] h-[70px]">
           <div class="w-[70px] h-full flex items-center justify-center">
-            <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" />
+            <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" :color="textColor" />
           </div>
         </div>
 
