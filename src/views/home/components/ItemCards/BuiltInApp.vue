@@ -124,7 +124,7 @@ function onClickoutside() {
       content-style="height: calc(100% - 50px);display:flex;"
       size="small"
     >
-      <div class="w-full rounded-2xl border overflow-auto dark:border-zinc-700" style="">
+      <div class="w-full rounded-2xl border overflow-auto dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 ">
         <AppLoader :component-name="item.expandParam.systemAppName" />
       </div>
     </NModal>

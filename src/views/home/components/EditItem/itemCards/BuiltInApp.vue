@@ -4,9 +4,11 @@ import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
 import IconEditor from '../IconEditor.vue'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
-import { systemApps } from '@/utils/cmn/builtInApps'
+import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
 import { AppLoader, RoundCardModal } from '@/components/common/'
+import { useAuthStore } from '@/store'
+import { AdminAuthRole } from '@/enums/admin'
 
 const props = defineProps<{
   itemInfo: Panel.Info
@@ -19,6 +21,7 @@ const emit = defineEmits<{
   (e: 'update:rules', info?: FormRules): void
 }>()
 
+const authStore = useAuthStore()
 const item = ref(props.itemInfo)
 const builtinAppModalShow = ref(false)
 const apps = ref(systemApps)
@@ -54,6 +57,9 @@ watch(model.value, () => {
 onMounted(() => {
   const r = { ...props.rules, ...rulesExtends }
   emit('update:rules', r)
+
+  if (authStore.userInfo?.role === AdminAuthRole.admin)
+    apps.value = [...systemApps, ...adminSystemApps]
 
   // 设置默认值
   if (!props.itemInfo.expandParam) {

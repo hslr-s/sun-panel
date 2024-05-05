@@ -86,7 +86,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-slate-200 dark:bg-zinc-900 p-2 h-full">
+  <div class="p-2">
     <NSpin v-show="loading" size="small" />
     <NAlert type="info" :bordered="false">
       {{ $t('apps.uploadsFileManager.alertText') }}
@@ -100,7 +100,7 @@ onMounted(() => {
           <NGridItem v-for=" item, index in imageList" :key="index">
             <NCard size="small" style="border-radius: 5px;" :bordered="true">
               <template #cover>
-                <div class="card transparent-grid">
+                <div class="card transparent-grid dark:brightness-75">
                   <NImage :lazy="true" style="object-fit: contain;height: 100%;" :src="item.src" />
                 </div>
               </template>
@@ -180,12 +180,5 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 80px;
-}
-
-.transparent-grid {
-  background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%),
-    linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%);
-  background-size: 16px 16px;
-  background-position: 0 0, 8px 8px;
 }
 </style>

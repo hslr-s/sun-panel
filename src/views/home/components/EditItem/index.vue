@@ -51,6 +51,7 @@ interface Emit {
   (e: 'done', item: Panel.Info): void// 创建完成
 }
 
+const previewTransparentCanvas = ref(false)
 const model = ref<Panel.Info>(props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault })
 const formRef = ref<FormInst | null>(null)
 
@@ -179,12 +180,15 @@ function handleUpdateCardType() {
   <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')">
     <!-- 卡片预览 -->
     <div class="mb-2">
-      <span class="flex justify-center mb-1">
+      <span class="flex mb-1">
         <NCheckbox v-model:checked="showPreview" size="small">
           {{ t('iconItem.preview') }}
         </NCheckbox>
+        <NCheckbox v-if="showPreview" v-model:checked="previewTransparentCanvas" size="small">
+          {{ t('iconItem.previewTransparentCanvas') }}
+        </NCheckbox>
       </span>
-      <div v-if="showPreview" class="transparent-grid preview-box rounded-xl border">
+      <div v-if="showPreview" class="preview-box rounded-xl border" :class="previewTransparentCanvas ? 'transparent-grid' : 'bg-[#e2e8f0]'">
         <div class="flex justify-center p-2">
           <div class="w-[210px] mr-4 z-[-1]">
             <ItemCards

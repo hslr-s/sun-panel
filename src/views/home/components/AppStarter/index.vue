@@ -101,7 +101,7 @@ onUnmounted(() => {
             >
               <div class="w-full h-full dark:bg-[#2c2c32]">
                 <div
-                  class="p-[5px] bg-slate-200 dark:bg-zinc-900 rounded-xl overflow-auto"
+                  class="p-[5px] rounded-xl overflow-auto border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 "
                   :style="{
                     width: isSmallScreen ? '100%' : '220px',
                     minWidth: '200px',
@@ -133,7 +133,7 @@ onUnmounted(() => {
               </div>
             </NLayoutSider>
             <NLayoutContent :content-style="{ height }">
-              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 " :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
                 <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>

@@ -151,61 +151,65 @@ watch(() => editModalArg.value.show, (v) => {
 </script>
 
 <template>
-  <div class="h-full">
-    <div class="p-2">
-      <NButton type="success" size="small" style="margin-right: 10px;" @click="handleAddGroup">
-        {{ $t('common.add') }}
-      </NButton>
+  <div class="p-2">
+    <NCard style="border-radius: 10px;margin-bottom:10px ;" size="small">
+      <div>
+        <NButton type="success" size="small" style="margin-right: 10px;" @click="handleAddGroup">
+          {{ $t('common.add') }}
+        </NButton>
 
-      <NButton v-if="!sortStatus" size="small" @click="handleDragSort">
-        {{ $t('common.sort') }}
-      </NButton>
+        <NButton v-if="!sortStatus" size="small" @click="handleDragSort">
+          {{ $t('common.sort') }}
+        </NButton>
 
-      <NButton v-else type="warning" size="small" @click="handleSaveSort">
-        {{ $t('common.saveSort') }}
-      </NButton>
-    </div>
+        <NButton v-else type="warning" size="small" @click="handleSaveSort">
+          {{ $t('common.saveSort') }}
+        </NButton>
+      </div>
+    </NCard>
 
-    <div class=" overflow-auto w-full mt-[20px]  bg-slate-200 dark:bg-zinc-900 rounded-xl" style="height:calc(100% - 65px)">
-      <VueDraggable
-        v-model="groups"
-        item-key="sort" :animation="300"
-        :style="{ padding: sortStatus ? '20px' : '10px' }"
-        :disabled="!sortStatus"
-      >
-        <div v-for="(item, index) in groups" :key="index" class="w-full">
-          <NCard size="small" style="border-radius:10px;margin-bottom: 10px;">
-            <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
-              <div class="flex items-center">
-                <span class="mr-[10px]">
-                  <SvgIcon class="text-[20px]" icon="material-symbols:ad-group-outline-rounded" />
+    <NCard style="border-radius: 10px;" size="small">
+      <div class="w-full mt-[20px] rounded-xl my-20 pt-[5px]" :class="sortStatus ? 'border border-dashed' : ''">
+        <VueDraggable
+          v-model="groups"
+          item-key="sort" :animation="300"
+          :style="{ padding: sortStatus ? '20px' : '5px' }"
+          :disabled="!sortStatus"
+        >
+          <div v-for="(item, index) in groups" :key="index" class="w-full">
+            <NCard size="small" style="border-radius:10px;margin-bottom: 10px;" class="card">
+              <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
+                <div class="flex items-center">
+                  <span class="mr-[10px]">
+                    <SvgIcon class="text-[20px]" icon="material-symbols:ad-group-outline-rounded" />
                   <!-- <SvgIcon class="text-[20px]" :icon="item.icon" /> -->
-                </span>
-                <span>
-                  {{ item.title }}
-                </span>
+                  </span>
+                  <span>
+                    {{ item.title }}
+                  </span>
+                </div>
+                <div class="ml-auto">
+                  <span>
+                    <NButton strong secondary type="success" size="small" @click="handleEditGroup(item)">
+                      <template #icon>
+                        <SvgIcon icon="basil:edit-solid" />
+                      </template>
+                    </NButton>
+                  </span>
+                  <span class="ml-[10px]">
+                    <NButton strong secondary type="error" size="small" class="ml-[10px]" @click="handleDelete(item)">
+                      <template #icon>
+                        <SvgIcon icon="material-symbols:delete" />
+                      </template>
+                    </NButton>
+                  </span>
+                </div>
               </div>
-              <div class="ml-auto">
-                <span>
-                  <NButton strong secondary type="success" size="small" @click="handleEditGroup(item)">
-                    <template #icon>
-                      <SvgIcon icon="basil:edit-solid" />
-                    </template>
-                  </NButton>
-                </span>
-                <span class="ml-[10px]">
-                  <NButton strong secondary type="error" size="small" class="ml-[10px]" @click="handleDelete(item)">
-                    <template #icon>
-                      <SvgIcon icon="material-symbols:delete" />
-                    </template>
-                  </NButton>
-                </span>
-              </div>
-            </div>
-          </NCard>
-        </div>
-      </VueDraggable>
-    </div>
+            </NCard>
+          </div>
+        </VueDraggable>
+      </div>
+    </NCard>
 
     <RoundCardModal v-model:show="editModalArg.show" size="small" type="small" :title="editModalArg.editStatus === 1 ? t('common.add') : t('common.edit')" style="width: 400px;">
       <NForm ref="formRef" :model="editModalArg.model" :rules="editModalArg.rules">
@@ -251,3 +255,13 @@ watch(() => editModalArg.value.show, (v) => {
     </RoundCardModal>
   </div>
 </template>
+
+<style scoped>
+.card{
+  background-color: rgb(241 241 241)
+}
+
+.dark .card{
+  background-color: #24242a
+}
+</style>
