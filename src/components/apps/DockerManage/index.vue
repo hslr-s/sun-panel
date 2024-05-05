@@ -26,6 +26,8 @@ const menuOptions = [
   },
 
 ]
+
+console.log(inverted, menuOptions)
 </script>
 
 <template>

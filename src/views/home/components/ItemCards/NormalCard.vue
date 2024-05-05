@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NDropdown, NModal, NSkeleton, NSpin } from 'naive-ui'
 import type { DropdownOption } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { useAuthStore, usePanelState } from '@/store'
-import { defaultItemCardBackgroundColor } from '@/utils/defaultData'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
@@ -26,7 +25,7 @@ const emit = defineEmits<{
 }>()
 const panelState = usePanelState()
 const authStore = useAuthStore()
-const dialog = useDialog()
+// const dialog = useDialog()
 
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
@@ -38,16 +37,16 @@ const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 
-const ms = useMessage()
-const defaultBackground = defaultItemCardBackgroundColor
+// const ms = useMessage()
+// const defaultBackground = defaultItemCardBackgroundColor
 
-const calculateLuminance = (color: string) => {
-  const hex = color.replace(/^#/, '')
-  const r = parseInt(hex.substring(0, 2), 16)
-  const g = parseInt(hex.substring(2, 4), 16)
-  const b = parseInt(hex.substring(4, 6), 16)
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
-}
+// const calculateLuminance = (color: string) => {
+//   const hex = color.replace(/^#/, '')
+//   const r = parseInt(hex.substring(0, 2), 16)
+//   const g = parseInt(hex.substring(2, 4), 16)
+//   const b = parseInt(hex.substring(4, 6), 16)
+//   return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+// }
 
 function openPage(openMethod: number, url: string, title?: string) {
   switch (openMethod) {

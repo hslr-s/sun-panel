@@ -34,6 +34,12 @@ const currentRightSelectIndex = ref<number | null>(null)
 const monitorGroup = ref<MonitorGroup>({
   hoverStatus: false,
   sortStatus: false,
+  cardStyle: {
+    style: 0,
+    textColor: '',
+    textInfoHideDescription: false,
+    textIconHideTitle: false,
+  },
 })
 
 const editShowStatus = ref<boolean>(false)

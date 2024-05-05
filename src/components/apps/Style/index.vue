@@ -4,7 +4,7 @@ import type { UploadFileInfo } from 'naive-ui'
 import { NButton, NCard, NGrid, NGridItem, NInput, NInputGroup, NPopconfirm, NSelect, NSlider, NSwitch, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { useAuthStore, usePanelState } from '@/store'
 import { set as setUserConfig } from '@/api/panel/userConfig'
-import { PanelPanelConfigStyleEnum } from '@/enums/panel'
+// import { PanelPanelConfigStyleEnum } from '@/enums/panel'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 
@@ -15,16 +15,16 @@ const showWallpaperInput = ref(false)
 
 const isSaveing = ref(false)
 
-const iconTypeOptions = [
-  {
-    label: t('apps.baseSettings.detailIcon'),
-    value: PanelPanelConfigStyleEnum.info,
-  },
-  {
-    label: t('apps.baseSettings.smallIcon'),
-    value: PanelPanelConfigStyleEnum.icon,
-  },
-]
+// const iconTypeOptions = [
+//   {
+//     label: t('apps.baseSettings.detailIcon'),
+//     value: PanelPanelConfigStyleEnum.info,
+//   },
+//   {
+//     label: t('apps.baseSettings.smallIcon'),
+//     value: PanelPanelConfigStyleEnum.icon,
+//   },
+// ]
 
 const maxWidthUnitOption = [
   {

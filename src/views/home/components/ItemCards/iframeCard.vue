@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin } from 'naive-ui'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
 import { t } from '@/locales'
@@ -9,7 +9,7 @@ import { useAuthStore, usePanelState } from '@/store'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
-  itemInfo: Panel.ItemCard.CardInfo
+  itemInfo: Panel.ItemInfo
   backgroundColor?: string
   iconTextColor?: string
   iconTextInfoHideDescription: boolean
@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>()
 const panelState = usePanelState()
 const authStore = useAuthStore()
-const dialog = useDialog()
+// const dialog = useDialog()
 
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
@@ -36,7 +36,7 @@ const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 
-const ms = useMessage()
+// const ms = useMessage()
 const defaultBackground = '#2a2a2a6b'
 
 const calculateLuminance = (color: string) => {
