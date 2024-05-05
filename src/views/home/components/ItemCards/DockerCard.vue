@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import type { DropdownOption } from 'naive-ui'
 import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin } from 'naive-ui'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
@@ -7,7 +8,7 @@ import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { useAuthStore, usePanelState } from '@/store'
-import { getContainerStatus as getContainerStatusApi } from '@/api/docker/container'
+import { execSwitchAction as execSwitchActionApi, getContainerStatus as getContainerStatusApi } from '@/api/docker/container'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
@@ -39,6 +40,7 @@ const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 const badgeStatusColor = ref('')
+const loading = ref(false)
 
 const containerState = ref<Docker.Container.Stats>({
   cpuPercent: 0,
@@ -104,7 +106,28 @@ function handleItemClick() {
   if (props.itemInfo?.lanUrl === '')
     jumpUrl = props.itemInfo.url
 
-  openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+  // console.log('项目呗点击', containerState.value.runStatus, props.itemInfo.expandParam.openPageAndStart)
+  if (containerState.value.runStatus === DockerContainerInfoState.exited && props.itemInfo.expandParam.openPageAndStart === true) {
+    execSwitchAction(true, () => {
+      openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+
+      // 容易被拦截暂时取消延时
+      // const delaySecond = props.itemInfo.expandParam.openPageAndStartDelaySecond
+      // if (delaySecond !== 0) {
+      //   // console.log('延时打开页面')
+      //   setTimeout(() => {
+      //     openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      //   }, delaySecond * 1000)
+      // }
+      // else {
+      //   // console.log('不延时打开页面')
+      //   openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      // }
+    })
+  }
+  else {
+    openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+  }
 }
 
 // 右键
@@ -141,6 +164,14 @@ function handleRightMenuSelect(key: string | number) {
       if (props.itemInfo && props.itemInfo.lanUrl)
         openPage(props.itemInfo?.openMethod, props.itemInfo.lanUrl, props.itemInfo?.title)
       break
+
+    case 'startContainer':
+      execSwitchAction(true)
+      break
+
+    case 'stopContainer':
+      execSwitchAction(false)
+      break
     case 'edit':
       // 这里有个奇怪的问题，如果不使用{...}的方式 父组件的值会同步修改 标记一下
       emit('edit')
@@ -154,7 +185,7 @@ function handleRightMenuSelect(key: string | number) {
 }
 
 function getDropdownMenuOptions() {
-  const dropdownMenuOptions = [
+  const dropdownMenuOptions: DropdownOption[] = [
     {
       label: t('iconItem.newWindowOpen'),
       key: 'newWindows',
@@ -177,13 +208,32 @@ function getDropdownMenuOptions() {
   }
 
   if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
-    dropdownMenuOptions.push({
-      label: t('common.edit'),
-      key: 'edit',
-    }, {
-      label: t('common.delete'),
-      key: 'delete',
-    })
+    dropdownMenuOptions.push(
+      {
+        type: 'divider',
+        key: 'd1',
+      },
+      {
+        label: t('iconItem.dockerAction.startContainer'),
+        key: 'startContainer',
+      },
+      {
+        label: t('iconItem.dockerAction.stopContainer'),
+        key: 'stopContainer',
+      },
+      {
+        type: 'divider',
+        key: 'd1',
+      },
+      {
+        label: t('common.edit'),
+        key: 'edit',
+      },
+      {
+        label: t('common.delete'),
+        key: 'delete',
+      },
+    )
   }
 
   return dropdownMenuOptions
@@ -194,8 +244,33 @@ function onClickoutside() {
   dropdownShow.value = false
 }
 
-function getContainerStatus() {
-  getContainerStatusApi<Docker.Container.Stats>(props.itemInfo.expandParam.containerId).then(({ data }) => {
+async function execSwitchAction(action: boolean, startSuccessCallback?: () => void) {
+  loading.value = true
+  const id = props.itemInfo.expandParam.containerId
+  await execSwitchActionApi({
+    id, action,
+  }).then(() => {
+    if (action) {
+      containerState.value.runStatus = DockerContainerInfoState.running
+      console.log(containerState.value.runStatus)
+      if (startSuccessCallback)
+        startSuccessCallback()
+    }
+    else {
+      containerState.value.runStatus = DockerContainerInfoState.exited
+    }
+
+    // 成功
+  }).catch(() => {
+    // 失败
+  })
+  loading.value = false
+}
+
+async function getContainerStatus(showLoading?: boolean) {
+  if (showLoading)
+    loading.value = true
+  await getContainerStatusApi<Docker.Container.Stats>(props.itemInfo.expandParam.containerId).then(({ data }) => {
     containerState.value = data
 
     // 设置徽章的颜色
@@ -214,6 +289,8 @@ function getContainerStatus() {
   }).catch(() => {
 
   })
+  if (showLoading)
+    loading.value = false
 }
 
 function roundNumberToTwoDecimalPlaces(num: number): number {
@@ -233,7 +310,7 @@ function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
 }
 
 onMounted(() => {
-  getContainerStatus()
+  getContainerStatus(true)
 
   if (props.itemInfo.expandParam.showBadgeStatus)
     showBadgeStatus.value = props.itemInfo.expandParam.showBadgeStatus
@@ -259,69 +336,68 @@ onUnmounted(() => {
       class="hover:shadow-[0_0_10px_5px_rgba(0,0,0,0.2)] transition-all duration-300 backdrop-blur-[2px] hover:backdrop-blur-[10px]"
     >
       <template #small>
-        <div
-          class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative"
-        >
-          <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
+        <NSpin :show="loading">
           <div
-            v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
-            class="dot dot-small flex items-center justify-center border"
-            :style="{ backgroundColor: badgeStatusColor }"
+            class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative"
           >
-            <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
+            <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
+            <div
+              v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
+              class="dot dot-small flex items-center justify-center border"
+              :style="{ backgroundColor: badgeStatusColor }"
+            >
+              <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
+            </div>
           </div>
-        </div>
-        <div
-          v-if="!iconTextIconHideTitle"
-          class="app-icon-small-title text-center app-icon-text-shadow cursor-pointer mt-[2px]"
-          :style="{ color: iconTextColor }"
-        >
-          <span>{{ itemInfo?.title }}</span>
-        </div>
+        </NSpin>
       </template>
 
       <template #info>
-        <!-- 图标 -->
-        <div class="app-icon-info-icon w-[70px] h-[70px]">
-          <div class="w-[70px] h-full flex items-center justify-center">
-            <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" :color="textColor" />
-          </div>
-        </div>
-
-        <div
-          v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
-          class="dot dot-info flex items-center justify-center border"
-          :style="{ backgroundColor: badgeStatusColor }"
-        >
-          <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
-        </div>
-
-        <!-- 文字 -->
-        <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
-        <div
-          class="text-white flex items-center"
-          :style="{ color: (!iconTextColor || iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }"
-        >
-          <div class="app-icon-info-text-box w-full">
-            <div class="app-icon-info-text-box-title font-semibold w-full">
-              <NEllipsis>
-                {{ itemInfo?.title }}
-              </NEllipsis>
+        <NSpin :show="loading" style="width: 100%;">
+          <div class="flex">
+            <!-- 图标 -->
+            <div class="app-icon-info-icon w-[70px] h-[70px]">
+              <div class="w-[70px] h-full flex items-center justify-center">
+                <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" :color="textColor" />
+              </div>
             </div>
-            <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
-              <NEllipsis v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2" class="text-xs">
-                CPU:{{ roundNumberToTwoDecimalPlaces(containerState.cpuPercent) }}%
-                RAM:{{ roundNumberToTwoDecimalPlaces(containerState.memory) }} MB
-              </NEllipsis>
-              <NEllipsis v-else-if="containerState.runStatus === DockerContainerInfoState.restarting" :line-clamp="2" class="text-xs">
-                {{ t('iconItem.showBadgeStatusRestarting') }}
-              </NEllipsis>
-              <NEllipsis v-else :line-clamp="2" class="text-xs">
-                {{ t('iconItem.showBadgeStatusExited') }}
-              </NEllipsis>
+
+            <div
+              v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
+              class="dot dot-info flex items-center justify-center border"
+              :style="{ backgroundColor: badgeStatusColor }"
+            >
+              <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
+            </div>
+
+            <!-- 文字 -->
+            <!-- 如果为纯白色，将自动根据背景的明暗计算字体的黑白色 -->
+            <div
+              class="text-white flex items-center"
+              :style="{ color: (!iconTextColor || iconTextColor === '#ffffff') ? textColor : iconTextColor, maxWidth: 'calc(100% - 80px)' }"
+            >
+              <div class="app-icon-info-text-box w-full">
+                <div class="app-icon-info-text-box-title font-semibold w-full">
+                  <NEllipsis>
+                    {{ itemInfo?.title }}
+                  </NEllipsis>
+                </div>
+                <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
+                  <NEllipsis v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2" class="text-xs">
+                    CPU:{{ roundNumberToTwoDecimalPlaces(containerState.cpuPercent) }}%
+                    RAM:{{ roundNumberToTwoDecimalPlaces(containerState.memory) }} MB
+                  </NEllipsis>
+                  <NEllipsis v-else-if="containerState.runStatus === DockerContainerInfoState.restarting" :line-clamp="2" class="text-xs">
+                    {{ t('iconItem.showBadgeStatusRestarting') }}
+                  </NEllipsis>
+                  <NEllipsis v-else :line-clamp="2" class="text-xs">
+                    {{ t('iconItem.showBadgeStatusExited') }}
+                  </NEllipsis>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </NSpin>
       </template>
     </ItemCard>
 

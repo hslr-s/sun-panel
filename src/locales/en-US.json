@@ -294,6 +294,10 @@
     "containerName": "Container",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",
+    "dockerAction": {
+      "startContainer": "Start container",
+      "stopContainer": "Stop container"
+    },
     "dockerStatusCard": "Docker container status card",
     "edit": "Edit item",
     "getGroupFail": "Failed to get group information",
@@ -317,6 +321,7 @@
     "onlyName": "Unique identifier (English identifier, used as OpenAPI, corresponding field: 'onlyName')",
     "onlyNameExisted": "The unique identifier is already occupied",
     "openMethod": "Open method",
+    "openPageAndStartContainer": "Start the container before opening the page",
     "ordinaryIcon": "Normal icon",
     "preview": "Effect preview",
     "resetBackground": "Reset",

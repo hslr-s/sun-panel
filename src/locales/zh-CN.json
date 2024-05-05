@@ -294,6 +294,10 @@
     "containerName": "容器",
     "currentPageLayerOpen": "当前页面弹窗打开",
     "currentPageOpen": "当前页面打开",
+    "dockerAction": {
+      "startContainer": "启动容器",
+      "stopContainer": "停止容器"
+    },
     "dockerStatusCard": "Docker容器状态卡片",
     "edit": "修改项目",
     "getGroupFail": "分组信息获取失败",
@@ -317,6 +321,7 @@
     "onlyName": "唯一标识 (英文标识，用作OpenAPI，对应字段：\"onlyName\")",
     "onlyNameExisted": "唯一标识已被占用",
     "openMethod": "打开方式",
+    "openPageAndStartContainer": "打开页面前启动容器",
     "ordinaryIcon": "普通图标",
     "preview": "效果预览",
     "resetBackground": "重置",

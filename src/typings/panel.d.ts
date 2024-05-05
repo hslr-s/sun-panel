@@ -120,9 +120,9 @@ declare namespace Panel.ItemCardExpandParam {
     interface Docker {
         containerId: string
         openPageAndStart: bool
+        openPageAndStartDelaySecond:number // 启动容器后延时n秒打开页面
         cardType: string
         showBadgeStatus?: DockerContainerInfoState[]
-
     }
 
 

@@ -2,7 +2,7 @@
 import {
   NButton, NCard, NCheckbox, NCheckboxGroup,
   NFormItem, NGrid, NGridItem, NInput,
-  NInputGroup, NSelect, NSpace, useMessage,
+  NInputGroup, NSelect, NSpace, NSwitch, useMessage,
 } from 'naive-ui'
 
 import type { FormRules } from 'naive-ui'
@@ -79,6 +79,7 @@ const extendParam: Panel.ItemCardExpandParam.Docker = {
   openPageAndStart: false,
   cardType: '',
   showBadgeStatus: [],
+  openPageAndStartDelaySecond: 0,
 }
 
 const model = ref(props.itemInfo)
@@ -103,6 +104,7 @@ onMounted(() => {
     ep.openPageAndStart = props.itemInfo.expandParam.openPageAndStart
     ep.cardType = props.itemInfo.expandParam.cardType
     ep.showBadgeStatus = props.itemInfo.expandParam.showBadgeStatus
+    ep.openPageAndStartDelaySecond = props.itemInfo.expandParam.openPageAndStartDelaySecond
 
     model.value.expandParam = ep
   }
@@ -212,10 +214,33 @@ function handleChange(value: string, appInfo: SystemApp) {
     <!-- <NFormItem path="description" :label="$t('common.description')">
       <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
     </NFormItem> -->
+    <NFormItem :label="$t('iconItem.openPageAndStartContainer')">
+      <NSwitch v-model:value="model.expandParam.openPageAndStart" />
+      <!-- <div v-if="model.expandParam.openPageAndStart" class="flex items-center">
+        <span class="mr-2 ml-5">容器启动后延时打开页面</span>
+        <NInputNumber
+          v-model:value="model.expandParam.openPageAndStartDelaySecond"
+          style="width: 80px;"
+          :min="0"
+          :max="60"
+        />
+        <span class="ml-2">s</span>
+      </div> -->
+    </NFormItem>
 
     <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
       <NSelect v-model:value="model.openMethod" :options="options" />
     </NFormItem>
+    <!-- <NGrid cols="2" :x-gap="10" item-responsive>
+      <NGridItem span="2 500:1">
+
+      </NGridItem>
+      <NGridItem span="2 500:1">
+        <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
+          <NSelect v-model:value="model.openMethod" :options="options" />
+        </NFormItem>
+      </NGridItem>
+    </NGrid> -->
 
     <RoundCardModal v-model:show="builtinAppModalShow">
       <AppLoader :component-name="item.expandParam.systemAppName" />
