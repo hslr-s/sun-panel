@@ -345,9 +345,9 @@
   },
   "panelHome": {
     "changeToLanModel": "切换为内网模式",
-    "changeToLanModelSuccess": "已经切换到内网模式（模式状态仅保存在本地）",
+    "changeToLanModelSuccess": "已经切换到内网模式（此状态仅保存在浏览器本地）",
     "changeToWanModel": "切换为公网模式",
-    "changeToWanModelSuccess": "已经切换到公网模式（模式状态仅保存在本地）",
+    "changeToWanModelSuccess": "已经切换到公网模式（模此状态仅保存在浏览器本地）",
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
     "openWanUrl": "打开公网地址"
