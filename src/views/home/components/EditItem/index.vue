@@ -184,30 +184,32 @@ function handleUpdateCardType() {
           {{ t('iconItem.preview') }}
         </NCheckbox>
       </span>
-      <div v-if="showPreview" class="flex justify-center transparent-grid preview-box p-2 rounded-xl border">
-        <div class="w-[210px] mr-4">
-          <ItemCards
-            :sort-status="false"
-            class="cursor-pointer"
-            :card-info="model"
-            :icon-text-info-hide-description="false"
-            :icon-text-icon-hide-title="false"
-            :card-style="PanelPanelConfigStyleEnum.info"
-            :card-type="PanelCardType.Normal"
-          />
-        </div>
+      <div v-if="showPreview" class="transparent-grid preview-box rounded-xl border">
+        <div class="flex justify-center p-2">
+          <div class="w-[210px] mr-4 z-[-1]">
+            <ItemCards
+              :sort-status="false"
+              class="cursor-pointer"
+              :card-info="model"
+              :icon-text-info-hide-description="false"
+              :icon-text-icon-hide-title="false"
+              :card-style="PanelPanelConfigStyleEnum.info"
+              :card-type="PanelCardType.Normal"
+            />
+          </div>
 
-        <div>
-          <ItemCards
-            :sort-status="false"
-            class="cursor-pointer"
-            :card-info="model"
-            icon-text-color="#000"
-            :icon-text-info-hide-description="false"
-            :icon-text-icon-hide-title="false"
-            :card-style="PanelPanelConfigStyleEnum.small"
-            :card-type="PanelCardType.Normal"
-          />
+          <div class="z-[-1]">
+            <ItemCards
+              :sort-status="false"
+              class="cursor-pointer"
+              :card-info="model"
+              icon-text-color="#000"
+              :icon-text-info-hide-description="false"
+              :icon-text-icon-hide-title="false"
+              :card-style="PanelPanelConfigStyleEnum.small"
+              :card-type="PanelCardType.Normal"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -294,7 +296,8 @@ function handleUpdateCardType() {
 
 <style scoped>
 .preview-box{
-  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
 .dark .preview-box{

@@ -298,6 +298,7 @@
       "startContainer": "启动容器",
       "stopContainer": "停止容器"
     },
+    "dockerContainerError": "容器异常",
     "dockerStatusCard": "Docker容器状态卡片",
     "edit": "修改项目",
     "getGroupFail": "分组信息获取失败",
@@ -323,7 +324,7 @@
     "openMethod": "打开方式",
     "openPageAndStartContainer": "打开页面前启动容器",
     "ordinaryIcon": "普通图标",
-    "preview": "效果预览",
+    "preview": "效果预览(仅供参考，可能与实际有差异)",
     "resetBackground": "重置",
     "selectUpload": "本地上传",
     "showBadgeStatus": "显示状态徽章",

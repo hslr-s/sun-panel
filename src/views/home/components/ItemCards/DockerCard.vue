@@ -11,6 +11,7 @@ import { useAuthStore, usePanelState } from '@/store'
 import { execSwitchAction as execSwitchActionApi, getContainerStatus as getContainerStatusApi } from '@/api/docker/container'
 
 import { VisitMode } from '@/enums/auth'
+import { apiRespErrMsg } from '@/utils/request/apiMessage'
 interface Prop {
   itemInfo: Panel.ItemInfo
   backgroundColor?: string
@@ -41,6 +42,8 @@ const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 const badgeStatusColor = ref('')
 const loading = ref(false)
+const badgeMsg = ref('')
+const dockerErrorMsg = ref('')
 
 const containerState = ref<Docker.Container.Stats>({
   cpuPercent: 0,
@@ -261,16 +264,28 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
     }
 
     // 成功
-  }).catch(() => {
+  }).catch((res) => {
+    if (res.code === -1) {
+      dockerErrorMsg.value = res.msg
+      return
+    }
+
+    apiRespErrMsg(res)
+
     // 失败
   })
   loading.value = false
 }
 
 async function getContainerStatus(showLoading?: boolean) {
+  const id = props.itemInfo.expandParam.containerId
+
+  if (!id)
+    return
+
   if (showLoading)
     loading.value = true
-  await getContainerStatusApi<Docker.Container.Stats>(props.itemInfo.expandParam.containerId).then(({ data }) => {
+  await getContainerStatusApi<Docker.Container.Stats>(id).then(({ data }) => {
     containerState.value = data
 
     // 设置徽章的颜色
@@ -286,8 +301,15 @@ async function getContainerStatus(showLoading?: boolean) {
         badgeStatusColor.value = '#7B7B7B'
         break
     }
-  }).catch(() => {
+  }).catch((res) => {
+    badgeStatusColor.value = 'red'
+    badgeMsg.value = t('iconItem.dockerContainerError')
+    if (res.code === -1) {
+      dockerErrorMsg.value = res.msg
+      return
+    }
 
+    apiRespErrMsg(res)
   })
   if (showLoading)
     loading.value = false
@@ -345,6 +367,7 @@ onUnmounted(() => {
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
               class="dot dot-small flex items-center justify-center border"
               :style="{ backgroundColor: badgeStatusColor }"
+              :title="badgeMsg"
             >
               <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
             </div>
@@ -366,6 +389,7 @@ onUnmounted(() => {
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
               class="dot dot-info flex items-center justify-center border"
               :style="{ backgroundColor: badgeStatusColor }"
+              :title="badgeMsg"
             >
               <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
             </div>
@@ -389,9 +413,15 @@ onUnmounted(() => {
                   </NEllipsis>
                   <NEllipsis v-else-if="containerState.runStatus === DockerContainerInfoState.restarting" :line-clamp="2" class="text-xs">
                     {{ t('iconItem.showBadgeStatusRestarting') }}
+                    <span class="text-[red]">
+                      {{ badgeMsg }}
+                    </span>
                   </NEllipsis>
                   <NEllipsis v-else :line-clamp="2" class="text-xs">
                     {{ t('iconItem.showBadgeStatusExited') }}
+                    <span class="text-[red]" :title="dockerErrorMsg">
+                      {{ badgeMsg }}
+                    </span>
                   </NEllipsis>
                 </div>
               </div>

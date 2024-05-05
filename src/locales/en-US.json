@@ -298,6 +298,7 @@
       "startContainer": "Start container",
       "stopContainer": "Stop container"
     },
+    "dockerContainerError": "Container exception",
     "dockerStatusCard": "Docker container status card",
     "edit": "Edit item",
     "getGroupFail": "Failed to get group information",
@@ -323,7 +324,7 @@
     "openMethod": "Open method",
     "openPageAndStartContainer": "Start the container before opening the page",
     "ordinaryIcon": "Normal icon",
-    "preview": "Effect preview",
+    "preview": "Effect preview (for reference only, may differ from actual)",
     "resetBackground": "Reset",
     "selectUpload": "Local upload",
     "showBadgeStatus": "Show status badge",

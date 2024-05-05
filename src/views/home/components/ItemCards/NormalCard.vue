@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
 import { NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import type { DropdownOption } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
@@ -139,7 +140,7 @@ function handleRightMenuSelect(key: string | number) {
 }
 
 function getDropdownMenuOptions() {
-  const dropdownMenuOptions = [
+  const dropdownMenuOptions: DropdownOption[] = [
     {
       label: t('iconItem.newWindowOpen'),
       key: 'newWindows',
@@ -162,13 +163,20 @@ function getDropdownMenuOptions() {
   }
 
   if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
-    dropdownMenuOptions.push({
-      label: t('common.edit'),
-      key: 'edit',
-    }, {
-      label: t('common.delete'),
-      key: 'delete',
-    })
+    dropdownMenuOptions.push(
+      {
+        type: 'divider',
+        key: 'd1',
+      },
+      {
+        label: t('common.edit'),
+        key: 'edit',
+      },
+      {
+        label: t('common.delete'),
+        key: 'delete',
+      },
+    )
   }
 
   return dropdownMenuOptions
