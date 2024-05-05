@@ -33,6 +33,14 @@ const containers = ref<Docker.Container.Info[]>([])
 async function getContainerList() {
   await getContainerListApi<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
     containers.value = res.data.list
+  }).catch((res) => {
+    if (res.code === -1) {
+      ms.error(`${t('iconItem.dockerGetContainerListFailed')}: ${res.msg}`, {
+        closable: true,
+        duration: 10000,
+        keepAliveOnHover: true,
+      })
+    }
   })
 }
 

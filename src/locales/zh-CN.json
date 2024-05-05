@@ -91,9 +91,11 @@
     },
     "dockerManage": {
       "action": "操作",
+      "alertText": "目前仅实现了 docker 的容器状态查看和开启、关闭的操作，更高级的功能（创建、删除...）会根据后续用户的需求来决定是否开发。没有PRO授权仅能查看状态，不可以操作。",
       "containerName": "容器名称",
       "created": "已创建",
       "dead": "已终止",
+      "dockerError": "Docker 出错了",
       "exited": "已停止",
       "paused": "已暂停",
       "restarting": "移出中",
@@ -299,6 +301,7 @@
       "stopContainer": "停止容器"
     },
     "dockerContainerError": "容器异常",
+    "dockerGetContainerListFailed": "获取容器列表失败",
     "dockerStatusCard": "Docker容器状态卡片",
     "edit": "修改项目",
     "getGroupFail": "分组信息获取失败",

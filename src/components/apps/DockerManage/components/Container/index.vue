@@ -1,17 +1,33 @@
 <script lang="ts" setup>
 import { h, onMounted, ref } from 'vue'
-import { NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
+import { NAlert, NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { t } from '@/locales'
+import { getList as getContainerListApi } from '@/api/docker/container'
 
 const ms = useMessage()
 const dockerState = useDockerStore()
 const loadingList = ref(false)
+const containerList = ref<Docker.Container.Info[]>([])
 const pagination = {
   pageSize: 10,
+}
+
+async function getContainerList() {
+  await getContainerListApi<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
+    containerList.value = res.data.list
+  }).catch((res) => {
+    if (res.code === -1) {
+      ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
+        closable: true,
+        duration: 10000,
+        keepAliveOnHover: true,
+      })
+    }
+  })
 }
 
 const createColumns = ({
@@ -136,17 +152,20 @@ const columns = createColumns({
 
 onMounted(async () => {
   loadingList.value = true
-  await dockerState.refreshContainerList()
+  await getContainerList()
   loadingList.value = false
 })
 </script>
 
 <template>
   <NSpace vertical :size="12">
+    <NAlert type="info">
+      {{ t('apps.dockerManage.alertText') }}
+    </NAlert>
     <NDataTable
       :bordered="false"
-      size="large"
-      :data="dockerState.containerList"
+      size="small"
+      :data="containerList"
       :columns="columns"
       :pagination="pagination"
       :loading="loadingList"

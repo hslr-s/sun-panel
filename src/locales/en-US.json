@@ -91,9 +91,11 @@
     },
     "dockerManage": {
       "action": "Action",
+      "alertText": "Currently, only Docker's container status viewing and opening and closing operations are implemented. More advanced functions (create, delete...) will be developed based on subsequent user needs. \nWithout PRO authorization, you can only view the status and cannot operate it.",
       "containerName": "Container name",
       "created": "Created",
       "dead": "Dead",
+      "dockerError": "Something went wrong with Docker",
       "exited": "Exited",
       "paused": "Paused",
       "restarting": "Removing",
@@ -299,6 +301,7 @@
       "stopContainer": "Stop container"
     },
     "dockerContainerError": "Container exception",
+    "dockerGetContainerListFailed": "Failed to get container list",
     "dockerStatusCard": "Docker container status card",
     "edit": "Edit item",
     "getGroupFail": "Failed to get group information",
