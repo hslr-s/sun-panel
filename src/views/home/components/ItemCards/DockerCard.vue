@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import type { DropdownOption } from 'naive-ui'
-import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin } from 'naive-ui'
+import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
 import { t } from '@/locales'
@@ -30,6 +30,7 @@ const panelState = usePanelState()
 const authStore = useAuthStore()
 let intervalId: any
 const showBadgeStatus = ref<DockerContainerInfoState[]>([])
+const ms = useMessage()
 
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
@@ -111,6 +112,12 @@ function handleItemClick() {
 
   // console.log('项目呗点击', containerState.value.runStatus, props.itemInfo.expandParam.openPageAndStart)
   if (containerState.value.runStatus === DockerContainerInfoState.exited && props.itemInfo.expandParam.openPageAndStart === true) {
+    // 判断当前是否为公开模式，公开模式进行拦截
+    if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+      ms.warning(t('common.publicModeRestricted'))
+      return
+    }
+
     execSwitchAction(true, () => {
       openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
 

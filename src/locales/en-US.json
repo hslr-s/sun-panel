@@ -234,6 +234,7 @@
     "noData": "No data available",
     "noPorAuth": "You do not have the PRO authorized function yet. This function can only be used after authorization.",
     "password": "Password",
+    "publicModeRestricted": "This feature is restricted in public mode.",
     "refreshPage": "Please refresh the page",
     "repeatLater": "Please try again later",
     "reset": "Reset",

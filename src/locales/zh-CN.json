@@ -234,6 +234,7 @@
     "noData": "暂无数据",
     "noPorAuth": "您还没有PRO授权功能，授权后才能使用此功能",
     "password": "密码",
+    "publicModeRestricted": "在公开模式下此功能受限",
     "refreshPage": "请刷新页面",
     "repeatLater": "请稍后重试",
     "reset": "重置",

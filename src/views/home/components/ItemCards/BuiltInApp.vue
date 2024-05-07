@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { NDropdown, NModal } from 'naive-ui'
+import { NDropdown, NModal, useMessage } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
@@ -23,6 +23,7 @@ const emit = defineEmits<{
   (e: 'edit'): void
 }>()
 const authStore = useAuthStore()
+const ms = useMessage()
 const item = ref(props.itemInfo)
 const builtinAppModalShow = ref(false)
 
@@ -37,7 +38,12 @@ function handleItemClick() {
     return
   }
 
-  console.log('点击了...')
+  // 判断当前是否为公开模式，公开模式进行拦截
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+    ms.warning(t('common.publicModeRestricted'))
+    return
+  }
+
   builtinAppModalShow.value = true
 }
 
