@@ -188,7 +188,7 @@ function handleUpdateCardType() {
           {{ t('iconItem.previewTransparentCanvas') }}
         </NCheckbox>
       </span>
-      <div v-if="showPreview" class="preview-box rounded-xl border" :class="previewTransparentCanvas ? 'transparent-grid' : 'bg-[#e2e8f0]'">
+      <div v-if="showPreview" class="preview-box rounded-xl border" :class="previewTransparentCanvas ? 'transparent-grid' : 'bg-[#f1f8ff]'">
         <div class="flex justify-center p-2">
           <div class="w-[210px] mr-4 z-[-1]">
             <ItemCards
