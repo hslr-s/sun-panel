@@ -10,6 +10,7 @@ import (
 func getDefaultConfig() map[string]map[string]string {
 	return map[string]map[string]string{
 		"base": {
+			"http_address":     "0.0.0.0",
 			"http_port":        "9090",
 			"source_path":      "./files",      // 存放文件的路径
 			"source_temp_path": "./files/temp", // 存放文件的缓存路径
