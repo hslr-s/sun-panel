@@ -1,34 +1,60 @@
 <script lang="ts" setup>
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted, onUnmounted, ref } from 'vue'
 import { NAlert, NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { t } from '@/locales'
-import { getList as getContainerListApi } from '@/api/docker/container'
 
 const ms = useMessage()
-const dockerState = useDockerStore()
 const loadingList = ref(false)
+let intervalId: any
 const containerList = ref<Docker.Container.Info[]>([])
+const dockerState = useDockerStore()
+const containerRuningIds = ref<string[]>([])
+const containerRuningState = ref<{ [key: string]: Docker.Container.Stats }>({})
 const pagination = {
   pageSize: 10,
 }
 
-async function getContainerList() {
-  await getContainerListApi<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
-    containerList.value = res.data.list
-  }).catch((res) => {
-    if (res.code === -1) {
-      ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
-        closable: true,
-        duration: 10000,
-        keepAliveOnHover: true,
-      })
-    }
-  })
-}
+// async function getContainerList() {
+//   await getContainerListApi<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
+//     containerList.value = res.data.list
+//     for (let i = 0; i < res.data.list.length; i++) {
+//       const element = res.data.list[i]
+//       containerRuningState.value[element.id] = {
+//       } as Docker.Container.Stats
+//       if (element.state === DockerContainerInfoState.running) {
+//         containerRuningIds.value.push(element.id)
+
+//         getContainersStats()
+//       }
+//     }
+//   }).catch((res) => {
+//     if (res.code === -1) {
+//       ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
+//         closable: true,
+//         duration: 10000,
+//         keepAliveOnHover: true,
+//       })
+//     }
+//   })
+// }
+
+// async function getContainersStats() {
+//   await getContainersStatsApi<{ [key: string]: Docker.Container.Stats }>(containerRuningIds.value).then((res) => {
+//     containerRuningState.value = res.data
+//   }).catch((res) => {
+//     // if (res.code === -1) {
+//     //   ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
+//     //     closable: true,
+//     //     duration: 10000,
+//     //     keepAliveOnHover: true,
+//     //   })
+//     // }
+//   })
+// }
 
 const createColumns = ({
   sendMail,
@@ -109,10 +135,45 @@ const createColumns = ({
         )
       },
     },
-    // {
-    //   title: '资源概览',
-    //   key: 'resource',
-    // },
+    {
+      title: t('apps.dockerManage.resourceOverview'),
+      key: 'resource',
+      render(row) {
+        const status = dockerState.containerRuningStats[row.id]
+        let cpu = ''
+        let RAM = ''
+
+        if (row.status === DockerContainerInfoState.running) {
+          cpu = 'CPU: --'
+          RAM = 'RAM: --'
+        }
+
+        if (status) {
+          if (status.cpuPercent || status.cpuPercent === 0) {
+            status.cpuPercent = roundNumberToTwoDecimalPlaces(status.cpuPercent || 0)
+            cpu = `CPU: ${status.cpuPercent}%`
+          }
+
+          if (status.memory || status.memory === 0) {
+            status.memory = roundNumberToTwoDecimalPlaces(status.memory || 0)
+            RAM = `RAM: ${status.memory}MB`
+          }
+        }
+
+        return h('div',
+          [
+            h(
+              'div', { class: 'text-xs' },
+              cpu,
+            ),
+            h(
+              'div', { class: 'text-xs' },
+              RAM,
+            ),
+          ],
+        )
+      },
+    },
     {
       title: t('apps.dockerManage.action'),
       key: 'action',
@@ -143,6 +204,10 @@ const createColumns = ({
   ]
 }
 
+function roundNumberToTwoDecimalPlaces(num: number): number {
+  return Number(num.toFixed(2))
+}
+
 const columns = createColumns({
 
   sendMail(rowData) {
@@ -152,23 +217,32 @@ const columns = createColumns({
 
 onMounted(async () => {
   loadingList.value = true
-  await getContainerList()
+  await dockerState.refreshContainerList()
   loadingList.value = false
+
+  intervalId = setInterval(() => {
+    dockerState.refreshContainerListStats()
+  }, 5000) // 5000毫秒，即5秒
+})
+
+onUnmounted(() => {
+  clearInterval(intervalId)
 })
 </script>
 
 <template>
-  <NSpace vertical :size="12">
-    <NAlert type="info">
-      {{ t('apps.dockerManage.alertText') }}
-    </NAlert>
-    <NDataTable
-      :bordered="false"
-      size="small"
-      :data="containerList"
-      :columns="columns"
-      :pagination="pagination"
-      :loading="loadingList"
-    />
-  </NSpace>
+  <div class="">
+    <NSpace vertical :size="12">
+      <NAlert type="info">
+        {{ t('apps.dockerManage.alertText') }}
+      </NAlert>
+      <NDataTable
+        :bordered="false" size="small"
+        :data="dockerState.containerList"
+        :columns="columns"
+        :pagination="pagination"
+        :loading="loadingList"
+      />
+    </NSpace>
+  </div>
 </template>

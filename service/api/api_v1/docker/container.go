@@ -2,7 +2,6 @@ package docker
 
 import (
 	"context"
-	"strings"
 	"sun-panel/api/api_v1/common/apiData/dockerApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/biz"
@@ -140,48 +139,46 @@ func (a *Container) GetContainerStatus(c *gin.Context) {
 	resp.NetworkRX = stateData.NetworkRX
 	resp.NetworkTX = stateData.NetworkTX
 	apiReturn.SuccessData(c, resp)
-
 }
 
-func calculateCPUPercentUnix(stats *types.StatsJSON) float64 {
-	cpuPercent := 0.0
-	cpuDelta := float64(stats.CPUStats.CPUUsage.TotalUsage) - float64(stats.PreCPUStats.CPUUsage.TotalUsage)
-	systemDelta := float64(stats.CPUStats.SystemUsage) - float64(stats.PreCPUStats.SystemUsage)
+// 获取多个容器的状态
+func (a *Container) GetContainersState(c *gin.Context) {
+	reqIds := []string{}
 
-	if systemDelta > 0.0 && cpuDelta > 0.0 {
-		cpuPercent = (cpuDelta / systemDelta) * 100.0
-		if len(stats.CPUStats.CPUUsage.PercpuUsage) != 0 {
-			cpuPercent = cpuPercent * float64(len(stats.CPUStats.CPUUsage.PercpuUsage))
+	if err := c.ShouldBindBodyWith(&reqIds, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	resp := map[string]dockerApiStructs.ContainerStats{}
+
+	for _, v := range reqIds {
+		inspectData, err := biz.Docker.GetContainerInspect(v)
+		if err != nil {
+			apiReturn.ErrorDocker(c, err.Error())
+			return
 		}
-	}
-	return cpuPercent
-}
-func calculateMemPercentUnix(memStats types.MemoryStats) float64 {
-	memPercent := 0.0
-	memUsage := float64(memStats.Usage - memStats.Stats["cache"])
-	memLimit := float64(memStats.Limit)
-	if memUsage > 0.0 && memLimit > 0.0 {
-		memPercent = (memUsage / memLimit) * 100.0
-	}
-	return memPercent
-}
-func calculateBlockIO(blkio types.BlkioStats) (blkRead float64, blkWrite float64) {
-	for _, bioEntry := range blkio.IoServiceBytesRecursive {
-		switch strings.ToLower(bioEntry.Op) {
-		case "read":
-			blkRead = (blkRead + float64(bioEntry.Value)) / 1024 / 1024
-		case "write":
-			blkWrite = (blkWrite + float64(bioEntry.Value)) / 1024 / 1024
-		}
-	}
-	return
-}
-func calculateNetwork(network map[string]types.NetworkStats) (float64, float64) {
-	var rx, tx float64
 
-	for _, v := range network {
-		rx += float64(v.RxBytes) / 1024
-		tx += float64(v.TxBytes) / 1024
+		temp := dockerApiStructs.ContainerStats{}
+		if inspectData.Status == "running" {
+			stateData, err := biz.Docker.GetContainerState(v)
+			if err != nil {
+				apiReturn.ErrorDocker(c, err.Error())
+				return
+			}
+			temp.CPUPercent = stateData.CPUPercent
+			temp.Memory = stateData.Memory
+			temp.Cache = stateData.Cache
+			temp.IORead = stateData.IORead
+			temp.IOWrite = stateData.IOWrite
+			temp.NetworkRX = stateData.NetworkRX
+			temp.NetworkTX = stateData.NetworkTX
+		}
+		temp.RunStatus = inspectData.Status
+
+		resp[v] = temp
 	}
-	return rx, tx
+
+	apiReturn.SuccessData(c, resp)
+
 }

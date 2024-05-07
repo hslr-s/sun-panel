@@ -98,7 +98,9 @@
       "dockerError": "Something went wrong with Docker",
       "exited": "Exited",
       "paused": "Paused",
-      "restarting": "Removing",
+      "removing": "Removing",
+      "resourceOverview": "Resource overview",
+      "restarting": "Restarting",
       "running": "Running",
       "state": "State",
       "unknown": "unknown"

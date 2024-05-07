@@ -11,7 +11,7 @@ import { addMultiple as addMultipleIcons, getListByGroupId } from '@/api/panel/i
 
 import { t } from '@/locales'
 
-interface ItemGroup extends Panel.ItemIconGroup {
+interface ItemGroup extends Panel.ItemGroupInfo {
   items?: Panel.ItemInfo[]
 }
 
@@ -44,9 +44,10 @@ async function importIcons(): Promise<string | null> {
       const element = groups[i]
 
       // 创建组得到组id
-      const createGroupResponse = await addGroup<Panel.ItemIconGroup>({
+      const createGroupResponse = await addGroup<Panel.ItemGroupInfo>({
         title: element.title,
         sort: element.sort,
+        cardStyle: element,
       })
 
       if (createGroupResponse.code === 0) {
@@ -249,7 +250,7 @@ async function handleStartImport() {
 </script>
 
 <template>
-  <div class="pt-2">
+  <div class="p-2">
     <NAlert type="info" :bordered="false">
       <p>{{ $t('apps.exportImport.tip') }}</p>
     </NAlert>

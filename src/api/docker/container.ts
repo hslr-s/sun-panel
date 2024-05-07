@@ -19,3 +19,10 @@ export function getContainerStatus<T>(containerId: string) {
     data: { id: containerId },
   })
 }
+
+export function getContainersStats<T>(containerIds: string[]) {
+  return post<T>({
+    url: '/docker/container/getContainersStats',
+    data: containerIds,
+  })
+}

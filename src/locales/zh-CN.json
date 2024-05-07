@@ -98,7 +98,9 @@
       "dockerError": "Docker 出错了",
       "exited": "已停止",
       "paused": "已暂停",
-      "restarting": "移出中",
+      "removing": "移除中",
+      "resourceOverview": "资源概览",
+      "restarting": "重启中",
       "running": "运行中",
       "state": "状态",
       "unknown": "未知"
