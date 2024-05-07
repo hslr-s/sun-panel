@@ -1,6 +1,5 @@
 @echo off
 
-set PATH=%PATH%;D:\WSL\TDM-GCC-64\bin 
 :: 构建前端产物
 echo 安装前端依赖
 call pnpm install
@@ -13,5 +12,7 @@ go install -a github.com/go-bindata/go-bindata/...@latest
 go install -a github.com/elazarl/go-bindata-assetfs/...@latest
 cd service
 go-bindata-assetfs -o=assets/bindata.go -pkg=assets assets/...
+set PATH=%PATH%;D:\WSL\TDM-GCC-64\bin
 go build -o ./target/sun-panel.exe --ldflags="-X sun-panel/global.RUNCODE=release" main.go
-copy ../dist ./target/web
+echo 生成最终产物
+xcopy /s /q ..\dist\** .\target\web\
