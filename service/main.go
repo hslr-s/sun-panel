@@ -14,8 +14,8 @@ func main() {
 		panic(err)
 	}
 	httpPort := global.Config.GetValueStringOrDefault("base", "http_port")
-
-	if err := router.InitRouters(":" + httpPort); err != nil {
+	httpAddress := global.Config.GetValueStringOrDefault("base", "http_address")
+	if err := router.InitRouters(httpAddress + ":" + httpPort); err != nil {
 		panic(err)
 	}
 }
