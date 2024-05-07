@@ -35,6 +35,6 @@ func InitRouters(addr string) error {
 	sourcePath := global.Config.GetValueString("base", "source_path")
 	router.Static(sourcePath[1:], sourcePath)
 
-	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on ", addr)
+	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on http://", addr)
 	return router.Run(addr)
 }
