@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
-import { NBackTop, NButton, NButtonGroup, useDialog, useMessage } from 'naive-ui'
+import { NBackTop, NButton, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { AppStarter, EditItem, ItemCards } from './components'
 import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
@@ -12,7 +12,6 @@ import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
 import { useAuthStore, usePanelState } from '@/store'
 import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
-import { router } from '@/router'
 import { t } from '@/locales'
 
 interface ItemGroup extends Panel.ItemGroupInfo {
@@ -217,7 +216,7 @@ function handleAddItem(itemIconGroupId?: number) {
       <div
         class="p-2.5 mx-auto"
         :style="{
-          marginTop: `${panelState.panelConfig.marginTop}%`,
+          marginTop: `calc(${panelState.panelConfig.marginTop}% + 70px)`,
           marginBottom: `${panelState.panelConfig.marginBottom}%`,
           maxWidth: (panelState.panelConfig.maxWidth ?? '1200') + panelState.panelConfig.maxWidthUnit,
         }"
@@ -392,40 +391,43 @@ function handleAddItem(itemIconGroupId?: number) {
     </div>
 
     <!-- 悬浮按钮 -->
-    <div class="fixed-element shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
-      <NButtonGroup vertical>
-        <!-- 网络模式切换按钮组 -->
-        <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
-          :title="t('panelHome.changeToWanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
-        >
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline-rounded" />
-          </template>
-        </NButton>
+    <div
+      class="fixed-element bg-[#2a2a2a6b] rounded-lg shadow-[0_0_10px_2px_rgba(0,0,0,0.2)] p-[2px] flex backdrop-blur-[2px]"
+    >
+      <div
+        v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.panelConfig.netModeChangeButtonShow"
+        class="float-btn flex items-center justify-center"
+        :title="t('panelHome.changeToWanModel')"
+        @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="material-symbols:lan-outline-rounded" />
+      </div>
 
-        <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
-          :title="t('panelHome.changeToLanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
-        >
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="mdi:wan" />
-          </template>
-        </NButton>
+      <div
+        v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan && panelState.panelConfig.netModeChangeButtonShow"
+        class="float-btn flex items-center justify-center"
+        :title="t('panelHome.changeToLanModel')"
+        @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="mdi:wan" />
+      </div>
 
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="majesticons-applications" />
-          </template>
-        </NButton>
+      <div
+        v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+        class="float-btn flex items-center justify-center"
+        @click="settingModalShow = !settingModalShow"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="majesticons-applications" />
+      </div>
 
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" :title="$t('panelHome.goToLogin')" @click="router.push('/login')">
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="material-symbols:account-circle" />
-          </template>
-        </NButton>
-      </NButtonGroup>
-
+      <div
+        v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC"
+        class="float-btn flex items-center justify-center"
+        :title="$t('panelHome.goToLogin')"
+        @click="$router.push('/login')"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="material-symbols:account-circle" />
+      </div>
       <AppStarter v-model:visible="settingModalShow" />
       <!-- <Setting v-model:visible="settingModalShow" /> -->
     </div>
@@ -490,10 +492,12 @@ html {
 
 .fixed-element {
   position: fixed;
+  /* left:10px; */
+  top:20px;
   /* 将元素固定在屏幕上 */
-  right: 10px;
+  right: 20px;
   /* 距离屏幕顶部的距离 */
-  bottom: 50px;
+  /* bottom: 50px; */
   /* 距离屏幕左侧的距离 */
 }
 
@@ -511,6 +515,24 @@ html {
   grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
   gap: 18px;
 
+}
+
+.float-btn {
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color  0.3s;
+}
+
+.float-btn:hover {
+  background-color: #a9a9a97a;
+  /* backdrop-filter:blur(10px) */
+}
+
+.float-btn-icon {
+  width: 21px;
+  height: 21px;
 }
 
 @media (max-width: 500px) {
