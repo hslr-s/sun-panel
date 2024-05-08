@@ -13,6 +13,7 @@ import { RoundCardModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
+import { apiRespErrMsg } from '@/utils/request/apiMessage'
 
 interface EditModalArg {
   show: boolean
@@ -106,8 +107,9 @@ function handleDelete(groupInfo: Panel.ItemGroupInfo) {
             ms.error(t('common.deleteFail'))
           else
             refreshList()
-        }).catch(() => {
-          ms.error(t('common.deleteFail'))
+        }).catch((res) => {
+          // ms.error(t('common.deleteFail'))
+          apiRespErrMsg(res)
         })
       }
     },
@@ -144,7 +146,7 @@ onMounted(() => {
 })
 
 watch(() => editModalArg.value.show, (v) => {
-  console.log(v)
+  // console.log(v)
   if (!v)
     editModalArg.value.model = { ...defaultItemGroupInfo }
 })

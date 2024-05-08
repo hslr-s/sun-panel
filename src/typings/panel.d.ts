@@ -24,7 +24,11 @@ declare namespace Panel {
         description?: string
         openMethod: number
         itemIconGroupId?: number
+
+        // 以下1.4.0新增
         onlyName?: string
+
+        // 以下1.5.0新增
         backgroundColor?: string
         cardType: number
         expandParam?: any
@@ -40,7 +44,6 @@ declare namespace Panel {
         itemType: number
         src?: string
         text?: string
-        // bgColor ?: string
         backgroundColor?: string // 从1.5.0开始逐渐废弃
     }
 

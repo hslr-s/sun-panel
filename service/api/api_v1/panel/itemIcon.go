@@ -73,26 +73,46 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 func (a *ItemIcon) AddMultiple(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	// type Request
-	req := []models.ItemIcon{}
+	req := []panelApiStructs.ItemInfo{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
 		return
 	}
 
-	for i := 0; i < len(req); i++ {
-		if req[i].ItemIconGroupId == 0 {
+	datas := []models.ItemIcon{}
+
+	for _, v := range req {
+		if v.ItemIconGroupId == 0 {
 			apiReturn.ErrorParamFomat(c, "Group is mandatory")
 			return
 		}
-		req[i].UserId = userInfo.ID
+		v.UserId = userInfo.ID
 		// json转字符串
-		if j, err := json.Marshal(req[i].Icon); err == nil {
-			req[i].IconJson = string(j)
+		if j, err := json.Marshal(v.Icon); err == nil {
+			v.IconJson = string(j)
 		}
+
+		saveData := models.ItemIcon{}
+
+		saveData.CardType = v.CardType
+		saveData.IconJson = v.IconJson
+		saveData.Icon = v.Icon
+		saveData.Title = v.Title
+		saveData.OnlyName = v.OnlyName
+		saveData.Url = v.Url
+		saveData.LanUrl = v.LanUrl
+		saveData.Description = v.Description
+		saveData.OpenMethod = v.OpenMethod
+		saveData.Sort = v.Sort
+		saveData.BackgroundColor = v.BackgroundColor
+		saveData.ItemIconGroupId = v.ItemIconGroupId
+		saveData.ExpandParam = base.AnyToJsonStr(v.ExpandParam)
+		saveData.UserId = userInfo.ID
+		datas = append(datas, saveData)
 	}
 
-	global.Db.Create(&req)
+	global.Db.Create(&datas)
 
 	apiReturn.SuccessData(c, req)
 }
