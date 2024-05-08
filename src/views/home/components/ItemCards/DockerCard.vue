@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { DropdownOption } from 'naive-ui'
 import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
+import { useDockerCardStore } from './dockerCard/store'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { ItemCard, ItemIcon } from '@/components/common'
 import { t } from '@/locales'
@@ -12,6 +13,7 @@ import { execSwitchAction as execSwitchActionApi, getContainerStatus as getConta
 
 import { VisitMode } from '@/enums/auth'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
+
 interface Prop {
   itemInfo: Panel.ItemInfo
   backgroundColor?: string
@@ -37,6 +39,8 @@ const windowSrc = ref<string>('')
 const windowTitle = ref<string>('')
 const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
+
+const store = useDockerCardStore()
 
 const dropdownMenuX = ref(0)
 const dropdownMenuY = ref(0)
@@ -262,7 +266,7 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
   }).then(() => {
     if (action) {
       containerState.value.runStatus = DockerContainerInfoState.running
-      console.log(containerState.value.runStatus)
+      // console.log(containerState.value.runStatus)
       if (startSuccessCallback)
         startSuccessCallback()
     }
@@ -286,28 +290,16 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
 
 async function getContainerStatus(showLoading?: boolean) {
   const id = props.itemInfo.expandParam.containerId
-
   if (!id)
     return
 
   if (showLoading)
     loading.value = true
   await getContainerStatusApi<Docker.Container.Stats>(id).then(({ data }) => {
-    containerState.value = data
-
-    // 设置徽章的颜色
-    switch (containerState.value.runStatus) {
-      case DockerContainerInfoState.running:
-        badgeStatusColor.value = '#18A058'
-        break
-      case DockerContainerInfoState.restarting:
-        badgeStatusColor.value = '#F0A020FF'
-        break
-
-      default:
-        badgeStatusColor.value = '#7B7B7B'
-        break
-    }
+    // console.log('请求容器data', data)
+    updateStats(data)
+    // console.log('注册', id)
+    store.registerContainerQueryStats(id)
   }).catch((res) => {
     badgeStatusColor.value = 'red'
     badgeMsg.value = t('iconItem.dockerContainerError')
@@ -320,6 +312,29 @@ async function getContainerStatus(showLoading?: boolean) {
   })
   if (showLoading)
     loading.value = false
+}
+
+function updateStats(data: Docker.Container.Stats) {
+  // console.log('数据域', data)
+  if (data) {
+    containerState.value = data
+
+    if (containerState.value.runStatus) {
+    // 设置徽章的颜色
+      switch (containerState.value.runStatus) {
+        case DockerContainerInfoState.running:
+          badgeStatusColor.value = '#18A058'
+          break
+        case DockerContainerInfoState.restarting:
+          badgeStatusColor.value = '#F0A020FF'
+          break
+
+        default:
+          badgeStatusColor.value = '#7B7B7B'
+          break
+      }
+    }
+  }
 }
 
 function roundNumberToTwoDecimalPlaces(num: number): number {
@@ -338,19 +353,29 @@ function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
   return inShowBadgeStatus(value) && containerState.value.runStatus === value
 }
 
-onMounted(() => {
-  getContainerStatus(true)
+onMounted(async () => {
+  if (props.itemInfo.expandParam.containerId) {
+    await getContainerStatus(true)
+
+    watch(() => store.containerRuningStats[props.itemInfo.expandParam.containerId], (value) => {
+      // console.log('数据有变化', props.itemInfo.expandParam.containerId)
+      // console.log('value', value)
+      if (value)
+        updateStats(value)
+    })
+  }
 
   if (props.itemInfo.expandParam.showBadgeStatus)
     showBadgeStatus.value = props.itemInfo.expandParam.showBadgeStatus
 
-  intervalId = setInterval(() => {
-    getContainerStatus()
-  }, 5000) // 5000毫秒，即5秒
+  // intervalId = setInterval(() => {
+  //   getContainerStatus()
+  // }, 5000) // 5000毫秒，即5秒
 })
 
 onUnmounted(() => {
-  clearInterval(intervalId)
+  // clearInterval(intervalId)
+  store.cancelContainerQueryStats(props.itemInfo.expandParam.containerId)
 })
 </script>
 
