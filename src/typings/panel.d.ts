@@ -41,7 +41,7 @@ declare namespace Panel {
         src?: string
         text?: string
         // bgColor ?: string
-        backgroundColor?: string
+        backgroundColor?: string // 从1.5.0开始逐渐废弃
     }
 
     interface State {
@@ -117,6 +117,7 @@ declare namespace Panel.ItemCardExpandParam {
 
     }
 
+    // docker卡片
     interface Docker {
         containerId: string
         openPageAndStart: bool
@@ -124,6 +125,12 @@ declare namespace Panel.ItemCardExpandParam {
         cardType: string
         showBadgeStatus?: DockerContainerInfoState[]
     }
+
+    // // 网络模式切换按钮
+    // interface SwitchNetMode {
+    //     wanIcon: ItemIcon
+    //     lanIcon: ItemIcon
+    // }
 
 
     // docker
