@@ -7,6 +7,7 @@ import { set as setUserConfig } from '@/api/panel/userConfig'
 // import { PanelPanelConfigStyleEnum } from '@/enums/panel'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
+import { PanelPanelConfigStyleEnum } from '@/enums'
 
 const authStore = useAuthStore()
 const panelState = usePanelState()
@@ -15,16 +16,16 @@ const showWallpaperInput = ref(false)
 
 const isSaveing = ref(false)
 
-// const iconTypeOptions = [
-//   {
-//     label: t('apps.baseSettings.detailIcon'),
-//     value: PanelPanelConfigStyleEnum.info,
-//   },
-//   {
-//     label: t('apps.baseSettings.smallIcon'),
-//     value: PanelPanelConfigStyleEnum.icon,
-//   },
-// ]
+const iconTypeOptions = [
+  {
+    label: t('apps.baseSettings.detailIcon'),
+    value: PanelPanelConfigStyleEnum.info,
+  },
+  {
+    label: t('apps.baseSettings.smallIcon'),
+    value: PanelPanelConfigStyleEnum.icon,
+  },
+]
 
 const maxWidthUnitOption = [
   {
@@ -137,14 +138,24 @@ function resetPanelConfig() {
         <span class="mr-[10px]">{{ $t('apps.baseSettings.publicVisitModeShow') }}</span>
         <NSwitch v-model:value="panelState.panelConfig.systemMonitorPublicVisitModeShow" />
       </div>
+
+      <div class="flex items-center mt-[5px]">
+        <div>
+          {{ t('apps.itemGroupManage.cardStyle') }}
+        </div>
+        <div class="w-[200px] ml-[5px]">
+          <NSelect v-model:value="panelState.panelConfig.iconStyle" size="small" :options="iconTypeOptions" />
+        </div>
+      </div>
     </NCard>
 
+    <!-- 1.5.0取消此设置 -->
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
         {{ $t('common.icon') }}
       </div>
       {{ t('apps.baseSettings.iconMigrateDescribe') }}
-      <!-- <div class="mt-[5px]">
+    <!-- <div class="mt-[5px]">
         <div>
           {{ $t('common.style') }}
         </div>
