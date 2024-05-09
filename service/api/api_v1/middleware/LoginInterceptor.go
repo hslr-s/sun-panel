@@ -50,7 +50,7 @@ func LoginInterceptor(c *gin.Context) {
 		c.Abort()
 		return
 	} else {
-		// 通过 设置当前用户信息
+		// 通过 设置当前用户信息 (这里可能存在了自动续期的功能)
 		global.UserToken.SetDefault(info.Token, info)
 		global.CUserToken.SetDefault(cToken, token)
 		c.Set("userInfo", info)

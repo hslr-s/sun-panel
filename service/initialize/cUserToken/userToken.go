@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-func InitCUserToken() cache.Cacher[string] {
-	return global.NewCache[string](72*time.Hour, 48*time.Hour, "CUserToken")
+func InitCUserToken(expiration time.Duration) cache.Cacher[string] {
+	return global.NewCache[string](expiration, 48*time.Hour, "CUserToken")
 }
 
 // func InitVerifyCodeCachePool() {
