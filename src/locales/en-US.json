@@ -141,7 +141,8 @@
       "appName": "Group Management",
       "cardStyle": "Card style",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
-      "groupName": "Group name"
+      "groupName": "Group name",
+      "publicVisitHide": "Hide in public mode"
     },
     "openApi": {
       "alertText": "Sun-Panel provides an open interface that can be used to add projects and other operations through development. For details, please refer to:",

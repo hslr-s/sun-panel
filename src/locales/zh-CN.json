@@ -141,7 +141,8 @@
       "appName": "分组管理",
       "cardStyle": "卡片风格",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
-      "groupName": "分组名称"
+      "groupName": "分组名称",
+      "publicVisitHide": "公开模式下隐藏"
     },
     "openApi": {
       "alertText": "Sun-Panel提供了开放接口，可以通过开发来实现添加项目等操作，具体请参考：",

@@ -36,10 +36,11 @@ func (a *ItemIconGroup) Edit(c *gin.Context) {
 	saveData.Description = req.Description
 	saveData.Sort = req.Sort
 	saveData.UserId = userInfo.ID
+	saveData.PublicVisitHide = base.BoolToInt(req.PublicVisitHide)
 
 	if req.ID != 0 {
 		// 修改
-		updateField := []string{"Icon", "Title", "CardStyle", "UserId"}
+		updateField := []string{"Icon", "Title", "CardStyle", "UserId", "PublicVisitHide"}
 
 		if req.Sort != 0 {
 			updateField = append(updateField, "Sort")
@@ -58,6 +59,7 @@ func (a *ItemIconGroup) Edit(c *gin.Context) {
 func (a *ItemIconGroup) GetList(c *gin.Context) {
 
 	userInfo, _ := base.GetCurrentUserInfo(c)
+	currentMode := base.GetCurrentVisitMode(c)
 	groups := []models.ItemIconGroup{}
 
 	err := global.Db.Transaction(func(tx *gorm.DB) error {
@@ -94,16 +96,23 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 	resp := []panelApiStructs.ItemGroupInfo{}
 	for _, v := range groups {
 		cardStyle := panelApiStructs.ItemGroupInfoCardStyle{}
+
+		// 过滤公开隐藏的
+		if currentMode == base.VISIT_MODE_PUBLIC && base.IntToBool(v.PublicVisitHide) {
+			continue
+		}
+
 		base.JsonStrToAny(v.CardStyle, &cardStyle)
 		resp = append(resp, panelApiStructs.ItemGroupInfo{
-			ID:          v.ID,
-			Icon:        v.Icon,
-			Title:       v.Title,
-			Description: v.Description,
-			Sort:        v.Sort,
-			UserId:      v.UserId,
-			User:        v.User,
-			CardStyle:   cardStyle,
+			ID:              v.ID,
+			Icon:            v.Icon,
+			Title:           v.Title,
+			Description:     v.Description,
+			Sort:            v.Sort,
+			UserId:          v.UserId,
+			User:            v.User,
+			CardStyle:       cardStyle,
+			PublicVisitHide: base.IntToBool(v.PublicVisitHide),
 		})
 	}
 

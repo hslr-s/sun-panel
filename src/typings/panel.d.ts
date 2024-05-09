@@ -38,6 +38,7 @@ declare namespace Panel {
         icon?: string
         title?: string
         sort?: number
+        publicVisitHide?:boolean
     }
 
     interface ItemIcon {

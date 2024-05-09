@@ -6,13 +6,14 @@ import (
 
 type ItemIconGroup struct {
 	BaseModel
-	Icon        string `json:"icon"`
-	Title       string `gorm:"type:varchar(50)" json:"title"`
-	Description string `gorm:"type:varchar(1000)" json:"description"`
-	Sort        int    `gorm:"type:int(11)" json:"sort"`
-	UserId      uint   `json:"userId"`
-	User        User   `json:"user"`
-	CardStyle   string `json:"cardStyle"`
+	Icon            string `json:"icon"`
+	Title           string `gorm:"type:varchar(50)" json:"title"`
+	Description     string `gorm:"type:varchar(1000)" json:"description"`
+	Sort            int    `gorm:"type:int(11)" json:"sort"`
+	PublicVisitHide int    `gorm:"type:tinyint(1)" json:"publicVisitHide"` // 公开模式隐藏
+	UserId          uint   `json:"userId"`
+	User            User   `json:"user"`
+	CardStyle       string `json:"cardStyle"`
 }
 
 func (m *ItemIconGroup) DeleteByUserId(db *gorm.DB, userId uint) (err error) {

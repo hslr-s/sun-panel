@@ -2,7 +2,6 @@ package docker
 
 import (
 	"context"
-	"fmt"
 	"sun-panel/api/api_v1/common/apiData/dockerApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/biz"
@@ -161,13 +160,12 @@ func (a *Container) GetContainersState(c *gin.Context) {
 			temp.RunStatus = "error"
 			temp.ErrorMassage = err.Error()
 			resp[v] = temp
-			break
+			continue
 		}
 
 		if inspectData.Status == "running" {
 			stateData, err := biz.Docker.GetContainerState(v)
 			if err != nil {
-				fmt.Println("错误", err)
 				temp.ErrorMassage = err.Error()
 			}
 			temp.CPUPercent = stateData.CPUPercent

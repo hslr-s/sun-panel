@@ -136,3 +136,14 @@ func JsonStrToMap(s string) map[string]interface{} {
 	JsonStrToAny(s, &data)
 	return data
 }
+
+func IntToBool(v int) bool {
+	return v == 1
+}
+
+func BoolToInt(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
+}

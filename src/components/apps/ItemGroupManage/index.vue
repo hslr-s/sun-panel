@@ -219,6 +219,10 @@ watch(() => editModalArg.value.show, (v) => {
           <NInput v-model:value="editModalArg.model.title" type="text" :maxlength="20" show-count />
         </NFormItem>
 
+        <NFormItem :label="t('apps.itemGroupManage.publicVisitHide')">
+          <NSwitch v-model:value="editModalArg.model.publicVisitHide" />
+        </NFormItem>
+
         <NDivider style="margin-top:5px" />
 
         <NFormItem :label="t('apps.itemGroupManage.cardStyle')">
