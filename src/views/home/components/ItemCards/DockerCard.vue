@@ -321,7 +321,7 @@ function updateStats(data: Docker.Container.Stats) {
     containerState.value = data
 
     if (containerState.value.runStatus) {
-    // 设置徽章的颜色
+      // 设置徽章的颜色
       switch (containerState.value.runStatus) {
         case DockerContainerInfoState.running:
           badgeStatusColor.value = '#18A058'
@@ -383,24 +383,18 @@ onUnmounted(() => {
 <template>
   <div class="app-icon w-full" @click="handleItemClick" @contextmenu="(e) => handleContextMenu(e)">
     <ItemCard
-      :card-type-style="cardStyle"
-      :background-color="backgroundColor"
-      :icon-text-icon-hide-title="iconTextIconHideTitle"
-      :icon-text-color="iconTextColor"
-      :icon-text="itemInfo?.title"
+      :card-type-style="cardStyle" :background-color="backgroundColor"
+      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemInfo?.title"
       class="hover:shadow-[0_0_10px_5px_rgba(0,0,0,0.2)] transition-all duration-300 backdrop-blur-[2px] hover:backdrop-blur-[10px]"
     >
       <template #small>
         <NSpin :show="loading">
-          <div
-            class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative"
-          >
+          <div class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative">
             <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
             <div
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
               class="dot dot-small flex items-center justify-center border"
-              :style="{ backgroundColor: badgeStatusColor }"
-              :title="badgeMsg"
+              :style="{ backgroundColor: badgeStatusColor }" :title="badgeMsg"
             >
               <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
             </div>
@@ -414,15 +408,17 @@ onUnmounted(() => {
             <!-- 图标 -->
             <div class="app-icon-info-icon w-[70px] h-[70px]">
               <div class="w-[70px] h-full flex items-center justify-center">
-                <ItemIcon :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl" :color="textColor" />
+                <ItemIcon
+                  :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl"
+                  :color="textColor"
+                />
               </div>
             </div>
 
             <div
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
               class="dot dot-info flex items-center justify-center border"
-              :style="{ backgroundColor: badgeStatusColor }"
-              :title="badgeMsg"
+              :style="{ backgroundColor: badgeStatusColor }" :title="badgeMsg"
             >
               <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
             </div>
@@ -440,11 +436,17 @@ onUnmounted(() => {
                   </NEllipsis>
                 </div>
                 <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
-                  <NEllipsis v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2" class="text-xs">
+                  <NEllipsis
+                    v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2"
+                    class="text-xs"
+                  >
                     CPU:{{ roundNumberToTwoDecimalPlaces(containerState.cpuPercent) }}%
                     RAM:{{ roundNumberToTwoDecimalPlaces(containerState.memory) }} MB
                   </NEllipsis>
-                  <NEllipsis v-else-if="containerState.runStatus === DockerContainerInfoState.restarting" :line-clamp="2" class="text-xs">
+                  <NEllipsis
+                    v-else-if="containerState.runStatus === DockerContainerInfoState.restarting"
+                    :line-clamp="2" class="text-xs"
+                  >
                     {{ t('iconItem.showBadgeStatusRestarting') }}
                     <span class="text-[red]">
                       {{ badgeMsg }}
@@ -467,7 +469,8 @@ onUnmounted(() => {
     <!-- 右键菜单 -->
     <NDropdown
       placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
-      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleRightMenuSelect"
+      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside"
+      @select="handleRightMenuSelect"
     />
 
     <!-- 弹窗 -->
@@ -507,7 +510,7 @@ onUnmounted(() => {
   border-radius: 50%;
 }
 
-.dot-small{
+.dot-small {
   top: 6px;
   right: 6px;
   width: 10px;
@@ -515,7 +518,7 @@ onUnmounted(() => {
   font-size: 10px;
 }
 
-.dot-info{
+.dot-info {
   top: 8px;
   right: 8px;
   width: 10px;
