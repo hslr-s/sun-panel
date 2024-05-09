@@ -199,6 +199,7 @@ function onClickoutside() {
       :card-style="cardStyle"
       :sort-status="sortStatus"
       :icon-text-info-hide-description="iconTextInfoHideDescription"
+      :title="itemInfo.description"
     />
 
     <!-- 右键菜单 -->

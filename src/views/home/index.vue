@@ -300,10 +300,9 @@ function handleAddItem(itemIconGroupId?: number) {
               <VueDraggable
                 v-model="itemGroup.items" item-key="sort" :animation="300"
                 class="icon-info-box"
-                filter=".not-drag"
                 :disabled="!itemGroup.sortStatus"
               >
-                <div v-for="item, index in itemGroup.items" :key="index" :title="item.description">
+                <div v-for="item, index in itemGroup.items" :key="index">
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
                     :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
@@ -342,7 +341,7 @@ function handleAddItem(itemIconGroupId?: number) {
                 filter=".not-drag"
                 :disabled="!itemGroup.sortStatus"
               >
-                <div v-for="item, index in itemGroup.items" :key="index" :title="item.description">
+                <div v-for="item, index in itemGroup.items" :key="index">
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
                     :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"

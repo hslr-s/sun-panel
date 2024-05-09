@@ -28,9 +28,11 @@ const emit = defineEmits<{
 }>()
 
 const getIconLoading = ref([false, false])
+const containerListLoading = ref(false)
 const ms = useMessage()
 const containers = ref<Docker.Container.Info[]>([])
 async function getContainerList() {
+  containerListLoading.value = true
   await getContainerListApi<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
     containers.value = res.data.list
   }).catch((res) => {
@@ -42,6 +44,7 @@ async function getContainerList() {
       })
     }
   })
+  containerListLoading.value = false
 }
 
 const item = ref(props.itemInfo)
@@ -158,9 +161,13 @@ function handleChange(value: string, appInfo: SystemApp) {
   <div>
     <NGrid cols="2" :x-gap="10" item-responsive>
       <NGridItem span="2 500:1">
-        <NFormItem path="expandParam.containerId" :label="$t('iconItem.containerName')">
+        <NFormItem
+          path="expandParam.containerId"
+          :label="$t('iconItem.containerName')"
+        >
           <NSelect
             v-model:value="model.expandParam.containerId"
+            :loading="containerListLoading"
             label-field="name"
             value-field="id"
             :options="containers"
