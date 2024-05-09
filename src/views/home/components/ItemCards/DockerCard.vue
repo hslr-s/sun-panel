@@ -298,6 +298,7 @@ async function getContainerStatus(showLoading?: boolean) {
   await getContainerStatusApi<Docker.Container.Stats>(id).then(({ data }) => {
     // console.log('请求容器data', data)
     updateStats(data)
+    badgeMsg.value = ''
     // console.log('注册', id)
     store.registerContainerQueryStats(id)
   }).catch((res) => {
