@@ -30,7 +30,7 @@ const emit = defineEmits<{
 }>()
 const panelState = usePanelState()
 const authStore = useAuthStore()
-let intervalId: any
+// let intervalId: any
 const showBadgeStatus = ref<DockerContainerInfoState[]>([])
 const ms = useMessage()
 

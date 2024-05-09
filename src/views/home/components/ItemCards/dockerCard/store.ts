@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { onMounted, ref } from 'vue'
-import { useMessage } from 'naive-ui'
 import { getContainersStats as getContainersStatsApi } from '@/api/docker/container'
 
 export const useDockerCardStore = defineStore('docker-card', () => {
@@ -12,12 +11,12 @@ export const useDockerCardStore = defineStore('docker-card', () => {
     [key: string]: Docker.Container.Stats
   }
 
-  let intervalId: any
+  // let intervalId: any
   const containerQueryStatsNum: ContainerQueryStatsNum = {}
   const containerRuningStats = ref<ContainerQueryStats>({})
   const containerQueryIds: string[] = []
 
-  const ms = useMessage()
+  // const ms = useMessage()
 
   //   async function refreshContainerList() {
   //     containerRuningIds.value = []
@@ -100,7 +99,7 @@ export const useDockerCardStore = defineStore('docker-card', () => {
   onMounted(() => {
     refreshContainerListStats()
     console.log('docker状态定时器启动')
-    intervalId = setInterval(() => {
+    setInterval(() => {
       if (containerQueryIds.length !== 0)
         refreshContainerListStats()
     //   console.log('计数', containerQueryStatsNum)

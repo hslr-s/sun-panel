@@ -33,6 +33,7 @@ const loginModalForm = ref<LoginModalForm>({
 
 const ms = useMessage()
 
+// const showGoToSiteButton = ref(false)
 const loginLoading = ref(false)
 const loginStatus = ref(false)
 const proExpiration = ref('')
@@ -163,7 +164,7 @@ onMounted(() => {
                 </div>
               </template>
               <template v-else>
-                <NButton size="small" @click="handleLogin">
+                <NButton size="small" ghost type="success" @click="handleLogin">
                   <NEllipsis style="max-width: 200px">
                     <span class="text-white">
                       {{ t("apps.proAuth.loginSunPanel") }}
@@ -190,12 +191,12 @@ onMounted(() => {
           </ProCard>
 
           <div class="mt-2 flex justify-center">
-            <NButton type="success" size="small" ghost @click="openToLink('proAuthSite')">
-              {{ t("apps.proAuth.goToSunPanelAuthSite") }}
+            <NButton size="small" style="margin-right: 5px;" @click="openToLink('proAuthSiteFAQ')">
+              {{ t("apps.proAuth.FAQButton") }}
             </NButton>
 
-            <NButton size="small" style="margin-left: 5px;" ghost @click="openToLink('proAuthSiteFAQ')">
-              {{ t("apps.proAuth.FAQButton") }}
+            <NButton size="small" @click="openToLink('proAuthSite')">
+              {{ t("apps.proAuth.goToSunPanelAuthSite") }}
             </NButton>
           </div>
         </div>

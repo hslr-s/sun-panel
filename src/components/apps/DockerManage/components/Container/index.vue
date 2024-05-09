@@ -1,19 +1,16 @@
 <script lang="ts" setup>
 import { h, onMounted, onUnmounted, ref } from 'vue'
-import { NAlert, NDataTable, NSpace, NTag, useMessage } from 'naive-ui'
+import { NAlert, NDataTable, NSpace, NTag } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { t } from '@/locales'
 
-const ms = useMessage()
 const loadingList = ref(false)
 let intervalId: any
-const containerList = ref<Docker.Container.Info[]>([])
 const dockerState = useDockerStore()
-const containerRuningIds = ref<string[]>([])
-const containerRuningState = ref<{ [key: string]: Docker.Container.Stats }>({})
+
 const pagination = {
   pageSize: 10,
 }
