@@ -45,6 +45,7 @@ declare namespace Docker.Container {
         networkTX: number;
         shotTime?: string; // 时间戳字符串
         runStatus:string
+        errorMessage:string
     }
     
     

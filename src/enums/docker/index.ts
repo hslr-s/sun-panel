@@ -6,4 +6,5 @@ export enum DockerContainerInfoState {
   paused = 'paused',
   exited = 'exited',
   dead = 'dead',
+  error = 'error', // 自定义状态与原生docker无关
 }

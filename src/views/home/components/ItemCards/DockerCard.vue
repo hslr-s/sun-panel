@@ -59,8 +59,10 @@ const containerState = ref<Docker.Container.Stats>({
   networkRX: 0,
   networkTX: 0,
   runStatus: DockerContainerInfoState.exited,
+  errorMessage: '',
 })
 const defaultBackground = '#2a2a2a6b'
+const describeText = ref('')
 
 const calculateLuminance = (color: string) => {
   const hex = color.replace(/^#/, '')
@@ -187,7 +189,6 @@ function handleRightMenuSelect(key: string | number) {
       execSwitchAction(false)
       break
     case 'edit':
-      // 这里有个奇怪的问题，如果不使用{...}的方式 父组件的值会同步修改 标记一下
       emit('edit')
       break
     case 'delete':
@@ -319,8 +320,15 @@ function updateStats(data: Docker.Container.Stats) {
   // console.log('数据域', data)
   if (data) {
     containerState.value = data
+    describeText.value = ''
+
+    if (data.errorMessage !== '') {
+      badgeMsg.value = t('iconItem.dockerContainerError')
+      dockerErrorMsg.value = data.errorMessage
+    }
 
     if (containerState.value.runStatus) {
+      describeText.value = `CPU:${roundNumberToTwoDecimalPlaces(containerState.value.cpuPercent)}% RAM:${roundNumberToTwoDecimalPlaces(containerState.value.memory)}MB`
       // 设置徽章的颜色
       switch (containerState.value.runStatus) {
         case DockerContainerInfoState.running:
@@ -328,6 +336,9 @@ function updateStats(data: Docker.Container.Stats) {
           break
         case DockerContainerInfoState.restarting:
           badgeStatusColor.value = '#F0A020FF'
+          break
+        case DockerContainerInfoState.error:
+          badgeStatusColor.value = 'red'
           break
 
         default:
@@ -347,7 +358,7 @@ function inShowBadgeStatus(value: DockerContainerInfoState): boolean {
   if (!Array.isArray(showBadgeStatus.value))
     throw new Error('The first argument must be an array')
 
-  return showBadgeStatus.value.includes(value)
+  return showBadgeStatus.value.includes(value) || value === DockerContainerInfoState.error
 }
 
 function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
@@ -381,7 +392,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="app-icon w-full" @click="handleItemClick" @contextmenu="(e) => handleContextMenu(e)">
+  <div
+    class="app-icon w-full"
+    :title="describeText"
+    @click="handleItemClick"
+    @contextmenu="(e) => handleContextMenu(e)"
+  >
     <ItemCard
       :card-type-style="cardStyle" :background-color="backgroundColor"
       :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemInfo?.title"

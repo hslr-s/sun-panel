@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"fmt"
 	"sun-panel/api/api_v1/common/apiData/dockerApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/biz"
@@ -153,18 +154,21 @@ func (a *Container) GetContainersState(c *gin.Context) {
 	resp := map[string]dockerApiStructs.ContainerStats{}
 
 	for _, v := range reqIds {
+		temp := dockerApiStructs.ContainerStats{}
 		inspectData, err := biz.Docker.GetContainerInspect(v)
+		temp.RunStatus = inspectData.Status
 		if err != nil {
-			apiReturn.ErrorDocker(c, err.Error())
-			return
+			temp.RunStatus = "error"
+			temp.ErrorMassage = err.Error()
+			resp[v] = temp
+			break
 		}
 
-		temp := dockerApiStructs.ContainerStats{}
 		if inspectData.Status == "running" {
 			stateData, err := biz.Docker.GetContainerState(v)
 			if err != nil {
-				apiReturn.ErrorDocker(c, err.Error())
-				return
+				fmt.Println("错误", err)
+				temp.ErrorMassage = err.Error()
 			}
 			temp.CPUPercent = stateData.CPUPercent
 			temp.Memory = stateData.Memory
@@ -174,7 +178,6 @@ func (a *Container) GetContainersState(c *gin.Context) {
 			temp.NetworkRX = stateData.NetworkRX
 			temp.NetworkTX = stateData.NetworkTX
 		}
-		temp.RunStatus = inspectData.Status
 
 		resp[v] = temp
 	}

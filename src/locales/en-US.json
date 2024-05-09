@@ -352,9 +352,9 @@
   },
   "panelHome": {
     "changeToLanModel": "Switch to LAN mode",
-    "changeToLanModelSuccess": "Has switched to intranet mode (this status is only saved locally in the browser)",
+    "changeToLanModelSuccess": "Has been switched to LAN mode",
     "changeToWanModel": "Switch to WAN mode",
-    "changeToWanModelSuccess": "Has been switched to public network mode (this status is only saved locally in the browser)",
+    "changeToWanModelSuccess": "Has been switched to WAN mode",
     "goToLogin": "Go to login",
     "openLanUrl": "Open LAN URL",
     "openWanUrl": "Open WAN URL"
