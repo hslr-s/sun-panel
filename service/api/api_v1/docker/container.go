@@ -72,6 +72,13 @@ func (a *Container) GetList(c *gin.Context) {
 }
 
 func (a *Container) ExecSwitchActionByContainerID(c *gin.Context) {
+
+	if biz.ProAuth.ProIsExpired() {
+		// 没有PRO授权
+		apiReturn.ErrorByCode(c, apiReturn.ErrCodeNoPROAuthorization)
+		return
+	}
+
 	req := dockerApiStructs.ExecSwitchActionByContainerIDReq{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {

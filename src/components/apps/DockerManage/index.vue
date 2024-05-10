@@ -27,7 +27,7 @@ const menuOptions = [
 
 ]
 
-console.log(inverted, menuOptions)
+// console.log(inverted, menuOptions)
 </script>
 
 <template>

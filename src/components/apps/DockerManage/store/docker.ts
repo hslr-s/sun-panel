@@ -23,10 +23,9 @@ export const useDockerStore = defineStore('docker-store', () => {
         const element = res.data.list[i]
         containerRuningStats.value[element.id] = {
         } as Docker.Container.Stats
-        if (element.state === DockerContainerInfoState.running) {
+        if (element.state === DockerContainerInfoState.running)
           containerRuningIds.value.push(element.id)
-          console.log(element.id)
-        }
+          // console.log(element.id)
       }
       refreshContainerListStats()
     }).catch((res) => {
