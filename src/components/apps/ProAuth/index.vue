@@ -6,6 +6,7 @@ import { getStatus as getStatusApi, login as loginApi, logout as logoutApi } fro
 import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
+import { useProAuthorizeStore } from '@/store'
 
 interface ProCardParam {
   nickName?: string
@@ -32,6 +33,7 @@ const loginModalForm = ref<LoginModalForm>({
 })
 
 const ms = useMessage()
+const proAuthorizeStore = useProAuthorizeStore()
 
 // const showGoToSiteButton = ref(false)
 const loginLoading = ref(false)
@@ -83,7 +85,7 @@ async function login(username: string, password: string) {
     }
     apiRespErrMsg(error)
   })
-
+  proAuthorizeStore.refreshProAuthStatus()
   loginLoading.value = false
 }
 
@@ -92,6 +94,7 @@ async function logout() {
     await logoutApi()
     getStatus()
     loginModalShow.value = false
+    proAuthorizeStore.refreshProAuthStatus()
   }
   catch (error) {
     apiRespErrMsg(error)

@@ -11,10 +11,11 @@ import IconEditor from '../IconEditor.vue'
 import { verifyUrlHttp } from './common'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
-import { AppLoader, RoundCardModal } from '@/components/common/'
+import { AppLoader, ProAuthOverlay, ProTag, RoundCardModal } from '@/components/common/'
 import { getList as getContainerListApi } from '@/api/docker/container'
 import { getSiteFavicon } from '@/api/panel/itemIcon'
 import { DockerContainerInfoState } from '@/enums/docker'
+import { useProAuthorizeStore } from '@/store'
 
 const props = defineProps<{
   itemInfo: Panel.Info
@@ -30,6 +31,7 @@ const emit = defineEmits<{
 const getIconLoading = ref([false, false])
 const containerListLoading = ref(false)
 const ms = useMessage()
+const proAuthStore = useProAuthorizeStore()
 const containers = ref<Docker.Container.Info[]>([])
 async function getContainerList() {
   containerListLoading.value = true
@@ -230,8 +232,9 @@ function handleChange(value: string, appInfo: SystemApp) {
       <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
     </NFormItem> -->
     <NFormItem :label="$t('iconItem.openPageAndStartContainer')">
-      <NSwitch v-model:value="model.expandParam.openPageAndStart" />
-      <!-- <div v-if="model.expandParam.openPageAndStart" class="flex items-center">
+      <ProAuthOverlay :show="proAuthStore.isExpired">
+        <NSwitch v-model:value="model.expandParam.openPageAndStart" />
+        <!-- <div v-if="model.expandParam.openPageAndStart" class="flex items-center">
         <span class="mr-2 ml-5">容器启动后延时打开页面</span>
         <NInputNumber
           v-model:value="model.expandParam.openPageAndStartDelaySecond"
@@ -241,6 +244,8 @@ function handleChange(value: string, appInfo: SystemApp) {
         />
         <span class="ml-2">s</span>
       </div> -->
+        <ProTag class="ml-2" />
+      </ProAuthOverlay>
     </NFormItem>
 
     <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">

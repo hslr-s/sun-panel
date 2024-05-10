@@ -233,7 +233,7 @@
     "nikeName": "Nickname",
     "no": "No",
     "noData": "No data available",
-    "noPorAuth": "You do not have the PRO authorized function yet. This function can only be used after authorization.",
+    "noPorAuth": "This function is a PRO authorized function and requires authorization before it can be used. If it has been authorized, please refresh the page. ",
     "password": "Password",
     "publicModeRestricted": "This feature is restricted in public mode.",
     "refreshPage": "Please refresh the page",

@@ -1,4 +1,5 @@
-import { t } from '@/locales'
+import { setLocale, t } from '@/locales'
+import { useAppStore } from '@/store'
 
 import UserInfoSvg from '@/assets/svg-icons/material-symbols-person-edit-outline-rounded.svg'
 import StyleSvg from '@/assets/svg-icons/ion-color-palette-outline.svg'
@@ -9,6 +10,10 @@ import OpenAPISvg from '@/assets/svg-icons/tabler-api.svg'
 import AboutSvg from '@/assets/svg-icons/lucide-info.svg'
 
 import ProAuthSvg from '@/assets/svg-icons/tabler-award.svg'
+
+// [未知原因]，需要深究（猜测无法监听）-此处需要单独设置一下语言否则不生效 // 临时解决
+const appStore = useAppStore()
+setLocale(appStore.language)
 
 export interface SystemApp {
   name: string
