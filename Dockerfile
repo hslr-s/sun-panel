@@ -39,6 +39,7 @@ RUN go env -w GO111MODULE=on \
     && go install -a -v github.com/go-bindata/go-bindata/...@latest \
     && go install -a -v github.com/elazarl/go-bindata-assetfs/...@latest \
     && go-bindata-assetfs -o=assets/bindata.go -pkg=assets assets/... \
+    && go mod tidy \
     && go build -o sun-panel --ldflags="-X sun-panel/global.RUNCODE=release -X sun-panel/global.ISDOCKER=true" main.go
 
 
