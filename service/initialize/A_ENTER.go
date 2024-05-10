@@ -105,7 +105,7 @@ func InitApp() error {
 	// 初始化用户token
 	global.UserToken = userToken.InitUserToken()
 	tokenExpires := global.Config.GetValueIntOrDefault("base", "token_expires", 168) // 默认7天
-	global.CUserToken = cUserToken.InitCUserToken(time.Duration(tokenExpires * int(time.Hour)))
+	global.CUserToken = cUserToken.InitCUserToken(time.Duration(tokenExpires) * time.Hour)
 
 	// 其他的初始化
 	global.VerifyCodeCachePool = other.InitVerifyCodeCachePool()
