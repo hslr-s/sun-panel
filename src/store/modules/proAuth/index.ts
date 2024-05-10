@@ -18,5 +18,5 @@ export const useProAuthorizeStore = defineStore('proAuthorize', () => {
     }
   }
   getIsExpired()
-  return { isExpired: proIsExpired }
+  return { isExpired: proIsExpired, refreshProAuthStatus: getIsExpired }
 })

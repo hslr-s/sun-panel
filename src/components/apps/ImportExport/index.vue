@@ -11,7 +11,7 @@ import { addMultiple as addMultipleIcons, getListByGroupId } from '@/api/panel/i
 
 import { t } from '@/locales'
 
-interface ItemGroup extends Panel.ItemIconGroup {
+interface ItemGroup extends Panel.ItemGroupInfo {
   items?: Panel.ItemInfo[]
 }
 
@@ -44,9 +44,10 @@ async function importIcons(): Promise<string | null> {
       const element = groups[i]
 
       // 创建组得到组id
-      const createGroupResponse = await addGroup<Panel.ItemIconGroup>({
+      const createGroupResponse = await addGroup<Panel.ItemGroupInfo>({
         title: element.title,
         sort: element.sort,
+        cardStyle: element.cardStyle,
       })
 
       if (createGroupResponse.code === 0) {
@@ -68,6 +69,9 @@ async function importIcons(): Promise<string | null> {
               description: iconElement.description,
               openMethod: iconElement.openMethod,
               itemIconGroupId: groupId,
+              cardType: iconElement.cardType,
+              backgroundColor: iconElement.backgroundColor,
+              expandParam: iconElement.expandParam,
             })
 
             // 每 batchSize 个添加一次
@@ -111,6 +115,7 @@ async function exportIcons(): Promise<IconGroup[]> {
         title: element.title as string,
         sort: element.sort as 0,
         children: [],
+        cardStyle: element.cardStyle,
       }
 
       const res = await getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(element.id)
@@ -125,6 +130,9 @@ async function exportIcons(): Promise<IconGroup[]> {
             lanUrl: iconElement.lanUrl || '',
             description: iconElement.description || '',
             openMethod: iconElement.openMethod || 1,
+            cardType: iconElement.cardType,
+            backgroundColor: iconElement.backgroundColor,
+            expandParam: iconElement.expandParam,
           })
         }
       }
@@ -249,7 +257,7 @@ async function handleStartImport() {
 </script>
 
 <template>
-  <div class="pt-2">
+  <div class="p-2">
     <NAlert type="info" :bordered="false">
       <p>{{ $t('apps.exportImport.tip') }}</p>
     </NAlert>

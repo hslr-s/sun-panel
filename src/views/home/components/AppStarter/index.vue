@@ -4,13 +4,9 @@ import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
 import { AppLoader, RoundCardModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
+import type { SystemApp } from '@/utils/cmn/builtInApps'
+import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
 
-interface App {
-  name: string
-  componentName: string
-  icon: string
-  auth?: number
-}
 const props = defineProps<{
   visible: boolean
 }>()
@@ -27,43 +23,7 @@ const defaultTitle = t('appLauncher.title')
 const title = ref('')
 const height = ref('500px')
 
-const apps = ref<App[]>([
-  {
-    name: t('apps.userInfo.appName'),
-    componentName: 'UserInfo',
-    icon: 'material-symbols-person-edit-outline-rounded',
-  },
-  {
-    name: t('apps.baseSettings.appName'),
-    componentName: 'Style',
-    icon: 'ion-color-palette-outline',
-  },
-  {
-    name: t('apps.itemGroupManage.appName'),
-    componentName: 'ItemGroupManage',
-    icon: 'material-symbols-ad-group-outline-rounded',
-  },
-  {
-    name: t('apps.uploadsFileManager.appName'),
-    componentName: 'UploadFileManager',
-    icon: 'tabler:file-upload',
-  },
-  {
-    name: t('apps.exportImport.appName'),
-    componentName: 'ImportExport',
-    icon: 'icon-park-outline-import-and-export',
-  },
-  {
-    name: 'Open API',
-    componentName: 'OpenApi',
-    icon: 'tabler:api',
-  },
-  {
-    name: t('apps.about.appName'),
-    componentName: 'About',
-    icon: 'lucide-info',
-  },
-])
+const apps = ref(systemApps)
 
 const authStore = useAuthStore()
 
@@ -74,7 +34,7 @@ const show = computed({
   },
 })
 
-function handleClickApp(item: App) {
+function handleClickApp(item: SystemApp) {
   componentName.value = item.componentName
   if (isSmallScreen.value)
     collapsed.value = true
@@ -97,26 +57,7 @@ function handleResize() {
 }
 
 onMounted(() => {
-  const adminApps: App[] = [
-    {
-      name: t('adminSettingUsers.appName'),
-      componentName: 'Users',
-      icon: 'lucide-users',
-      auth: 1,
-    },
-    {
-      name: t('proAuth.appName'),
-      componentName: 'ProAuth',
-      icon: 'tabler-award',
-      auth: 1,
-    },
-    {
-      name: t('apps.globalSetting.appName'),
-      componentName: 'GlobalSetting',
-      icon: 'ic-outline-build-circle',
-      auth: 1,
-    },
-  ]
+  const adminApps = adminSystemApps
   // 初始化
   if (authStore.userInfo?.role === 1)
     apps.value = apps.value.concat(adminApps)
@@ -160,7 +101,7 @@ onUnmounted(() => {
             >
               <div class="w-full h-full dark:bg-[#2c2c32]">
                 <div
-                  class="p-[5px] bg-slate-200 dark:bg-zinc-900 rounded-xl overflow-auto"
+                  class="p-[5px] rounded-xl overflow-auto border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 "
                   :style="{
                     width: isSmallScreen ? '100%' : '220px',
                     minWidth: '200px',
@@ -192,7 +133,7 @@ onUnmounted(() => {
               </div>
             </NLayoutSider>
             <NLayoutContent :content-style="{ height }">
-              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 " :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
                 <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>

@@ -66,6 +66,7 @@
       "detailIcon": "详情图标",
       "hideDescription": "隐藏描述信息",
       "hideTitle": "隐藏标题",
+      "iconMigrateDescribe": "图标样式已经迁移到分组设置，并支持按分组单独设置样式",
       "leftRightMargin": "左右边距",
       "mask": "遮罩",
       "maxWidth": "最大宽度",
@@ -87,6 +88,22 @@
     },
     "common": {
       "notFound": "抱歉，应用加载失败，请尝试刷新页面或者清除浏览器缓存"
+    },
+    "dockerManage": {
+      "action": "操作",
+      "alertText": "目前仅实现了 docker 的容器状态查看和开启、关闭的操作，更高级的功能（创建、删除...）会根据后续用户的需求来决定是否开发。没有PRO授权仅能查看状态，不可以操作。",
+      "containerName": "容器名称",
+      "created": "已创建",
+      "dead": "已终止",
+      "dockerError": "Docker 出错了",
+      "exited": "已停止",
+      "paused": "已暂停",
+      "removing": "移除中",
+      "resourceOverview": "资源概览",
+      "restarting": "重启中",
+      "running": "运行中",
+      "state": "状态",
+      "unknown": "未知"
     },
     "exportImport": {
       "appName": "导出导入",
@@ -122,8 +139,10 @@
     },
     "itemGroupManage": {
       "appName": "分组管理",
+      "cardStyle": "卡片风格",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
-      "groupName": "分组名称"
+      "groupName": "分组名称",
+      "publicVisitHide": "公开模式下隐藏"
     },
     "openApi": {
       "alertText": "Sun-Panel提供了开放接口，可以通过开发来实现添加项目等操作，具体请参考：",
@@ -144,7 +163,7 @@
         "notExpiredText": "{date}到期",
         "upgradePRO": "升级为PRO"
       },
-      "goToSunPanelAuthSite": "前往授权平台",
+      "goToSunPanelAuthSite": "注册/订阅 PRO",
       "login": "登录",
       "loginSunPanel": "登录Sun-Panel授权平台",
       "logout": "退出",
@@ -214,8 +233,9 @@
     "nikeName": "昵称",
     "no": "否",
     "noData": "暂无数据",
-    "noPorAuth": "您还没有PRO授权功能，授权后才能使用此功能",
+    "noPorAuth": "此功能为PRO授权功能，需要授权后才能使用，如已授权请刷新页面",
     "password": "密码",
+    "publicModeRestricted": "在公开模式下此功能受限",
     "refreshPage": "请刷新页面",
     "repeatLater": "请稍后重试",
     "reset": "重置",
@@ -272,13 +292,33 @@
   "iconItem": {
     "add": "添加项目",
     "advancedFeatures": "高级功能",
+    "builtInApp": "内置应用",
+    "builtInAppOpen": "内置应用",
+    "builtinApp": "内置应用",
+    "cardBackground": "卡片背景色",
+    "cardType": "卡片类型",
+    "containerName": "容器",
     "currentPageLayerOpen": "当前页面弹窗打开",
     "currentPageOpen": "当前页面打开",
+    "dockerAction": {
+      "startContainer": "启动容器",
+      "stopContainer": "停止容器"
+    },
+    "dockerContainerError": "容器异常",
+    "dockerGetContainerListFailed": "获取容器列表失败",
+    "dockerStatusCard": "Docker容器状态卡片",
     "edit": "修改项目",
     "getGroupFail": "分组信息获取失败",
     "getIcon": "获取图标",
     "geticonFail": "图标获取失败",
+    "icon": {
+      "iconName": "图标名称",
+      "iconStyle": "图标风格",
+      "imageUrl": "图像地址",
+      "textContent": "文本内容"
+    },
     "iconGroup": "分组",
+    "iframeCard": "Iframe 卡片",
     "inputIconName": "请输入图标名称",
     "inputIconUrlOrUpload": "输入图标地址或上传",
     "lanUrl": "内网地址",
@@ -289,7 +329,19 @@
     "onlyName": "唯一标识 (英文标识，用作OpenAPI，对应字段：\"onlyName\")",
     "onlyNameExisted": "唯一标识已被占用",
     "openMethod": "打开方式",
+    "openPageAndStartContainer": "打开页面前启动容器",
+    "ordinaryIcon": "普通图标",
+    "preview": "效果预览(仅供参考)",
+    "previewTransparentCanvas": "画布透明",
+    "resetBackground": "重置",
     "selectUpload": "本地上传",
+    "showBadgeStatus": "显示状态徽章",
+    "showBadgeStatusAll": "全部",
+    "showBadgeStatusExited": "已停止",
+    "showBadgeStatusNo": "不显示",
+    "showBadgeStatusRestarting": "重启中",
+    "showBadgeStatusRunning": "运行中",
+    "systemApp": "系统应用",
     "url": "地址",
     "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },
@@ -301,9 +353,9 @@
   },
   "panelHome": {
     "changeToLanModel": "切换为内网模式",
-    "changeToLanModelSuccess": "已经切换到内网模式（模式状态仅保存在本地）",
+    "changeToLanModelSuccess": "已经切换到内网模式",
     "changeToWanModel": "切换为公网模式",
-    "changeToWanModelSuccess": "已经切换到公网模式（模式状态仅保存在本地）",
+    "changeToWanModelSuccess": "已经切换到公网模式",
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
     "openWanUrl": "打开公网地址"

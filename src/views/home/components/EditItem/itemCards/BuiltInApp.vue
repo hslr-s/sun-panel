@@ -1,0 +1,122 @@
+<script setup lang="ts">
+import { NCard, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
+import type { FormRules } from 'naive-ui'
+import { onMounted, ref, watch } from 'vue'
+import IconEditor from '../IconEditor.vue'
+import type { SystemApp } from '@/utils/cmn/builtInApps'
+import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
+import { t } from '@/locales'
+import { AppLoader, RoundCardModal } from '@/components/common/'
+import { useAuthStore } from '@/store'
+import { AdminAuthRole } from '@/enums/admin'
+
+const props = defineProps<{
+  itemInfo: Panel.Info
+  rules: FormRules
+}>()
+
+const emit = defineEmits<{
+
+  (e: 'update:itemInfo', info?: Panel.Info): void
+  (e: 'update:rules', info?: FormRules): void
+}>()
+
+const authStore = useAuthStore()
+const item = ref(props.itemInfo)
+const builtinAppModalShow = ref(false)
+const apps = ref(systemApps)
+const rulesExtends: FormRules = {
+  url: [
+    {
+      required: true,
+      trigger: 'blur',
+      type: 'string',
+      message: t('form.required'),
+    },
+  ],
+  expandParam: {
+    systemAppName: {
+      required: true,
+      trigger: 'blur',
+      type: 'string',
+      message: t('form.required'),
+    },
+  },
+}
+
+const extendParam: Panel.ItemCardExpandParam.SystemApp = {
+  systemAppName: '',
+}
+
+const model = ref(props.itemInfo)
+
+watch(model.value, () => {
+  emit('update:itemInfo', model.value)
+})
+
+onMounted(() => {
+  const r = { ...props.rules, ...rulesExtends }
+  emit('update:rules', r)
+
+  if (authStore.userInfo?.role === AdminAuthRole.admin)
+    apps.value = [...systemApps, ...adminSystemApps]
+
+  // 设置默认值
+  if (!props.itemInfo.expandParam) {
+    model.value.expandParam = { ...extendParam }
+  }
+  else {
+    const ep = { ...extendParam }
+    // 给子字段赋值，防止无用的字段
+    ep.systemAppName = props.itemInfo.expandParam.systemAppName
+    model.value.expandParam = ep
+  }
+})
+
+function handleSystemChange(value: string, appInfo: SystemApp) {
+  model.value.title = appInfo.name
+  model.value.icon = {
+    text: appInfo.icon,
+    itemType: 3,
+  }
+  model.value.description = t('iconItem.builtinApp')
+}
+</script>
+
+<template>
+  <div>
+    <NGrid cols="2" :x-gap="10" item-responsive>
+      <NGridItem span="2 500:1">
+        <NFormItem path="expandParam.systemAppName" :label="$t('iconItem.builtInAppOpen')">
+          <NSelect
+            v-model:value="model.expandParam.systemAppName"
+            label-field="name"
+            value-field="componentName"
+            :options="apps"
+            @update:value="handleSystemChange"
+          />
+        </NFormItem>
+      </NGridItem>
+      <NGridItem span="2 500:1">
+        <NFormItem path="title" :label="$t('common.title')">
+          <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
+        </NFormItem>
+      </NGridItem>
+    </NGrid>
+
+    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
+      <NCard size="small">
+        <IconEditor v-model:item-icon="model.icon" />
+      </NCard>
+    </NFormItem>
+
+    <NFormItem path="description" :label="$t('common.description')">
+      <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
+    </NFormItem>
+
+    <RoundCardModal v-model:show="builtinAppModalShow">
+      <AppLoader :component-name="item.expandParam.systemAppName" />
+      <!--  -->
+    </RoundCardModal>
+  </div>
+</template>

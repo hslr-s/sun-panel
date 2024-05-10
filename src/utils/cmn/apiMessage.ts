@@ -23,11 +23,11 @@ export function apiRespErrMsg(res: any) {
     const getI18nValue = t(apiErrorCodeName)
     console.log(apiErrorCodeName)
     if (apiErrorCodeName === getI18nValue && apiErrorCodeName !== undefined) {
-      message.error(t('common.unknownError'))
+      message.error(`${t('common.unknownError')}: ${res.msg}`)
       console.error(res.msg)
     }
     else {
-      message.error(t(`apiErrorCode.${res.code}`))
+      message.error(getI18nValue)
     }
   }
   else {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { NButton, NColorPicker, NInput, NRadio, NUpload } from 'naive-ui'
+import { NButton, NInput, NRadio, NUpload } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import { computed, defineProps } from 'vue'
-import { ItemIcon } from '@/components/common'
+// import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { apiRespErrMsg } from '@/utils/cmn'
+import { t } from '@/locales'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null
@@ -15,16 +16,16 @@ const emit = defineEmits<{
 const authStore = useAuthStore()
 
 // 默认图标背景色
-const defautSwatchesBackground = [
-  '#00000000',
-  '#000000',
-  '#ffffff',
-  '#18A058',
-  '#2080F0',
-  '#F0A020',
-  'rgba(208, 48, 80, 1)',
-  '#C418D1FF',
-]
+// const defautSwatchesBackground = [
+//   '#00000000',
+//   '#000000',
+//   '#ffffff',
+//   '#18A058',
+//   '#2080F0',
+//   '#F0A020',
+//   'rgba(208, 48, 80, 1)',
+//   '#C418D1FF',
+// ]
 
 const initData: Panel.ItemIcon = {
   itemType: 2,
@@ -55,11 +56,6 @@ function handleChange() {
   emit('update:itemIcon', itemIconInfo.value || null)
 }
 
-function handleResetBackgroundColor() {
-  itemIconInfo.value.backgroundColor = initData.backgroundColor
-  handleChange()
-}
-
 const handleUploadFinish = ({
   file,
   event,
@@ -83,7 +79,7 @@ const handleUploadFinish = ({
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <div class="mb-[10px]">
       <NRadio
         :checked="itemIconInfo.itemType === 1 "
@@ -109,72 +105,54 @@ const handleUploadFinish = ({
         name="iconType"
         @change="handleIconTypeRadioChange(3)"
       >
-        {{ $t('iconItem.onlineIcon') }}
+        {{ t('iconItem.onlineIcon') }}
       </NRadio>
     </div>
 
-    <div class=" h-[100px]">
-      <div class="flex">
-        <div>
-          <div class="border rounded-2xl bg-slate-200 overflow-hidden rounded-2xl transparent-grid">
-            <ItemIcon :item-icon="itemIconInfo" />
-          </div>
-        </div>
-        <!-- 文字 -->
-        <div class="ml-[20px]">
-          <!-- <NImage :src="model.icon" preview-disabled /> -->
-          <div v-if="itemIconInfo.itemType === 1">
-            <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" @input="handleChange" />
-          </div>
+    <div class="w-full flex">
+      <!-- 文字 -->
+      <div v-if="itemIconInfo.itemType === 1" class="flex items-center">
+        <span class="w-auto mr-2 whitespace-nowrap">{{ t('iconItem.icon.textContent') }}</span>
+        <NInput v-model:value="itemIconInfo.text" :maxlength="10" type="text" show-count clearable @input="handleChange" />
+      </div>
 
-          <div v-if="itemIconInfo.itemType === 3">
-            <div>
-              <NInput v-model:value="itemIconInfo.text" class="mb-[5px]" size="small" type="text" :placeholder="$t('iconItem.inputIconName')" @input="handleChange" />
-
-              <NButton quaternary type="info">
-                <a target="_blank" href="https://icon-sets.iconify.design/">{{ $t('iconItem.onlineIconLibrary') }}</a>
-              </NButton>
-            </div>
-          </div>
-
-          <!-- 图片 -->
-          <div v-if="itemIconInfo.itemType === 2">
-            <NInput v-model:value="itemIconInfo.src" class="mb-[5px] w-full" size="small" type="text" :placeholder="$t('iconItem.inputIconUrlOrUpload')" @input="handleChange" />
-            <NUpload
-              action="/api/file/uploadImg"
-              :show-file-list="false"
-              name="imgfile"
-              :headers="{
-                token: authStore.token as string,
-              }"
-              @finish="handleUploadFinish"
-            >
-              <NButton size="small">
-                {{ $t('iconItem.selectUpload') }}
-              </NButton>
-            </NUpload>
-          </div>
+      <!-- 在线图标 -->
+      <div v-if="itemIconInfo.itemType === 3" class="flex items-center">
+        <span class="w-auto mr-2">{{ t('iconItem.icon.iconName') }}</span>
+        <div class="flex">
+          <NInput v-model:value="itemIconInfo.text" type="text" class="mr-1" :placeholder="$t('iconItem.inputIconName')" clearable @input="handleChange" />
+          <NButton quaternary type="info">
+            <a target="_blank" href="https://icon-sets.iconify.design/">{{ $t('iconItem.onlineIconLibrary') }}</a>
+          </NButton>
         </div>
       </div>
 
-      <div class="flex items-center mt-[10px]">
-        <div class="w-auto text-slate-500 mr-[10px]">
-          {{ $t('common.backgroundColor') }}
-        </div>
-        <div class="w-[150px] flex items-center mr-[10px]">
-          <NColorPicker
-            v-model:value="itemIconInfo.backgroundColor"
-            size="small"
-            :modes="['hex']"
-            :swatches="defautSwatchesBackground"
-            @complete="handleChange"
-            @update-value="handleChange"
+      <!-- 图片 -->
+      <div v-if="itemIconInfo.itemType === 2" class="flex items-center w-full">
+        <span class="w-auto mr-2 whitespace-nowrap">{{ t('iconItem.icon.imageUrl') }}</span>
+        <div class="flex w-full">
+          <NInput
+            v-model:value="itemIconInfo.src"
+            class="mr-1"
+            type="text"
+            style="width:300px"
+            :placeholder="$t('iconItem.inputIconUrlOrUpload')"
+            clearable
+            @input="handleChange"
           />
-        </div>
-        <div v-if="itemIconInfo.backgroundColor !== initData.backgroundColor" class="w-auto text-slate-500 mr-[10px] cursor-pointer">
-          <NButton quaternary type="info" @click="handleResetBackgroundColor">
-            {{ $t('common.reset') }}
-          </NButton>
+          <NUpload
+            action="/api/file/uploadImg"
+            :show-file-list="false"
+            name="imgfile"
+            :headers="{
+              token: authStore.token as string,
+            }"
+            @finish="handleUploadFinish"
+          >
+            <NButton size="small">
+              {{ $t('iconItem.selectUpload') }}
+            </NButton>
+          </NUpload>
         </div>
       </div>
     </div>

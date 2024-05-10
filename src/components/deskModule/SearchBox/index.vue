@@ -180,7 +180,7 @@ onMounted(() => {
   box-shadow: 0px 0px 30px -5px rgba(41, 41, 41, 0.45);
   -webkit-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.45);
   -moz-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.45);
-  backdrop-filter:blur(5px)
+  backdrop-filter:blur(10px)
 }
 
 .before {

@@ -29,7 +29,7 @@ type ItemIcon struct {
 
 func (a *ItemIcon) Edit(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
-	req := models.ItemIcon{}
+	req := panelApiStructs.ItemInfo{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
@@ -38,7 +38,24 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 
 	req.UserId = userInfo.ID
 
-	if v, err := biz.Item.Edit(userInfo.ID, req); err != nil {
+	saveData := models.ItemIcon{}
+	saveData.ID = req.ID
+	saveData.CardType = req.CardType
+	saveData.IconJson = req.IconJson
+	saveData.Icon = req.Icon
+	saveData.Title = req.Title
+	saveData.OnlyName = req.OnlyName
+	saveData.Url = req.Url
+	saveData.LanUrl = req.LanUrl
+	saveData.Description = req.Description
+	saveData.OpenMethod = req.OpenMethod
+	saveData.Sort = req.Sort
+	saveData.BackgroundColor = req.BackgroundColor
+	saveData.ItemIconGroupId = req.ItemIconGroupId
+	saveData.ExpandParam = base.AnyToJsonStr(req.ExpandParam)
+	saveData.UserId = userInfo.ID
+
+	if v, err := biz.Item.Edit(userInfo.ID, saveData); err != nil {
 		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
 			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
 			return
@@ -46,36 +63,56 @@ func (a *ItemIcon) Edit(c *gin.Context) {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	} else {
-		req = v
+		saveData = v
 	}
 
-	apiReturn.SuccessData(c, req)
+	apiReturn.SuccessData(c, saveData)
 }
 
 // 添加多个图标
 func (a *ItemIcon) AddMultiple(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	// type Request
-	req := []models.ItemIcon{}
+	req := []panelApiStructs.ItemInfo{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
 		return
 	}
 
-	for i := 0; i < len(req); i++ {
-		if req[i].ItemIconGroupId == 0 {
+	datas := []models.ItemIcon{}
+
+	for _, v := range req {
+		if v.ItemIconGroupId == 0 {
 			apiReturn.ErrorParamFomat(c, "Group is mandatory")
 			return
 		}
-		req[i].UserId = userInfo.ID
+		v.UserId = userInfo.ID
 		// json转字符串
-		if j, err := json.Marshal(req[i].Icon); err == nil {
-			req[i].IconJson = string(j)
+		if j, err := json.Marshal(v.Icon); err == nil {
+			v.IconJson = string(j)
 		}
+
+		saveData := models.ItemIcon{}
+
+		saveData.CardType = v.CardType
+		saveData.IconJson = v.IconJson
+		saveData.Icon = v.Icon
+		saveData.Title = v.Title
+		saveData.OnlyName = v.OnlyName
+		saveData.Url = v.Url
+		saveData.LanUrl = v.LanUrl
+		saveData.Description = v.Description
+		saveData.OpenMethod = v.OpenMethod
+		saveData.Sort = v.Sort
+		saveData.BackgroundColor = v.BackgroundColor
+		saveData.ItemIconGroupId = v.ItemIconGroupId
+		saveData.ExpandParam = base.AnyToJsonStr(v.ExpandParam)
+		saveData.UserId = userInfo.ID
+		datas = append(datas, saveData)
 	}
 
-	global.Db.Create(&req)
+	global.Db.Create(&datas)
 
 	apiReturn.SuccessData(c, req)
 }
@@ -121,16 +158,36 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	itemIcons := []models.ItemIcon{}
 
+	resp := []panelApiStructs.ItemInfo{}
+
 	if err := global.Db.Order("sort ,created_at").Find(&itemIcons, "item_icon_group_id = ? AND user_id=?", req.ItemIconGroupId, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
 
-	for k, v := range itemIcons {
-		json.Unmarshal([]byte(v.IconJson), &itemIcons[k].Icon)
+	for _, v := range itemIcons {
+		json.Unmarshal([]byte(v.IconJson), &v.Icon)
+		temp := panelApiStructs.ItemInfo{}
+
+		temp.ID = v.ID
+		temp.CardType = v.CardType
+		temp.Icon = v.Icon
+		temp.Title = v.Title
+		temp.OnlyName = v.OnlyName
+		temp.Url = v.Url
+		temp.LanUrl = v.LanUrl
+		temp.Description = v.Description
+		temp.OpenMethod = v.OpenMethod
+		temp.Sort = v.Sort
+		temp.BackgroundColor = v.BackgroundColor
+		temp.ItemIconGroupId = v.ItemIconGroupId
+		temp.UserId = userInfo.ID
+		temp.ExpandParam = base.JsonStrToMap(v.ExpandParam)
+
+		resp = append(resp, temp)
 	}
 
-	apiReturn.SuccessListData(c, itemIcons, 0)
+	apiReturn.SuccessListData(c, resp, 0)
 }
 
 func (a *ItemIcon) Deletes(c *gin.Context) {

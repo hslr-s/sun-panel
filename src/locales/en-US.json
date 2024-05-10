@@ -66,6 +66,7 @@
       "detailIcon": "Detail icon",
       "hideDescription": "Hide description information",
       "hideTitle": "Hide title",
+      "iconMigrateDescribe": "Icon styles have been migrated to group settings and support setting styles individually by group",
       "leftRightMargin": "Left-right margin",
       "mask": "Mask",
       "maxWidth": "Max width",
@@ -87,6 +88,22 @@
     },
     "common": {
       "notFound": "Sorry, the application failed to load. Please try refreshing the page or clearing the browser cache."
+    },
+    "dockerManage": {
+      "action": "Action",
+      "alertText": "Currently, only Docker's container status viewing and opening and closing operations are implemented. More advanced functions (create, delete...) will be developed based on subsequent user needs. \nWithout PRO authorization, you can only view the status and cannot operate it.",
+      "containerName": "Container name",
+      "created": "Created",
+      "dead": "Dead",
+      "dockerError": "Something went wrong with Docker",
+      "exited": "Exited",
+      "paused": "Paused",
+      "removing": "Removing",
+      "resourceOverview": "Resource overview",
+      "restarting": "Restarting",
+      "running": "Running",
+      "state": "State",
+      "unknown": "unknown"
     },
     "exportImport": {
       "appName": "Export/Import",
@@ -122,8 +139,10 @@
     },
     "itemGroupManage": {
       "appName": "Group Management",
+      "cardStyle": "Card style",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
-      "groupName": "Group name"
+      "groupName": "Group name",
+      "publicVisitHide": "Hide in public mode"
     },
     "openApi": {
       "alertText": "Sun-Panel provides an open interface that can be used to add projects and other operations through development. For details, please refer to:",
@@ -144,7 +163,7 @@
         "notExpiredText": "{date} expires",
         "upgradePRO": "Upgrade to PRO"
       },
-      "goToSunPanelAuthSite": "Go to the authorized platform",
+      "goToSunPanelAuthSite": "Register/Subscribe PRO",
       "login": "Log in",
       "loginSunPanel": "Log in to the Sun-Panel authorization platform",
       "logout": "logout",
@@ -214,8 +233,9 @@
     "nikeName": "Nickname",
     "no": "No",
     "noData": "No data available",
-    "noPorAuth": "You do not have the PRO authorized function yet. This function can only be used after authorization.",
+    "noPorAuth": "This function is a PRO authorized function and requires authorization before it can be used. If it has been authorized, please refresh the page. ",
     "password": "Password",
+    "publicModeRestricted": "This feature is restricted in public mode.",
     "refreshPage": "Please refresh the page",
     "repeatLater": "Please try again later",
     "reset": "Reset",
@@ -272,13 +292,33 @@
   "iconItem": {
     "add": "Add item",
     "advancedFeatures": "Advanced Features",
+    "builtInApp": "Built-in app",
+    "builtInAppOpen": "Built-in app",
+    "builtinApp": "Built-in app",
+    "cardBackground": "Card background color",
+    "cardType": "Card type",
+    "containerName": "Container",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",
+    "dockerAction": {
+      "startContainer": "Start container",
+      "stopContainer": "Stop container"
+    },
+    "dockerContainerError": "Container exception",
+    "dockerGetContainerListFailed": "Failed to get container list",
+    "dockerStatusCard": "Docker container status card",
     "edit": "Edit item",
     "getGroupFail": "Failed to get group information",
     "getIcon": "Get icon",
     "geticonFail": "Failed to get icon",
+    "icon": {
+      "iconName": "Icon name",
+      "iconStyle": "Icon style",
+      "imageUrl": "Image address",
+      "textContent": "text content"
+    },
     "iconGroup": "Group",
+    "iframeCard": "iframe card",
     "inputIconName": "Enter icon name",
     "inputIconUrlOrUpload": "Enter icon URL or upload",
     "lanUrl": "LAN URL",
@@ -289,7 +329,19 @@
     "onlyName": "Unique identifier (English identifier, used as OpenAPI, corresponding field: 'onlyName')",
     "onlyNameExisted": "The unique identifier is already occupied",
     "openMethod": "Open method",
+    "openPageAndStartContainer": "Start the container before opening the page",
+    "ordinaryIcon": "Normal icon",
+    "preview": "Effect preview (for reference only)",
+    "previewTransparentCanvas": "Canvas transparent",
+    "resetBackground": "Reset",
     "selectUpload": "Local upload",
+    "showBadgeStatus": "Show status badge",
+    "showBadgeStatusAll": "All",
+    "showBadgeStatusExited": "Exited",
+    "showBadgeStatusNo": "Do not show",
+    "showBadgeStatusRestarting": "Restarting",
+    "showBadgeStatusRunning": "Running",
+    "systemApp": "system applications",
     "url": "URL",
     "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },
@@ -301,9 +353,9 @@
   },
   "panelHome": {
     "changeToLanModel": "Switch to LAN mode",
-    "changeToLanModelSuccess": "Switched to LAN mode (mode status saved locally)",
+    "changeToLanModelSuccess": "Has been switched to LAN mode",
     "changeToWanModel": "Switch to WAN mode",
-    "changeToWanModelSuccess": "Switched to WAN mode (mode status saved locally)",
+    "changeToWanModelSuccess": "Has been switched to WAN mode",
     "goToLogin": "Go to login",
     "openLanUrl": "Open LAN URL",
     "openWanUrl": "Open WAN URL"

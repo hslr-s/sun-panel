@@ -42,7 +42,7 @@ const refreshInterval = 5000
       :icon-text="iconText"
       :icon-text-color="iconTextColor"
       :background-color="extendParam.backgroundColor"
-      class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
+      class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)] transition-all duration-300 backdrop-blur-[2px] hover:backdrop-blur-[10px]"
     >
       <template #icon>
         <!-- 图标 -->

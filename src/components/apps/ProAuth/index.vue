@@ -6,6 +6,7 @@ import { getStatus as getStatusApi, login as loginApi, logout as logoutApi } fro
 import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
+import { useProAuthorizeStore } from '@/store'
 
 interface ProCardParam {
   nickName?: string
@@ -32,7 +33,9 @@ const loginModalForm = ref<LoginModalForm>({
 })
 
 const ms = useMessage()
+const proAuthorizeStore = useProAuthorizeStore()
 
+// const showGoToSiteButton = ref(false)
 const loginLoading = ref(false)
 const loginStatus = ref(false)
 const proExpiration = ref('')
@@ -82,7 +85,7 @@ async function login(username: string, password: string) {
     }
     apiRespErrMsg(error)
   })
-
+  proAuthorizeStore.refreshProAuthStatus()
   loginLoading.value = false
 }
 
@@ -91,6 +94,7 @@ async function logout() {
     await logoutApi()
     getStatus()
     loginModalShow.value = false
+    proAuthorizeStore.refreshProAuthStatus()
   }
   catch (error) {
     apiRespErrMsg(error)
@@ -163,7 +167,7 @@ onMounted(() => {
                 </div>
               </template>
               <template v-else>
-                <NButton size="small" @click="handleLogin">
+                <NButton size="small" ghost type="success" @click="handleLogin">
                   <NEllipsis style="max-width: 200px">
                     <span class="text-white">
                       {{ t("apps.proAuth.loginSunPanel") }}
@@ -190,12 +194,12 @@ onMounted(() => {
           </ProCard>
 
           <div class="mt-2 flex justify-center">
-            <NButton type="success" size="small" ghost @click="openToLink('proAuthSite')">
-              {{ t("apps.proAuth.goToSunPanelAuthSite") }}
+            <NButton size="small" style="margin-right: 5px;" @click="openToLink('proAuthSiteFAQ')">
+              {{ t("apps.proAuth.FAQButton") }}
             </NButton>
 
-            <NButton size="small" style="margin-left: 5px;" ghost @click="openToLink('proAuthSiteFAQ')">
-              {{ t("apps.proAuth.FAQButton") }}
+            <NButton size="small" @click="openToLink('proAuthSite')">
+              {{ t("apps.proAuth.goToSunPanelAuthSite") }}
             </NButton>
           </div>
         </div>

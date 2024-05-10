@@ -42,6 +42,14 @@ func (t *IniConfig) GetValueInt(section string, name string) int {
 	return t.Config.Section(section).Key(name).MustInt()
 }
 
+func (t *IniConfig) GetValueIntOrDefault(section string, name string, defaultValue int) int {
+	v := t.Config.Section(section).Key(name).MustInt()
+	if v == 0 {
+		v = defaultValue
+	}
+	return v
+}
+
 // 获取组配置
 func (t *IniConfig) GetSection(section string, result interface{}) error {
 	if group, err := t.Config.GetSection(section); err != nil {

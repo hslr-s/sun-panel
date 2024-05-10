@@ -64,6 +64,7 @@ function handleSubmit() {
 function handleChangeLanuage(value: Language) {
   languageValue.value = value
   appStore.setLanguage(value)
+  history.go(0)
 }
 
 async function getConfig() {

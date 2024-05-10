@@ -104,7 +104,8 @@ func InitApp() error {
 
 	// 初始化用户token
 	global.UserToken = userToken.InitUserToken()
-	global.CUserToken = cUserToken.InitCUserToken()
+	tokenExpires := global.Config.GetValueIntOrDefault("base", "token_expires", 168) // 默认7天
+	global.CUserToken = cUserToken.InitCUserToken(time.Duration(tokenExpires * int(time.Hour)))
 
 	// 其他的初始化
 	global.VerifyCodeCachePool = other.InitVerifyCodeCachePool()
@@ -136,14 +137,17 @@ func DatabaseConnect() {
 	}
 
 	if db, err := database.DbInit(dbClientInfo); err != nil {
-		log.Panicln("Database initialization error", err)
+		log.Panicln("Database initialization error:", err)
 		panic(err)
 	} else {
 		global.Db = db
 		models.Db = global.Db
 	}
 
-	database.CreateDatabase(databaseDrive, global.Db)
+	if err := database.CreateDatabase(databaseDrive, global.Db); err != nil {
+		log.Println("Database initialization error:", err)
+		log.Panicln("Database initialization error", err)
+	}
 
 	database.NotFoundAndCreateUser(global.Db)
 }

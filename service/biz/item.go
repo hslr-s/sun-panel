@@ -49,6 +49,9 @@ func (p *ItemType) Edit(userId uint, itemIcon models.ItemIcon) (models.ItemIcon,
 			"UserId",
 			"ItemIconGroupId",
 			"OnlyName",
+			"CardType",
+			"BackgroundColor",
+			"ExpandParam",
 		}
 		if itemIcon.Sort != 0 {
 			updateField = append(updateField, "Sort")

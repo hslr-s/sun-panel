@@ -1,4 +1,5 @@
 import type { Language } from '@/store/modules/app/helper'
+import { PanelPanelConfigStyleEnum } from '@/enums'
 
 export const defautSwatchesBackground = [
   '#00000000',
@@ -15,3 +16,12 @@ export const languageOptions: { label: string; key: Language; value: Language }[
   { label: 'English', key: 'en-US', value: 'en-US' },
   { label: '简体中文', key: 'zh-CN', value: 'zh-CN' },
 ]
+
+export const defaultItemGroupInfoCardStyle: Panel.ItemGroupInfoCardStyle = {
+  style: PanelPanelConfigStyleEnum.info,
+  textColor: '#ffffff',
+  textInfoHideDescription: false,
+  textIconHideTitle: false,
+}
+
+export const defaultItemCardBackgroundColor = '#2a2a2a6b'

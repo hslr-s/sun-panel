@@ -38,6 +38,14 @@ export interface Icon {
   lanUrl: string
   description: string
   openMethod: number
+
+  // 以下1.4.0新增，由于不能重复暂不导入导出此参数
+  // onlyName?: string
+
+  // 以下1.5.0新增
+  backgroundColor?: string
+  cardType: number
+  expandParam?: any
 }
 
 // 图标组
@@ -45,6 +53,7 @@ export interface IconGroup {
   title: string
   sort: number
   children: Icon[]
+  cardStyle: Panel.ItemGroupInfoCardStyle
 }
 
 interface ExportJsonResult {

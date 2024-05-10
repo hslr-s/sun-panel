@@ -50,8 +50,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="pt-5">
-    <div class="flex flex-col items-center justify-center">
+  <div class="app-background h-full">
+    <div class="flex flex-col items-center justify-center p-5">
       <img :src="srcSvglogo" width="100" height="100" alt="">
       <div class="text-3xl font-semibold">
         {{ $t('common.appName') }}
@@ -66,7 +66,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <NDivider style="margin:10px 0">
+    <NDivider style="margin:10px 0;padding: 0 10px">
       •
     </NDivider>
     <div class="flex flex-col items-center justify-center text-base">
