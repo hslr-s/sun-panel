@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - 'v*beta*'
 
 jobs:
   build:
@@ -35,4 +35,4 @@ jobs:
           context: .  # 这里在项目根目录找Dockerfile构建
           platforms: linux/amd64,linux/arm,linux/arm64
           push: true 
-          tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.APP_VERSION }}
+          tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.APP_VERSION }}, ${{ vars.DOCKER_IMAGE_NAME }}:beta

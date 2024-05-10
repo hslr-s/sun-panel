@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - 'v*'
+    tags-ignore:
+      - '!*beta*'
 
 jobs:
   build:
