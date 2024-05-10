@@ -1,31 +1,30 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { Container } from './components'
 import { useDockerStore } from './store/docker'
 // import Header from './layout/Header/index.vue'
-const inverted = ref(false)
+// const inverted = ref(false)
 
 const dockerStore = useDockerStore()
 
-const menuOptions = [
-  {
-    label: '容器',
-    key: 'container',
-  },
-  //   {
-  //     label: "",
-  //     key: 'compose',
-  //   },
-  {
-    label: '镜像',
-    key: 'image',
-  },
-  {
-    label: '网络',
-    key: 'network',
-  },
+// const menuOptions = [
+//   {
+//     label: '容器',
+//     key: 'container',
+//   },
+//   //   {
+//   //     label: "",
+//   //     key: 'compose',
+//   //   },
+//   {
+//     label: '镜像',
+//     key: 'image',
+//   },
+//   {
+//     label: '网络',
+//     key: 'network',
+//   },
 
-]
+// ]
 
 // console.log(inverted, menuOptions)
 </script>
