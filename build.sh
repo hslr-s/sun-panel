@@ -69,6 +69,7 @@ _build() {
     outPath="sun-panel_${COMMIT_SHA}_${os}_${arch}"
   fi
   outname="${pathRelease}/${outPath}/sun-panel"
+  go mod tidy
   go build -o "${outname}" --ldflags="-X sun-panel/global.RUNCODE=release" main.go
 
   cd $pathRelease
@@ -141,6 +142,7 @@ buildReleaseLinuxMusl() {
 
     outFileName="${packagePath}/sun-panel"
 
+    go mod tidy
     go build -o "${outFileName}" -ldflags="$muslflags" main.go
     # go build -o "${outFileName}" -ldflags="$muslflags" -tags=jsoniter main.go
 
