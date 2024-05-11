@@ -68,7 +68,7 @@ defineExpose({
     try {
       const errors = await formRef.value?.validate()
 
-      if (!errors) {
+      if (!errors?.warnings) {
         return Promise.resolve(true)
       }
       else {
