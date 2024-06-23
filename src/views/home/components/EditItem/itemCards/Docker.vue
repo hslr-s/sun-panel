@@ -150,7 +150,9 @@ function handleUpdateshowBadgeStatusValue(value: (string | number)[]) {
 }
 
 function handleChange(value: string, appInfo: SystemApp) {
-  model.value.title = appInfo.name
+  if (model.value.title === '')
+    model.value.title = appInfo.name
+
   // model.value.icon = {
   //   text: appInfo.icon,
   //   itemType: 3,
