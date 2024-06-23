@@ -1,7 +1,7 @@
 package biz
 
 var (
-	ProAuth       = NewProAuth()
+	ProAuth       = ProAuthType{}
 	GlobalSetting = GlobalSettingType{}
 	Item          = ItemType{}
 	OpenApi       = OpanApiType{}

@@ -43,6 +43,11 @@ func getDefaultConfig() map[string]map[string]string {
 			"source_temp_path": "./runtime/temp", // 存放文件的缓存路径
 			"web_path":         "./web",
 		},
+
+		// 此为隐藏配置
+		"pro_auth": {
+			"host": "https://auth.sun-panel.top",
+		},
 	}
 }
 
@@ -113,6 +118,7 @@ func InitApp() error {
 	global.SystemMonitor = global.NewCache[interface{}](5*time.Hour, -1, "systemMonitorCache")
 
 	// 注册与统计程序
+	biz.ProAuth = *biz.NewProAuth()
 	biz.ProAuth.Start()
 	return nil
 }

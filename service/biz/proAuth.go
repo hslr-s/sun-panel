@@ -49,10 +49,12 @@ const ProAuthTypeSystemSettingProAuthDataShortTermKey = "pro_auth_data_short_ter
 const ProAuthTypeSystemSettingAccountPasswordKey = "ProAuthAccountPassword"
 
 func NewProAuth() *ProAuthType {
-
-	proAuth.Config.Url = "https://auth.sun-panel.top"
-	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN"
+	// 此配置项为隐藏的默认为正式服务器
+	proAuth.Config.Url = global.Config.GetValueStringOrDefault("pro_auth", "host")
+	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN" // 绝密不可泄露
 	proAuth.Config.TimeDifference = 3600
+
+	global.Logger.Debugln("auth_host", proAuth.Config.Url)
 
 	p := ProAuthType{
 		PingInterval:     6 * time.Hour, // ping执行的时间间隔
@@ -61,7 +63,6 @@ func NewProAuth() *ProAuthType {
 	}
 	// debug模式连接本地授权平台
 	if global.RUNCODE == "debug" {
-		proAuth.Config.Url = "http://127.0.0.1:3005"
 		p.PingInterval = 30 * time.Second
 		// proAuth.Config.IsDebug = true // 明文传输
 	}
