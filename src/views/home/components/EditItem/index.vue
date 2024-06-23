@@ -184,8 +184,8 @@ function handleDelete() {
         deletes([props.itemInfo?.id as number]).then(({ code, msg }) => {
           if (code === 0) {
             ms.success(t('common.deleteSuccess'))
-            emit('done', props.itemInfo as Panel.Info)
             show.value = false
+            emit('done', props.itemInfo as Panel.Info)
           }
           else {
             ms.error(`${t('common.deleteFail')}:${msg}`)
