@@ -275,6 +275,7 @@
     "searchBox": {
       "iconUploadHint": "It is recommended to use svg format for icon images. For other formats, please ensure that the ratio is 1:1.",
       "inputPlaceholder": "Enter search content",
+      "noProAuth": "Non-PRO authorized users can only add 2 additional search engines",
       "openWithNewOpen": "Search results open in new window",
       "searchEngineManage": "Search engine management",
       "uploadImage": "Select upload image/icon",

@@ -12,10 +12,12 @@ import {
 import type { SearchSaveDataType } from './base'
 import { defaultSearchEngineList, defaultSearchSaveData } from './base'
 import { t } from '@/locales'
-import { useAuthStore } from '@/store'
+import { useAuthStore, useProAuthorizeStore } from '@/store'
 import { useModuleConfig } from '@/store/modules'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
 import { randomCode } from '@/utils/cmn'
+import { ProTag } from '@/components/common'
+import { message } from '@/utils/cmn/apiMessage'
 
 interface State extends SearchSaveDataType {
 }
@@ -24,6 +26,7 @@ const dialog = useDialog()
 const formRef = ref<FormInst | null>(null)
 const moduleConfig = useModuleConfig()
 const authStore = useAuthStore()
+const proAuthStore = useProAuthorizeStore()
 const editModalShow = ref(false)
 const editModalIndex = ref(0)
 const searchSaveData = ref<State>({ ...defaultSearchSaveData })
@@ -56,6 +59,11 @@ const rules = {
   },
 }
 function handleAdd() {
+  if (proAuthStore.isExpired && searchSaveData.value.searchEngineList.length >= 2) {
+    message.warning(t('deskModule.searchBox.noProAuth'))
+    return
+  }
+
   editModalModel.value = { ...modelDefault }
   editModalTitle.value = t('common.add')
   editModalIsEdit.value = false
@@ -160,6 +168,12 @@ onMounted(() => {
     <NButton style="margin-right: 2px;" size="small" type="success" @click="handleAdd">
       {{ t("common.add") }}
     </NButton>
+
+    <ProTag class="mx-2" />
+
+    <span v-if="proAuthStore.isExpired">
+      <span>{{ t('deskModule.searchBox.noProAuth') }}</span>
+    </span>
 
     <!-- list -->
     <div class="h-[500px] overflow-auto mt-5">
