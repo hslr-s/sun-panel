@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { defineEmits, onMounted, ref } from 'vue'
-import { NAvatar, NCheckbox } from 'naive-ui'
+import { NAvatar, NCheckbox, NModal } from 'naive-ui'
+import SearchBoxSetting from './SearchBoxSetting.vue'
+import type { SearchSaveDataType } from './base'
+import { defaultSearchEngineList, defaultSearchSaveData } from './base'
 import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
 import { useAuthStore } from '@/store'
 import { VisitMode } from '@/enums/auth'
 
-import SvgSrcBaidu from '@/assets/search_engine_svg/baidu.svg'
-import SvgSrcBing from '@/assets/search_engine_svg/bing.svg'
-import SvgSrcGoogle from '@/assets/search_engine_svg/google.svg'
+import { message } from '@/utils/request/apiMessage'
+import { t } from '@/locales'
 
 withDefaults(defineProps<{
   background?: string
@@ -20,10 +22,7 @@ withDefaults(defineProps<{
 
 const emits = defineEmits(['itemSearch'])
 
-interface State {
-  currentSearchEngine: DeskModule.SearchBox.SearchEngine
-  searchEngineList: DeskModule.SearchBox.SearchEngine[]
-  newWindowOpen: boolean
+interface State extends SearchSaveDataType {
 }
 
 const moduleConfigName = 'deskModuleSearchBox'
@@ -32,31 +31,13 @@ const authStore = useAuthStore()
 const searchTerm = ref('')
 const isFocused = ref(false)
 const searchSelectListShow = ref(false)
-const defaultSearchEngineList = ref<DeskModule.SearchBox.SearchEngine[]>([
-  {
-    iconSrc: SvgSrcGoogle,
-    title: 'Google',
-    url: 'https://www.google.com/search?q=%s',
-  },
-  {
-    iconSrc: SvgSrcBaidu,
-    title: 'Baidu',
-    url: 'https://www.baidu.com/s?wd=%s',
-  },
-  {
-    iconSrc: SvgSrcBing,
-    title: 'Bing',
-    url: 'https://www.bing.com/search?q=%s',
-  },
-])
+const searchBoxSettingShow = ref(false)
 
-const defaultState: State = {
-  currentSearchEngine: defaultSearchEngineList.value[0],
-  searchEngineList: [] || defaultSearchEngineList,
-  newWindowOpen: false,
-}
+const defaultState: State = defaultSearchSaveData
 
 const state = ref<State>({ ...defaultState })
+
+const selectEngineList = ref<DeskModule.SearchBox.SearchEngine[]>([])
 
 const onFocus = (): void => {
   isFocused.value = true
@@ -68,8 +49,11 @@ const onBlur = (): void => {
 
 function handleEngineClick() {
   // 访客模式不允许修改
-  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC)
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+    message.warning(t('common.publicModeRestricted'))
     return
+  }
+
   searchSelectListShow.value = !searchSelectListShow.value
 }
 
@@ -109,13 +93,23 @@ function handleClearSearchTerm() {
   emits('itemSearch', searchTerm.value)
 }
 
-onMounted(() => {
+function handleOpenModalSetting() {
+  searchBoxSettingShow.value = !searchBoxSettingShow.value
+}
+
+function getData() {
   moduleConfig.getValueByNameFromCloud<State>('deskModuleSearchBox').then(({ code, data }) => {
     if (code === 0)
       state.value = data || defaultState
     else
       state.value = defaultState
+
+    selectEngineList.value = defaultSearchEngineList.concat(state.value.searchEngineList)
   })
+}
+
+onMounted(() => {
+  getData()
 })
 </script>
 
@@ -139,21 +133,24 @@ onMounted(() => {
     <!-- 搜索引擎选择 -->
     <div v-if="searchSelectListShow" class="w-full mt-[10px] rounded-xl p-[10px]" :style="{ background }">
       <div class="flex items-center">
-        <div class="flex items-center">
+        <div class="flex items-center flex-wrap">
           <div
-            v-for="item, index in defaultSearchEngineList"
+            v-for="item, index in selectEngineList"
             :key="index"
             :title="item.title"
-            class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl"
+            class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl my-1"
             @click="handleEngineUpdate(item)"
           >
             <NAvatar :src="item.iconSrc" style="background-color: transparent;" :size="20" />
           </div>
-        <!-- <div class="w-[40px] h-[40px] ml-[10px] flex justify-center items-center cursor-pointer" @click="handleEngineClick">
-          <NAvatar style="background-color: transparent;" :size="30">
-            <SvgIcon icon="lets-icons:setting-alt-fill" style="font-size: 20px;" />
-          </NAvatar>
-        </div> -->
+          <div
+            class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl my-1"
+            @click="handleOpenModalSetting"
+          >
+            <NAvatar style="background-color: transparent;" :size="30">
+              <SvgIcon icon="lets-icons--setting-alt-fill" style="font-size: 20px;color:#475569" />
+            </NAvatar>
+          </div>
         </div>
       </div>
 
@@ -165,6 +162,18 @@ onMounted(() => {
         </NCheckbox>
       </div>
     </div>
+
+    <!-- 搜索栏设置窗口 -->
+    <NModal
+      v-model:show="searchBoxSettingShow"
+      preset="card"
+      size="small"
+      style="width: 600px;border-radius: 1rem;"
+      :title="t('deskModule.searchBox.searchEngineManage')"
+      @after-leave="getData"
+    >
+      <SearchBoxSetting />
+    </NModal>
   </div>
 </template>
 

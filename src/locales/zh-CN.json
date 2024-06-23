@@ -273,8 +273,12 @@
       "wed": "星期三"
     },
     "searchBox": {
+      "iconUploadHint": "图标图片推荐使用svg格式，其他格式请保证比例为1:1",
       "inputPlaceholder": "请输入搜索内容",
-      "openWithNewOpen": "新窗口打开"
+      "openWithNewOpen": "搜索结果使用新窗口打开",
+      "searchEngineManage": "搜索引擎管理",
+      "uploadImage": "选择上传图片/图标",
+      "urlKeywordhint": "如果搜索的关键字不在末端可以使用“%s”来表示"
     },
     "systemMonitor": {
       "cpuState": "CPU状态",
