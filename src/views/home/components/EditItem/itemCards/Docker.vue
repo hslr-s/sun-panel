@@ -89,6 +89,7 @@ const rulesExtends: FormRules = {
 
 const extendParam: Panel.ItemCardExpandParam.Docker = {
   containerId: '',
+  containerName: '',
   openPageAndStart: false,
   cardType: '',
   showBadgeStatus: [],
@@ -118,6 +119,7 @@ onMounted(() => {
     ep.cardType = props.itemInfo.expandParam.cardType
     ep.showBadgeStatus = props.itemInfo.expandParam.showBadgeStatus
     ep.openPageAndStartDelaySecond = props.itemInfo.expandParam.openPageAndStartDelaySecond
+    ep.containerName = props.itemInfo.expandParam.containerName
 
     model.value.expandParam = ep
   }
@@ -146,18 +148,15 @@ async function getIconByUrl(url: string, loadingIndex: number) {
 function handleUpdateshowBadgeStatusValue(value: (string | number)[]) {
   model.value.expandParam.showBadgeStatus = value
   // message.info(JSON.stringify(value))
-  console.log(JSON.stringify(value))
+  // console.log(JSON.stringify(value))
 }
 
 function handleChange(value: string, appInfo: SystemApp) {
+  const containerName = appInfo.name
   if (model.value.title === '')
-    model.value.title = appInfo.name
+    model.value.title = containerName
 
-  // model.value.icon = {
-  //   text: appInfo.icon,
-  //   itemType: 3,
-  // }
-  // model.value.description = t('iconItem.builtinApp')
+  model.value.expandParam.containerName = containerName
 }
 </script>
 

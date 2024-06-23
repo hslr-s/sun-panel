@@ -124,6 +124,7 @@ declare namespace Panel.ItemCardExpandParam {
     // docker卡片
     interface Docker {
         containerId: string
+        containerName: string
         openPageAndStart: bool
         openPageAndStartDelaySecond:number // 启动容器后延时n秒打开页面
         cardType: string

@@ -49,7 +49,6 @@ const badgeStatusColor = ref('')
 const loading = ref(false)
 const badgeMsg = ref('')
 const dockerErrorMsg = ref('')
-const lastUpdateTimestamp = ref(0)
 const lastTime = ref('')
 
 const containerState = ref<Docker.Container.Stats>({
@@ -308,6 +307,8 @@ async function getContainerStatus(showLoading?: boolean) {
   }).catch((res) => {
     badgeStatusColor.value = 'red'
     badgeMsg.value = t('iconItem.dockerContainerError')
+
+    // 【暂时不做了】 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
     if (res.code === -1) {
       dockerErrorMsg.value = res.msg
       return
@@ -320,7 +321,7 @@ async function getContainerStatus(showLoading?: boolean) {
 }
 
 function updateStats(data: Docker.Container.Stats) {
-  console.log('数据域', props.itemInfo.title, data)
+  // console.log('数据域', props.itemInfo.title, data)
 
   containerState.value = data
   describeText.value = ''
