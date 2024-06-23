@@ -145,6 +145,8 @@ func (a *Container) GetContainerStatus(c *gin.Context) {
 	resp.IOWrite = stateData.IOWrite
 	resp.NetworkRX = stateData.NetworkRX
 	resp.NetworkTX = stateData.NetworkTX
+	resp.ShotTime = time.Now()
+
 	apiReturn.SuccessData(c, resp)
 }
 
@@ -182,8 +184,9 @@ func (a *Container) GetContainersState(c *gin.Context) {
 			temp.IOWrite = stateData.IOWrite
 			temp.NetworkRX = stateData.NetworkRX
 			temp.NetworkTX = stateData.NetworkTX
-		}
 
+		}
+		temp.ShotTime = time.Now()
 		resp[v] = temp
 	}
 

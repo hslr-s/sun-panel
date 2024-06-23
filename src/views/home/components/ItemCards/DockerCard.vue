@@ -49,6 +49,8 @@ const badgeStatusColor = ref('')
 const loading = ref(false)
 const badgeMsg = ref('')
 const dockerErrorMsg = ref('')
+const lastUpdateTimestamp = ref(0)
+const lastTime = ref('')
 
 const containerState = ref<Docker.Container.Stats>({
   cpuPercent: 0,
@@ -264,7 +266,8 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
   const id = props.itemInfo.expandParam.containerId
   await execSwitchActionApi({
     id, action,
-  }).then(() => {
+  }).then(async () => {
+    // 成功
     if (action) {
       containerState.value.runStatus = DockerContainerInfoState.running
       // console.log(containerState.value.runStatus)
@@ -274,19 +277,18 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
     else {
       containerState.value.runStatus = DockerContainerInfoState.exited
     }
-
-    // 成功
+    await getContainerStatus()
+    loading.value = false
   }).catch((res) => {
+    // 失败
+    loading.value = false
     if (res.code === -1) {
       dockerErrorMsg.value = res.msg
       return
     }
 
     apiRespErrMsg(res)
-
-    // 失败
   })
-  loading.value = false
 }
 
 async function getContainerStatus(showLoading?: boolean) {
@@ -298,6 +300,7 @@ async function getContainerStatus(showLoading?: boolean) {
     loading.value = true
   await getContainerStatusApi<Docker.Container.Stats>(id).then(({ data }) => {
     // console.log('请求容器data', data)
+    lastTime.value = data.shotTime || ''
     updateStats(data)
     badgeMsg.value = ''
     // console.log('注册', id)
@@ -317,34 +320,33 @@ async function getContainerStatus(showLoading?: boolean) {
 }
 
 function updateStats(data: Docker.Container.Stats) {
-  // console.log('数据域', data)
-  if (data) {
-    containerState.value = data
-    describeText.value = ''
+  console.log('数据域', props.itemInfo.title, data)
 
-    if (data.errorMessage !== '') {
-      badgeMsg.value = t('iconItem.dockerContainerError')
-      dockerErrorMsg.value = data.errorMessage
-    }
+  containerState.value = data
+  describeText.value = ''
 
-    if (containerState.value.runStatus) {
-      describeText.value = `CPU:${roundNumberToTwoDecimalPlaces(containerState.value.cpuPercent)}% RAM:${roundNumberToTwoDecimalPlaces(containerState.value.memory)}MB`
-      // 设置徽章的颜色
-      switch (containerState.value.runStatus) {
-        case DockerContainerInfoState.running:
-          badgeStatusColor.value = '#18A058'
-          break
-        case DockerContainerInfoState.restarting:
-          badgeStatusColor.value = '#F0A020FF'
-          break
-        case DockerContainerInfoState.error:
-          badgeStatusColor.value = 'red'
-          break
+  if (data.errorMessage !== '') {
+    badgeMsg.value = t('iconItem.dockerContainerError')
+    dockerErrorMsg.value = data.errorMessage
+  }
 
-        default:
-          badgeStatusColor.value = '#7B7B7B'
-          break
-      }
+  if (containerState.value.runStatus) {
+    describeText.value = `CPU:${roundNumberToTwoDecimalPlaces(containerState.value.cpuPercent)}% RAM:${roundNumberToTwoDecimalPlaces(containerState.value.memory)}MB`
+    // 设置徽章的颜色
+    switch (containerState.value.runStatus) {
+      case DockerContainerInfoState.running:
+        badgeStatusColor.value = '#18A058'
+        break
+      case DockerContainerInfoState.restarting:
+        badgeStatusColor.value = '#F0A020FF'
+        break
+      case DockerContainerInfoState.error:
+        badgeStatusColor.value = 'red'
+        break
+
+      default:
+        badgeStatusColor.value = '#7B7B7B'
+        break
     }
   }
 }
@@ -369,11 +371,20 @@ onMounted(async () => {
   if (props.itemInfo.expandParam.containerId) {
     await getContainerStatus(true)
 
+    // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
     watch(() => store.containerRuningStats[props.itemInfo.expandParam.containerId], (value) => {
       // console.log('数据有变化', props.itemInfo.expandParam.containerId)
-      // console.log('value', value)
-      if (value)
+      if (value) {
+        const d1 = new Date(value.shotTime || '')
+        const lt = new Date(lastTime.value || '')
+
+        // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
+        if ((value.shotTime === '' || lastTime.value === '') || d1 < lt)
+          return // 不更新
+
+        lastTime.value = value.shotTime || ''
         updateStats(value)
+      }
     })
   }
 
