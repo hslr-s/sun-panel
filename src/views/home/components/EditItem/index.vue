@@ -2,9 +2,9 @@
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
-  NButton, NCheckbox, NColorPicker, NDivider, NForm, NFormItem,
-  NGrid, NGridItem, NInput, NModal, NSelect,
-  useMessage,
+  NButton, NCheckbox, NColorPicker, NDivider, NFlex, NForm,
+  NFormItem, NGrid, NGridItem, NInput, NModal,
+  NSelect, useDialog, useMessage,
 } from 'naive-ui'
 
 import NormalCard from './itemCards/Normal.vue'
@@ -12,7 +12,7 @@ import SystemAppCard from './itemCards/BuiltInApp.vue'
 import DockerCard from './itemCards/Docker.vue'
 
 import { ItemCards } from '@/views/home/components'
-import { edit } from '@/api/panel/itemIcon'
+import { deletes, edit } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
@@ -28,7 +28,9 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 const ms = useMessage()
+const dialog = useDialog()
 const submitLoading = ref(false)
+const deleteLoading = ref(false)
 const expandAdvancedFeatures = ref(false)
 const showPreview = ref(true)
 const itemIconGroupOptions = ref<{
@@ -170,6 +172,34 @@ function getGroupListOptions() {
   })
 }
 
+function handleDelete() {
+  if (props.itemInfo?.id) {
+    dialog.warning({
+      title: t('common.warning'),
+      content: t('common.deleteConfirmByName', { name: props.itemInfo.title }),
+      positiveText: t('common.confirm'),
+      negativeText: t('common.cancel'),
+      onPositiveClick: () => {
+        deleteLoading.value = true
+        deletes([props.itemInfo?.id as number]).then(({ code, msg }) => {
+          if (code === 0) {
+            ms.success(t('common.deleteSuccess'))
+            emit('done', props.itemInfo as Panel.Info)
+            show.value = false
+          }
+          else {
+            ms.error(`${t('common.deleteFail')}:${msg}`)
+          }
+          deleteLoading.value = false
+        }).catch((error) => {
+          apiRespErrMsg(error)
+          deleteLoading.value = false
+        })
+      },
+    })
+  }
+}
+
 function handleUpdateCardType() {
   rules.value = { ...defaultRules }
   // model.value.expandParam = undefined
@@ -291,9 +321,15 @@ function handleUpdateCardType() {
     </div>
 
     <template #footer>
-      <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleValidateButtonClick">
-        {{ $t('common.save') }}
-      </NButton>
+      <NFlex justify="end">
+        <NButton v-if="itemInfo?.id" type="error" :loading="deleteLoading" style="float: right;" @click="handleDelete">
+          {{ $t('common.delete') }}
+        </NButton>
+
+        <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleValidateButtonClick">
+          {{ $t('common.save') }}
+        </NButton>
+      </NFlex>
     </template>
   </NModal>
 </template>
