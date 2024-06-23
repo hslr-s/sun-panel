@@ -162,10 +162,10 @@ function itemFrontEndSearch(keyword?: string) {
         filteredData.value.push({ items: element, hoverStatus: false, cardStyle: items.value[i].cardStyle, title: items.value[i].title })
     }
     filterItems.value = filteredData.value
-    console.log('搜索模式开启')
+    // console.log('搜索模式开启')
   }
   else {
-    console.log('搜索模式关闭')
+    // console.log('搜索模式关闭')
     filterItems.value = items.value
   }
 }
