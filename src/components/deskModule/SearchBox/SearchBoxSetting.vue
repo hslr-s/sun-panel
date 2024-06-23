@@ -172,7 +172,7 @@ onMounted(() => {
     <ProTag class="mx-2" />
 
     <span v-if="proAuthStore.isExpired">
-      <span>{{ t('deskModule.searchBox.noProAuth') }}</span>
+      <span class="text-xs">{{ t('deskModule.searchBox.noProAuth') }}</span>
     </span>
 
     <!-- list -->
