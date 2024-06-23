@@ -7,6 +7,7 @@ import type {
 import {
   NAvatar, NButton, NCard, NFlex,
   NForm, NFormItem, NInput, NModal, NUpload,
+  useDialog,
 } from 'naive-ui'
 import type { SearchSaveDataType } from './base'
 import { defaultSearchEngineList, defaultSearchSaveData } from './base'
@@ -14,10 +15,12 @@ import { t } from '@/locales'
 import { useAuthStore } from '@/store'
 import { useModuleConfig } from '@/store/modules'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { randomCode } from '@/utils/cmn'
 
 interface State extends SearchSaveDataType {
 }
 
+const dialog = useDialog()
 const formRef = ref<FormInst | null>(null)
 const moduleConfig = useModuleConfig()
 const authStore = useAuthStore()
@@ -29,6 +32,7 @@ const modelDefault: DeskModule.SearchBox.SearchEngine = {
   iconSrc: '',
   title: '',
   url: '',
+  key: '',
 }
 const editModalModel = ref<DeskModule.SearchBox.SearchEngine>({ ...modelDefault })
 const editModalTitle = ref('')
@@ -98,13 +102,29 @@ function getList() {
 
 function save(e: MouseEvent) {
   e.preventDefault()
+
+  // 生成唯一的key值
+  if (!editModalModel.value.key || editModalModel.value.key === '')
+    editModalModel.value.key = randomCode(15)
+
   formRef.value?.validate((errors) => {
     if (!errors) {
-      if (editModalIsEdit.value)
+      if (editModalIsEdit.value) {
         searchSaveData.value.searchEngineList[editModalIndex.value] = editModalModel.value
 
-      else
+        if (searchSaveData.value.currentSearchEngine.key || searchSaveData.value.currentSearchEngine.key !== '') {
+          // 如果当前使用的搜索引擎是当前的修改项，将对当前所使用的搜索引擎同步更新
+          for (let i = 0; i < searchSaveData.value.searchEngineList.length; i++) {
+            const element = searchSaveData.value.searchEngineList[i]
+            if (searchSaveData.value.currentSearchEngine.key === element.key)
+              searchSaveData.value.currentSearchEngine = element
+          }
+        }
+      }
+
+      else {
         searchSaveData.value.searchEngineList.push(editModalModel.value)
+      }
 
       moduleConfig.saveToCloud('deskModuleSearchBox', searchSaveData.value)
       editModalShow.value = false
@@ -116,10 +136,18 @@ function save(e: MouseEvent) {
 }
 
 function deleteByIndex(index: number) {
-  searchSaveData.value.searchEngineList.splice(index, 1)
+  dialog.warning({
+    title: t('common.warning'),
+    content: t('common.deleteConfirm'),
+    positiveText: t('common.confirm'),
+    negativeText: t('common.cancel'),
+    onPositiveClick: () => {
+      searchSaveData.value.searchEngineList.splice(index, 1)
+      moduleConfig.saveToCloud('deskModuleSearchBox', searchSaveData.value)
+      editModalShow.value = false
+    },
 
-  moduleConfig.saveToCloud('deskModuleSearchBox', searchSaveData.value)
-  editModalShow.value = false
+  })
 }
 
 onMounted(() => {
