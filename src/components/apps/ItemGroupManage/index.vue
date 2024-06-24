@@ -3,13 +3,13 @@ import { onMounted, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
   NButton, NCard, NColorPicker, NDivider,
-  NForm, NFormItem, NInput, NSelect, NSwitch,
-  useDialog,
+  NFlex, NForm, NFormItem, NInput, NSelect,
+  NSwitch, useDialog,
   useMessage,
 } from 'naive-ui'
 import { VueDraggable } from 'vue-draggable-plus'
 import { deletes, edit, getList, saveSort } from '@/api/panel/itemIconGroup'
-import { RoundCardModal, SvgIcon } from '@/components/common'
+import { RoundCardModal, STip, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
@@ -214,7 +214,7 @@ watch(() => editModalArg.value.show, (v) => {
     </NCard>
 
     <RoundCardModal v-model:show="editModalArg.show" size="small" type="small" :title="editModalArg.editStatus === 1 ? t('common.add') : t('common.edit')" style="width: 400px;">
-      <NForm ref="formRef" :model="editModalArg.model" :rules="editModalArg.rules">
+      <NForm ref="formRef" :model="editModalArg.model" size="small" :rules="editModalArg.rules">
         <NFormItem path="title" :label="$t('apps.itemGroupManage.groupName')">
           <NInput v-model:value="editModalArg.model.title" type="text" :maxlength="20" show-count />
         </NFormItem>
@@ -237,7 +237,13 @@ watch(() => editModalArg.value.show, (v) => {
           <NSwitch v-model:value="editModalArg.model.cardStyle.textIconHideTitle" />
         </NFormItem>
 
-        <NFormItem :label="t('common.textColor')">
+        <NFormItem>
+          <template #label>
+            <NFlex align="center">
+              {{ t('common.textColor') }}
+              <STip :content="t('apps.itemGroupManage.textAutoColor')" />
+            </NFlex>
+          </template>
           <NColorPicker
             v-model:value="editModalArg.model.cardStyle.textColor"
             :show-alpha="false"
