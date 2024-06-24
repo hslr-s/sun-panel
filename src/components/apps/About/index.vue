@@ -86,7 +86,7 @@ onMounted(() => {
       <div v-if="!checkLoading" class="mt-2">
         <NFlex v-if="newVersionInfo !== null" justify="center" align="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
           {{ t('apps.about.haveNewVersion') }}
-          <NBadge value="New" :offset="[5, -5]">
+          <NBadge value="New" processing :offset="[5, -5]">
             <NTag type="info">
               <a :href="link('update_log')" target="_blank" class="link"> v{{ newVersionInfo.version }}</a>
             </NTag>
