@@ -41,8 +41,10 @@
   "apps": {
     "about": {
       "QR": "二维码(推荐)",
+      "alreadyLatestVersion": "已经是最新版本",
       "appName": "关于",
       "author": "作者：",
+      "checkFailed": "检查更新失败，请点此去官网查看",
       "checkUpdate": "检查新版本",
       "communicationGroup": "交流群：",
       "discussions": "交流社区：",
@@ -50,7 +52,7 @@
       "frontVersionText": "前端编译时间",
       "groupChat": "QQ、TG交流群",
       "issue": "建议反馈：",
-      "viewUpdateLog": "点此查看更新说明",
+      "viewUpdateLog": "点此查看更新日志",
       "website": "网站："
     },
     "baseSettings": {

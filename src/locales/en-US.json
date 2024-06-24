@@ -41,8 +41,10 @@
   "apps": {
     "about": {
       "QR": "QR Code(recommend)",
+      "alreadyLatestVersion": "Already the latest version",
       "appName": "About",
       "author": "Author:",
+      "checkFailed": "Failed to check for updates, please click here to check on the official website",
       "checkUpdate": "Check for new version",
       "communicationGroup": "Communication group:",
       "discussions": "Discussions:",
@@ -50,7 +52,7 @@
       "frontVersionText": "Front-end compile time",
       "groupChat": "QQ, TG communication group",
       "issue": "Feedback:",
-      "viewUpdateLog": "Click here to view update log",
+      "viewUpdateLog": "Click here to view the update log",
       "website": "Website:"
     },
     "baseSettings": {

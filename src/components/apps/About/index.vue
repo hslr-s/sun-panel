@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { NDivider, NGradientText, NTag } from 'naive-ui'
+import { NBadge, NButton, NCheckbox, NDivider, NFlex, NGradientText, NTag } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import { get } from '@/api/system/about'
+import { checkNewVersion as checkNewVersionApi, get } from '@/api/system/about'
 import { useAppStore } from '@/store'
 import srcSvglogo from '@/assets/logo.svg'
 import srcGitee from '@/assets/about_image/gitee.png'
@@ -11,6 +11,8 @@ import srcBilibili from '@/assets/about_image/bilibili.png'
 import srcYoutube from '@/assets/about_image/youtube.png'
 import srcQQGroupQR from '@/assets/about_image/qq_group_qr2.png'
 import { RoundCardModal } from '@/components/common'
+import { message } from '@/utils/request/apiMessage'
+import { t } from '@/locales'
 
 interface Version {
   versionName: string
@@ -22,6 +24,10 @@ const versionName = ref('')
 const qqGroupQRShow = ref(false)
 const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
 const linksDomain = 'http://links.sun-panel.top'
+const isCheckBeta = ref(false)
+const newVersionInfo = ref<About.NewVersionInfo | null>(null)
+const checkLoading = ref(false)
+const isCheckFailed = ref(false)
 
 function getLangeuageSimple() {
   if (appStore.language === 'zh-CN')
@@ -41,17 +47,31 @@ function getWebsiteUrl(): string {
   return 'http://doc.sun-panel.top'
 }
 
+async function checkNewVersion() {
+  checkLoading.value = true
+  await checkNewVersionApi<About.NewVersionInfo | null>(isCheckBeta.value).then(({ data }) => {
+    newVersionInfo.value = data
+    isCheckFailed.value = false
+  }).catch(() => {
+    isCheckFailed.value = true
+    message.error(t('common.failed'))
+  })
+  checkLoading.value = false
+}
+
 onMounted(() => {
   get<Version>().then((res) => {
     if (res.code === 0)
       versionName.value = res.data.versionName
   })
+
+  checkNewVersion()
 })
 </script>
 
 <template>
-  <div class="app-background h-full">
-    <div class="flex flex-col items-center justify-center p-5">
+  <div class="app-background h-full overflow-auto py-5">
+    <div class="flex flex-col items-center justify-center">
       <img :src="srcSvglogo" width="100" height="100" alt="">
       <div class="text-3xl font-semibold">
         {{ $t('common.appName') }}
@@ -61,9 +81,37 @@ onMounted(() => {
           <a :href="link('update_log')" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
         </NGradientText>
       </div>
-      <div class="mt-2">
-        <a href="https://github.com/hslr-s/sun-panel/releases" target="_blank" class="link">{{ $t('apps.about.checkUpdate') }}</a>
+
+      <div v-if="!checkLoading" class="mt-2">
+        <NFlex v-if="newVersionInfo !== null" justify="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
+          <NBadge value="New" :offset="[5, -5]">
+            <NTag type="info">
+              <a :href="link('update_log')" target="_blank" class="link"> v{{ newVersionInfo.version }}</a>
+            </NTag>
+          </NBadge>
+        </NFlex>
+
+        <NFlex v-else-if="!isCheckFailed && newVersionInfo === null " justify="center" style="margin:10px 0 ;">
+          <NTag type="success">
+            {{ t('apps.about.alreadyLatestVersion') }}
+          </NTag>
+        </NFlex>
+
+        <NFlex v-if="isCheckFailed" justify="center" style="margin:10px 0 ;">
+          <NTag type="error">
+            <a href="https://github.com/hslr-s/sun-panel/releases" target="_blank"> {{ t("apps.about.checkFailed") }}</a>
+          </NTag>
+        </NFlex>
       </div>
+
+      <NFlex align="center" justify="center">
+        <NCheckbox v-model:checked="isCheckBeta">
+          Beta
+        </NCheckbox>
+        <NButton size="tiny" type="success" @click="checkNewVersion">
+          {{ $t('apps.about.checkUpdate') }}
+        </NButton>
+      </NFlex>
     </div>
 
     <NDivider style="margin:10px 0;padding: 0 10px">
