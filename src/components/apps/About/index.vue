@@ -72,7 +72,7 @@ onMounted(() => {
 <template>
   <div class="app-background h-full overflow-auto py-5">
     <div class="flex flex-col items-center justify-center">
-      <img :src="srcSvglogo" width="100" height="100" alt="">
+      <img :src="srcSvglogo" width="80" height="80" alt="">
       <div class="text-3xl font-semibold">
         {{ $t('common.appName') }}
       </div>
@@ -108,7 +108,7 @@ onMounted(() => {
         <NCheckbox v-model:checked="isCheckBeta">
           Beta
         </NCheckbox>
-        <NButton size="tiny" type="success" @click="checkNewVersion">
+        <NButton size="tiny" type="success" :loading="checkLoading" @click="checkNewVersion">
           {{ $t('apps.about.checkUpdate') }}
         </NButton>
       </NFlex>
