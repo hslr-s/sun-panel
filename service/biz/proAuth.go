@@ -3,6 +3,7 @@ package biz
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
@@ -37,6 +38,23 @@ type ProAuthDataShortTerm struct {
 	Token               string
 	UserInfo            proAuth.UserInfo // 昵称
 }
+
+type NewVersion struct {
+	ReleaseTime time.Time
+	Type        proAuth.VersionType
+	Version     string
+	DownloadURL string
+	PageUrl     string
+}
+
+type VersionType string
+
+const (
+	VersionTypeRelease VersionType = "release"
+	VersionTypeBeta    VersionType = "beta"
+	VersionTypeAlpha   VersionType = "alpha"
+	VersionTypeRC      VersionType = "rc"
+)
 
 var ErrAccountPasswordIncomplete = errors.New("ErrAccountPasswordIncomplete")
 
@@ -478,4 +496,36 @@ func (p *ProAuthType) GetAuthDataShortTerm() *ProAuthDataShortTerm {
 
 func (p *ProAuthType) AuthDataShortTermSyncToSysntemSetting() {
 	p.SaveAuthDataShortTerm(p.ProAuthDataShortTerm)
+}
+
+func (p *ProAuthType) CheckNewBetaVersion(versionType VersionType) (*NewVersion, error) {
+	var v *NewVersion
+	version, err := proAuth.CheckVersion(proAuth.CheckVersionReq{
+		Base:        p.GetBase(),
+		VersionType: proAuth.VersionType(versionType),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	jb, e := json.Marshal(version)
+
+	fmt.Println("检查更新返回的数据", string(jb), e)
+
+	if version.IsNoNewVersion {
+		return nil, nil
+	}
+
+	if version.VersionInfo != nil {
+		v = &NewVersion{
+			ReleaseTime: version.VersionInfo.ReleaseTime,
+			Type:        version.VersionInfo.Type,
+			Version:     version.VersionInfo.Version,
+			DownloadURL: version.VersionInfo.DownloadURL,
+			PageUrl:     version.VersionInfo.PageUrl,
+		}
+	}
+
+	return v, nil
 }

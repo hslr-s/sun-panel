@@ -65,3 +65,32 @@ type PingResp struct {
 	RespBase
 	ProExpiration *time.Time // pro授权过期时间
 }
+
+type VersionType string
+
+const (
+	VersionTypeRelease VersionType = "release"
+	VersionTypeBeta    VersionType = "beta"
+	VersionTypeAlpha   VersionType = "alpha"
+	VersionTypeRC      VersionType = "rc"
+)
+
+type CheckVersionReq struct {
+	Base
+	VersionType VersionType // 查询版本的类型
+}
+type VersionInfo struct {
+	Version      string
+	Type         VersionType
+	ReleaseTime  time.Time
+	Description  string
+	DownloadURL  string
+	PageUrl      string
+	IsActive     bool
+	IsRolledBack bool
+}
+type CheckVersionResp struct {
+	RespBase
+	VersionInfo    *VersionInfo
+	IsNoNewVersion bool
+}

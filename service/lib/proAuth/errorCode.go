@@ -30,3 +30,10 @@ func GetError(code int) error {
 	}
 	return errors.New("unknown error")
 }
+
+func GetErrorAndDefault(code int, defaultErr error) error {
+	if err, ok := ErrorCodeMap[code]; ok {
+		return err
+	}
+	return defaultErr
+}
