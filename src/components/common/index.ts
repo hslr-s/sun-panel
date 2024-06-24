@@ -13,6 +13,7 @@ import ProCard from './ProCard/index.vue'
 import ProTag from './ProTag/index.vue'
 import Overlay from './Overlay/index.vue'
 import ProAuthOverlay from './ProAuthOverlay/index.vue'
+import STip from './STip/index.vue'
 
 export {
   Verification,
@@ -30,4 +31,5 @@ export {
   ProTag,
   Overlay,
   ProAuthOverlay,
+  STip,
 }
