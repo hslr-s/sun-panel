@@ -40,7 +40,7 @@ func Login(req LoginReq) (loginResp LoginResp, err error) {
 	req.Timestamp = time.Now().Unix()
 	if code, err := requestCommon(Config.Url+"/api/login", req, &loginResp); err != nil {
 		if code != 0 {
-			return loginResp, GetError(code)
+			return loginResp, GetErrorAndDefault(code, err)
 		}
 		return loginResp, err
 	}
@@ -54,7 +54,7 @@ func AutoLogin(req LoginReq) (loginResp LoginResp, err error) {
 	req.Timestamp = time.Now().Unix()
 	if code, err := requestCommon(Config.Url+"/api/autoLogin", req, &loginResp); err != nil {
 		if code != 0 {
-			return loginResp, GetError(code)
+			return loginResp, GetErrorAndDefault(code, err)
 		}
 		return loginResp, err
 	}
@@ -79,7 +79,7 @@ func Ping(req PingReq) (pingResp PingResp, err error) {
 	req.Timestamp = time.Now().Unix()
 	if code, err := requestCommon(Config.Url+"/api/ping", req, &pingResp); err != nil {
 		if code != 0 {
-			return pingResp, GetError(code)
+			return pingResp, GetErrorAndDefault(code, err)
 		}
 		return pingResp, err
 	}

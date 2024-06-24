@@ -37,7 +37,7 @@ func (p *ProAuthApi) Login(c *gin.Context) {
 			return
 		} else {
 			global.Logger.Error("biz.ProAuth.Login:", err.Error())
-			apiReturn.ErrorByCode(c, apiReturn.ErrCodeProAuthServerError)
+			apiReturn.Error(c, err.Error())
 			return
 		}
 	}

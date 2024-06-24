@@ -249,11 +249,11 @@ func (p *ProAuthType) AutoLogin() error {
 	resp, err := proAuth.AutoLogin(param)
 	if err != nil {
 		// p.LoginStatus = false
-		if errors.Is(err, proAuth.GetError(proAuth.ErrManualLogin)) {
+		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrManualLogin, err)) {
 			p.Reset()
-		} else if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
+		} else if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrIncorrectUsernameOrPassword, err)) {
 			p.Reset()
-		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
+		} else if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrAccountDisabled, err)) {
 			p.Reset()
 		}
 		// p.AutoLoginDisable = true
@@ -301,7 +301,7 @@ func (p *ProAuthType) RenewTempAuth() error {
 		global.Logger.Error("renewTempAuth fail:", err.Error())
 
 		// token过期,并且允许自动登录
-		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) && !p.AutoLoginDisable {
+		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrTokenExpires, err)) && !p.AutoLoginDisable {
 			p.AutoLogin()
 			return nil
 		}
@@ -342,7 +342,7 @@ func (p *ProAuthType) Ping() error {
 	}
 	resp, err := proAuth.Ping(param)
 	if err != nil {
-		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) {
+		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrTokenExpires, err)) {
 			global.Logger.Debug("ping fail:", err.Error())
 			p.AutoLogin()
 		}
