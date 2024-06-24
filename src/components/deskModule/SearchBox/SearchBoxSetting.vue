@@ -165,15 +165,15 @@ onMounted(() => {
 
 <template>
   <div>
-    <NButton style="margin-right: 2px;" size="small" type="success" @click="handleAdd">
-      {{ t("common.add") }}
-    </NButton>
+    <NFlex align="center">
+      <NButton style="margin-right: 2px;" size="small" type="success" @click="handleAdd">
+        {{ t("common.add") }}
+      </NButton>
 
-    <ProTag class="mx-2" />
-
-    <span v-if="proAuthStore.isExpired">
-      <span class="text-xs">{{ t('deskModule.searchBox.noProAuth') }}</span>
-    </span>
+      <div class="flex items-center">
+        <ProTag class="mx-2" show-icon :content="t('deskModule.searchBox.noProAuth')" />
+      </div>
+    </NFlex>
 
     <!-- list -->
     <div class="h-[500px] overflow-auto mt-5">

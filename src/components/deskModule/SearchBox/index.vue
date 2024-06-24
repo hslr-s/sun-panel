@@ -15,6 +15,7 @@ import { t } from '@/locales'
 withDefaults(defineProps<{
   background?: string
   textColor?: string
+  borderColor?: string
 }>(), {
   background: '#2a2a2a6b',
   textColor: 'white',
@@ -115,7 +116,11 @@ onMounted(() => {
 
 <template>
   <div class="search-box w-full" @keydown.enter="handleSearchClick" @keydown.esc="handleClearSearchTerm">
-    <div class="search-container flex rounded-2xl items-center justify-center text-white w-full" :style="{ background, color: textColor }" :class="{ focused: isFocused }">
+    <div
+      class="search-container flex rounded-2xl items-center justify-center text-white w-full"
+      :style="{ background, color: textColor, borderColor }"
+      :class="{ focused: isFocused }"
+    >
       <div class="search-box-btn-engine w-[40px] flex justify-center cursor-pointer" @click="handleEngineClick">
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>

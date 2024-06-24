@@ -223,6 +223,7 @@ function handleAddItem(itemIconGroupId?: number) {
       >
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
+          <!-- 时钟组件 -->
           <div class="flex mx-[auto] items-center justify-center text-white">
             <div class="logo">
               <span class="text-2xl md:text-6xl font-bold text-shadow">
@@ -236,8 +237,15 @@ function handleAddItem(itemIconGroupId?: number) {
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
+
+          <!-- 搜索栏组件 -->
           <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto sm:w-full lg:w-[80%]">
-            <SearchBox @itemSearch="itemFrontEndSearch" />
+            <SearchBox
+              :background="panelState.panelConfig.searchBoxBackground"
+              :text-color="panelState.panelConfig.searchBoxTextColor"
+              :border-color="panelState.panelConfig.searchBoxBorderColor"
+              @itemSearch="itemFrontEndSearch"
+            />
           </div>
         </div>
 

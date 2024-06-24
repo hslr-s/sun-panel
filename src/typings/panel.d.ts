@@ -69,6 +69,10 @@ declare namespace Panel {
         clockColor?: string
         searchBoxShow?: boolean
         searchBoxSearchIcon?: boolean
+        searchBoxBackground?:string
+        searchBoxBorderColor?:string
+        // searchBoxPlaceholderColor?:string
+        searchBoxTextColor?:string
         marginTop?: number
         marginBottom?: number
         maxWidth?: number

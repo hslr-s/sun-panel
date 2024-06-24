@@ -1,17 +1,26 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { UploadFileInfo } from 'naive-ui'
-import { NButton, NCard, NGrid, NGridItem, NInput, NInputGroup, NPopconfirm, NSelect, NSlider, NSwitch, NUpload, NUploadDragger, useMessage } from 'naive-ui'
+import {
+  NButton, NCard, NColorPicker, NFlex, NGrid,
+  NGridItem, NInput, NInputGroup,
+  NPopconfirm, NSelect, NSlider, NSwitch, NUpload,
+  NUploadDragger,
+  useDialog, useMessage,
+} from 'naive-ui'
 import { useAuthStore, usePanelState } from '@/store'
+import { defaultStatePanelConfig } from '@/store/modules/panel/helper'
 import { set as setUserConfig } from '@/api/panel/userConfig'
 // import { PanelPanelConfigStyleEnum } from '@/enums/panel'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 import { PanelPanelConfigStyleEnum } from '@/enums'
+import { STip } from '@/components/common'
 
 const authStore = useAuthStore()
 const panelState = usePanelState()
 const ms = useMessage()
+const dialog = useDialog()
 const showWallpaperInput = ref(false)
 
 const isSaveing = ref(false)
@@ -75,18 +84,36 @@ function uploadCloud() {
   })
 }
 
+function handleResetSearchBox() {
+  panelState.panelConfig.searchBoxShow = defaultStatePanelConfig().searchBoxShow
+  panelState.panelConfig.searchBoxSearchIcon = defaultStatePanelConfig().searchBoxSearchIcon
+  panelState.panelConfig.searchBoxBackground = defaultStatePanelConfig().searchBoxBackground
+  panelState.panelConfig.searchBoxBorderColor = defaultStatePanelConfig().searchBoxBorderColor
+  panelState.panelConfig.searchBoxTextColor = defaultStatePanelConfig().searchBoxTextColor
+}
+
 function resetPanelConfig() {
-  panelState.resetPanelConfig()
-  uploadCloud()
+  dialog.warning({
+    title: t('common.warning'),
+    content: t('apps.baseSettings.resetAllStyleWarnText'),
+    positiveText: t('common.confirm'),
+    negativeText: t('common.cancel'),
+    onPositiveClick: () => {
+      panelState.resetPanelConfig()
+      uploadCloud()
+    },
+  })
 }
 </script>
 
 <template>
   <div class="bg-slate-200 dark:bg-zinc-900 rounded-[10px] p-[8px] overflow-auto">
     <NCard style="border-radius:10px" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        LOGO
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          LOGO
+        </div>
+      </template>
 
       <div>
         <div>
@@ -99,9 +126,12 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.clock') }}
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.clock') }}
+        </div>
+      </template>
+
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.clockSecondShow') }}</span>
         <NSwitch v-model:value="panelState.panelConfig.clockShowSecond" />
@@ -109,23 +139,127 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.searchBar') }}
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold flex">
+          <span>
+            {{ $t('apps.baseSettings.searchBar') }}
+          </span>
+
+          <span class="ml-auto">
+            <NPopconfirm
+              @positive-click="handleResetSearchBox"
+            >
+              <template #trigger>
+                <NButton size="tiny" quaternary type="warning">{{ t('common.reset') }}</NButton>
+              </template>
+              {{ $t('apps.baseSettings.resetWarnText') }}
+            </NPopconfirm>
+          </span>
+        </div>
+      </template>
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
         <NSwitch v-model:value="panelState.panelConfig.searchBoxShow" />
       </div>
-      <div v-if="panelState.panelConfig.searchBoxShow" class="flex items-center mt-[5px]">
-        <span class="mr-[10px]">{{ $t('apps.baseSettings.searchBarSearchItem') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" />
-      </div>
+      <template v-if="panelState.panelConfig.searchBoxShow">
+        <div class="flex items-center mt-[5px]">
+          <span class="mr-[10px]">{{ $t('apps.baseSettings.searchBarSearchItem') }}</span>
+          <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" />
+        </div>
+
+        <NFlex class="mt-[5px]" align="center">
+          <div>
+            {{ $t('common.backgroundColor') }}
+          </div>
+          <div class="flex items-center mt-[5px] w-[100px]">
+            <NColorPicker
+              v-model:value="panelState.panelConfig.searchBoxBackground"
+              size="small"
+              :modes="['hex']"
+              :swatches="[
+                '#00000000',
+                '#000000',
+                '#ffffff',
+                '#18A058',
+                '#2080F0',
+                '#F0A020',
+              ]"
+            />
+          </div>
+        </NFlex>
+
+        <NFlex class="mt-[5px]" align="center">
+          <div>
+            {{ $t('common.textColor') }}
+          </div>
+          <div class="flex items-center mt-[5px] w-[100px]">
+            <NColorPicker
+              v-model:value="panelState.panelConfig.searchBoxTextColor"
+              size="small"
+              :modes="['hex']"
+              :swatches="[
+                '#00000000',
+                '#000000',
+                '#ffffff',
+                '#18A058',
+                '#2080F0',
+                '#F0A020',
+              ]"
+            />
+          </div>
+        </NFlex>
+
+        <NFlex class="mt-[5px]" align="center">
+          <div>
+            {{ $t('apps.baseSettings.searchBarBorderColor') }}
+          </div>
+          <div class="flex items-center mt-[5px] w-[100px]">
+            <NColorPicker
+              v-model:value="panelState.panelConfig.searchBoxBorderColor"
+              size="small"
+              :modes="['hex']"
+              :swatches="[
+                '#00000000',
+                '#000000',
+                '#ffffff',
+                '#18A058',
+                '#2080F0',
+                '#F0A020',
+              ]"
+            />
+          </div>
+        </NFlex>
+
+        <!-- <NFlex class="mt-[5px]" align="center">
+          <div>
+            {{ $t('apps.baseSettings.searchBarPlaceholderColor') }}
+          </div>
+          <div class="flex items-center mt-[5px] w-[100px]">
+            <NColorPicker
+              v-model:value="panelState.panelConfig.searchBoxPlaceholderColor"
+              :show-alpha="false"
+              size="small"
+              :modes="['hex']"
+              :swatches="[
+                '#000000',
+                '#ffffff',
+                '#18A058',
+                '#2080F0',
+                '#F0A020',
+              ]"
+            />
+          </div>
+        </NFlex> -->
+      </template>
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.systemMonitorStatus') }}
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.systemMonitorStatus') }}
+        </div>
+      </template>
+
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
         <NSwitch v-model:value="panelState.panelConfig.systemMonitorShow" />
@@ -152,9 +286,12 @@ function resetPanelConfig() {
     <!-- 1.5.0取消此设置 -->
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('common.icon') }}
+        <NFlex align="center">
+          {{ $t('common.icon') }}
+
+          <STip :content="t('apps.baseSettings.iconMigrateDescribe')" class="text-cyan-600 text-xl" />
+        </NFlex>
       </div>
-      {{ t('apps.baseSettings.iconMigrateDescribe') }}
     <!-- <div class="mt-[5px]">
         <div>
           {{ $t('common.style') }}
@@ -204,9 +341,12 @@ function resetPanelConfig() {
       </div> -->
     </NCard>
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.wallpaper') }}
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.wallpaper') }}
+        </div>
+      </template>
+
       <NUpload
         action="/api/file/uploadImg"
         :show-file-list="false"
@@ -249,9 +389,11 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.contentArea') }}
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.contentArea') }}
+        </div>
+      </template>
 
       <NGrid cols="2">
         <NGridItem span="12 400:12">
@@ -294,9 +436,16 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <div class="text-slate-500 mb-[5px] font-bold">
-        {{ $t('apps.baseSettings.customFooter') }}
-      </div>
+      <template #header>
+        <div class="text-slate-500 font-bold flex items-center">
+          <span>
+            {{ $t('apps.baseSettings.customFooter') }}
+          </span>
+          <span class="mx-2">
+            <STip :content="t('apps.baseSettings.customFooterAlert')" class="text-base text-cyan-600" />
+          </span>
+        </div>
+      </template>
 
       <NInput
         v-model:value="panelState.panelConfig.footerHtml"
@@ -306,16 +455,9 @@ function resetPanelConfig() {
     </NCard>
 
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <NPopconfirm
-        @positive-click="resetPanelConfig"
-      >
-        <template #trigger>
-          <NButton size="small" quaternary type="error">
-            {{ $t('common.reset') }}
-          </NButton>
-        </template>
-        {{ $t('apps.baseSettings.resetWarnText') }}
-      </NPopconfirm>
+      <NButton size="small" quaternary type="error" @click="resetPanelConfig">
+        {{ $t('common.reset') }}
+      </NButton>
 
       <NButton size="small" quaternary type="success" class="ml-[10px]" @click="uploadCloud">
         {{ $t('common.save') }}
