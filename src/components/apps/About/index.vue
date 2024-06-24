@@ -13,6 +13,7 @@ import srcQQGroupQR from '@/assets/about_image/qq_group_qr2.png'
 import { RoundCardModal } from '@/components/common'
 import { message } from '@/utils/request/apiMessage'
 import { t } from '@/locales'
+import { buildTimeString } from '@/utils/cmn'
 
 interface Version {
   versionName: string
@@ -83,12 +84,16 @@ onMounted(() => {
       </div>
 
       <div v-if="!checkLoading" class="mt-2">
-        <NFlex v-if="newVersionInfo !== null" justify="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
+        <NFlex v-if="newVersionInfo !== null" justify="center" align="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
+          {{ t('apps.about.haveNewVersion') }}
           <NBadge value="New" :offset="[5, -5]">
             <NTag type="info">
               <a :href="link('update_log')" target="_blank" class="link"> v{{ newVersionInfo.version }}</a>
             </NTag>
           </NBadge>
+          <template v-if="newVersionInfo.type === 'release'">
+            ({{ buildTimeString(newVersionInfo.releaseTime, "YYYY-MM-DD") }})
+          </template>
         </NFlex>
 
         <NFlex v-else-if="!isCheckFailed && newVersionInfo === null " justify="center" style="margin:10px 0 ;">
