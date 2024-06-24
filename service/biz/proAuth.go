@@ -3,7 +3,6 @@ package biz
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
@@ -39,12 +38,12 @@ type ProAuthDataShortTerm struct {
 	UserInfo            proAuth.UserInfo // 昵称
 }
 
-type NewVersion struct {
-	ReleaseTime time.Time
-	Type        proAuth.VersionType
-	Version     string
-	DownloadURL string
-	PageUrl     string
+type LatestVersion struct {
+	ReleaseTime time.Time           `json:"releaseTime"`
+	Type        proAuth.VersionType `json:"type"`
+	Version     string              `json:"version"`
+	DownloadURL string              `json:"downloadURL"`
+	PageUrl     string              `json:"pageUrl"`
 }
 
 type VersionType string
@@ -52,8 +51,8 @@ type VersionType string
 const (
 	VersionTypeRelease VersionType = "release"
 	VersionTypeBeta    VersionType = "beta"
-	VersionTypeAlpha   VersionType = "alpha"
-	VersionTypeRC      VersionType = "rc"
+	// VersionTypeAlpha   VersionType = "alpha"
+	// VersionTypeRC      VersionType = "rc"
 )
 
 var ErrAccountPasswordIncomplete = errors.New("ErrAccountPasswordIncomplete")
@@ -498,8 +497,8 @@ func (p *ProAuthType) AuthDataShortTermSyncToSysntemSetting() {
 	p.SaveAuthDataShortTerm(p.ProAuthDataShortTerm)
 }
 
-func (p *ProAuthType) CheckNewBetaVersion(versionType VersionType) (*NewVersion, error) {
-	var v *NewVersion
+func (p *ProAuthType) CheckNewVersion(versionType VersionType) (*LatestVersion, error) {
+	var v *LatestVersion
 	version, err := proAuth.CheckVersion(proAuth.CheckVersionReq{
 		Base:        p.GetBase(),
 		VersionType: proAuth.VersionType(versionType),
@@ -509,16 +508,15 @@ func (p *ProAuthType) CheckNewBetaVersion(versionType VersionType) (*NewVersion,
 		return nil, err
 	}
 
-	jb, e := json.Marshal(version)
-
-	fmt.Println("检查更新返回的数据", string(jb), e)
+	// jb, e := json.Marshal(version)
+	// fmt.Println("检查更新返回的数据", string(jb), e)
 
 	if version.IsNoNewVersion {
 		return nil, nil
 	}
 
 	if version.VersionInfo != nil {
-		v = &NewVersion{
+		v = &LatestVersion{
 			ReleaseTime: version.VersionInfo.ReleaseTime,
 			Type:        version.VersionInfo.Type,
 			Version:     version.VersionInfo.Version,

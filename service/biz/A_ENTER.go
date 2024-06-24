@@ -6,4 +6,5 @@ var (
 	Item          = ItemType{}
 	OpenApi       = OpanApiType{}
 	Docker        = DockerType{}
+	Version       = VersionStruct{}
 )
