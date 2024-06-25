@@ -413,7 +413,6 @@ onUnmounted(() => {
     <ItemCard
       :card-type-style="cardStyle" :background-color="backgroundColor"
       :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemInfo?.title"
-      class="hover:shadow-[0_0_10px_5px_rgba(0,0,0,0.2)] transition-all duration-300 backdrop-blur-[2px] hover:backdrop-blur-[10px]"
     >
       <template #small>
         <NSpin :show="loading">

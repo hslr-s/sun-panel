@@ -24,7 +24,10 @@ const propClass = ref(props.class)
       v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info"
       class="item-card-info w-full rounded-2xl transition-all duration-200 flex"
       :class="propClass"
-      :style="{ backgroundColor: backgroundColor ?? defaultBackground }"
+      :style="{
+        'backgroundColor': backgroundColor ?? defaultBackground,
+        '--custom-box-shadow-color': backgroundColor ?? defaultBackground,
+      }"
     >
       <slot name="info" />
     </div>
@@ -37,7 +40,10 @@ const propClass = ref(props.class)
       <div
         class="item-card-small-icon overflow-hidden rounded-2xl sunpanel w-[70px] h-[70px] mx-auto transition-all duration-200"
         :class="propClass"
-        :style="{ backgroundColor: backgroundColor ?? defaultBackground }"
+        :style="{
+          'backgroundColor': backgroundColor ?? defaultBackground,
+          '--custom-box-shadow-color': backgroundColor ?? defaultBackground,
+        }"
       >
         <slot name="small" />
       </div>
@@ -52,3 +58,11 @@ const propClass = ref(props.class)
     </div>
   </div>
 </template>
+
+<style scoped>
+.item-card-info:hover,.item-card-small-icon:hover {
+  box-shadow: 0 0 20px var(--custom-box-shadow-color,#2a2a2a6b),
+  0 0 1px 1px rgba(255, 255, 255,.1),
+  0 0 20px 5px rgba(0,0,0,.1);
+}
+</style>

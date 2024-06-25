@@ -79,8 +79,6 @@ function handleItemClick() {
     return
   }
 
-  console.log('就卡屏')
-
   let jumpUrl = ''
 
   if (props.itemInfo)
