@@ -14,6 +14,7 @@ import ProTag from './ProTag/index.vue'
 import Overlay from './Overlay/index.vue'
 import ProAuthOverlay from './ProAuthOverlay/index.vue'
 import STip from './STip/index.vue'
+import SModal from './SModal/index.vue'
 
 export {
   Verification,
@@ -32,4 +33,5 @@ export {
   Overlay,
   ProAuthOverlay,
   STip,
+  SModal,
 }

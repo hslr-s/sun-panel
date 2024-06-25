@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { NDropdown, NModal, useMessage } from 'naive-ui'
+import { NDropdown, useMessage } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
 import { useAuthStore } from '@/store'
-import { AppLoader } from '@/components/common/'
+import { AppLoader, SModal } from '@/components/common/'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
@@ -122,7 +122,7 @@ function onClickoutside() {
       :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleRightMenuSelect"
     />
 
-    <NModal
+    <SModal
       v-model:show="builtinAppModalShow"
       :title="item.title"
       preset="card"
@@ -130,10 +130,11 @@ function onClickoutside() {
       :bordered="true"
       content-style="height: calc(100% - 50px);display:flex;"
       size="small"
+      move
     >
       <div class="w-full rounded-2xl border overflow-auto dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 ">
         <AppLoader :component-name="item.expandParam.systemAppName" />
       </div>
-    </NModal>
+    </SModal>
   </div>
 </template>

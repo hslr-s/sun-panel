@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
-import { AppLoader, RoundCardModal, SvgIcon } from '@/components/common'
+import { AppLoader, SModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
@@ -73,17 +73,22 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <RoundCardModal
+    <SModal
       v-model:show="show"
-      style="max-width: 900px;"
+      style="max-width: 900px;border-radius: 1rem;"
       size="small"
+      move
     >
       <template #header>
-        <div class="flex items-center select-none" @click="collapsed = !collapsed">
-          <div class="text-3xl cursor-pointer" style="color:var(--n-color-target)">
+        <div class="flex items-center select-none">
+          <div
+            class="text-3xl cursor-pointer"
+            style="color:var(--n-color-target)"
+            @click="collapsed = !collapsed"
+          >
             <SvgIcon class=" transition-all duration-500" :icon="collapsed ? 'tabler-layout-sidebar-right-collapse-filled' : 'tabler-layout-sidebar-left-collapse-filled'" />
           </div>
-          <div class="ml-1">
+          <div class="ml-1" @click="collapsed = !collapsed">
             {{ title === '' ? defaultTitle : title }}
           </div>
         </div>
@@ -140,7 +145,7 @@ onUnmounted(() => {
           </NLayout>
         </NSpace>
       </div>
-    </RoundCardModal>
+    </SModal>
   </div>
 </template>
 
