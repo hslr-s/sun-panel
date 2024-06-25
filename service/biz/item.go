@@ -53,9 +53,10 @@ func (p *ItemType) Edit(userId uint, itemIcon models.ItemIcon) (models.ItemIcon,
 			"BackgroundColor",
 			"ExpandParam",
 		}
-		if itemIcon.Sort != 0 {
-			updateField = append(updateField, "Sort")
-		}
+		// 修改不更新sort
+		// if itemIcon.Sort != 0 {
+		// 	updateField = append(updateField, "Sort")
+		// }
 		global.Db.Model(&models.ItemIcon{}).
 			Select(updateField).
 			Where("id=?", itemIcon.ID).Updates(&itemIcon)
