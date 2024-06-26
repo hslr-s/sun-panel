@@ -14,7 +14,7 @@ defineProps<{
         <template #icon>
           <slot v-if="content && showIcon" name="icon">
             <SvgIcon
-              icon="pepicons-pop--exclamation-circle-filled"
+              icon="lucide:info"
             />
           </slot>
         </template>
@@ -28,7 +28,7 @@ defineProps<{
     <template #icon>
       <slot v-if="content && showIcon" name="icon">
         <SvgIcon
-          icon="pepicons-pop--exclamation-circle-filled"
+          icon="lucide:info"
         />
       </slot>
     </template>

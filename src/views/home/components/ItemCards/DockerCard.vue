@@ -13,6 +13,7 @@ import { execSwitchAction as execSwitchActionApi, getContainerStatus as getConta
 
 import { VisitMode } from '@/enums/auth'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { bytesToSize } from '@/utils/cmn'
 
 interface Prop {
   itemInfo: Panel.ItemInfo
@@ -332,7 +333,7 @@ function updateStats(data: Docker.Container.Stats) {
   }
 
   if (containerState.value.runStatus) {
-    describeText.value = `CPU:${roundNumberToTwoDecimalPlaces(containerState.value.cpuPercent)}% RAM:${roundNumberToTwoDecimalPlaces(containerState.value.memory)}MB`
+    describeText.value = `CPU:${roundNumberToTwoDecimalPlaces(containerState.value.cpuPercent)}% RAM:${bytesToSize(containerState.value.memory * 1024 * 1024)}`
     // 设置徽章的颜色
     switch (containerState.value.runStatus) {
       case DockerContainerInfoState.running:
@@ -354,6 +355,10 @@ function updateStats(data: Docker.Container.Stats) {
 
 function roundNumberToTwoDecimalPlaces(num: number): number {
   return Number(num.toFixed(2))
+}
+
+function roundNumberToOneDecimalPlaces(num: number): number {
+  return Number(num.toFixed(1))
 }
 
 function inShowBadgeStatus(value: DockerContainerInfoState): boolean {
@@ -396,6 +401,37 @@ onMounted(async () => {
   //   getContainerStatus()
   // }, 5000) // 5000毫秒，即5秒
 })
+
+function formatMemory(sizeInMB: number): string {
+  // 定义单位数组
+  const units = ['MB', 'GB', 'TB']
+  let size = sizeInMB
+  let unitIndex = 0
+
+  // 转换到合适的单位，直到小于1024
+  while (size >= 1024) {
+    size /= 1024
+    unitIndex++
+  }
+
+  // 四舍五入到小数点后一位
+  let roundedSize = Math.round(size * 10) / 10
+
+  // 检查整数部分长度是否超过3位
+  const integerPart = Math.floor(roundedSize) // 获取整数部分
+  if (integerPart.toString().length >= 3) {
+    // 如果整数部分超过3位，向上取整到最近的整数，并转换到下一个单位
+    roundedSize = Math.ceil(roundedSize)
+    unitIndex++
+    roundedSize /= 1024
+  }
+
+  // 格式化为字符串，保留小数点后一位
+  const formattedSize = roundedSize.toFixed(1)
+
+  // 返回格式化后的数值和单位
+  return `${formattedSize} ${units[unitIndex]}`
+}
 
 onUnmounted(() => {
   // clearInterval(intervalId)
@@ -467,8 +503,8 @@ onUnmounted(() => {
                     v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2"
                     class="text-xs"
                   >
-                    CPU:{{ roundNumberToTwoDecimalPlaces(containerState.cpuPercent) }}%
-                    RAM:{{ roundNumberToTwoDecimalPlaces(containerState.memory) }} MB
+                    CPU:{{ roundNumberToOneDecimalPlaces(containerState.cpuPercent) }}%
+                    RAM:{{ formatMemory(containerState.memory) }}
                   </NEllipsis>
                   <NEllipsis
                     v-else-if="containerState.runStatus === DockerContainerInfoState.restarting"

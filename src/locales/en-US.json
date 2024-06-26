@@ -124,7 +124,7 @@
       "selectExportData": "Select the configuration data to export",
       "selectImportData": "Select the configuration data to import",
       "softwareVersionLow": "The current software version may be too old and may not be compatible with this configuration file. It is recommended to update the software to the latest version before importing again.",
-      "tip": "Importing icon configuration data will not clear existing icon data",
+      "tip": "Importing icon configuration data will not clear existing icon data, and exporting configuration will not export uploaded image icon files.",
       "transmuteStandard": "Transmute Standard",
       "warnConfigFileLow": "The configuration file version is too low but compatible"
     },

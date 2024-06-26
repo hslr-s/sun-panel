@@ -124,7 +124,7 @@
       "selectExportData": "请选择要导出的配置数据",
       "selectImportData": "请选择要导入的配置数据",
       "softwareVersionLow": "当前软件版本可能过旧，很有可能无法兼容该配置文件，请谨慎导入。推荐将软件更新到新版后再次导入",
-      "tip": "导入图标配置数据不会清空现有图标数据",
+      "tip": "导入图标配置数据不会清空现有图标数据，导出配置不会导出上传的图片图标文件",
       "transmuteStandard": "浏览器书签转换工具",
       "warnConfigFileLow": "配置文件版本过低，但是兼容"
     },
