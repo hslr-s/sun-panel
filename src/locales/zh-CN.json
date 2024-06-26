@@ -283,7 +283,7 @@
     "searchBox": {
       "iconUploadHint": "图标图片推荐使用svg格式，其他格式请保证比例为1:1",
       "inputPlaceholder": "请输入搜索内容",
-      "noProAuth": "非 PRO 授权除默认搜索引擎外，还可以额外添加2个自定义搜索引擎",
+      "noProAuth": "非 PRO 授权，除默认搜索引擎之外，最多只能添加2个自定义搜索引擎",
       "openWithNewOpen": "搜索结果使用新窗口打开",
       "searchEngineManage": "搜索引擎管理",
       "uploadImage": "选择上传图片/图标",
