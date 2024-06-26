@@ -291,6 +291,7 @@
     },
     "systemMonitor": {
       "cpuState": "CPU status",
+      "customTitle": "Custom title",
       "diskMountPoint": "Mount point",
       "diskState": "Disk status",
       "memoryState": "Memory status",

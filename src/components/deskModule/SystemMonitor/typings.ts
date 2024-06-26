@@ -30,4 +30,5 @@ export interface GenericProgressStyleExtendParam {
 
 export interface DiskExtendParam extends GenericProgressStyleExtendParam {
   path: string
+  title: string
 }

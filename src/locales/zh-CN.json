@@ -291,6 +291,7 @@
     },
     "systemMonitor": {
       "cpuState": "CPU状态",
+      "customTitle": "自定义标题",
       "diskMountPoint": "挂载点",
       "diskState": "磁盘状态",
       "memoryState": "内存状态",

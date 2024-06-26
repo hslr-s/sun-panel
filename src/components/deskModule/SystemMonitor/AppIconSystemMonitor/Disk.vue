@@ -13,6 +13,7 @@ interface Prop {
   progressColor: string
   progressRailColor: string
   path: string
+  title: string
 }
 
 const props = defineProps<Prop>()
@@ -58,7 +59,7 @@ onUnmounted(() => {
     :percentage="correctionNumberByCardStyle(diskState?.usedPercent || 0, cardTypeStyle)"
     :card-type-style="cardTypeStyle"
     :info-card-right-text="`${formatdiskSize(formatdiskToByte(diskState?.used || 0))}/${formatdiskSize(formatdiskToByte(diskState?.total || 0))}`"
-    :info-card-left-text="diskState?.mountpoint"
+    :info-card-left-text="title || diskState?.mountpoint"
     :text-color="textColor"
   />
 </template>

@@ -8,6 +8,7 @@ declare namespace SystemMonitor {
     }
 
     interface DiskInfo {
+        title:string
         mountpoint: string
         total: number
         used: number
