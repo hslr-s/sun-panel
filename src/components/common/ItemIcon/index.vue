@@ -26,7 +26,7 @@ const iconExt = computed(() => {
     <slot>
       <template v-if="itemIcon">
         <template v-if="itemIcon?.itemType === 1">
-          <NAvatar :size="props.size" :style="{ backgroundColor: defaultBackground }">
+          <NAvatar :size="props.size" :style="{ backgroundColor: defaultBackground, color: props.color }">
             {{ itemIcon.text }}
           </NAvatar>
         </template>
