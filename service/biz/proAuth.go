@@ -69,7 +69,7 @@ func NewProAuth() *ProAuthType {
 	// 此配置项为隐藏的默认为正式服务器
 	proAuth.Config.Url = global.Config.GetValueStringOrDefault("pro_auth", "host")
 	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN" // 绝密不可泄露
-	proAuth.Config.TimeDifference = 3600
+	proAuth.Config.TimeDifference = 604800                     // 允许的时间差为7天
 
 	global.Logger.Debugln("auth_host", proAuth.Config.Url)
 
@@ -403,12 +403,15 @@ func (p *ProAuthType) timerFunc() {
 // 是否过期
 func (p *ProAuthType) ProIsExpired() bool {
 	global.Logger.Debug("检查是否过期 ProIsExpired")
+
 	if p.ProAuthDataShortTerm == nil {
 		return true
 	}
 	if p.ProAuthDataShortTerm.ProExpiration == nil {
 		return true
 	}
+	global.Logger.Debug("临时授权过期时间", p.ProAuthDataShortTerm.ProExpiration)
+	global.Logger.Debug("最终过期时间", p.ProAuthDataShortTerm.ProExpiration)
 	return p.ProAuthDataShortTerm.ProExpiration.Before(time.Now())
 }
 

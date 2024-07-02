@@ -4,7 +4,7 @@ import { withDefaults } from 'vue'
 import { NTooltip } from 'naive-ui'
 import { SvgIcon } from '..'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   icon?: string
   content?: string
 }>(), {
