@@ -1,11 +1,13 @@
 package panel
 
 import (
+	"errors"
 	"math"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/models"
 
@@ -29,28 +31,26 @@ func (a *ItemIconGroup) Edit(c *gin.Context) {
 	req.UserId = userInfo.ID
 
 	saveData := models.ItemIconGroup{}
+	saveData.ID = req.ID
 	saveData.CardStyle = base.AnyToJsonStr(req.CardStyle)
 	saveData.Title = req.Title
 	saveData.Icon = req.Icon
+	saveData.OnlyName = req.OnlyName
 	// saveData.Icon = "material-symbols:ad-group-outline"
 	saveData.Description = req.Description
 	saveData.Sort = req.Sort
 	saveData.UserId = userInfo.ID
 	saveData.PublicVisitHide = base.BoolToInt(req.PublicVisitHide)
 
-	if req.ID != 0 {
-		// 修改
-		updateField := []string{"Icon", "Title", "CardStyle", "UserId", "PublicVisitHide"}
-
-		if req.Sort != 0 {
-			updateField = append(updateField, "Sort")
+	if v, err := biz.ItemGroup.Edit(userInfo.ID, saveData); err != nil {
+		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
+			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
+			return
 		}
-		global.Db.Model(&models.ItemIconGroup{}).
-			Select(updateField).
-			Where("id=?", req.ID).Updates(&saveData)
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
 	} else {
-		// 创建
-		global.Db.Model(&models.ItemIconGroup{}).Create(&saveData)
+		saveData = v
 	}
 
 	apiReturn.SuccessData(c, saveData)
@@ -107,6 +107,7 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 			ID:              v.ID,
 			Icon:            v.Icon,
 			Title:           v.Title,
+			OnlyName:        v.OnlyName,
 			Description:     v.Description,
 			Sort:            v.Sort,
 			UserId:          v.UserId,

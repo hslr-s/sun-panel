@@ -15,6 +15,7 @@ type ItemGroupInfo struct {
 	ID              uint                   `json:"id"`
 	Icon            string                 `json:"icon"`
 	Title           string                 `json:"title"`
+	OnlyName        string                 `json:"onlyName"`
 	Description     string                 `json:"description"`
 	Sort            int                    `json:"sort"`
 	UserId          uint                   `json:"userId"`

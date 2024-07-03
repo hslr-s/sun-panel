@@ -2,9 +2,9 @@
 import { onMounted, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
-  NButton, NCard, NColorPicker, NDivider,
-  NFlex, NForm, NFormItem, NInput, NSelect,
-  NSwitch, useDialog,
+  NButton, NCard, NColorPicker,
+  NDivider, NFlex, NForm, NFormItem, NInput,
+  NSelect, NSwitch, useDialog,
   useMessage,
 } from 'naive-ui'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -14,6 +14,7 @@ import { t } from '@/locales'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { useAppStore } from '@/store'
 
 interface EditModalArg {
   show: boolean
@@ -21,7 +22,9 @@ interface EditModalArg {
   model: Panel.ItemGroupInfo
   rules: FormRules
 }
+const onlyNameDocLink = 'http://links.sun-panel.top/only_name_beautify_doc_'
 
+const appStore = useAppStore()
 const formRef = ref<FormInst | null>(null)
 const ms = useMessage()
 const dialog = useDialog()
@@ -127,8 +130,11 @@ function handleSaveGroup() {
         refreshList()
         editModalArg.value.show = false
         editModalArg.value.model = { ...defaultItemGroupInfo }
-      }).catch(() => {
-        ms.error(t('common.saveFail'))
+      }).catch((res) => {
+        if (res.code === -2)
+          ms.error(`${t('common.saveFail')}: ${t('iconItem.onlyNameExisted')}`)
+        else
+          apiRespErrMsg(res)
       })
     }
     else { console.log(errors) }
@@ -144,6 +150,13 @@ function refreshList() {
 onMounted(() => {
   refreshList()
 })
+
+function getLangeuageSimple() {
+  if (appStore.language === 'zh-CN')
+    return 'zh_cn'
+
+  return 'en'
+}
 
 watch(() => editModalArg.value.show, (v) => {
   // console.log(v)
@@ -223,7 +236,7 @@ watch(() => editModalArg.value.show, (v) => {
           <NSwitch v-model:value="editModalArg.model.publicVisitHide" />
         </NFormItem>
 
-        <NDivider style="margin-top:5px" />
+        <NDivider class="!my-2" />
 
         <NFormItem :label="t('apps.itemGroupManage.cardStyle')">
           <NSelect v-model:value="editModalArg.model.cardStyle.style" :options="iconTypeOptions" />
@@ -258,10 +271,33 @@ watch(() => editModalArg.value.show, (v) => {
             ]"
           />
         </NFormItem>
+
+        <NDivider class="!my-2" />
+
+        <NFormItem path="onlyName">
+          <template #label>
+            <NFlex align="center">
+              {{ $t('apps.itemGroupManage.onlyName') }}
+              <STip>
+                {{ t('apps.itemGroupManage.onlyNameDescribe') }}
+                <NButton
+                  text
+                  tag="a"
+                  :href="onlyNameDocLink + getLangeuageSimple()"
+                  target="_blank"
+                  type="primary"
+                >
+                  {{ t("common.lookDoc") }}
+                </NButton>
+              </STip>
+            </NFlex>
+          </template>
+          <NInput v-model:value="editModalArg.model.onlyName" type="text" show-count :maxlength="20" />
+        </NFormItem>
       </NForm>
       <template #footer>
         <NButton type="success" size="small" class="float-right" @click="handleSaveGroup">
-          {{ $t('common.confirm') }}
+          {{ $t('common.save') }}
         </NButton>
       </template>
     </RoundCardModal>

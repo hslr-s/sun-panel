@@ -8,7 +8,7 @@ withDefaults(defineProps<{
   icon?: string
   content?: string
 }>(), {
-  icon: 'pepicons-pop--exclamation-circle-filled',
+  icon: 'fa-solid--info-circle',
   content: '',
 })
 </script>
@@ -21,7 +21,9 @@ withDefaults(defineProps<{
           :icon="icon"
         />
       </template>
-      {{ content }}
+      <slot>
+        {{ content }}
+      </slot>
     </NTooltip>
   </span>
 </template>

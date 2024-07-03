@@ -37,6 +37,7 @@ declare namespace Panel {
     interface ItemIconGroup extends Common.InfoBase {
         icon?: string
         title?: string
+        onlyName?:string
         sort?: number
         publicVisitHide?:boolean
     }
