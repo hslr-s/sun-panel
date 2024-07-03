@@ -6,6 +6,7 @@ import { computed, defineProps } from 'vue'
 import { useAuthStore } from '@/store'
 import { apiRespErrMsg } from '@/utils/cmn'
 import { t } from '@/locales'
+import { STip } from '@/components/common'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null
@@ -80,7 +81,7 @@ const handleUploadFinish = ({
 
 <template>
   <div class="w-full">
-    <div class="mb-[10px]">
+    <div class="mb-[10px] flex items-center">
       <NRadio
         :checked="itemIconInfo.itemType === 1 "
         :value="1"
@@ -107,6 +108,11 @@ const handleUploadFinish = ({
       >
         {{ t('iconItem.onlineIcon') }}
       </NRadio>
+
+      <STip class="mx-5">
+        <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+        <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+      </STip>
     </div>
 
     <div class="w-full flex">

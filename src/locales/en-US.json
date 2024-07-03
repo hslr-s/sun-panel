@@ -330,6 +330,8 @@
     "geticonFail": "Failed to get icon",
     "icon": {
       "iconName": "Icon name",
+      "iconOnlineTip": "Online icon: (This is a third-party icon library). You need to ensure that the device accessing the current page is connected to the Internet before it can be used. \nHow to use: After entering the website, copy the desired icon name and paste it into the text box.",
+      "iconSizeTip": "Icon size: In order to make the icon style aesthetically pleasing, the ‘svg’ format icons in [Online Icon] mode and [Image] mode have been reduced in size, and icons in other formats are 100%.",
       "iconStyle": "Icon style",
       "imageUrl": "Image address",
       "textContent": "text content"
