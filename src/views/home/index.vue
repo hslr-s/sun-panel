@@ -268,7 +268,7 @@ function handleAddItem(itemIconGroupId?: number) {
           <div
             v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
             class="item-list mt-[50px]"
-            :class="itemGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
+            :class="itemGroup.sortStatus ? (`shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl item-group-${itemGroup.onlyName}`) : `item-group-${itemGroup.onlyName}`"
             @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
             @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
