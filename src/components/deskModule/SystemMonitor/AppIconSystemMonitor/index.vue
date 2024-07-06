@@ -39,7 +39,7 @@ const refreshInterval = 5000
     <GenericMonitorCard
       :icon-text-icon-hide-title="false"
       :card-type-style="cardTypeStyle"
-      :icon-text="iconText"
+      :icon-text="extendParam?.title || iconText"
       :icon-text-color="iconTextColor"
       :background-color="extendParam.backgroundColor"
     >
