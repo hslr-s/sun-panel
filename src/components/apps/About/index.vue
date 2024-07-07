@@ -10,7 +10,7 @@ import srcDocker from '@/assets/about_image/docker.png'
 import srcBilibili from '@/assets/about_image/bilibili.png'
 import srcYoutube from '@/assets/about_image/youtube.png'
 import srcQQGroupQR from '@/assets/about_image/qq_group_qr2.png'
-import { RoundCardModal } from '@/components/common'
+import { RoundCardModal, STip } from '@/components/common'
 import { message } from '@/utils/request/apiMessage'
 import { t } from '@/locales'
 import { buildTimeString } from '@/utils/cmn'
@@ -116,6 +116,15 @@ onMounted(() => {
         <NButton size="tiny" type="success" :loading="checkLoading" @click="checkNewVersion">
           {{ $t('apps.about.checkUpdate') }}
         </NButton>
+        <STip>
+          <div class="max-w-[300px]">
+            <p>{{ t("apps.about.checkUploadTip1") }}</p>
+            <br>
+            <p>{{ t("apps.about.checkUploadTip2") }}</p>
+            <br>
+            <p>{{ t("apps.about.checkUploadTip3") }}</p>
+          </div>
+        </STip>
       </NFlex>
     </div>
 
@@ -125,7 +134,7 @@ onMounted(() => {
     <div class="flex flex-col items-center justify-center text-base">
       <div>
         {{ $t('apps.about.website') }}
-        <a :href="getWebsiteUrl()" target="_blank" class="link"> sun-panel.top </a>
+        <a :href="getWebsiteUrl()" target="_blank" class="link"> Sun-Panel.Top </a>
       </div>
       <div>
         {{ $t('apps.about.author') }}
@@ -136,7 +145,7 @@ onMounted(() => {
         </a>
       </div>
       <div>
-        {{ $t('apps.about.issue') }}<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link"> Github Issues</a>
+        {{ $t('apps.about.issue') }}<a :href="link('faq')" target="_blank" class="link">{{ t('apps.about.faq') }}</a> | <a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link"> Github Issues</a>
       </div>
       <div>
         {{ $t('apps.about.discussions') }}<a href="https://github.com/hslr-s/sun-panel/discussions" target="_blank" class="link"> Github Discussions</a>
