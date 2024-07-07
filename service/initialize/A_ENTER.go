@@ -38,6 +38,7 @@ var cmdParams CMDParams
 func getDefaultConfig() map[string]map[string]string {
 	return map[string]map[string]string{
 		"base": {
+			"http_address":     "0.0.0.0",
 			"http_port":        "3002",
 			"source_path":      "./uploads",      // 存放文件的路径
 			"source_temp_path": "./runtime/temp", // 存放文件的缓存路径
