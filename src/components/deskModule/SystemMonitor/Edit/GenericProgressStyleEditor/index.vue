@@ -89,13 +89,3 @@ const data = computed({
     </NForm>
   </div>
 </template>
-
-<style>
-.transparent-grid {
-    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
-                      linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 8px 8px;
-    background-color: #e2e8f0;
-}
-</style>

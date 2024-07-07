@@ -1,10 +1,36 @@
 html,
 body,
 #app {
-	height: 100%;
+    height: 100%;
 }
 
 body {
-	padding-bottom: constant(safe-area-inset-bottom);
-	padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.transparent-grid {
+    background-image: linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%),
+        linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    background-color: #e2e8f0;
+}
+
+.app-background {
+    background-color: white;
+}
+
+.dark .app-background {
+    background-color: #2c2c32;
+}
+
+.item-card-info,.item-card-small-icon {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.item-card-info:hover,.item-card-small-icon:hover {
+    backdrop-filter: blur(10px);
 }

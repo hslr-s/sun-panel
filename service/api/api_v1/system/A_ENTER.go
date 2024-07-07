@@ -8,4 +8,5 @@ type ApiSystem struct {
 	NoticeApi       NoticeApi
 	ModuleConfigApi ModuleConfigApi
 	MonitorApi      MonitorApi
+	OpenApiApi      OpenApiApi
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { NColorPicker, NForm, NFormItem, NSelect } from 'naive-ui'
+import { NColorPicker, NForm, NFormItem, NInput, NSelect } from 'naive-ui'
 import type { DiskExtendParam } from '../../typings'
 import GenericMonitorCard from '../../components/GenericMonitorCard/index.vue'
 import GenericProgress from '../../components/GenericProgress/index.vue'
@@ -53,10 +53,15 @@ async function getMountPointList() {
         value: element.mountpoint,
       })
     }
+    extendParam.value.title = extendParam.value.title || extendParam.value.path
   }
   catch (error) {
-
+    console.error(error)
   }
+}
+
+function handlePathUpdate(value: string | number | null) {
+  extendParam.value.title = value as string
 }
 
 onMounted(() => {
@@ -68,7 +73,7 @@ defineExpose({
     try {
       const errors = await formRef.value?.validate()
 
-      if (!errors) {
+      if (!errors?.warnings) {
         return Promise.resolve(true)
       }
       else {
@@ -134,7 +139,10 @@ defineExpose({
 
     <NForm ref="formRef" v-model="extendParam" :model="extendParam" :rules="rules">
       <NFormItem :label="$t('deskModule.systemMonitor.diskMountPoint')" path="path">
-        <NSelect v-model:value="extendParam.path" size="small" :options="mountPointList" />
+        <NSelect v-model:value="extendParam.path" size="small" :options="mountPointList" @update:value="handlePathUpdate" />
+      </NFormItem>
+      <NFormItem :label="$t('deskModule.systemMonitor.customTitle')">
+        <NInput v-model:value="extendParam.title" size="small" type="text" />
       </NFormItem>
       <NFormItem :label="$t('deskModule.systemMonitor.progressColor')">
         <NColorPicker v-model:value="extendParam.progressColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />

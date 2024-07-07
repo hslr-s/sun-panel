@@ -86,6 +86,7 @@ func (d *SQLiteConfig) Connect() (db *gorm.DB, err error) {
 			NamingStrategy: schema.NamingStrategy{
 				SingularTable: true,
 			},
+			DisableForeignKeyConstraintWhenMigrating: true,
 		})
 	}
 
@@ -123,6 +124,7 @@ func CreateDatabase(driver string, db *gorm.DB) error {
 		&models.File{},
 		&models.ItemIconGroup{},
 		&models.ModuleConfig{},
+		&models.OpenApiToken{},
 	)
 
 	return err

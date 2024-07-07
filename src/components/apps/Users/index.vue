@@ -4,13 +4,15 @@ import { NAlert, NButton, NDataTable, NDropdown, NTag, useDialog, useMessage } f
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
 import { getPublicVisitUser, setPublicVisitUser, deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
-import { SvgIcon } from '@/components/common'
-import { useAuthStore } from '@/store'
+import { ProTag, SvgIcon } from '@/components/common'
+import { useAuthStore, useProAuthorizeStore } from '@/store'
 import { t } from '@/locales'
 import { AdminAuthRole } from '@/enums/admin'
 
 const message = useMessage()
 const authStore = useAuthStore()
+const proAuth = useProAuthorizeStore()
+
 const tableIsLoading = ref<boolean>(false)
 const editUserDialogShow = ref<boolean>(false)
 const keyWord = ref<string>()
@@ -90,6 +92,8 @@ const createColumns = ({
                   setPublicVisitUser(null).then(({ code }) => {
                     if (code === 0)
                       publicVisitUserId.value = null
+                  }).catch((error) => {
+                    message.error(`${t('common.failed')}:${error.msg}`)
                   })
                 }
                 else {
@@ -97,6 +101,8 @@ const createColumns = ({
                   setPublicVisitUser(row.id as number).then(({ code }) => {
                     if (code === 0)
                       publicVisitUserId.value = row.id as number
+                  }).catch((error) => {
+                    message.error(`${t('common.failed')}:${error.msg}`)
                   })
                 }
                 break
@@ -170,6 +176,10 @@ function handlePageChange(page: number) {
 
 // 添加
 function handleAdd() {
+  if (proAuth.isExpired && userList.value && userList.value.length >= 2) {
+    message.warning(t('adminSettingUsers.noProCreateLimitWarning'))
+    return
+  }
   editUserDialogShow.value = true
   editUserUserInfo.value = {}
 }
@@ -189,18 +199,27 @@ async function getList(page: number | null) {
   if (keyWord.value !== '')
     req.keyWord = keyWord.value
 
-  const { data } = await usersGetList<Common.ListResponse<User.Info[]>>(req)
-  pagination.itemCount = data.count
-  if (data.list)
-    userList.value = data.list
-  tableIsLoading.value = false
+  try {
+    const { data } = await usersGetList<Common.ListResponse<User.Info[]>>(req)
+    pagination.itemCount = data.count
+    if (data.list)
+      userList.value = data.list
+    tableIsLoading.value = false
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 
 async function deletes(ids: number[]) {
-  const { code } = await usersDeletes(ids)
-  if (code === 0) {
+  try {
+    await usersDeletes(ids)
     message.success(t('common.deleteSuccess'))
     getList(null)
+  }
+  catch (error) {
+    const err = error as Common.Response
+    message.error(`${t('common.deleteSuccess')}:${err.msg}`)
   }
 }
 
@@ -213,14 +232,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="overflow-auto pt-2">
+  <div class="overflow-auto p-2">
     <NAlert type="info" :bordered="false">
       {{ $t('adminSettingUsers.alertText') }}
     </NAlert>
     <div class="my-[10px]">
-      <NButton type="primary" size="small" ghost @click="handleAdd">
+      <NButton type="primary" size="small" @click="handleAdd">
         {{ $t('common.add') }}
       </NButton>
+      <ProTag class="ml-2" />
     </div>
 
     <NDataTable

@@ -39,10 +39,9 @@ const refreshInterval = 5000
     <GenericMonitorCard
       :icon-text-icon-hide-title="false"
       :card-type-style="cardTypeStyle"
-      :icon-text="iconText"
+      :icon-text="extendParam?.title || iconText"
       :icon-text-color="iconTextColor"
       :background-color="extendParam.backgroundColor"
-      class="hover:shadow-[0_0_20px_10px_rgba(0,0,0,0.2)]"
     >
       <template #icon>
         <!-- 图标 -->
@@ -82,6 +81,7 @@ const refreshInterval = 5000
             :progress-rail-color="extendParam?.progressRailColor"
             :text-color="extendParam?.color"
             :path="extendParam?.path"
+            :title="extendParam?.title"
             :refresh-interval="refreshInterval"
           />
         </div>
@@ -110,6 +110,7 @@ const refreshInterval = 5000
           :progress-rail-color="extendParam?.progressRailColor"
           :text-color="extendParam?.color"
           :path="extendParam?.path"
+          :title="extendParam?.title"
           :refresh-interval="refreshInterval"
         />
       </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { NDivider, NGradientText, NTag } from 'naive-ui'
+import { NBadge, NButton, NCheckbox, NDivider, NFlex, NGradientText, NTag } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import { get } from '@/api/system/about'
+import { checkNewVersion as checkNewVersionApi, get } from '@/api/system/about'
 import { useAppStore } from '@/store'
 import srcSvglogo from '@/assets/logo.svg'
 import srcGitee from '@/assets/about_image/gitee.png'
@@ -11,6 +11,9 @@ import srcBilibili from '@/assets/about_image/bilibili.png'
 import srcYoutube from '@/assets/about_image/youtube.png'
 import srcQQGroupQR from '@/assets/about_image/qq_group_qr2.png'
 import { RoundCardModal } from '@/components/common'
+import { message } from '@/utils/request/apiMessage'
+import { t } from '@/locales'
+import { buildTimeString } from '@/utils/cmn'
 
 interface Version {
   versionName: string
@@ -21,51 +24,125 @@ const appStore = useAppStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
 const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
+const linksDomain = 'http://links.sun-panel.top'
+const isCheckBeta = ref(false)
+const newVersionInfo = ref<About.NewVersionInfo | null>(null)
+const checkLoading = ref(false)
+const isCheckFailed = ref(false)
+
+function getLangeuageSimple() {
+  if (appStore.language === 'zh-CN')
+    return 'zh_cn'
+
+  return 'en'
+}
+
+function link(c: string): string {
+  return `${linksDomain}/${c}_${getLangeuageSimple()}`
+}
+
+function getWebsiteUrl(): string {
+  if (appStore.language === 'zh-CN')
+    return 'https://doc.sun-panel.top/zh_cn/'
+
+  return 'http://doc.sun-panel.top'
+}
+
+async function checkNewVersion() {
+  checkLoading.value = true
+  await checkNewVersionApi<About.NewVersionInfo | null>(isCheckBeta.value).then(({ data }) => {
+    newVersionInfo.value = data
+    isCheckFailed.value = false
+  }).catch(() => {
+    isCheckFailed.value = true
+    message.error(t('common.failed'))
+  })
+  checkLoading.value = false
+}
 
 onMounted(() => {
   get<Version>().then((res) => {
     if (res.code === 0)
       versionName.value = res.data.versionName
   })
+
+  checkNewVersion()
 })
 </script>
 
 <template>
-  <div class="pt-5">
+  <div class="app-background h-full overflow-auto py-5">
     <div class="flex flex-col items-center justify-center">
-      <img :src="srcSvglogo" width="100" height="100" alt="">
+      <img :src="srcSvglogo" width="80" height="80" alt="">
       <div class="text-3xl font-semibold">
         {{ $t('common.appName') }}
       </div>
       <div class="text-xl">
         <NGradientText type="info">
-          <a href="https://github.com/hslr-s/sun-panel/releases" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
+          <a :href="link('update_log')" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
         </NGradientText>
       </div>
-      <div class="mt-2">
-        <a href="https://github.com/hslr-s/sun-panel/releases" target="_blank" class="link">{{ $t('apps.about.checkUpdate') }}</a>
+
+      <div v-if="!checkLoading" class="mt-2">
+        <NFlex v-if="newVersionInfo !== null" justify="center" align="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
+          {{ t('apps.about.haveNewVersion') }}
+          <NBadge value="New" processing :offset="[5, -5]">
+            <NTag type="info">
+              <a :href="link('update_log')" target="_blank" class="link"> v{{ newVersionInfo.version }}</a>
+            </NTag>
+          </NBadge>
+          <template v-if="newVersionInfo.type === 'release'">
+            ({{ buildTimeString(newVersionInfo.releaseTime, "YYYY-MM-DD") }})
+          </template>
+        </NFlex>
+
+        <NFlex v-else-if="!isCheckFailed && newVersionInfo === null " justify="center" style="margin:10px 0 ;">
+          <NTag type="success">
+            {{ t('apps.about.alreadyLatestVersion') }}
+          </NTag>
+        </NFlex>
+
+        <NFlex v-if="isCheckFailed" justify="center" style="margin:10px 0 ;">
+          <NTag type="error">
+            <a href="https://github.com/hslr-s/sun-panel/releases" target="_blank"> {{ t("apps.about.checkFailed") }}</a>
+          </NTag>
+        </NFlex>
       </div>
+
+      <NFlex align="center" justify="center">
+        <NCheckbox v-model:checked="isCheckBeta">
+          Beta
+        </NCheckbox>
+        <NButton size="tiny" type="success" :loading="checkLoading" @click="checkNewVersion">
+          {{ $t('apps.about.checkUpdate') }}
+        </NButton>
+      </NFlex>
     </div>
 
-    <NDivider style="margin:10px 0">
+    <NDivider style="margin:10px 0;padding: 0 10px">
       •
     </NDivider>
     <div class="flex flex-col items-center justify-center text-base">
       <div>
-        {{ $t('apps.about.author') }}<a href="https://github.com/hslr-s" target="_blank" class="link">红烧猎人</a> | <a href="https://github.com/hslr-s/sun-panel/blob/master/doc/donate.md" target="_blank" class="text-red-600 hover:text-red-900">{{ $t('apps.about.donate') }}</a>
+        {{ $t('apps.about.website') }}
+        <a :href="getWebsiteUrl()" target="_blank" class="link"> sun-panel.top </a>
       </div>
       <div>
-        {{ $t('apps.about.issue') }}<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link">Github Issues</a>
-      </div>
-      <div>
-        {{ $t('apps.about.discussions') }}<a href="https://github.com/hslr-s/sun-panel/discussions" target="_blank" class="link">Github Discussions</a>
-      </div>
-      <div>
-        {{ $t('apps.about.QQGroup') }}<a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=K6UII6aEPZUeDRIPOEpOSJZH-Vmr_RPu&authKey=jEXhnVekLbDDx5UkQzKtd3bRmhZggkGBxmvW4NT5LLIAFP7toMmqABwvkANGHbLb&noverify=0&group_code=831615449" target="_blank" class="link">{{ $t("apps.about.addQQGroupUrl") }}</a>
+        {{ $t('apps.about.author') }}
+        <a href="https://github.com/hslr-s" target="_blank" class="link"> 红烧猎人 </a>
         |
-        <span class="link cursor-pointer" @click="qqGroupQRShow = !qqGroupQRShow">
-          {{ $t('apps.about.QR') }}
-        </span>
+        <a :href="link('donate')" target="_blank" class="text-red-600 hover:text-red-900">
+          {{ $t('apps.about.donate') }}
+        </a>
+      </div>
+      <div>
+        {{ $t('apps.about.issue') }}<a href="https://github.com/hslr-s/sun-panel/issues" target="_blank" class="link"> Github Issues</a>
+      </div>
+      <div>
+        {{ $t('apps.about.discussions') }}<a href="https://github.com/hslr-s/sun-panel/discussions" target="_blank" class="link"> Github Discussions</a>
+      </div>
+      <div>
+        {{ $t('apps.about.communicationGroup') }} <a :href="link('groupChat')" target="_blank" class="link"> {{ $t("apps.about.groupChat") }}</a>
       </div>
 
       <div class="flex mt-[10px] flex-wrap justify-center">

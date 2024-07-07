@@ -4,6 +4,7 @@ declare namespace DeskModule.SearchBox {
         iconSrc: string
         title: string
         url: string
+        key: string
     }
 
 }

@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/initialize/cUserToken"
 	"sun-panel/initialize/config"
@@ -24,10 +26,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var DB_DRIVER = database.SQLITE
+type CMDParams struct {
+	CfgPath  string // 配置文件目录
+	CfgInit  bool   // 配置初始化
+	PwdReset bool   // 重置密码
+}
 
-// var RUNCODE = "debug"
-// var ISDOCER = "" // 是否为docker模式
+var DB_DRIVER = database.SQLITE
+var cmdParams CMDParams
+
+func getDefaultConfig() map[string]map[string]string {
+	return map[string]map[string]string{
+		"base": {
+			"http_port":        "3002",
+			"source_path":      "./uploads",      // 存放文件的路径
+			"source_temp_path": "./runtime/temp", // 存放文件的缓存路径
+			"web_path":         "./web",
+		},
+
+		// 此为隐藏配置
+		"pro_auth": {
+			"host": "https://auth.sun-panel.top",
+		},
+	}
+}
 
 func InitApp() error {
 	Logo()
@@ -41,15 +63,18 @@ func InitApp() error {
 		global.Logger = logger
 	}
 
-	// 命令行运行
-	CommandRun()
+	cmdParams = CommandInit()
+
+	// 如果为命令可能会终止运行
+	CommandRun(cmdParams)
 
 	// 配置初始化
 	{
-		if config, err := config.ConfigInit(); err != nil {
+		if config, err := config.ConfigInit(cmdParams.CfgPath); err != nil {
 			global.Logger.Errorln("Configuration initialization error", err)
 			return err
 		} else {
+			config.Default = getDefaultConfig()
 			global.Config = config
 		}
 	}
@@ -84,13 +109,17 @@ func InitApp() error {
 
 	// 初始化用户token
 	global.UserToken = userToken.InitUserToken()
-	global.CUserToken = cUserToken.InitCUserToken()
+	tokenExpires := global.Config.GetValueIntOrDefault("base", "token_expires", 168) // 默认7天
+	global.CUserToken = cUserToken.InitCUserToken(time.Duration(tokenExpires) * time.Hour)
 
 	// 其他的初始化
 	global.VerifyCodeCachePool = other.InitVerifyCodeCachePool()
 	global.SystemSetting = systemSettingCache.InItSystemSettingCache()
 	global.SystemMonitor = global.NewCache[interface{}](5*time.Hour, -1, "systemMonitorCache")
 
+	// 注册与统计程序
+	biz.ProAuth = *biz.NewProAuth()
+	biz.ProAuth.Start()
 	return nil
 }
 
@@ -114,42 +143,44 @@ func DatabaseConnect() {
 	}
 
 	if db, err := database.DbInit(dbClientInfo); err != nil {
-		log.Panicln("Database initialization error", err)
+		log.Panicln("Database initialization error:", err)
 		panic(err)
 	} else {
 		global.Db = db
 		models.Db = global.Db
 	}
 
-	database.CreateDatabase(databaseDrive, global.Db)
+	if err := database.CreateDatabase(databaseDrive, global.Db); err != nil {
+		log.Println("Database initialization error:", err)
+		log.Panicln("Database initialization error", err)
+	}
 
 	database.NotFoundAndCreateUser(global.Db)
 }
 
-// 命令行运行
-func CommandRun() {
-	var (
-		cfg bool
-		pwd bool
-	)
-
-	flag.BoolVar(&cfg, "config", false, "Generate configuration file")
-	flag.BoolVar(&pwd, "password-reset", false, "Reset the password of the first user")
-
+// 命令行参数初始化
+func CommandInit() CMDParams {
+	flag.StringVar(&cmdParams.CfgPath, "config-path", "./conf", "Configuration file directory")
+	flag.BoolVar(&cmdParams.CfgInit, "config-reset", false, "Create or reset the configuration file")
+	flag.BoolVar(&cmdParams.PwdReset, "password-reset", false, "Reset the password of the first admin account")
 	flag.Parse()
+	return cmdParams
+}
 
-	if cfg {
+// 命令行运行
+func CommandRun(arg CMDParams) {
+	if cmdParams.CfgInit {
 		// 生成配置文件
 		fmt.Println("Generating configuration file")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.example.ini")
-		cmn.AssetsTakeFileToPath("conf.example.ini", "conf/conf.ini")
+		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cmdParams.CfgPath, "conf.example.ini"))
+		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cmdParams.CfgPath, "conf.ini"))
 		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
-	} else if pwd {
+	} else if cmdParams.PwdReset {
 		// 重置密码
 
 		// 配置初始化
-		config, _ := config.ConfigInit()
+		config, _ := config.ConfigInit(cmdParams.CfgPath)
 		global.Config = config
 
 		DatabaseConnect()

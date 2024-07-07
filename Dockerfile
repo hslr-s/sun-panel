@@ -39,7 +39,8 @@ RUN go env -w GO111MODULE=on \
     && go install -a -v github.com/go-bindata/go-bindata/...@latest \
     && go install -a -v github.com/elazarl/go-bindata-assetfs/...@latest \
     && go-bindata-assetfs -o=assets/bindata.go -pkg=assets assets/... \
-    && go build -o sun-panel --ldflags="-X sun-panel/global.RUNCODE=release -X sun-panel/global.ISDOCKER=docker" main.go
+    && go mod tidy \
+    && go build -o sun-panel --ldflags="-X sun-panel/global.RUNCODE=release -X sun-panel/global.ISDOCKER=true" main.go
 
 
 
@@ -59,6 +60,6 @@ EXPOSE 3002
 
 RUN apk add --no-cache bash ca-certificates su-exec tzdata \
     && chmod +x ./sun-panel \
-    && ./sun-panel -config
+    && ./sun-panel -config-reset
 
 CMD ./sun-panel

@@ -2,15 +2,11 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
-import { AppLoader, RoundCardModal, SvgIcon } from '@/components/common'
+import { AppLoader, SModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
+import type { SystemApp } from '@/utils/cmn/builtInApps'
+import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
 
-interface App {
-  name: string
-  componentName: string
-  icon: string
-  auth?: number
-}
 const props = defineProps<{
   visible: boolean
 }>()
@@ -27,38 +23,7 @@ const defaultTitle = t('appLauncher.title')
 const title = ref('')
 const height = ref('500px')
 
-const apps = ref<App[]>([
-  {
-    name: t('apps.userInfo.appName'),
-    componentName: 'UserInfo',
-    icon: 'material-symbols-person-edit-outline-rounded',
-  },
-  {
-    name: t('apps.baseSettings.appName'),
-    componentName: 'Style',
-    icon: 'ion-color-palette-outline',
-  },
-  {
-    name: t('apps.itemGroupManage.appName'),
-    componentName: 'ItemGroupManage',
-    icon: 'material-symbols-ad-group-outline-rounded',
-  },
-  {
-    name: t('apps.uploadsFileManager.appName'),
-    componentName: 'UploadFileManager',
-    icon: 'tabler:file-upload',
-  },
-  {
-    name: t('apps.exportImport.appName'),
-    componentName: 'ImportExport',
-    icon: 'icon-park-outline-import-and-export',
-  },
-  {
-    name: t('apps.about.appName'),
-    componentName: 'About',
-    icon: 'lucide-info',
-  },
-])
+const apps = ref(systemApps)
 
 const authStore = useAuthStore()
 
@@ -69,7 +34,7 @@ const show = computed({
   },
 })
 
-function handleClickApp(item: App) {
+function handleClickApp(item: SystemApp) {
   componentName.value = item.componentName
   if (isSmallScreen.value)
     collapsed.value = true
@@ -92,15 +57,10 @@ function handleResize() {
 }
 
 onMounted(() => {
-  const adminApp: App = {
-    name: t('adminSettingUsers.appName'),
-    componentName: 'Users',
-    icon: 'lucide-users',
-    auth: 1,
-  }
+  const adminApps = adminSystemApps
   // 初始化
   if (authStore.userInfo?.role === 1)
-    apps.value.push(adminApp)
+    apps.value = apps.value.concat(adminApps)
 
   window.addEventListener('resize', handleResize)
   handleResize()
@@ -113,17 +73,22 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <RoundCardModal
+    <SModal
       v-model:show="show"
-      style="max-width: 900px;"
+      style="max-width: 900px;border-radius: 1rem;"
       size="small"
+      move
     >
       <template #header>
-        <div class="flex items-center select-none" @click="collapsed = !collapsed">
-          <div class="text-3xl cursor-pointer" style="color:var(--n-color-target)">
+        <div class="flex items-center select-none">
+          <div
+            class="text-3xl cursor-pointer"
+            style="color:var(--n-color-target)"
+            @click="collapsed = !collapsed"
+          >
             <SvgIcon class=" transition-all duration-500" :icon="collapsed ? 'tabler-layout-sidebar-right-collapse-filled' : 'tabler-layout-sidebar-left-collapse-filled'" />
           </div>
-          <div class="ml-1">
+          <div class="ml-1" @click="collapsed = !collapsed">
             {{ title === '' ? defaultTitle : title }}
           </div>
         </div>
@@ -141,7 +106,7 @@ onUnmounted(() => {
             >
               <div class="w-full h-full dark:bg-[#2c2c32]">
                 <div
-                  class="p-[5px] bg-slate-200 dark:bg-zinc-900 rounded-xl overflow-auto"
+                  class="p-[5px] rounded-xl overflow-auto border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 "
                   :style="{
                     width: isSmallScreen ? '100%' : '220px',
                     minWidth: '200px',
@@ -173,14 +138,14 @@ onUnmounted(() => {
               </div>
             </NLayoutSider>
             <NLayoutContent :content-style="{ height }">
-              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full" :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 " :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
                 <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>
           </NLayout>
         </NSpace>
       </div>
-    </RoundCardModal>
+    </SModal>
   </div>
 </template>
 

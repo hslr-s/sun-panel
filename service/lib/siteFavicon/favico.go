@@ -92,7 +92,7 @@ func DownloadImage(url, savePath string, maxSize int64) (*os.File, error) {
 	fileExt := path.Ext(url)
 	fileName := cmn.Md5(fmt.Sprintf("%s%s", urlFileName, time.Now().String())) + fileExt
 
-	destination := savePath + "/" + fileName
+	destination := strings.TrimRight(savePath, "/") + "/" + strings.TrimLeft(fileName, "/")
 
 	// 创建本地文件用于保存图片
 	file, err := os.Create(destination)

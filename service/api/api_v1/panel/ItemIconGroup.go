@@ -1,10 +1,13 @@
 package panel
 
 import (
+	"errors"
 	"math"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
+	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/models"
 
@@ -18,7 +21,7 @@ type ItemIconGroup struct {
 
 func (a *ItemIconGroup) Edit(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
-	req := models.ItemIconGroup{}
+	req := panelApiStructs.ItemGroupEditReq{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
@@ -27,26 +30,36 @@ func (a *ItemIconGroup) Edit(c *gin.Context) {
 
 	req.UserId = userInfo.ID
 
-	if req.ID != 0 {
-		// 修改
-		updateField := []string{"IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "GroupId", "UserId"}
-		if req.Sort != 0 {
-			updateField = append(updateField, "Sort")
+	saveData := models.ItemIconGroup{}
+	saveData.ID = req.ID
+	saveData.CardStyle = base.AnyToJsonStr(req.CardStyle)
+	saveData.Title = req.Title
+	saveData.Icon = req.Icon
+	saveData.OnlyName = req.OnlyName
+	// saveData.Icon = "material-symbols:ad-group-outline"
+	saveData.Description = req.Description
+	saveData.Sort = req.Sort
+	saveData.UserId = userInfo.ID
+	saveData.PublicVisitHide = base.BoolToInt(req.PublicVisitHide)
+
+	if v, err := biz.ItemGroup.Edit(userInfo.ID, saveData); err != nil {
+		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
+			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
+			return
 		}
-		global.Db.Model(&models.ItemIconGroup{}).
-			Select(updateField).
-			Where("id=?", req.ID).Updates(&req)
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
 	} else {
-		// 创建
-		global.Db.Create(&req)
+		saveData = v
 	}
 
-	apiReturn.SuccessData(c, req)
+	apiReturn.SuccessData(c, saveData)
 }
 
 func (a *ItemIconGroup) GetList(c *gin.Context) {
 
 	userInfo, _ := base.GetCurrentUserInfo(c)
+	currentMode := base.GetCurrentVisitMode(c)
 	groups := []models.ItemIconGroup{}
 
 	err := global.Db.Transaction(func(tx *gorm.DB) error {
@@ -80,11 +93,35 @@ func (a *ItemIconGroup) GetList(c *gin.Context) {
 		return nil
 	})
 
+	resp := []panelApiStructs.ItemGroupInfo{}
+	for _, v := range groups {
+		cardStyle := panelApiStructs.ItemGroupInfoCardStyle{}
+
+		// 过滤公开隐藏的
+		if currentMode == base.VISIT_MODE_PUBLIC && base.IntToBool(v.PublicVisitHide) {
+			continue
+		}
+
+		base.JsonStrToAny(v.CardStyle, &cardStyle)
+		resp = append(resp, panelApiStructs.ItemGroupInfo{
+			ID:              v.ID,
+			Icon:            v.Icon,
+			Title:           v.Title,
+			OnlyName:        v.OnlyName,
+			Description:     v.Description,
+			Sort:            v.Sort,
+			UserId:          v.UserId,
+			User:            v.User,
+			CardStyle:       cardStyle,
+			PublicVisitHide: base.IntToBool(v.PublicVisitHide),
+		})
+	}
+
 	if err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	} else {
-		apiReturn.SuccessListData(c, groups, 0)
+		apiReturn.SuccessListData(c, resp, 0)
 	}
 }
 

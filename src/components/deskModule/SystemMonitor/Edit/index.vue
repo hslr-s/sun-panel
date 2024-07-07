@@ -33,6 +33,7 @@ const defaultDiskExtendParam: DiskExtendParam = {
   color: '#fff',
   backgroundColor: '#2a2a2a6b',
   path: '',
+  title: '',
 }
 
 const defaultMonitorData: MonitorData = {

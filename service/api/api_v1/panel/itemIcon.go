@@ -2,6 +2,7 @@ package panel
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
 	"sun-panel/lib/siteFavicon"
@@ -27,68 +29,90 @@ type ItemIcon struct {
 
 func (a *ItemIcon) Edit(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
-	req := models.ItemIcon{}
+	req := panelApiStructs.ItemInfo{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
 		return
 	}
 
-	if req.ItemIconGroupId == 0 {
-		// apiReturn.Error(c, "Group is mandatory")
-		apiReturn.ErrorParamFomat(c, "Group is mandatory")
-		return
-	}
-
 	req.UserId = userInfo.ID
 
-	// json转字符串
-	if j, err := json.Marshal(req.Icon); err == nil {
-		req.IconJson = string(j)
-	}
+	saveData := models.ItemIcon{}
+	saveData.ID = req.ID
+	saveData.CardType = req.CardType
+	saveData.IconJson = req.IconJson
+	saveData.Icon = req.Icon
+	saveData.Title = req.Title
+	saveData.OnlyName = req.OnlyName
+	saveData.Url = req.Url
+	saveData.LanUrl = req.LanUrl
+	saveData.Description = req.Description
+	saveData.OpenMethod = req.OpenMethod
+	saveData.Sort = req.Sort
+	saveData.BackgroundColor = req.BackgroundColor
+	saveData.ItemIconGroupId = req.ItemIconGroupId
+	saveData.ExpandParam = base.AnyToJsonStr(req.ExpandParam)
+	saveData.UserId = userInfo.ID
 
-	if req.ID != 0 {
-		// 修改
-		updateField := []string{"IconJson", "Icon", "Title", "Url", "LanUrl", "Description", "OpenMethod", "GroupId", "UserId", "ItemIconGroupId"}
-		if req.Sort != 0 {
-			updateField = append(updateField, "Sort")
+	if v, err := biz.Item.Edit(userInfo.ID, saveData); err != nil {
+		if errors.Is(err, biz.ErrItemOnlyNameExisted) {
+			apiReturn.ErrorByCodeAndMsg(c, -2, err.Error())
+			return
 		}
-		global.Db.Model(&models.ItemIcon{}).
-			Select(updateField).
-			Where("id=?", req.ID).Updates(&req)
+		apiReturn.ErrorDatabase(c, err.Error())
+		return
 	} else {
-		req.Sort = 9999
-		// 创建
-		global.Db.Create(&req)
+		saveData = v
 	}
 
-	apiReturn.SuccessData(c, req)
+	apiReturn.SuccessData(c, saveData)
 }
 
 // 添加多个图标
 func (a *ItemIcon) AddMultiple(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	// type Request
-	req := []models.ItemIcon{}
+	req := []panelApiStructs.ItemInfo{}
 
 	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		apiReturn.ErrorParamFomat(c, err.Error())
 		return
 	}
 
-	for i := 0; i < len(req); i++ {
-		if req[i].ItemIconGroupId == 0 {
+	datas := []models.ItemIcon{}
+
+	for _, v := range req {
+		if v.ItemIconGroupId == 0 {
 			apiReturn.ErrorParamFomat(c, "Group is mandatory")
 			return
 		}
-		req[i].UserId = userInfo.ID
+		v.UserId = userInfo.ID
 		// json转字符串
-		if j, err := json.Marshal(req[i].Icon); err == nil {
-			req[i].IconJson = string(j)
+		if j, err := json.Marshal(v.Icon); err == nil {
+			v.IconJson = string(j)
 		}
+
+		saveData := models.ItemIcon{}
+
+		saveData.CardType = v.CardType
+		saveData.IconJson = v.IconJson
+		saveData.Icon = v.Icon
+		saveData.Title = v.Title
+		saveData.OnlyName = v.OnlyName
+		saveData.Url = v.Url
+		saveData.LanUrl = v.LanUrl
+		saveData.Description = v.Description
+		saveData.OpenMethod = v.OpenMethod
+		saveData.Sort = v.Sort
+		saveData.BackgroundColor = v.BackgroundColor
+		saveData.ItemIconGroupId = v.ItemIconGroupId
+		saveData.ExpandParam = base.AnyToJsonStr(v.ExpandParam)
+		saveData.UserId = userInfo.ID
+		datas = append(datas, saveData)
 	}
 
-	global.Db.Create(&req)
+	global.Db.Create(&datas)
 
 	apiReturn.SuccessData(c, req)
 }
@@ -134,16 +158,36 @@ func (a *ItemIcon) GetListByGroupId(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	itemIcons := []models.ItemIcon{}
 
+	resp := []panelApiStructs.ItemInfo{}
+
 	if err := global.Db.Order("sort ,created_at").Find(&itemIcons, "item_icon_group_id = ? AND user_id=?", req.ItemIconGroupId, userInfo.ID).Error; err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
 
-	for k, v := range itemIcons {
-		json.Unmarshal([]byte(v.IconJson), &itemIcons[k].Icon)
+	for _, v := range itemIcons {
+		json.Unmarshal([]byte(v.IconJson), &v.Icon)
+		temp := panelApiStructs.ItemInfo{}
+
+		temp.ID = v.ID
+		temp.CardType = v.CardType
+		temp.Icon = v.Icon
+		temp.Title = v.Title
+		temp.OnlyName = v.OnlyName
+		temp.Url = v.Url
+		temp.LanUrl = v.LanUrl
+		temp.Description = v.Description
+		temp.OpenMethod = v.OpenMethod
+		temp.Sort = v.Sort
+		temp.BackgroundColor = v.BackgroundColor
+		temp.ItemIconGroupId = v.ItemIconGroupId
+		temp.UserId = userInfo.ID
+		temp.ExpandParam = base.JsonStrToMap(v.ExpandParam)
+
+		resp = append(resp, temp)
 	}
 
-	apiReturn.SuccessListData(c, itemIcons, 0)
+	apiReturn.SuccessListData(c, resp, 0)
 }
 
 func (a *ItemIcon) Deletes(c *gin.Context) {
@@ -207,8 +251,16 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	resp := panelApiStructs.ItemIconGetSiteFaviconResp{}
 	fullUrl := ""
 	if iconUrl, err := siteFavicon.GetOneFaviconURL(req.Url); err != nil {
-		apiReturn.Error(c, "acquisition failed: get ico error:"+err.Error())
-		return
+		// 尝试使用最原始的方式获取图标 https://域名/favicon.ico
+		if urlInfo, err := url.Parse(req.Url); err != nil {
+			errMsg := "acquisition failed: get ico error:" + err.Error()
+			global.Logger.Error(errMsg)
+			apiReturn.Error(c, errMsg)
+			return
+		} else {
+			fullUrl = urlInfo.Scheme + "://" + urlInfo.Host + "/favicon.ico"
+		}
+
 	} else {
 		fullUrl = iconUrl
 	}
@@ -245,6 +297,7 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	// 生成保存目录
 	configUpload := global.Config.GetValueString("base", "source_path")
 	savePath := fmt.Sprintf("%s/%d/%d/%d/", configUpload, time.Now().Year(), time.Now().Month(), time.Now().Day())
+	global.Logger.Debug("保存路径", savePath)
 	isExist, _ := cmn.PathExists(savePath)
 	if !isExist {
 		os.MkdirAll(savePath, os.ModePerm)
@@ -260,13 +313,14 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 		}
 	}
 
+	pureFilePath := imgInfo.Name()[len(configUpload):]
 	// 保存到数据库
 	ext := path.Ext(fullUrl)
 	mFile := models.File{}
-	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, imgInfo.Name()); err != nil {
+	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, pureFilePath); err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}
-	resp.IconUrl = imgInfo.Name()[1:]
+	resp.IconUrl = global.UPLOAD_ROUTE + pureFilePath
 	apiReturn.SuccessData(c, resp)
 }

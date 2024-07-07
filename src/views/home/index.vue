@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
-import { NBackTop, NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
-import { nextTick, onMounted, ref } from 'vue'
-import { AppIcon, AppStarter, EditItem } from './components'
+import { NBackTop, NButton, useDialog, useMessage } from 'naive-ui'
+import { onMounted, ref } from 'vue'
+import { AppStarter, EditItem, ItemCards } from './components'
 import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
 import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
+import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
 
-import { setTitle, updateLocalUserInfo } from '@/utils/cmn'
 import { useAuthStore, usePanelState } from '@/store'
-import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
+import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
-import { router } from '@/router'
 import { t } from '@/locales'
 
-interface ItemGroup extends Panel.ItemIconGroup {
+interface ItemGroup extends Panel.ItemGroupInfo {
   sortStatus?: boolean
   hoverStatus: boolean
   items?: Panel.ItemInfo[]
@@ -30,63 +29,14 @@ const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
 const editItemInfoShow = ref<boolean>(false)
 const editItemInfoData = ref<Panel.ItemInfo | null>(null)
-const windowShow = ref<boolean>(false)
-const windowSrc = ref<string>('')
-const windowTitle = ref<string>('')
 
-const windowIframeRef = ref(null)
-const windowIframeIsLoad = ref<boolean>(false)
-
-const dropdownMenuX = ref(0)
-const dropdownMenuY = ref(0)
-const dropdownShow = ref(false)
-const currentRightSelectItem = ref<Panel.ItemInfo | null>(null)
+// const dropdownShow = ref(false)
 const currentAddItenIconGroupId = ref<number | undefined>()
 
 const settingModalShow = ref(false)
 
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
-
-function openPage(openMethod: number, url: string, title?: string) {
-  switch (openMethod) {
-    case 1:
-      window.location.href = url
-      break
-    case 2:
-      window.open(url)
-      break
-    case 3:
-      windowShow.value = true
-      windowSrc.value = url
-      windowTitle.value = title || url
-      windowIframeIsLoad.value = true
-      break
-
-    default:
-      break
-  }
-}
-
-function handleItemClick(itemGroupIndex: number, item: Panel.ItemInfo) {
-  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus) {
-    handleEditItem(item)
-    return
-  }
-
-  let jumpUrl = ''
-
-  if (item)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? item.lanUrl : item.url) as string
-  if (item.lanUrl === '')
-    jumpUrl = item.url
-
-  openPage(item.openMethod, jumpUrl, item.title)
-}
-
-function handWindowIframeIdLoad(payload: Event) {
-  windowIframeIsLoad.value = false
-}
 
 function getList() {
   // 获取组数据
@@ -100,6 +50,8 @@ function getList() {
     }
     filterItems.value = items.value
     // console.log(items)
+  }).catch((error) => {
+    apiRespErrMsg(error)
   })
 }
 
@@ -108,73 +60,9 @@ function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: n
   getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
     if (res.code === 0)
       items.value[itemIconGroupIndex].items = res.data.list
+  }).catch((error) => {
+    apiRespErrMsg(error)
   })
-}
-
-function handleRightMenuSelect(key: string | number) {
-  dropdownShow.value = false
-  // console.log(currentRightSelectItem, key)
-  let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? currentRightSelectItem.value?.lanUrl : currentRightSelectItem.value?.url
-  if (currentRightSelectItem.value?.lanUrl === '')
-    jumpUrl = currentRightSelectItem.value.url
-  switch (key) {
-    case 'newWindows':
-      window.open(jumpUrl)
-      break
-    case 'openWanUrl':
-      if (currentRightSelectItem.value)
-        openPage(currentRightSelectItem.value?.openMethod, currentRightSelectItem.value?.url, currentRightSelectItem.value?.title)
-      break
-    case 'openLanUrl':
-      if (currentRightSelectItem.value && currentRightSelectItem.value.lanUrl)
-        openPage(currentRightSelectItem.value?.openMethod, currentRightSelectItem.value.lanUrl, currentRightSelectItem.value?.title)
-      break
-    case 'edit':
-      // 这里有个奇怪的问题，如果不使用{...}的方式 父组件的值会同步修改 标记一下
-      handleEditItem({ ...currentRightSelectItem.value } as Panel.ItemInfo)
-      break
-    case 'delete':
-      dialog.warning({
-        title: t('common.warning'),
-        content: t('common.deleteConfirmByName', { name: currentRightSelectItem.value?.title }),
-        positiveText: t('common.confirm'),
-        negativeText: t('common.cancel'),
-        onPositiveClick: () => {
-          deletes([currentRightSelectItem.value?.id as number]).then(({ code, msg }) => {
-            if (code === 0) {
-              ms.success(t('common.deleteSuccess'))
-              getList()
-            }
-            else {
-              ms.error(`${t('common.deleteFail')}:${msg}`)
-            }
-          })
-        },
-      })
-
-      break
-    default:
-      break
-  }
-}
-
-function handleContextMenu(e: MouseEvent, itemGroupIndex: number, item: Panel.ItemInfo) {
-  if (items.value[itemGroupIndex] && items.value[itemGroupIndex].sortStatus)
-    return
-
-  e.preventDefault()
-  currentRightSelectItem.value = item
-  dropdownShow.value = false
-  nextTick().then(() => {
-    dropdownShow.value = true
-    dropdownMenuX.value = e.clientX
-    dropdownMenuY.value = e.clientY
-  })
-}
-
-function onClickoutside() {
-  // message.info('clickoutside')
-  dropdownShow.value = false
 }
 
 function handleEditSuccess(item: Panel.ItemInfo) {
@@ -190,8 +78,31 @@ function handleChangeNetwork(mode: PanelStateNetworkModeEnum) {
     ms.success(t('panelHome.changeToWanModelSuccess'))
 }
 
+// 删除项目
+function deleteItem(itemInfo: Panel.ItemInfo) {
+  dialog.warning({
+    title: t('common.warning'),
+    content: t('common.deleteConfirmByName', { name: itemInfo.title }),
+    positiveText: t('common.confirm'),
+    negativeText: t('common.cancel'),
+    onPositiveClick: () => {
+      deletes([itemInfo.id as number]).then(({ code, msg }) => {
+        if (code === 0) {
+          ms.success(t('common.deleteSuccess'))
+          getList()
+        }
+        else {
+          ms.error(`${t('common.deleteFail')}:${msg}`)
+        }
+      }).catch((error) => {
+        apiRespErrMsg(error)
+      })
+    },
+  })
+}
+
 // 结束拖拽
-// function handleEndDrag(event: any, itemIconGroup: Panel.ItemIconGroup) {
+// function handleEndDrag(event: any, itemIconGroup: Panel.ItemGroupInfo) {
 //   // console.log(event)
 //   // console.log(items.value)
 // }
@@ -215,44 +126,10 @@ function handleSaveSort(itemGroup: ItemGroup) {
       else {
         ms.error(`${t('common.saveFail')}:${msg}`)
       }
+    }).catch((error) => {
+      apiRespErrMsg(error)
     })
   }
-}
-
-function getDropdownMenuOptions() {
-  const dropdownMenuOptions = [
-    {
-      label: t('iconItem.newWindowOpen'),
-      key: 'newWindows',
-    },
-
-  ]
-
-  if (currentRightSelectItem.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
-    dropdownMenuOptions.push({
-      label: t('panelHome.openLanUrl'),
-      key: 'openLanUrl',
-    })
-  }
-
-  if (currentRightSelectItem.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
-    dropdownMenuOptions.push({
-      label: t('panelHome.openWanUrl'),
-      key: 'openWanUrl',
-    })
-  }
-
-  if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
-    dropdownMenuOptions.push({
-      label: t('common.edit'),
-      key: 'edit',
-    }, {
-      label: t('common.delete'),
-      key: 'delete',
-    })
-  }
-
-  return dropdownMenuOptions
 }
 
 onMounted(() => {
@@ -282,11 +159,13 @@ function itemFrontEndSearch(keyword?: string) {
         )
       })
       if (element && element.length > 0)
-        filteredData.value.push({ items: element, hoverStatus: false })
+        filteredData.value.push({ items: element, hoverStatus: false, cardStyle: items.value[i].cardStyle, title: items.value[i].title })
     }
     filterItems.value = filteredData.value
+    // console.log('搜索模式开启')
   }
   else {
+    // console.log('搜索模式关闭')
     filterItems.value = items.value
   }
 }
@@ -337,13 +216,14 @@ function handleAddItem(itemIconGroupId?: number) {
       <div
         class="p-2.5 mx-auto"
         :style="{
-          marginTop: `${panelState.panelConfig.marginTop}%`,
+          marginTop: `calc(${panelState.panelConfig.marginTop}% + 70px)`,
           marginBottom: `${panelState.panelConfig.marginBottom}%`,
           maxWidth: (panelState.panelConfig.maxWidth ?? '1200') + panelState.panelConfig.maxWidthUnit,
         }"
       >
         <!-- 头 -->
         <div class="mx-[auto] w-[80%]">
+          <!-- 时钟组件 -->
           <div class="flex mx-[auto] items-center justify-center text-white">
             <div class="logo">
               <span class="text-2xl md:text-6xl font-bold text-shadow">
@@ -357,8 +237,15 @@ function handleAddItem(itemIconGroupId?: number) {
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
+
+          <!-- 搜索栏组件 -->
           <div v-if="panelState.panelConfig.searchBoxShow" class="flex mt-[20px] mx-auto sm:w-full lg:w-[80%]">
-            <SearchBox @itemSearch="itemFrontEndSearch" />
+            <SearchBox
+              :background="panelState.panelConfig.searchBoxBackground"
+              :text-color="panelState.panelConfig.searchBoxTextColor"
+              :border-color="panelState.panelConfig.searchBoxBorderColor"
+              @itemSearch="itemFrontEndSearch"
+            />
           </div>
         </div>
 
@@ -381,7 +268,7 @@ function handleAddItem(itemIconGroupId?: number) {
           <div
             v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
             class="item-list mt-[50px]"
-            :class="itemGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
+            :class="itemGroup.sortStatus ? (`shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl item-group-${itemGroup.onlyName}`) : `item-group-${itemGroup.onlyName}`"
             @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
             @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
@@ -404,91 +291,105 @@ function handleAddItem(itemIconGroupId?: number) {
               </div>
             </div>
 
-            <!-- 详情图标 -->
-            <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info">
-              <div v-if="itemGroup.items">
-                <VueDraggable
-                  v-model="itemGroup.items" item-key="sort" :animation="300"
-                  class="icon-info-box"
-                  filter=".not-drag"
-                  :disabled="!itemGroup.sortStatus"
-                >
-                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
-                    <AppIcon
-                      :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
-                      :item-info="item"
-                      :icon-text-color="panelState.panelConfig.iconTextColor"
-                      :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
-                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
-                      :style="0"
-                      @click="handleItemClick(itemGroupIndex, item)"
-                    />
-                  </div>
-
-                  <div v-if="itemGroup.items.length === 0" class="not-drag">
-                    <AppIcon
-                      :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
-                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: t('common.add'), url: '', openMethod: 0 }"
-                      :icon-text-color="panelState.panelConfig.iconTextColor"
-                      :icon-text-info-hide-description="panelState.panelConfig.iconTextInfoHideDescription || false"
-                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
-                      :style="0"
-                      @click="handleAddItem(itemGroup.id)"
-                    />
-                  </div>
-                </VueDraggable>
-              </div>
+            <!-- 编辑栏 -->
+            <div v-if="itemGroup.sortStatus" class="flex my-4">
+              <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
+                <template #icon>
+                  <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
+                </template>
+                <div>
+                  {{ $t('common.saveSort') }}
+                </div>
+              </NButton>
             </div>
+
+            <!-- 详情图标 -->
+            <templete v-if="itemGroup.items && (!itemGroup.cardStyle || itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.info)">
+              <VueDraggable
+                v-model="itemGroup.items" item-key="sort" :animation="300"
+                class="icon-info-box"
+                :disabled="!itemGroup.sortStatus"
+              >
+                <div v-for="item, index in itemGroup.items" :key="index">
+                  <ItemCards
+                    :sort-status="itemGroup.sortStatus || false"
+                    :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
+                    :card-info="item"
+                    :icon-text-color="itemGroup.cardStyle.textColor"
+                    :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
+                    :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
+                    :card-style="PanelPanelConfigStyleEnum.info"
+                    :card-type="PanelCardType.Normal"
+                    @delete="() => deleteItem(item)"
+                    @edit="() => handleEditItem(item)"
+                  />
+                </div>
+
+                <div v-if="itemGroup.items.length === 0" class="not-drag">
+                  <ItemCards
+                    :sort-status="itemGroup.sortStatus || false"
+                    class="cursor-pointer"
+                    :card-info="{ icon: { itemType: 3, text: 'subway:add' }, title: t('common.add'), url: '', openMethod: 0, cardType: PanelCardType.Normal }"
+                    :icon-text-color="itemGroup.cardStyle.textColor"
+                    :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
+                    :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
+                    :card-style="PanelPanelConfigStyleEnum.info"
+                    :card-type="PanelCardType.Normal"
+                    @click="handleAddItem(itemGroup.id)"
+                  />
+                </div>
+              </VueDraggable>
+            </templete>
 
             <!-- APP图标宫型盒子 -->
-            <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon">
-              <div v-if="itemGroup.items">
-                <VueDraggable
-                  v-model="itemGroup.items" item-key="sort" :animation="300"
-                  class="icon-small-box"
+            <templete v-if="itemGroup.items && itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.icon">
+              <VueDraggable
+                v-model="itemGroup.items" item-key="sort" :animation="300"
+                class="icon-small-box"
+                filter=".not-drag"
+                :disabled="!itemGroup.sortStatus"
+              >
+                <div v-for="item, index in itemGroup.items" :key="index">
+                  <ItemCards
+                    :sort-status="itemGroup.sortStatus || false"
+                    :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
+                    :card-info="item"
+                    :icon-text-color="itemGroup.cardStyle.textColor"
+                    :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
+                    :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
+                    :card-style="PanelPanelConfigStyleEnum.small"
+                    :card-type="PanelCardType.Normal"
+                    @delete="() => deleteItem(item)"
+                    @edit="() => handleEditItem(item)"
+                  />
+                </div>
 
-                  filter=".not-drag"
-                  :disabled="!itemGroup.sortStatus"
-                >
-                  <div v-for="item, index in itemGroup.items" :key="index" :title="item.description" @contextmenu="(e) => handleContextMenu(e, itemGroupIndex, item)">
-                    <AppIcon
-                      :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
-                      :item-info="item"
-                      :icon-text-color="panelState.panelConfig.iconTextColor"
-                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
-                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
-                      :style="1"
-                      @click="handleItemClick(itemGroupIndex, item)"
-                    />
-                  </div>
-
-                  <div v-if="itemGroup.items.length === 0" class="not-drag">
-                    <AppIcon
-                      class="cursor-pointer"
-                      :item-info="{ icon: { itemType: 3, text: 'subway:add' }, title: $t('common.add'), url: '', openMethod: 0 }"
-                      :icon-text-color="panelState.panelConfig.iconTextColor"
-                      :icon-text-info-hide-description="!panelState.panelConfig.iconTextInfoHideDescription"
-                      :icon-text-icon-hide-title="panelState.panelConfig.iconTextIconHideTitle || false"
-                      :style="1"
-                      @click="handleAddItem(itemGroup.id)"
-                    />
-                  </div>
-                </vuedraggable>
-              </div>
-            </div>
+                <div v-if="itemGroup.items.length === 0" class="not-drag">
+                  <ItemCards
+                    :sort-status="itemGroup.sortStatus || false"
+                    class="cursor-pointer"
+                    :card-info="{ icon: { itemType: 3, text: 'subway:add' }, title: t('common.add'), url: '', openMethod: 0, cardType: PanelCardType.Normal }"
+                    :icon-text-color="itemGroup.cardStyle.textColor"
+                    :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
+                    :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
+                    :card-style="PanelPanelConfigStyleEnum.small"
+                    :card-type="PanelCardType.Normal"
+                    @click="handleAddItem(itemGroup.id)"
+                  />
+                </div>
+              </vuedraggable>
+            </templete>
 
             <!-- 编辑栏 -->
-            <div v-if="itemGroup.sortStatus" class="flex mt-[10px]">
-              <div>
-                <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
-                  <template #icon>
-                    <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
-                  </template>
-                  <div>
-                    {{ $t('common.saveSort') }}
-                  </div>
-                </NButton>
-              </div>
+            <div v-if="itemGroup.sortStatus" class="flex my-4">
+              <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
+                <template #icon>
+                  <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
+                </template>
+                <div>
+                  {{ $t('common.saveSort') }}
+                </div>
+              </NButton>
             </div>
           </div>
         </div>
@@ -496,47 +397,44 @@ function handleAddItem(itemIconGroupId?: number) {
       </div>
     </div>
 
-    <!-- 右键菜单 -->
-    <NDropdown
-      placement="bottom-start" trigger="manual" :x="dropdownMenuX" :y="dropdownMenuY"
-      :options="getDropdownMenuOptions()" :show="dropdownShow" :on-clickoutside="onClickoutside" @select="handleRightMenuSelect"
-    />
-
     <!-- 悬浮按钮 -->
-    <div class="fixed-element shadow-[0_0_10px_2px_rgba(0,0,0,0.2)]">
-      <NButtonGroup vertical>
-        <!-- 网络模式切换按钮组 -->
-        <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
-          :title="t('panelHome.changeToWanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
-        >
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="material-symbols:lan-outline-rounded" />
-          </template>
-        </NButton>
+    <div
+      class="fixed-element bg-[#2a2a2a6b] rounded-lg shadow-[0_0_10px_2px_rgba(0,0,0,0.2)] p-[2px] flex backdrop-blur-[2px]"
+    >
+      <div
+        v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.panelConfig.netModeChangeButtonShow"
+        class="float-btn flex items-center justify-center"
+        :title="t('panelHome.changeToWanModel')"
+        @click="handleChangeNetwork(PanelStateNetworkModeEnum.wan)"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="material-symbols:lan-outline-rounded" />
+      </div>
 
-        <NButton
-          v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan && panelState.panelConfig.netModeChangeButtonShow" color="#2a2a2a6b"
-          :title="t('panelHome.changeToLanModel')" @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
-        >
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="mdi:wan" />
-          </template>
-        </NButton>
+      <div
+        v-if="panelState.networkMode === PanelStateNetworkModeEnum.wan && panelState.panelConfig.netModeChangeButtonShow"
+        class="float-btn flex items-center justify-center"
+        :title="t('panelHome.changeToLanModel')"
+        @click="handleChangeNetwork(PanelStateNetworkModeEnum.lan)"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="mdi:wan" />
+      </div>
 
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" color="#2a2a2a6b" @click="settingModalShow = !settingModalShow">
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="majesticons-applications" />
-          </template>
-        </NButton>
+      <div
+        v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+        class="float-btn flex items-center justify-center"
+        @click="settingModalShow = !settingModalShow"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="majesticons-applications" />
+      </div>
 
-        <NButton v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC" color="#2a2a2a6b" :title="$t('panelHome.goToLogin')" @click="router.push('/login')">
-          <template #icon>
-            <SvgIcon class="text-white font-xl" icon="material-symbols:account-circle" />
-          </template>
-        </NButton>
-      </NButtonGroup>
-
+      <div
+        v-if="authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC"
+        class="float-btn flex items-center justify-center"
+        :title="$t('panelHome.goToLogin')"
+        @click="$router.push('/login')"
+      >
+        <SvgIcon class="text-white font-xl float-btn-icon" icon="material-symbols:account-circle" />
+      </div>
       <AppStarter v-model:visible="settingModalShow" />
       <!-- <Setting v-model:visible="settingModalShow" /> -->
     </div>
@@ -557,34 +455,6 @@ function handleAddItem(itemIconGroupId?: number) {
     </NBackTop>
 
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfoData" :item-group-id="currentAddItenIconGroupId" @done="handleEditSuccess" />
-
-    <!-- 弹窗 -->
-    <NModal
-      v-model:show="windowShow" :mask-closable="false" preset="card"
-      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
-      aria-modal="true"
-    >
-      <template #header>
-        <div class="flex items-center">
-          <span class="mr-[20px]">
-            {{ windowTitle }}
-          </span>
-
-          <NSpin v-if="windowIframeIsLoad" size="small" />
-        </div>
-      </template>
-      <div class="w-full h-full rounded-2xl overflow-hidden border dark:border-zinc-700">
-        <div v-if="windowIframeIsLoad" class="flex flex-col p-5">
-          <NSkeleton height="50px" width="100%" class="rounded-lg" />
-          <NSkeleton height="180px" width="100%" class="mt-[20px] rounded-lg" />
-          <NSkeleton height="180px" width="100%" class="mt-[20px] rounded-lg" />
-        </div>
-        <iframe
-          v-show="!windowIframeIsLoad" id="windowIframeId" ref="windowIframeRef" :src="windowSrc"
-          class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
-        />
-      </div>
-    </NModal>
   </div>
 </template>
 
@@ -629,10 +499,12 @@ html {
 
 .fixed-element {
   position: fixed;
+  /* left:10px; */
+  top:20px;
   /* 将元素固定在屏幕上 */
-  right: 10px;
+  right: 20px;
   /* 距离屏幕顶部的距离 */
-  bottom: 50px;
+  /* bottom: 50px; */
   /* 距离屏幕左侧的距离 */
 }
 
@@ -650,6 +522,24 @@ html {
   grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
   gap: 18px;
 
+}
+
+.float-btn {
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color  0.3s;
+}
+
+.float-btn:hover {
+  background-color: #a9a9a97a;
+  /* backdrop-filter:blur(10px) */
+}
+
+.float-btn-icon {
+  width: 21px;
+  height: 21px;
 }
 
 @media (max-width: 500px) {

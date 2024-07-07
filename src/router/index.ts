@@ -1,7 +1,9 @@
 import type { App } from 'vue'
+
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { setupPageGuard } from './permission'
+import { dockerRouter } from './docker'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -38,6 +40,14 @@ const routes: RouteRecordRaw[] = [
     path: '/test',
     name: 'test',
     component: () => import('@/views/exception/test/index.vue'),
+  },
+
+  dockerRouter,
+
+  {
+    path: '/test/demo',
+    name: 'test-demo',
+    component: () => import('@/views/exception/test/demo.vue'),
   },
 
   // adminRouter,

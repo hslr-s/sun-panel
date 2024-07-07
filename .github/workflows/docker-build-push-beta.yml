@@ -2,10 +2,9 @@ name: docker-push-beta
 
 on:
   workflow_dispatch:
-  # 暂时取消自动编译，优化后重新开启
-  # push:
-  #   tags:
-  #     - 'v*'
+  push:
+    tags:
+      - 'v*beta*'
 
 jobs:
   build:
@@ -34,6 +33,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .  # 这里在项目根目录找Dockerfile构建
-          platforms: linux/amd64,linux/arm,linux/arm64
+          platforms: linux/arm,linux/amd64,linux/arm64
           push: true 
-          tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.APP_VERSION }}
+          tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.APP_VERSION }}, ${{ vars.DOCKER_IMAGE_NAME }}:beta
