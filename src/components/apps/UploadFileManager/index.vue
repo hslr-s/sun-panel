@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NAlert, NButton, NButtonGroup, NCard, NEllipsis, NGrid, NGridItem, NImage, NImageGroup, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NAlert, NButton, NButtonGroup, NCard, NEllipsis, NImage, NImageGroup, NSpin, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { deletes, getList } from '@/api/system/file'
 import { set as savePanelConfig } from '@/api/panel/userConfig'
@@ -26,9 +26,10 @@ const infoModalState = ref<InfoModalState>({
 
 async function getFileList() {
   loading.value = true
-  const { data } = await getList<Common.ListResponse<File.Info[]>>()
+  const { data } = await getList<Common.ListResponse<File.Info[]>>().finally(() => {
+    loading.value = false
+  })
   imageList.value = data.list
-  loading.value = false
 }
 
 async function copyImageUrl(text: string) {
@@ -86,22 +87,29 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="p-2">
-    <NSpin v-show="loading" size="small" />
-    <NAlert type="info" :bordered="false">
-      {{ $t('apps.uploadsFileManager.alertText') }}
-    </NAlert>
-    <div class="flex justify-center mt-2">
-      <div v-if="imageList.length === 0 && !loading" class="flex">
-        {{ $t('apps.uploadsFileManager.nothingText') }}
+  <div class="h-full overflow-auto p-2">
+    <NCard style="border-radius:10px" size="small">
+      <NAlert type="info" :bordered="false">
+        {{ $t('apps.uploadsFileManager.alertText') }}
+      </NAlert>
+
+      <div v-if="loading" class="w-20 h-[100px] mt-10">
+        <NSpin description="loading" />
       </div>
-      <NImageGroup v-else>
-        <NGrid cols="2 300:2 600:4 900:6 1100:9" :x-gap="5" :y-gap="5">
-          <NGridItem v-for=" item, index in imageList" :key="index">
-            <NCard size="small" style="border-radius: 5px;" :bordered="true">
+
+      <div class="flex justify-center mt-2">
+        <div v-if="imageList.length === 0 && !loading" class="flex">
+          {{ $t('apps.uploadsFileManager.nothingText') }}
+        </div>
+        <NImageGroup v-else>
+          <div class="img-group">
+            <NCard
+              v-for=" item, index in imageList" :key="index"
+              size="small" style="border-radius: 5px;" :bordered="true" hoverable
+            >
               <template #cover>
-                <div class="card transparent-grid dark:brightness-75">
-                  <NImage :lazy="true" style="object-fit: contain;height: 100%;" :src="item.src" />
+                <div class="img-card transparent-grid dark:brightness-75">
+                  <NImage lazy style="object-fit: contain;height: 100%;" :src="item.src" />
                 </div>
               </template>
               <template #footer>
@@ -136,10 +144,10 @@ onMounted(() => {
                 </div>
               </template>
             </NCard>
-          </NGridItem>
-        </NGrid>
-      </NImageGroup>
-    </div>
+          </div>
+        </NImageGroup>
+      </div>
+    </NCard>
 
     <RoundCardModal v-model:show="infoModalState.show" style="max-width: 300px;" size="small" :title="$t('apps.uploadsFileManager.infoTitle')">
       <div>
@@ -175,10 +183,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.card {
+.img-card {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 80px;
+}
+
+.img-group {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 18px;
+
 }
 </style>
