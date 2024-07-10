@@ -15,7 +15,7 @@ function updateComponent() {
       .finally(() => {
         loading.value = false
       }).catch(() => {
-      // 组件不存在
+        // 组件不存在
         dynamicComponent.value = ''
         return null
       }),
@@ -34,11 +34,14 @@ onMounted(() => {
 <template>
   <div class="h-full">
     <NSpin :show="loading" style="height: 100%;" content-style="height: 100%;" :delay="500" description="loading...">
-      <component :is="dynamicComponent" v-if="dynamicComponent" />
+      <template v-if="dynamicComponent">
+        <div v-show="!loading" class="fade-in-animation h-full">
+          <component :is="dynamicComponent" />
+        </div>
+      </template>
+
       <!-- <component :is="getComponent(componentName || '')" v-if="dynamicComponent" /> -->
-      <div
-        v-else-if="!dynamicComponent"
-      >
+      <div v-else-if="!dynamicComponent">
         <!-- Component not found! -->
         <div class="mt-[10px]">
           {{ $t('apps.common.notFound') }}
@@ -47,3 +50,19 @@ onMounted(() => {
     </NSpin>
   </div>
 </template>
+
+<style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-animation {
+  animation: fadeIn 0.2s ease-in-out;
+}
+</style>

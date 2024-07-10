@@ -49,6 +49,12 @@ export const systemApps: SystemApp[] = [
     iconSrc: UploadFileManagerSvg,
   },
   {
+    name: 'Docker',
+    componentName: 'DockerManage',
+    icon: 'tabler-brand-docker',
+    auth: 1,
+  },
+  {
     name: t('apps.exportImport.appName'),
     componentName: 'ImportExport',
     icon: 'icon-park-outline:import-and-export',
@@ -60,6 +66,7 @@ export const systemApps: SystemApp[] = [
     icon: 'tabler:api',
     iconSrc: OpenAPISvg,
   },
+
   {
     name: t('apps.about.appName'),
     componentName: 'About',
@@ -71,18 +78,11 @@ export const systemApps: SystemApp[] = [
 // 管理账号的应用
 export const adminSystemApps: SystemApp[] = [
   {
-    name: 'Docker',
-    componentName: 'DockerManage',
-    icon: 'tabler-brand-docker',
-    auth: 1,
-  },
-  {
     name: t('adminSettingUsers.appName'),
     componentName: 'Users',
     icon: 'lucide:users',
     auth: 1,
     iconSrc: OpenAPISvg,
-
   },
   {
     name: t('proAuth.appName'),
