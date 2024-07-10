@@ -241,24 +241,22 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="">
-    <NSpace vertical :size="12">
-      <!-- 没有PRO授权仅能查看状态，不可以操作。 -->
-      <NAlert type="info" closable>
-        {{ t('apps.dockerManage.alertText') }}
-      </NAlert>
+  <NSpace vertical :size="12">
+    <!-- 没有PRO授权仅能查看状态，不可以操作。 -->
+    <NAlert type="info" closable>
+      {{ t('apps.dockerManage.alertText') }}
+    </NAlert>
 
-      <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable>
-        {{ dockerState.refreshContainerListErrorMsg }}
-      </NAlert>
+    <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable>
+      {{ dockerState.refreshContainerListErrorMsg }}
+    </NAlert>
 
-      <NDataTable
-        :bordered="false" size="small"
-        :data="dockerState.containerList"
-        :columns="columns"
-        :pagination="pagination"
-        :loading="loadingList"
-      />
-    </NSpace>
-  </div>
+    <NDataTable
+      :bordered="false" size="small"
+      :data="dockerState.containerList"
+      :columns="columns"
+      :pagination="pagination"
+      :loading="loadingList"
+    />
+  </NSpace>
 </template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { h, onMounted, reactive, ref } from 'vue'
-import { NAlert, NButton, NDataTable, NDropdown, NTag, useDialog, useMessage } from 'naive-ui'
+import { NAlert, NButton, NCard, NDataTable, NDropdown, NTag, useDialog, useMessage } from 'naive-ui'
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
 import EditUser from './EditUser/index.vue'
 import { getPublicVisitUser, setPublicVisitUser, deletes as usersDeletes, getList as usersGetList } from '@/api/panel/users'
@@ -232,28 +232,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="overflow-auto p-2">
-    <NAlert type="info" :bordered="false">
-      {{ $t('adminSettingUsers.alertText') }}
-    </NAlert>
-    <div class="my-[10px] flex items-center">
-      <NButton type="primary" size="small" @click="handleAdd">
-        {{ $t('common.add') }}
-      </NButton>
+  <div class="h-full overflow-auto p-2">
+    <NCard style="border-radius:10px" size="small">
+      <NAlert type="info" :bordered="false">
+        {{ $t('adminSettingUsers.alertText') }}
+      </NAlert>
+      <div class="my-[10px] flex items-center">
+        <NButton type="primary" size="small" @click="handleAdd">
+          {{ $t('common.add') }}
+        </NButton>
 
-      <ProTag class="mx-2" show-icon :content="t('adminSettingUsers.addUserNoProText')" />
-    </div>
+        <ProTag class="mx-2" show-icon :content="t('adminSettingUsers.addUserNoProText')" />
+      </div>
 
-    <NDataTable
-      :columns="columns"
-      :data="userList"
-      :pagination="pagination"
-      :bordered="false"
-      :loading="tableIsLoading"
-      :remote="true"
+      <NDataTable
+        :columns="columns"
+        :data="userList"
+        :pagination="pagination"
+        :bordered="false"
+        :loading="tableIsLoading"
+        :remote="true"
 
-      @update:page="handlePageChange"
-    />
+        @update:page="handlePageChange"
+      />
+    </NCard>
     <EditUser v-model:visible="editUserDialogShow" :user-info="editUserUserInfo" @done="handelDone" />
   </div>
 </template>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { NCard } from 'naive-ui'
 import { Container } from './components'
 import { useDockerStore } from './store/docker'
 // import Header from './layout/Header/index.vue'
@@ -30,8 +31,10 @@ const dockerStore = useDockerStore()
 </script>
 
 <template>
-  <div v-if="dockerStore.actionMenuBar === 'container'" class="p-[20px]">
-    <Container />
+  <div v-if="dockerStore.actionMenuBar === 'container'" class="h-full overflow-auto p-2">
+    <NCard style="border-radius:10px" size="small">
+      <Container />
+    </NCard>
   </div>
 </template>
 
