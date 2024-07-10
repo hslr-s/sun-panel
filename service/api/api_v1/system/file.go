@@ -141,7 +141,7 @@ func (a *FileApi) Deletes(c *gin.Context) {
 		return
 	}
 
-	global.Db.Transaction(func(tx *gorm.DB) error {
+	err := global.Db.Transaction(func(tx *gorm.DB) error {
 		files := []models.File{}
 
 		if err := tx.Order("created_at desc").Find(&files, "user_id=? AND id in ?", userInfo.ID, req.Ids).Error; err != nil {
@@ -149,7 +149,13 @@ func (a *FileApi) Deletes(c *gin.Context) {
 		}
 
 		for _, v := range files {
-			os.Remove(v.Src)
+			sourcePath := global.Config.GetValueString("base", "source_path")
+			path := strings.TrimRight(sourcePath, "/") + "/" + strings.TrimLeft(v.Src, "/")
+			err := os.Remove(path)
+			if err != nil {
+				global.Logger.Errorln("delete file ", path, ":", err)
+				return err
+			}
 		}
 
 		if err := tx.Order("created_at desc").Delete(&files, "user_id=? AND id in ?", userInfo.ID, req.Ids).Error; err != nil {
@@ -159,6 +165,10 @@ func (a *FileApi) Deletes(c *gin.Context) {
 		return nil
 	})
 
+	if err != nil {
+		apiReturn.Error(c, err.Error())
+		return
+	}
 	apiReturn.Success(c)
 
 }
