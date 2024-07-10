@@ -78,14 +78,12 @@ onMounted(() => {
   <NCard style="border-radius:10px" class="mt-[10px]" size="small">
     <NH3>
       {{ t("apps.globalSetting.customJSAndCss") }}
-      <ProTag />
+      <ProTag show-icon>
+        <div class="max-w-[400px]">
+          {{ t("apps.globalSetting.customJSAndCssAlert", { path: customPath }) }}
+        </div>
+      </ProTag>
     </NH3>
-
-    <NAlert type="info" :bordered="false" style="border-radius: 5px;margin-bottom: 5px;">
-      <span class="text-sm">
-        {{ t("apps.globalSetting.customJSAndCssAlert", { path: customPath }) }}
-      </span>
-    </NAlert>
 
     <NAlert type="error" :bordered="false" style="border-radius: 5px;">
       <template #icon>

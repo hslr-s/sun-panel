@@ -1,7 +1,8 @@
 {
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
-    "alertText": "Data between accounts are not interoperable. Non-PRO users can only create two at most. Those created in the old version will not be affected.",
+    "addUserNoProText": "Non-PRO licenses can only create up to two users.",
+    "alertText": "Data between accounts are not interoperable.",
     "appName": "Account management",
     "currentUseUsername": "Current username",
     "deletePromptContent": "Are you sure you want to delete {name} ({username})?",

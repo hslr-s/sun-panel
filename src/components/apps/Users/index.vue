@@ -236,11 +236,12 @@ onMounted(() => {
     <NAlert type="info" :bordered="false">
       {{ $t('adminSettingUsers.alertText') }}
     </NAlert>
-    <div class="my-[10px]">
+    <div class="my-[10px] flex items-center">
       <NButton type="primary" size="small" @click="handleAdd">
         {{ $t('common.add') }}
       </NButton>
-      <ProTag class="ml-2" />
+
+      <ProTag class="mx-2" show-icon :content="t('adminSettingUsers.addUserNoProText')" />
     </div>
 
     <NDataTable

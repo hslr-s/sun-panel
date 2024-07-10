@@ -9,7 +9,7 @@ interface ProIsExpired {
 
 export const useProAuthorizeStore = defineStore('proAuthorize', () => {
   const proIsExpired = ref(true)
-  const hideProBadge = ref(false)
+  const hideProBadge = ref(true)
   async function getIsExpired() {
     try {
       const { data } = await proIsExpiredApi<ProIsExpired>()
