@@ -6,6 +6,7 @@ import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { t } from '@/locales'
+import { ProTag } from '@/components/common'
 
 const loadingList = ref(false)
 let intervalId: any
@@ -172,7 +173,19 @@ const createColumns = ({
       },
     },
     {
-      title: t('apps.dockerManage.action'),
+      title() {
+        return [
+          h('span', t('apps.dockerManage.action')),
+          h('span', {
+            style: 'max-width:80px',
+          }, h(
+            ProTag,
+            {
+              style: 'margin-left:8px',
+            },
+          )),
+        ]
+      },
       key: 'action',
       render(row) {
         return h(
@@ -230,9 +243,15 @@ onUnmounted(() => {
 <template>
   <div class="">
     <NSpace vertical :size="12">
-      <NAlert type="info">
+      <!-- 没有PRO授权仅能查看状态，不可以操作。 -->
+      <NAlert type="info" closable>
         {{ t('apps.dockerManage.alertText') }}
       </NAlert>
+
+      <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable>
+        {{ dockerState.refreshContainerListErrorMsg }}
+      </NAlert>
+
       <NDataTable
         :bordered="false" size="small"
         :data="dockerState.containerList"

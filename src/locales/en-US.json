@@ -103,7 +103,7 @@
     },
     "dockerManage": {
       "action": "Action",
-      "alertText": "Currently, only Docker's container status viewing and opening and closing operations are implemented. More advanced functions (create, delete...) will be developed based on subsequent user needs. \nWithout PRO authorization, you can only view the status and cannot operate it.",
+      "alertText": "At present, only the operation and opening and closing of the container status of Docker's container is implemented. More advanced functions (creation, deletion ...) will decide whether to develop according to the needs of subsequent users.",
       "containerName": "Container name",
       "created": "Created",
       "dead": "Dead",

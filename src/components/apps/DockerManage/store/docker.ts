@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useMessage } from 'naive-ui'
 import { getContainersStats as getContainersStatsApi, getList } from '@/api/docker/container'
-import { t } from '@/locales'
 import { DockerContainerInfoState } from '@/enums/docker'
+import { t } from '@/locales'
 
 export const useDockerStore = defineStore('docker-store', () => {
   const containerList = ref<Docker.Container.Info[]>([])
@@ -13,7 +12,8 @@ export const useDockerStore = defineStore('docker-store', () => {
   const containerRuningIds = ref<string[]>([])
   const containerRuningStats = ref<{ [key: string]: Docker.Container.Stats }>({})
 
-  const ms = useMessage()
+  // const ms = useMessage()
+  const refreshContainerListErrorMsg = ref('')
 
   async function refreshContainerList() {
     containerRuningIds.value = []
@@ -27,15 +27,17 @@ export const useDockerStore = defineStore('docker-store', () => {
           containerRuningIds.value.push(element.id)
           // console.log(element.id)
       }
+      refreshContainerListErrorMsg.value = ''
       refreshContainerListStats()
     }).catch((res) => {
-      if (res.code === -1) {
-        ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
-          closable: true,
-          duration: 10000,
-          keepAliveOnHover: true,
-        })
-      }
+      refreshContainerListErrorMsg.value = `${t('apps.dockerManage.dockerError')}: ${res.msg}`
+      // if (res.code === -1) {
+      //   ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
+      //     closable: true,
+      //     duration: 10000,
+      //     keepAliveOnHover: true,
+      //   })
+      // }
     })
   }
 
@@ -60,5 +62,6 @@ export const useDockerStore = defineStore('docker-store', () => {
     refreshContainerListStats,
     containerList,
     isLoading,
+    refreshContainerListErrorMsg,
   }
 })
