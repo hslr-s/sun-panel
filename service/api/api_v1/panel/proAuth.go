@@ -72,3 +72,19 @@ func (p *ProAuthApi) Logout(c *gin.Context) {
 	biz.ProAuth.Reset()
 	apiReturn.Success(c)
 }
+
+// 设置隐藏的PRO徽章的状态
+func (p *ProAuthApi) SetHideProBadgeStatus(c *gin.Context) {
+	type Req struct {
+		Status bool
+	}
+
+	req := Req{}
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	biz.ProAuth.SetHideProBadgeStatus(req.Status)
+	apiReturn.Success(c)
+}

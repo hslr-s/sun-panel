@@ -13,5 +13,6 @@ type Openness struct {
 func (p *Openness) ProIsExpired(c *gin.Context) {
 	apiReturn.SuccessData(c, gin.H{
 		"isExpired": biz.ProAuth.ProIsExpired(),
+		"hideProBadge":biz.ProAuth.GetHideProBadgeStatus(),
 	})
 }

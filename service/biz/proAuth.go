@@ -415,6 +415,23 @@ func (p *ProAuthType) ProIsExpired() bool {
 	return p.ProAuthDataShortTerm.ProExpiration.Before(time.Now())
 }
 
+func (p *ProAuthType) GetHideProBadgeStatus() bool {
+	var status bool
+	err := global.SystemSetting.GetValueByInterface("hide_pro_badge", &status)
+	if err != nil {
+		return false
+	}
+
+	return status
+}
+
+func (p *ProAuthType) SetHideProBadgeStatus(stats bool) {
+	err := global.SystemSetting.Set("hide_pro_badge", stats)
+	if err != nil {
+		global.Logger.Errorln("SetHideProBadgeStatus", err)
+	}
+}
+
 func (p *ProAuthType) TempAuthIsExpired() bool {
 	global.Logger.Debug("检查是否过期 TempAuthIsExpired")
 	if p.ProIsExpired() {
