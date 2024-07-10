@@ -178,6 +178,7 @@
         "upgradePRO": "升级为PRO"
       },
       "goToSunPanelAuthSite": "注册/订阅 PRO",
+      "hideProBadgeText": "隐藏所有的 PRO 功能徽章以及说明",
       "login": "登录",
       "loginSunPanel": "登录Sun-Panel授权平台",
       "logout": "退出",

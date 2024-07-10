@@ -21,3 +21,10 @@ export function getStatus<T>() {
     url: '/panel/proAuth/getStatus',
   })
 }
+
+export function setHideProBadgeStatus<T>(status: boolean) {
+  return post<T>({
+    url: '/panel/proAuth/setHideProBadgeStatus',
+    data: { status },
+  })
+}

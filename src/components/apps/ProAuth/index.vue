@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import moment from 'moment'
 import { onMounted, ref } from 'vue'
-import { NAlert, NButton, NCard, NEllipsis, NForm, NFormItemRow, NInput, useMessage } from 'naive-ui'
-import { getStatus as getStatusApi, login as loginApi, logout as logoutApi } from '@/api/panel/proAuth'
+import { NAlert, NButton, NCard, NEllipsis, NForm, NFormItemRow, NInput, NSwitch, useMessage } from 'naive-ui'
+import { getStatus as getStatusApi, login as loginApi, logout as logoutApi, setHideProBadgeStatus as setHideProBadgeStatusApi } from '@/api/panel/proAuth'
 import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
@@ -39,6 +39,8 @@ const proAuthorizeStore = useProAuthorizeStore()
 const loginLoading = ref(false)
 const loginStatus = ref(false)
 const proExpiration = ref('')
+const hideProBadgeValue = ref(false)
+const hideProBadgeLoading = ref(false)
 const proCardParam = ref<ProCardParam>()
 const cardStyleSuccess = {
   backgroundColor: '#F0A020',
@@ -119,6 +121,14 @@ function openToLink(link: string) {
     window.open(links[link])
 }
 
+async function handleUpdateHideProBadgeStatus(status: boolean) {
+  // 必须未过期的状态才允许开启此功能
+  if (!proAuthorizeStore.isExpired)
+    await setHideProBadgeStatusApi(status)
+
+  proAuthorizeStore.refreshProAuthStatus()
+}
+
 function isExpired(expired: string) {
   const momentDate1 = moment()
   const momentDate2 = moment(expired)
@@ -194,18 +204,30 @@ onMounted(() => {
           </ProCard>
 
           <div class="mt-2 flex justify-center">
-            <NButton size="small" style="margin-right: 5px;" @click="openToLink('proAuthSiteFAQ')">
-              {{ t("apps.proAuth.FAQButton") }}
-            </NButton>
-
-            <NButton size="small" @click="openToLink('proAuthSite')">
+            <NButton size="small" style="margin-right: 5px;" @click="openToLink('proAuthSite')">
               {{ t("apps.proAuth.goToSunPanelAuthSite") }}
             </NButton>
+
+            <NButton size="small" @click="openToLink('proAuthSiteFAQ')">
+              {{ t("apps.proAuth.FAQButton") }}
+            </NButton>
+          </div>
+
+          <div class="mt-5 flex justify-center">
+            <span class="mx-2">
+              {{ t('apps.proAuth.hideProBadgeText') }}
+            </span>
+            <NSwitch
+              v-model:value="proAuthorizeStore.hideProBadge"
+              :disabled="proAuthorizeStore.isExpired"
+              :loading="hideProBadgeLoading"
+              @update:value="handleUpdateHideProBadgeStatus"
+            />
           </div>
         </div>
       </div>
 
-      <NAlert :bordered="false" :show-icon="false">
+      <NAlert v-if="!proAuthorizeStore.hideProBadge" :bordered="false" :show-icon="false">
         {{ t("apps.proAuth.textDescription") }}
       </NAlert>
 

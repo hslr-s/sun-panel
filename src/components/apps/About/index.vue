@@ -131,7 +131,7 @@ onMounted(() => {
     <NDivider style="margin:10px 0;padding: 0 10px">
       •
     </NDivider>
-    <div class="flex flex-col items-center justify-center text-base">
+    <div class="flex flex-col items-center justify-center text-[13px]">
       <div>
         {{ $t('apps.about.website') }}
         <a :href="getWebsiteUrl()" target="_blank" class="link"> Sun-Panel.Top </a>

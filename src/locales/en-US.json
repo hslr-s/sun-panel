@@ -178,6 +178,7 @@
         "upgradePRO": "Upgrade to PRO"
       },
       "goToSunPanelAuthSite": "Register/Subscribe PRO",
+      "hideProBadgeText": "Hide all PRO feature badges and descriptions",
       "login": "Log in",
       "loginSunPanel": "Log in to the Sun-Panel authorization platform",
       "logout": "logout",
