@@ -79,20 +79,14 @@ function handleItemClick() {
     return
   }
 
-  let jumpUrl = ''
-
-  if (props.itemInfo)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
-
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
+  const jumpUrl = getItemUrl()
 
   openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
 }
 
 // 右键
-function handleContextMenu(e: MouseEvent) {
-  e.preventDefault()
+function handleContextMenu(event: MouseEvent) {
+  event.preventDefault()
 
   if (props.sortStatus)
     return
@@ -101,9 +95,28 @@ function handleContextMenu(e: MouseEvent) {
   dropdownShow.value = false
   nextTick().then(() => {
     dropdownShow.value = true
-    dropdownMenuX.value = e.clientX
-    dropdownMenuY.value = e.clientY
+    dropdownMenuX.value = event.clientX
+    dropdownMenuY.value = event.clientY
   })
+}
+
+function handleMousedowClick(event: MouseEvent) {
+  event.preventDefault()
+  // 鼠标中键
+  if (event.button === 1)
+    window.open(getItemUrl())
+}
+
+// 获取项目地址，自动识别内外网
+function getItemUrl() {
+  let jumpUrl = ''
+  if (props.itemInfo)
+    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
+
+  if (props.itemInfo?.lanUrl === '')
+    jumpUrl = props.itemInfo.url
+
+  return jumpUrl
 }
 
 function handleRightMenuSelect(key: string | number) {
@@ -186,7 +199,7 @@ function onClickoutside() {
 </script>
 
 <template>
-  <div class="app-icon w-full" @click="handleItemClick" @contextmenu="(e) => handleContextMenu(e)">
+  <div class="app-icon w-full" @click="handleItemClick" @contextmenu="(e) => handleContextMenu(e)" @mousedown="handleMousedowClick">
     <StandardIcon
       :item-info="itemInfo"
       :card-type-style="cardStyle"
