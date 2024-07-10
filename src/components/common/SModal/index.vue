@@ -73,7 +73,7 @@ function getRandomInt(min: number, max: number): number {
       <slot name="cover" />
     </template>
 
-    <template #eader-extra>
+    <template #header-extra>
       <slot name="header-extra" />
     </template>
 

@@ -21,7 +21,8 @@ const screenWidth = ref(0)
 const isSmallScreen = ref(false)
 const defaultTitle = t('appLauncher.title')
 const title = ref('')
-const height = ref('500px')
+const height = ref('600px')
+const maxWidth = ref('1000px')
 
 const apps = ref(systemApps)
 
@@ -56,6 +57,11 @@ function handleResize() {
   }
 }
 
+// function handleMaxMinButton() {
+//   height.value = 'calc(100vh - 70px)'
+//   maxWidth.value = '100vw'
+// }
+
 onMounted(() => {
   const adminApps = adminSystemApps
   // 初始化
@@ -75,10 +81,16 @@ onUnmounted(() => {
   <div>
     <SModal
       v-model:show="show"
-      style="max-width: 900px;border-radius: 1rem;"
+      style="max-width: 1000px;border-radius: 1rem;"
+      :style="{ maxWidth }"
       size="small"
       move
     >
+      <!-- <template #header-extra>
+        <NButton size="small" @click="handleMaxMinButton">
+          最大化
+        </NButton>
+      </template> -->
       <template #header>
         <div class="flex items-center select-none">
           <div
