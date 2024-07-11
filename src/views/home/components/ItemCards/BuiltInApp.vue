@@ -126,7 +126,7 @@ function onClickoutside() {
       v-model:show="builtinAppModalShow"
       :title="item.title"
       preset="card"
-      style="max-width: 1000px;height: 600px; border-radius: 1rem;"
+      style="max-width: 1200px;height: 650px; border-radius: 1rem;"
       :bordered="true"
       content-style="height: calc(100% - 50px);display:flex;"
       size="small"

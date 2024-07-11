@@ -222,7 +222,7 @@ function onClickoutside() {
     <!-- 弹窗 -->
     <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
-      style="max-width: 1000px;height: 600px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
+      style="max-width: 1200px;height: 650px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
     >
       <template #header>
