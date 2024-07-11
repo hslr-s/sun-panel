@@ -1,3 +1,33 @@
+发布程序的流程说明：
+修改 `assets\version` 版本号。
+
+
+
+```sh
+# 提交代码，打标签
+git tag v1.3.2-beta24-02-02
+
+# 推送到 pro 远程库
+git push pro --tag
+
+# 编译
+# 有新标签docker版本会自动在 github action 编译
+
+
+
+# 二进制版本，需要将代码推到主库，并且在虚拟机中找到项目目录和编译的镜像，并拉取标签，启动容器并进去拉取代码
+
+# 虚拟机编译
+git pull --tag
+
+# 注意切换到分支要编译的分支
+chmod +x ./build && ./build -r
+
+# 编译成功后下载各种二进制文件上传到github
+
+```
+
+
 [[ 简体中文 ]](https://sun-panel-doc.enianteam.com/zh_cn/introduce/project.html) |
 [[ English ]](https://sun-panel-doc.enianteam.com/introduce/project.html)
 
