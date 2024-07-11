@@ -149,9 +149,23 @@ func (a *FileApi) Deletes(c *gin.Context) {
 		}
 
 		for _, v := range files {
-			sourcePath := global.Config.GetValueString("base", "source_path")
-			path := strings.TrimRight(sourcePath, "/") + "/" + strings.TrimLeft(v.Src, "/")
-			err := os.Remove(path)
+			// 兼容旧版
+			var err error
+			var path = ""
+			if len(v.Src) >= 0 && v.Src[0] == '.' {
+				path = v.Src
+			} else {
+				// 新版的储存方式
+				sourcePath := global.Config.GetValueString("base", "source_path")
+				path = strings.TrimRight(sourcePath, "/") + "/" + strings.TrimLeft(v.Src, "/")
+			}
+
+			// 判断文件是否存在
+			exists := false
+			if exists, err = cmn.PathExists(path); err == nil && exists {
+				err = os.Remove(path)
+			}
+
 			if err != nil {
 				global.Logger.Errorln("delete file ", path, ":", err)
 				return err
