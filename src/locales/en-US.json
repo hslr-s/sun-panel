@@ -322,6 +322,7 @@
     "builtinApp": "Built-in app",
     "cardBackground": "Card background color",
     "cardType": "Card type",
+    "containerFormTip": "After the container is updated, the container ID will become invalid and an exception reminder will appear. Just reselect the container.",
     "containerName": "Container",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",

@@ -11,7 +11,7 @@ import IconEditor from '../IconEditor.vue'
 import { verifyUrlHttp } from './common'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
-import { AppLoader, ProAuthOverlay, ProTag, RoundCardModal } from '@/components/common/'
+import { AppLoader, ProAuthOverlay, ProTag, RoundCardModal, STip } from '@/components/common/'
 import { getList as getContainerListApi } from '@/api/docker/container'
 import { getSiteFavicon } from '@/api/panel/itemIcon'
 import { DockerContainerInfoState } from '@/enums/docker'
@@ -166,8 +166,17 @@ function handleChange(value: string, appInfo: SystemApp) {
       <NGridItem span="2 500:1">
         <NFormItem
           path="expandParam.containerId"
-          :label="$t('iconItem.containerName')"
         >
+          <template #label>
+            <span class="flex items-center">
+              <span>
+                {{ $t('iconItem.containerName') }}
+              </span>
+              <STip class="ml-1">
+                {{ t("iconItem.containerFormTip") }}
+              </STip>
+            </span>
+          </template>
           <NSelect
             v-model:value="model.expandParam.containerId"
             :loading="containerListLoading"
