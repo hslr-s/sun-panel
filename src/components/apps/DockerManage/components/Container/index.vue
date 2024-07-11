@@ -73,6 +73,32 @@ const createColumns = ({
       },
     },
     {
+      title: t('apps.dockerManage.ports'),
+      key: 'name',
+      render(row) {
+        const group = (g: Docker.Container.Port) => {
+          return h(NTag,
+            {
+              size: 'tiny',
+              style: { margin: '0 2px' },
+              type: 'info',
+            },
+          `${g.publicPort}:${g.privatePort}`)
+        }
+
+        const c = []
+        for (const key in row.ports) {
+          if (Object.prototype.hasOwnProperty.call(row.ports, key)) {
+            const element = row.ports[key]
+            if (element.publicPort !== 0 && element.privatePort !== 0)
+              c.push(group(element))
+          }
+        }
+
+        return c
+      },
+    },
+    {
       title: t('apps.dockerManage.state'),
       key: 'state',
       render(row) {

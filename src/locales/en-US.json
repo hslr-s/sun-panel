@@ -110,6 +110,7 @@
       "dockerError": "Something went wrong with Docker",
       "exited": "Exited",
       "paused": "Paused",
+      "ports": "port",
       "removing": "Removing",
       "resourceOverview": "Resource overview",
       "restarting": "Restarting",
