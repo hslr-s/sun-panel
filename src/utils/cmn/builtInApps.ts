@@ -43,16 +43,16 @@ export const systemApps: SystemApp[] = [
     iconSrc: ItemGroupManageSvg,
   },
   {
-    name: t('apps.uploadsFileManager.appName'),
-    componentName: 'UploadFileManager',
-    icon: 'tabler:file-upload',
-    iconSrc: UploadFileManagerSvg,
-  },
-  {
     name: 'Docker',
     componentName: 'DockerManage',
     icon: 'tabler-brand-docker',
     auth: 1,
+  },
+  {
+    name: t('apps.uploadsFileManager.appName'),
+    componentName: 'UploadFileManager',
+    icon: 'tabler:file-upload',
+    iconSrc: UploadFileManagerSvg,
   },
   {
     name: t('apps.exportImport.appName'),
@@ -85,19 +85,18 @@ export const adminSystemApps: SystemApp[] = [
     iconSrc: OpenAPISvg,
   },
   {
-    name: t('proAuth.appName'),
-    componentName: 'ProAuth',
-    icon: 'tabler:award',
-    auth: 1,
-    iconSrc: ProAuthSvg,
-
-  },
-  {
     name: t('apps.globalSetting.appName'),
     componentName: 'GlobalSetting',
     icon: 'ic:outline-build-circle',
     auth: 1,
     iconSrc: OpenAPISvg,
 
+  },
+  {
+    name: t('proAuth.appName'),
+    componentName: 'ProAuth',
+    icon: 'tabler:award',
+    auth: 1,
+    iconSrc: ProAuthSvg,
   },
 ]
