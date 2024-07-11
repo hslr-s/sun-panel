@@ -178,6 +178,7 @@
         "notExpiredText": "{date} expires",
         "upgradePRO": "Upgrade to PRO"
       },
+      "funcDescription": "Function comparison",
       "goToSunPanelAuthSite": "Register/Subscribe PRO",
       "hideProBadgeText": "Hide all PRO feature badges and descriptions",
       "login": "Log in",
@@ -386,7 +387,7 @@
     "openWanUrl": "Open WAN URL"
   },
   "proAuth": {
-    "appName": "Pro authorization"
+    "appName": "PRO authorization"
   },
   "settingUserInfo": {
     "confirmLogoutText": "Are you sure you want to logout?",

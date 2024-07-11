@@ -6,7 +6,7 @@ import { getStatus as getStatusApi, login as loginApi, logout as logoutApi, setH
 import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
-import { useProAuthorizeStore } from '@/store'
+import { useAppStore, useProAuthorizeStore } from '@/store'
 
 interface ProCardParam {
   nickName?: string
@@ -20,12 +20,6 @@ interface LoginModalForm {
   password?: string
 }
 
-const links: { [key: string]: string } = {
-  proAuthSite: 'http://links.sun-panel.top/proAuthSite',
-  proAuthSiteRegister: 'http://links.sun-panel.top/proAuthSiteRegister',
-  proAuthSiteFAQ: 'http://links.sun-panel.top/proAuthSiteFAQ',
-}
-
 const loginModalShow = ref(false)
 const loginModalForm = ref<LoginModalForm>({
   username: '',
@@ -34,12 +28,12 @@ const loginModalForm = ref<LoginModalForm>({
 
 const ms = useMessage()
 const proAuthorizeStore = useProAuthorizeStore()
+const appStore = useAppStore()
 
 // const showGoToSiteButton = ref(false)
 const loginLoading = ref(false)
 const loginStatus = ref(false)
 const proExpiration = ref('')
-const hideProBadgeValue = ref(false)
 const hideProBadgeLoading = ref(false)
 const proCardParam = ref<ProCardParam>()
 const cardStyleSuccess = {
@@ -117,8 +111,14 @@ function handleSubmit() {
 }
 
 function openToLink(link: string) {
-  if (links[link])
-    window.open(links[link])
+  window.open('http://links.sun-panel.top' + `/${link}`)
+}
+
+function getLangeuageSimple() {
+  if (appStore.language === 'zh-CN')
+    return 'zh_cn'
+
+  return 'en'
 }
 
 async function handleUpdateHideProBadgeStatus(status: boolean) {
@@ -204,11 +204,15 @@ onMounted(() => {
           </ProCard>
 
           <div class="mt-2 flex justify-center">
-            <NButton size="small" style="margin-right: 5px;" @click="openToLink('proAuthSite')">
+            <NButton size="small" style="margin-right: 5px;" @click="openToLink(`proAuthSite_${getLangeuageSimple()}`)">
               {{ t("apps.proAuth.goToSunPanelAuthSite") }}
             </NButton>
 
-            <NButton size="small" @click="openToLink('proAuthSiteFAQ')">
+            <NButton size="small" style="margin-right: 5px;" @click="openToLink(`funcDescription_${getLangeuageSimple()}`)">
+              {{ t("apps.proAuth.funcDescription") }}
+            </NButton>
+
+            <NButton size="small" @click="openToLink(`proAuthSiteFAQ_${getLangeuageSimple()}`)">
               {{ t("apps.proAuth.FAQButton") }}
             </NButton>
           </div>
