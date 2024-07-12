@@ -101,10 +101,10 @@ function handleContextMenu(event: MouseEvent) {
 }
 
 function handleMousedowClick(event: MouseEvent) {
-  event.preventDefault()
-  // 鼠标中键
-  if (event.button === 1)
+  if (event.button === 1 && !props.sortStatus) {
+    event.preventDefault()
     window.open(getItemUrl())
+  }
 }
 
 // 获取项目地址，自动识别内外网
