@@ -2,11 +2,11 @@ name: docker-push
 
 on:
   workflow_dispatch:
-  push:
-    tags-ignore:
-      - '!*beta*'
-    tags:
-      - 'v*'
+  # push:
+  #   tags-ignore:
+  #     - '!*beta*'
+  #   tags:
+  #     - 'v*'
     
 
 jobs:
