@@ -82,6 +82,7 @@ const createColumns = ({
               size: 'tiny',
               style: { margin: '0 2px' },
               type: 'info',
+              title: `${g.type} ${g.ip}:${g.publicPort}`,
             },
           `${g.publicPort}:${g.privatePort}`)
         }
