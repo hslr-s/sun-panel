@@ -57,6 +57,10 @@ func InitRouters(addr string) error {
 			}
 			c.File(setting.FaviconUrl)
 		})
+
+		router.NoRoute(func(c *gin.Context) {
+			c.File(webPath + "/index.html")
+		})
 	}
 
 	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on http://", addr)
