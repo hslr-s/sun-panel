@@ -37,9 +37,9 @@ declare namespace Panel {
     interface ItemIconGroup extends Common.InfoBase {
         icon?: string
         title?: string
-        onlyName?:string
+        onlyName?: string
         sort?: number
-        publicVisitHide?:boolean
+        publicVisitHide?: boolean
     }
 
     interface ItemIcon {
@@ -54,6 +54,7 @@ declare namespace Panel {
         leftSiderCollapsed: boolean
         networkMode: PanelStateNetworkModeEnum | null
         panelConfig: panelConfig
+        itemGroupCardCacheData:ItemGroupCardCacheData[]
     }
 
     interface panelConfig {
@@ -70,10 +71,10 @@ declare namespace Panel {
         clockColor?: string
         searchBoxShow?: boolean
         searchBoxSearchIcon?: boolean
-        searchBoxBackground?:string
-        searchBoxBorderColor?:string
+        searchBoxBackground?: string
+        searchBoxBorderColor?: string
         // searchBoxPlaceholderColor?:string
-        searchBoxTextColor?:string
+        searchBoxTextColor?: string
         marginTop?: number
         marginBottom?: number
         maxWidth?: number
@@ -106,6 +107,12 @@ declare namespace Panel {
     interface ItemGroupInfo extends ItemIconGroup {
         cardStyle: ItemGroupInfoCardStyle
     }
+
+    interface ItemGroupCardCacheData extends ItemGroupInfo {
+        sortStatus?: boolean
+        hoverStatus: boolean
+        items?: Panel.ItemInfo[]
+    }
 }
 
 declare namespace Panel.ItemCardExpandParam {
@@ -131,7 +138,7 @@ declare namespace Panel.ItemCardExpandParam {
         containerId: string
         containerName: string
         openPageAndStart: bool
-        openPageAndStartDelaySecond:number // 启动容器后延时n秒打开页面
+        openPageAndStartDelaySecond: number // 启动容器后延时n秒打开页面
         cardType: string
         showBadgeStatus?: DockerContainerInfoState[]
     }

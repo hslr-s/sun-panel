@@ -41,6 +41,11 @@ export const usePanelState = defineStore('panel', {
       this.panelConfig = defaultStatePanelConfig()
     },
 
+    setItemGroupCacheData(data: Panel.ItemGroupCardCacheData[]) {
+      this.itemGroupCardCacheData = data
+      this.recordState()
+    },
+
     // async refreshSpaceNoteList(spaceId: string) {
     //   await getListBySpaceNoteId<Common.ListResponse<SNote.InfoTree[]>>(spaceId).then((res) => {
     //     this.notesList = res.data.list

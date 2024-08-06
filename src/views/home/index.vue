@@ -14,10 +14,8 @@ import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } f
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
 
-interface ItemGroup extends Panel.ItemGroupInfo {
-  sortStatus?: boolean
-  hoverStatus: boolean
-  items?: Panel.ItemInfo[]
+interface ItemGroup extends Panel.ItemGroupCardCacheData {
+
 }
 
 const ms = useMessage()
@@ -32,23 +30,34 @@ const editItemInfoData = ref<Panel.ItemInfo | null>(null)
 
 // const dropdownShow = ref(false)
 const currentAddItenIconGroupId = ref<number | undefined>()
-
 const settingModalShow = ref(false)
 
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
 function getList() {
+  filterItems.value = panelState.itemGroupCardCacheData
   // 获取组数据
   getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ code, data, msg }) => {
-    if (code === 0)
+    if (code === 0) {
       items.value = data.list
-    for (let i = 0; i < data.list.length; i++) {
-      const element = data.list[i]
-      if (element.id)
-        updateItemIconGroupByNet(i, element.id)
     }
-    filterItems.value = items.value
+    const getAllGroupList = async () => {
+      for (let i = 0; i < data.list.length; i++) {
+        const element = data.list[i]
+        // console.log('正在组', element.id)
+        if (element.id) {
+          await updateItemIconGroupByNet(i, element.id)
+        }
+      }
+    }
+
+    getAllGroupList().then(() => {
+      // console.log('全部完毕')
+      filterItems.value = items.value
+      panelState.setItemGroupCacheData(items.value)
+    })
+
     // console.log(items)
   }).catch((error) => {
     apiRespErrMsg(error)
@@ -56,8 +65,8 @@ function getList() {
 }
 
 // 从后端获取组下面的图标
-function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: number) {
-  getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
+async function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: number) {
+  await getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
     if (res.code === 0)
       items.value[itemIconGroupIndex].items = res.data.list
   }).catch((error) => {
