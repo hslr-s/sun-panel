@@ -70,6 +70,7 @@
       "configSaved": "配置已保存",
       "contentArea": "内容区域",
       "customFooter": "自定义页脚",
+      "customFooterAlert": "此功能需要您具备一些前端的知识(html、js、css)，并且这是一个危险的操作。请不要引用来源不明的代码，这样极有可能导致被攻击，隐私泄露，项目崩溃等。使用时尽量新建一个窗口查看预览效果。",
       "customImageAddress": "展开图片链接输入框",
       "detailIcon": "详情图标",
       "hideDescription": "隐藏描述信息",

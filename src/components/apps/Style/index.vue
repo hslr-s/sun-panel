@@ -441,9 +441,13 @@ function resetPanelConfig() {
           <span>
             {{ $t('apps.baseSettings.customFooter') }}
           </span>
-          <!-- <span class="mx-2">
-            <STip :content="t('apps.baseSettings.customFooterAlert')" class="text-base text-cyan-600" />
-          </span> -->
+          <span class="mx-2">
+            <STip class="text-base text-orange-500">
+              <div style="max-width: 400px">
+                {{ t('apps.baseSettings.customFooterAlert') }}
+              </div>
+            </STip>
+          </span>
         </div>
       </template>
 

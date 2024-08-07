@@ -70,6 +70,7 @@
       "configSaved": "Configuration saved",
       "contentArea": "Content area",
       "customFooter": "Custom footer",
+      "customFooterAlert": "This feature requires you to have some front-end knowledge (html, js, css), and it is a dangerous operation. \nPlease do not quote code from unknown sources, as this is very likely to lead to attacks, privacy leaks, project collapse, etc. \nWhen using it, try to create a new window to view the preview effect.",
       "customImageAddress": "Expand image link input box",
       "detailIcon": "Detail icon",
       "hideDescription": "Hide description information",
