@@ -69,7 +69,6 @@
       "configFailed": "配置保存失败,{message}",
       "configSaved": "配置已保存",
       "contentArea": "内容区域",
-      "customFooter": "自定义页脚",
       "customFooterAlert": "因为框架的安全限制，目前不支持执行 \"<script></script>\" 标签中的代码",
       "customImageAddress": "展开图片链接输入框",
       "detailIcon": "详情图标",

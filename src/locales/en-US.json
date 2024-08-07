@@ -69,7 +69,6 @@
       "configFailed": "Configuration save failed, {message}",
       "configSaved": "Configuration saved",
       "contentArea": "Content area",
-      "customFooter": "Custom footer",
       "customFooterAlert": "Due to framework security restrictions, executing code in the \"<script></script>\" tag is currently not supported.",
       "customImageAddress": "Expand image link input box",
       "detailIcon": "Detail icon",
