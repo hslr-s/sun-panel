@@ -1,7 +1,7 @@
 {
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "请输入新密码，留空密码不变",
-    "addUserNoProText": "非 PRO 授权最多只能创建两个用户",
+    "addUserNoProText": "非 PRO 授权最多只能创建两个账号",
     "alertText": "账号之间的数据不互通。",
     "appName": "账号管理",
     "currentUseUsername": "当前账号",
