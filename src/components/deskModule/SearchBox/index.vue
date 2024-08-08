@@ -64,6 +64,16 @@ function handleEngineUpdate(engine: DeskModule.SearchBox.SearchEngine) {
   searchSelectListShow.value = false
 }
 
+function handleOnKeyDownEnter(e: any) {
+  // 修复Mac safari浏览器中文输入法回车触发
+  if (e.keyCode === 229)
+    return
+  if (e.key === 'Enter' && !e.isComposing) {
+    console.log('按下', e)
+    handleSearchClick()
+  }
+}
+
 function handleSearchClick() {
   const url = state.value.currentSearchEngine.url
   const keyword = searchTerm
@@ -115,7 +125,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="search-box w-full" @keydown.enter="handleSearchClick" @keydown.esc="handleClearSearchTerm">
+  <div class="search-box w-full" @keydown.enter="handleOnKeyDownEnter" @keydown.esc="handleClearSearchTerm">
     <div
       class="search-container flex rounded-2xl items-center justify-center text-white w-full"
       :style="{ background, color: textColor, borderColor }"
