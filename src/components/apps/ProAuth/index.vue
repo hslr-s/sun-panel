@@ -3,7 +3,7 @@ import moment from 'moment'
 import { onMounted, ref } from 'vue'
 import {
   NAlert, NButton, NCard, NDivider, NEllipsis, NForm,
-  NFormItemRow, NInput, NSwitch, useDialog, useMessage,
+  NFormItem, NInput, NSwitch, useDialog, useMessage,
 } from 'naive-ui'
 import {
   getStatus as getStatusApi,
@@ -308,14 +308,14 @@ onMounted(() => {
           </div>
         </div>
 
-        <div @keydown.enter="handleSubmit">
+        <div class="mt-2" @keydown.enter="handleSubmit">
           <NForm>
-            <NFormItemRow>
+            <NFormItem :label="t('apps.proAuth.username')">
               <NInput v-model:value="loginModalForm.username" :placeholder="t('apps.proAuth.username')" />
-            </NFormItemRow>
-            <NFormItemRow>
+            </NFormItem>
+            <NFormItem :label="t('apps.proAuth.password')">
               <NInput v-model:value="loginModalForm.password" type="password" :placeholder="t('apps.proAuth.password')" />
-            </NFormItemRow>
+            </NFormItem>
           </NForm>
           <NButton type="primary" :loading="loginLoading" block secondary strong @click="handleSubmit">
             {{ t("apps.proAuth.login") }}
