@@ -8,9 +8,8 @@ import { SvgIcon } from '@/components/common'
 import { useModuleConfig } from '@/store/modules'
 import { useAuthStore } from '@/store'
 import { VisitMode } from '@/enums/auth'
-
-import { message } from '@/utils/request/apiMessage'
 import { t } from '@/locales'
+import { message } from '@/utils/request/apiMessage'
 
 withDefaults(defineProps<{
   background?: string
@@ -50,18 +49,23 @@ const onBlur = (): void => {
 
 function handleEngineClick() {
   // 访客模式不允许修改
-  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
-    message.warning(t('common.publicModeRestricted'))
-    return
-  }
+  // if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+  //   message.warning(t('common.publicModeRestricted'))
+  //   return
+  // }
 
   searchSelectListShow.value = !searchSelectListShow.value
 }
 
 function handleEngineUpdate(engine: DeskModule.SearchBox.SearchEngine) {
   state.value.currentSearchEngine = engine
-  moduleConfig.saveToCloud(moduleConfigName, state.value)
   searchSelectListShow.value = false
+
+  // 非登录模式不保存
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+    return
+  }
+  moduleConfig.saveToCloud(moduleConfigName, state.value)
 }
 
 function handleOnKeyDownEnter(e: any) {
@@ -69,7 +73,6 @@ function handleOnKeyDownEnter(e: any) {
   if (e.keyCode === 229)
     return
   if (e.key === 'Enter' && !e.isComposing) {
-    console.log('按下', e)
     handleSearchClick()
   }
 }
@@ -105,6 +108,10 @@ function handleClearSearchTerm() {
 }
 
 function handleOpenModalSetting() {
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+    message.warning(t('common.publicModeRestricted'))
+    return
+  }
   searchBoxSettingShow.value = !searchBoxSettingShow.value
 }
 
@@ -117,6 +124,13 @@ function getData() {
 
     selectEngineList.value = defaultSearchEngineList.concat(state.value.searchEngineList)
   })
+}
+
+function handleUpdateOpenMethod() {
+  if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
+    return
+  }
+  moduleConfig.saveToCloud(moduleConfigName, state.value)
 }
 
 onMounted(() => {
@@ -158,6 +172,8 @@ onMounted(() => {
           >
             <NAvatar :src="item.iconSrc" style="background-color: transparent;" :size="20" />
           </div>
+
+          <!-- 搜索引擎管理 -->
           <div
             class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl my-1"
             @click="handleOpenModalSetting"
@@ -170,7 +186,7 @@ onMounted(() => {
       </div>
 
       <div class="mt-[10px]">
-        <NCheckbox v-model:checked="state.newWindowOpen" @update-checked="moduleConfig.saveToCloud(moduleConfigName, state)">
+        <NCheckbox v-model:checked="state.newWindowOpen" @update-checked="handleUpdateOpenMethod">
           <span :style="{ color: textColor }">
             {{ $t('deskModule.searchBox.openWithNewOpen') }}
           </span>
