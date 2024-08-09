@@ -146,12 +146,9 @@ function runFooterJSCode() {
   const footerElements = document.querySelectorAll('.custom-footer')
   console.log('footerElements', footerElements)
   footerElements.forEach((footer) => {
-    console.log('找到了footer')
     const scriptElements = footer.querySelectorAll('script')
 
     scriptElements.forEach((script) => {
-      console.log('找到了Script标签')
-
       // 创建一个新的 script 标签
       const newScript = document.createElement('script')
 
@@ -264,7 +261,7 @@ function handleAddItem(itemIconGroupId?: number) {
       }"
     />
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
-    <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto" style="scroll-behavior: smooth;">
+    <div ref="scrollContainerRef" class="scroll-container absolute w-full h-full overflow-auto">
       <div
         class="p-2.5 mx-auto"
         :style="{
@@ -321,7 +318,7 @@ function handleAddItem(itemIconGroupId?: number) {
             v-for="(itemGroup, itemGroupIndex) in filterItems" :id="`item-group-${itemGroup.onlyName}`"
             :key="itemGroupIndex"
             class="item-list mt-[50px]"
-            :class="itemGroup.sortStatus ? (`shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl item-group-${itemGroup.onlyName}`) : `item-group-${itemGroup.onlyName}`"
+            :class="`item-group-${itemGroup.onlyName} item-group-index-${itemGroupIndex} ${itemGroup.sortStatus ? (`border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl `) : ''}`"
             @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
             @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
