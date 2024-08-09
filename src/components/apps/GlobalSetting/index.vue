@@ -181,7 +181,7 @@ onMounted(() => {
                 {{ t('apps.globalSetting.clearIcoImage') }}
               </NButton>
             </NButtonGroup>
-            <input id="fileIcoUpload" type="file" accept="image/*" style="display: none;" @change="handleFileIcoUploadChange">
+            <input id="fileIcoUpload" type="file" accept=".ico" style="display: none;" @change="handleFileIcoUploadChange">
           </div>
         </ProAuthOverlay>
       </div>
