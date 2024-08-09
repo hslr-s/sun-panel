@@ -62,7 +62,7 @@
       "website": "网站："
     },
     "baseSettings": {
-      "appName": "风格设置",
+      "appName": "个性化设置",
       "bottomMargin": "底部边距",
       "clock": "时钟组件",
       "clockSecondShow": "显示秒",

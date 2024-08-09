@@ -62,7 +62,7 @@
       "website": "Website:"
     },
     "baseSettings": {
-      "appName": "Style Settings",
+      "appName": "Personalization",
       "bottomMargin": "Bottom margin",
       "clock": "Clock component",
       "clockSecondShow": "Show seconds",
