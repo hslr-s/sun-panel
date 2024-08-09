@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { h, onMounted, onUnmounted, ref } from 'vue'
-import { NAlert, NDataTable, NSpace, NTag } from 'naive-ui'
+import { NAlert, NDataTable, NEllipsis, NSpace, NTag } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
@@ -63,18 +63,27 @@ const createColumns = ({
     {
       title: t('apps.dockerManage.containerName'),
       key: 'name',
+      width: 400,
       render(row) {
-        return h(
+        const rowInfo = h(
           RowName,
           {
             value: row,
           },
+        )
+        return h(
+          'div',
+          {
+            style: { minWidth: 200 },
+          },
+          rowInfo,
         )
       },
     },
     {
       title: t('apps.dockerManage.ports'),
       key: 'name',
+      width: 60,
       render(row) {
         const group = (g: Docker.Container.Port) => {
           return h(NTag,
@@ -82,21 +91,22 @@ const createColumns = ({
               size: 'tiny',
               style: { margin: '0 2px' },
               type: 'info',
-              title: `${g.type} ${g.ip}:${g.publicPort}`,
+              title: `(${g.type}) ${g.ip}:${g.publicPort} => ${g.privatePort}`,
             },
-          `${g.publicPort}:${g.privatePort}`)
+          `${g.type} ${g.ip}:${g.publicPort}`)
         }
 
         const c = []
         for (const key in row.ports) {
           if (Object.prototype.hasOwnProperty.call(row.ports, key)) {
             const element = row.ports[key]
-            if (element.publicPort !== 0 && element.privatePort !== 0)
+            if (element.publicPort !== 0 && element.privatePort !== 0) {
               c.push(group(element))
+            }
           }
         }
 
-        return c
+        return h(NEllipsis, { lineClamp: 2 }, c)
       },
     },
     {
@@ -163,6 +173,7 @@ const createColumns = ({
     {
       title: t('apps.dockerManage.resourceOverview'),
       key: 'resource',
+      width: 200,
       render(row) {
         const status = dockerState.containerRuningStats[row.id]
         let cpu = ''
