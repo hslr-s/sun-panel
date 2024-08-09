@@ -144,7 +144,6 @@ function handleSaveSort(itemGroup: ItemGroup) {
 function runFooterJSCode() {
   // 获取类名为 'footer' 的元素
   const footerElements = document.querySelectorAll('.custom-footer')
-  console.log('footerElements', footerElements)
   footerElements.forEach((footer) => {
     const scriptElements = footer.querySelectorAll('script')
 
@@ -156,7 +155,7 @@ function runFooterJSCode() {
         // 如果 script 标签有 src 属性
         newScript.src = script.src
         newScript.type = script.type
-        newScript.onload = () => console.log(`Loaded script: ${script.src}`)
+        // newScript.onload = () => console.log(`Loaded script: ${script.src}`)
         newScript.onerror = () => console.error(`Failed to load script: ${script.src}`)
       }
       else {
