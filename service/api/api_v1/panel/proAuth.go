@@ -67,6 +67,16 @@ func (p *ProAuthApi) GetStatus(c *gin.Context) {
 	apiReturn.SuccessData(c, resp)
 }
 
+// 刷新状态
+func (p *ProAuthApi) RefreshStatus(c *gin.Context) {
+	err := biz.ProAuth.AutoLogin()
+	if err != nil {
+		apiReturn.Error(c, err.Error())
+		return
+	}
+	apiReturn.Success(c)
+}
+
 // 退出账号
 func (p *ProAuthApi) Logout(c *gin.Context) {
 	biz.ProAuth.Reset()
