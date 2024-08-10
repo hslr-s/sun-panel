@@ -3,8 +3,11 @@ name: docker-push-beta
 on:
   workflow_dispatch:
   push:
+    tags-ignore:
+      - '!*beta*'
     tags:
       - 'v*beta*'
+    
 
 jobs:
   build:
