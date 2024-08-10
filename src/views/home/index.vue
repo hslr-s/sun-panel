@@ -14,10 +14,8 @@ import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } f
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
 
-interface ItemGroup extends Panel.ItemGroupInfo {
-  sortStatus?: boolean
-  hoverStatus: boolean
-  items?: Panel.ItemInfo[]
+interface ItemGroup extends Panel.ItemGroupCardCacheData {
+
 }
 
 const ms = useMessage()
@@ -32,23 +30,34 @@ const editItemInfoData = ref<Panel.ItemInfo | null>(null)
 
 // const dropdownShow = ref(false)
 const currentAddItenIconGroupId = ref<number | undefined>()
-
 const settingModalShow = ref(false)
 
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
 function getList() {
+  filterItems.value = panelState.itemGroupCardCacheData
   // 获取组数据
   getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ code, data, msg }) => {
-    if (code === 0)
+    if (code === 0) {
       items.value = data.list
-    for (let i = 0; i < data.list.length; i++) {
-      const element = data.list[i]
-      if (element.id)
-        updateItemIconGroupByNet(i, element.id)
     }
-    filterItems.value = items.value
+    const getAllGroupList = async () => {
+      for (let i = 0; i < data.list.length; i++) {
+        const element = data.list[i]
+        // console.log('正在组', element.id)
+        if (element.id) {
+          await updateItemIconGroupByNet(i, element.id)
+        }
+      }
+    }
+
+    getAllGroupList().then(() => {
+      // console.log('全部完毕')
+      filterItems.value = items.value
+      panelState.setItemGroupCacheData(items.value)
+    })
+
     // console.log(items)
   }).catch((error) => {
     apiRespErrMsg(error)
@@ -56,8 +65,8 @@ function getList() {
 }
 
 // 从后端获取组下面的图标
-function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: number) {
-  getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
+async function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: number) {
+  await getListByGroupId<Common.ListResponse<Panel.ItemInfo[]>>(itemIconGroupId).then((res) => {
     if (res.code === 0)
       items.value[itemIconGroupIndex].items = res.data.list
   }).catch((error) => {
@@ -132,17 +141,56 @@ function handleSaveSort(itemGroup: ItemGroup) {
   }
 }
 
-onMounted(() => {
-  // 更新用户信息
-  updateLocalUserInfo()
-  getList()
+function runFooterJSCode() {
+  // 获取类名为 'footer' 的元素
+  const footerElements = document.querySelectorAll('.custom-footer')
+  footerElements.forEach((footer) => {
+    const scriptElements = footer.querySelectorAll('script')
 
-  // 更新同步云端配置
-  panelState.updatePanelConfigByCloud()
+    scriptElements.forEach((script) => {
+      // 创建一个新的 script 标签
+      const newScript = document.createElement('script')
+
+      if (script.src) {
+        // 如果 script 标签有 src 属性
+        newScript.src = script.src
+        newScript.type = script.type
+        // newScript.onload = () => console.log(`Loaded script: ${script.src}`)
+        newScript.onerror = () => console.error(`Failed to load script: ${script.src}`)
+      }
+      else {
+        // 如果 script 标签是内联脚本
+        newScript.textContent = script.textContent
+      }
+
+      // 将新的 script 标签添加到文档中
+      document.body.appendChild(newScript)
+
+      // 如果不需要保留原有的 script 标签，可以移除它
+      if (script.parentNode) {
+        script.parentNode.removeChild(script)
+      }
+    })
+  })
+}
+
+onMounted(async () => {
+  // 更新用户信息
+  await updateLocalUserInfo()
+  getList()
 
   // 设置标题
   if (panelState.panelConfig.logoText)
     setTitle(panelState.panelConfig.logoText)
+
+  // 更新同步云端配置
+  await panelState.updatePanelConfigByCloud()
+
+  // 设置标题
+  if (panelState.panelConfig.logoText)
+    setTitle(panelState.panelConfig.logoText)
+
+  runFooterJSCode()
 })
 
 // 前端搜索过滤
@@ -212,7 +260,7 @@ function handleAddItem(itemIconGroupId?: number) {
       }"
     />
     <div class="mask" :style="{ backgroundColor: `rgba(0,0,0,${panelState.panelConfig.backgroundMaskNumber})` }" />
-    <div ref="scrollContainerRef" class="absolute w-full h-full overflow-auto">
+    <div ref="scrollContainerRef" class="scroll-container absolute w-full h-full overflow-auto">
       <div
         class="p-2.5 mx-auto"
         :style="{
@@ -250,7 +298,7 @@ function handleAddItem(itemIconGroupId?: number) {
         </div>
 
         <!-- 应用盒子 -->
-        <div :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
+        <div id="item-card-box" :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
           <!-- 系统监控状态 -->
           <div
             v-if="panelState.panelConfig.systemMonitorShow
@@ -266,9 +314,10 @@ function handleAddItem(itemIconGroupId?: number) {
 
           <!-- 组纵向排列 -->
           <div
-            v-for="(itemGroup, itemGroupIndex) in filterItems" :key="itemGroupIndex"
+            v-for="(itemGroup, itemGroupIndex) in filterItems" :id="`item-group-${itemGroup.onlyName}`"
+            :key="itemGroupIndex"
             class="item-list mt-[50px]"
-            :class="itemGroup.sortStatus ? (`shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl item-group-${itemGroup.onlyName}`) : `item-group-${itemGroup.onlyName}`"
+            :class="`item-group-${itemGroup.onlyName} item-group-index-${itemGroupIndex} ${itemGroup.sortStatus ? (`border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl `) : ''}`"
             @mouseenter="handleSetHoverStatus(itemGroupIndex, true)"
             @mouseleave="handleSetHoverStatus(itemGroupIndex, false)"
           >
@@ -393,7 +442,7 @@ function handleAddItem(itemIconGroupId?: number) {
             </div>
           </div>
         </div>
-        <div class="mt-5 footer" v-html="panelState.panelConfig.footerHtml" />
+        <div class="mt-5 footer custom-footer" v-html="panelState.panelConfig.footerHtml" />
       </div>
     </div>
 

@@ -22,6 +22,12 @@ export function getStatus<T>() {
   })
 }
 
+export function refreshStatus<T>() {
+  return post<T>({
+    url: '/panel/proAuth/refreshStatus',
+  })
+}
+
 export function setHideProBadgeStatus<T>(status: boolean) {
   return post<T>({
     url: '/panel/proAuth/setHideProBadgeStatus',

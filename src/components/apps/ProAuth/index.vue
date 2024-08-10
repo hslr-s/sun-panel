@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import moment from 'moment'
 import { onMounted, ref } from 'vue'
-import { NAlert, NButton, NCard, NEllipsis, NForm, NFormItemRow, NInput, NSwitch, useMessage } from 'naive-ui'
-import { getStatus as getStatusApi, login as loginApi, logout as logoutApi, setHideProBadgeStatus as setHideProBadgeStatusApi } from '@/api/panel/proAuth'
+import {
+  NAlert, NButton, NCard, NDivider, NEllipsis, NForm,
+  NFormItem, NInput, NSwitch, useDialog, useMessage,
+} from 'naive-ui'
+import {
+  getStatus as getStatusApi,
+  login as loginApi, logout as logoutApi,
+  refreshStatus as refreshStatusApi,
+  setHideProBadgeStatus as setHideProBadgeStatusApi,
+} from '@/api/panel/proAuth'
 import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
@@ -27,6 +35,7 @@ const loginModalForm = ref<LoginModalForm>({
 })
 
 const ms = useMessage()
+const dialog = useDialog()
 const proAuthorizeStore = useProAuthorizeStore()
 const appStore = useAppStore()
 
@@ -36,6 +45,7 @@ const loginStatus = ref(false)
 const proExpiration = ref('')
 const hideProBadgeLoading = ref(false)
 const proCardParam = ref<ProCardParam>()
+const refreshLoading = ref(false)
 const cardStyleSuccess = {
   backgroundColor: '#F0A020',
   color: 'white',
@@ -85,16 +95,41 @@ async function login(username: string, password: string) {
   loginLoading.value = false
 }
 
-async function logout() {
-  try {
-    await logoutApi()
+async function refreshStatus(username: string, password: string) {
+  refreshLoading.value = true
+
+  await refreshStatusApi().then(() => {
     getStatus()
-    loginModalShow.value = false
-    proAuthorizeStore.refreshProAuthStatus()
-  }
-  catch (error) {
+  }).catch((error) => {
     apiRespErrMsg(error)
-  }
+  })
+  proAuthorizeStore.refreshProAuthStatus()
+  refreshLoading.value = false
+}
+
+function logout() {
+  dialog.warning({
+    title: t('common.warning'),
+    content: t('apps.proAuth.logoutConfirm'),
+    positiveText: t('common.confirm'),
+    negativeText: t('common.cancel'),
+    onPositiveClick: () => {
+      const a = async () => {
+        try {
+          await logoutApi()
+          getStatus()
+          loginModalShow.value = false
+          proAuthorizeStore.refreshProAuthStatus()
+        }
+        catch (error) {
+          apiRespErrMsg(error)
+        }
+      }
+
+      a()
+    },
+
+  })
 }
 
 function handleLogin() {
@@ -203,21 +238,16 @@ onMounted(() => {
             </template>
           </ProCard>
 
-          <div class="mt-2 flex justify-center">
-            <NButton size="small" style="margin-right: 5px;" @click="openToLink(`proAuthSite_${getLangeuageSimple()}`)">
-              {{ t("apps.proAuth.goToSunPanelAuthSite") }}
-            </NButton>
-
-            <NButton size="small" style="margin-right: 5px;" @click="openToLink(`funcDescription_${getLangeuageSimple()}`)">
-              {{ t("apps.proAuth.funcDescription") }}
-            </NButton>
-
-            <NButton size="small" @click="openToLink(`proAuthSiteFAQ_${getLangeuageSimple()}`)">
-              {{ t("apps.proAuth.FAQButton") }}
+          <div v-if="loginStatus" class="my-2 flex justify-center">
+            <NButton size="tiny" style="margin-right: 5px;" :loading="refreshLoading" @click="refreshStatus">
+              <template #icon>
+                <SvgIconOnline icon="ic:baseline-refresh" />
+              </template>
+              {{ t("apps.proAuth.refreshAuth") }}
             </NButton>
           </div>
 
-          <div class="mt-5 flex justify-center">
+          <div class="mt-2 flex justify-center">
             <span class="mx-2">
               {{ t('apps.proAuth.hideProBadgeText') }}
             </span>
@@ -229,6 +259,22 @@ onMounted(() => {
             />
           </div>
         </div>
+      </div>
+
+      <NDivider class="!my-2" />
+
+      <div class="my-2 text-center">
+        <NButton size="small" style="margin: 2px;" @click="openToLink(`proAuthSite_${getLangeuageSimple()}`)">
+          {{ t("apps.proAuth.goToSunPanelAuthSite") }}
+        </NButton>
+
+        <NButton size="small" style="margin: 2px;" @click="openToLink(`funcDescription_${getLangeuageSimple()}`)">
+          {{ t("apps.proAuth.funcDescription") }}
+        </NButton>
+
+        <NButton size="small" style="margin: 2px;" @click="openToLink(`proAuthSiteFAQ_${getLangeuageSimple()}`)">
+          {{ t("apps.proAuth.FAQButton") }}
+        </NButton>
       </div>
 
       <NAlert v-if="!proAuthorizeStore.hideProBadge" :bordered="false" :show-icon="false">
@@ -262,14 +308,14 @@ onMounted(() => {
           </div>
         </div>
 
-        <div @keydown.enter="handleSubmit">
+        <div class="mt-2" @keydown.enter="handleSubmit">
           <NForm>
-            <NFormItemRow>
+            <NFormItem :label="t('apps.proAuth.username')">
               <NInput v-model:value="loginModalForm.username" :placeholder="t('apps.proAuth.username')" />
-            </NFormItemRow>
-            <NFormItemRow>
+            </NFormItem>
+            <NFormItem :label="t('apps.proAuth.password')">
               <NInput v-model:value="loginModalForm.password" type="password" :placeholder="t('apps.proAuth.password')" />
-            </NFormItemRow>
+            </NFormItem>
           </NForm>
           <NButton type="primary" :loading="loginLoading" block secondary strong @click="handleSubmit">
             {{ t("apps.proAuth.login") }}

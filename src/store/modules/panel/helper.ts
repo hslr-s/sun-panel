@@ -42,6 +42,7 @@ export function defaultState(): Panel.State {
     leftSiderCollapsed: false,
     networkMode: PanelStateNetworkModeEnum.wan,
     panelConfig: { ...defaultStatePanelConfig() },
+    itemGroupCardCacheData: [],
   }
 }
 

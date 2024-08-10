@@ -15,6 +15,7 @@ func InitProAuthRouter(router *gin.RouterGroup) {
 		r.POST("/panel/proAuth/login", api.Login)
 		r.POST("/panel/proAuth/getStatus", api.GetStatus)
 		r.POST("/panel/proAuth/logout", api.Logout)
+		r.POST("/panel/proAuth/refreshStatus", api.RefreshStatus)
 		r.POST("/panel/proAuth/setHideProBadgeStatus", api.SetHideProBadgeStatus)
 	}
 
