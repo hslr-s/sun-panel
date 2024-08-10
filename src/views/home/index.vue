@@ -298,7 +298,7 @@ function handleAddItem(itemIconGroupId?: number) {
         </div>
 
         <!-- 应用盒子 -->
-        <div :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
+        <div id="item-card-box" :style="{ marginLeft: `${panelState.panelConfig.marginX}px`, marginRight: `${panelState.panelConfig.marginX}px` }">
           <!-- 系统监控状态 -->
           <div
             v-if="panelState.panelConfig.systemMonitorShow
