@@ -228,6 +228,7 @@
     "cancel": "取消",
     "confirm": "确定",
     "continue": "继续",
+    "current": "当前",
     "delete": "删除",
     "deleteConfirm": "你确定要删除吗？",
     "deleteConfirmByName": "你确定要删除{name}吗？",
@@ -285,6 +286,10 @@
     "yes": "是"
   },
   "deskModule": {
+    "accountSwitcher": {
+      "accountSwitch": "账号切换",
+      "failed": "失效"
+    },
     "clock": {
       "fri": "星期五",
       "mon": "星期一",

@@ -3,7 +3,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { NBackTop, NButton, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { AppStarter, EditItem, ItemCards } from './components'
-import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
+import { AccountSwitcher, Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
 import { SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
@@ -468,6 +468,21 @@ function handleAddItem(itemIconGroupId?: number) {
         <SvgIcon class="text-white font-xl float-btn-icon" icon="mdi:wan" />
       </div>
 
+      <!-- 账号管理器切换 -->
+      <template
+        v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+      >
+        <AccountSwitcher>
+          <div
+            v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+            class="float-btn flex items-center justify-center"
+          >
+            <SvgIcon class="text-white font-xl float-btn-icon" icon="ph--user-switch-bold" />
+          </div>
+        </AccountSwitcher>
+      </template>
+
+      <!-- 应用启动器 -->
       <div
         v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
         class="float-btn flex items-center justify-center"

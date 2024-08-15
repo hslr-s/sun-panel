@@ -228,6 +228,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "continue": "Continue",
+    "current": "Current",
     "delete": "Delete",
     "deleteConfirm": "Are you sure you want to delete?",
     "deleteConfirmByName": "Are you sure you want to delete {name}?",
@@ -285,6 +286,10 @@
     "yes": "Yes"
   },
   "deskModule": {
+    "accountSwitcher": {
+      "accountSwitch": "Account switch",
+      "failed": "Invalid"
+    },
     "clock": {
       "fri": "Friday",
       "mon": "Monday",
