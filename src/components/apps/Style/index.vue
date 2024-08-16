@@ -286,19 +286,6 @@ function resetPanelConfig() {
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <template #header>
         <div class="text-slate-500 font-bold">
-          {{ $t('apps.baseSettings.accountSwitcher') }}
-        </div>
-      </template>
-
-      <div class="flex items-center mt-[5px]">
-        <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.accountSwitcherShow" />
-      </div>
-    </NCard>
-
-    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
-      <template #header>
-        <div class="text-slate-500 font-bold">
           {{ $t('apps.baseSettings.netModeChangeButtonShow') }}
         </div>
       </template>

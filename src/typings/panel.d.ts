@@ -86,7 +86,6 @@ declare namespace Panel {
         systemMonitorPublicVisitModeShow?: boolean
         netModeChangeButtonShow?: boolean
         netModeChangeAuto?: boolean
-        accountSwitcherShow?:boolean
     }
 
     interface userConfig {

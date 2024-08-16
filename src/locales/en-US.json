@@ -1,4 +1,7 @@
 {
+  "accountSwitcher": {
+    "logoutAllAccount": "Log out of all accounts"
+  },
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
     "addUserNoProText": "Non-PRO authorization can only create up to two accounts.",
@@ -213,6 +216,8 @@
     },
     "userInfo": {
       "appName": "My Information",
+      "currentAccount": "Current account",
+      "settingSaveLocal": "This function is only saved locally",
       "theme": "Theme",
       "themeStyle": {
         "auto": "Follow the system ",
@@ -275,6 +280,7 @@
     "saveSort": "Save sort",
     "saveSuccess": "Saved successfully",
     "serverError": "Server error",
+    "setting": "Setting",
     "show": "Show",
     "sort": "Sort",
     "style": "Style",
@@ -293,7 +299,7 @@
     "accountSwitcher": {
       "accountExist": "The account already exists, please try to add another account",
       "accountSwitch": "Account switch",
-      "addAccount": "Log in to other accounts",
+      "addAccount": "Add another account",
       "failed": "Invalid",
       "loggedInAccount": "Already logged in account",
       "logoutAllConfirmText": "Are you sure you want to safely log out of all accounts?",

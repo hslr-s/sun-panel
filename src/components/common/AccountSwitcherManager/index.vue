@@ -208,23 +208,26 @@ onMounted(() => {
       </NFlex>
     </div>
 
-    <NFlex v-if="!isPopup" justify="end" align="center">
+    <NDivider v-if="!isPopup" style="margin: 10px 0;" />
+    <NFlex v-if="!isPopup" justify="end" align="center" class="mt-5">
       <!-- <NButton size="tiny" type="info" @click="loginModalShow = true">
         <template #icon>
           <SvgIcon icon="tabler--refresh" />
         </template>
       </NButton> -->
 
-      <NButton size="tiny" type="info" @click="loginModalShow = true">
+      <NButton size="small" type="info" @click="loginModalShow = true">
         <template #icon>
           <SvgIcon icon="lets-icons--user-add" />
         </template>
+        {{ t('deskModule.accountSwitcher.addAccount') }}
       </NButton>
 
-      <NButton size="tiny" type="error" @click="handleLogoutAll">
+      <NButton size="small" type="error" @click="handleLogoutAll">
         <template #icon>
           <SvgIcon icon="tabler-logout" />
         </template>
+        {{ t('accountSwitcher.logoutAllAccount') }}
       </NButton>
     </NFlex>
 

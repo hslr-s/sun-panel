@@ -7,9 +7,9 @@ import { useTheme } from '@/hooks/useTheme'
 export const useAppStore = defineStore('app-store', {
   state: (): AppState => getLocalSetting(),
   actions: {
-    setSiderCollapsed(collapsed: boolean) {
-      this.recordState()
-    },
+    // setSiderCollapsed(collapsed: boolean) {
+    //   this.recordState()
+    // },
 
     setTheme(theme: Theme) {
       this.theme = theme

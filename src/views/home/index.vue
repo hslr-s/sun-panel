@@ -9,7 +9,7 @@ import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
 
-import { useAuthStore, usePanelState } from '@/store'
+import { useAccountManagerStore, useAuthStore, usePanelState } from '@/store'
 import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
@@ -22,6 +22,7 @@ const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
 const authStore = useAuthStore()
+const accountManagerStore = useAccountManagerStore()
 
 const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
@@ -470,7 +471,7 @@ function handleAddItem(itemIconGroupId?: number) {
 
       <!-- 账号管理器切换 -->
       <template
-        v-if="panelState.panelConfig.accountSwitcherShow && authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+        v-if="accountManagerStore.accounts.length > 1 && authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
       >
         <AccountSwitcher>
           <div

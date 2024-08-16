@@ -33,7 +33,6 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     systemMonitorPublicVisitModeShow: false,
     netModeChangeButtonShow: true,
     netModeChangeAuto: false,
-    accountSwitcherShow: false,
 
   }
 }

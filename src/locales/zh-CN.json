@@ -1,4 +1,7 @@
 {
+  "accountSwitcher": {
+    "logoutAllAccount": "退出全部账号"
+  },
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "请输入新密码，留空密码不变",
     "addUserNoProText": "非 PRO 授权最多只能创建两个账号",
@@ -213,6 +216,8 @@
     },
     "userInfo": {
       "appName": "我的信息",
+      "currentAccount": "当前账号",
+      "settingSaveLocal": "此功能仅保存在本地",
       "theme": "主题",
       "themeStyle": {
         "auto": "跟随系统 ",
@@ -275,6 +280,7 @@
     "saveSort": "保存排序",
     "saveSuccess": "保存成功",
     "serverError": "服务器错误",
+    "setting": "设置",
     "show": "显示",
     "sort": "排序",
     "style": "风格",
@@ -293,7 +299,7 @@
     "accountSwitcher": {
       "accountExist": "账号已存在，请尝试添加其他账号",
       "accountSwitch": "账号切换",
-      "addAccount": "登录其他账号",
+      "addAccount": "添加其他账号",
       "failed": "失效",
       "loggedInAccount": "已登录账号",
       "logoutAllConfirmText": "您确定要安全退出全部账号吗？",
