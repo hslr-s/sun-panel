@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import type { AccountInfo, AccountManagerStore } from './helper'
 import { defaultStore, setLocalSetting } from './helper'
 import { getInfo } from '@/api/system/user'
+import { logout } from '@/api'
 
 export const useAccountManagerStore = defineStore('account-manager-store', {
   state: (): AccountManagerStore => defaultStore(),
@@ -10,8 +11,13 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     // 添加账号，已存在并且登录状态为失效状态 则先删除记录，再添加新的记录
     addAccount(account: AccountInfo) {
       const info = this.getAccountInfo(account.username)
-      if (info && !info.loginStatus) {
-        this.deleteAccount(account)
+      if (info) {
+        if (info.loginStatus) {
+          this.logoutAndDeleteAccount(info) // 安全退出之前登录的账号
+        }
+        else {
+          this.deleteAccount(info)
+        }
       }
       this.accounts.push(account)
       this.recordState()
@@ -24,9 +30,13 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
 
     // 删除账号
     deleteAccount(account: AccountInfo) {
-      const index = this.accounts.findIndex(item => item.username === account.username || item.cToken === account.cToken)
-      if (index !== -1)
-        this.accounts.splice(index, 1)
+      for (let i = 0; i < this.accounts.length; i++) {
+        const element = this.accounts[i]
+        if (element.username === account.username || element.cToken === account.cToken) {
+          this.accounts.splice(i, 1)
+          this.recordState()
+        }
+      }
       this.recordState()
     },
 
@@ -51,6 +61,13 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
         }
       }
 
+      this.recordState()
+    },
+
+    async logoutAndDeleteAccount(account: AccountInfo) {
+      await logout(account.cToken).then(() => {
+        this.deleteAccount(account)
+      })
       this.recordState()
     },
 
