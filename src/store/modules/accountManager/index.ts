@@ -7,9 +7,10 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
   state: (): AccountManagerStore => defaultStore(),
   actions: {
 
-    // 添加账号，已存在则先删除再添加新的记录
+    // 添加账号，已存在并且登录状态为失效状态 则先删除记录，再添加新的记录
     addAccount(account: AccountInfo) {
-      if (this.isExistAccount(account.username)) {
+      const info = this.getAccountInfo(account.username)
+      if (info && !info.loginStatus) {
         this.deleteAccount(account)
       }
       this.accounts.push(account)
@@ -27,6 +28,13 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
       if (index !== -1)
         this.accounts.splice(index, 1)
       this.recordState()
+    },
+
+    getAccountInfo(username: string) {
+      const index = this.accounts.findIndex(item => item.username === username)
+      if (index !== -1)
+        return this.accounts[index]
+      return null
     },
 
     // 登录检测
