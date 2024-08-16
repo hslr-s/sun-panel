@@ -470,11 +470,10 @@ function handleAddItem(itemIconGroupId?: number) {
 
       <!-- 账号管理器切换 -->
       <template
-        v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+        v-if="panelState.panelConfig.accountSwitcherShow"
       >
         <AccountSwitcher>
           <div
-            v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
             class="float-btn flex items-center justify-center"
           >
             <SvgIcon class="text-white font-xl float-btn-icon" icon="ph--user-switch-bold" />

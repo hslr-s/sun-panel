@@ -250,6 +250,8 @@
     "inputPlaceholderByText": "Please enter {text}",
     "language": "Language",
     "leastOne": "Please keep at least one",
+    "login": "Log in",
+    "logout": "Logout",
     "lookDoc": "View documentation",
     "networkError": "Network error, please try again later",
     "nikeName": "Nickname",
@@ -287,8 +289,13 @@
   },
   "deskModule": {
     "accountSwitcher": {
+      "accountExist": "The account already exists, please try to add another account",
       "accountSwitch": "Account switch",
-      "failed": "Invalid"
+      "addAccount": "Log in to other accounts",
+      "failed": "Invalid",
+      "loggedInAccount": "Already logged in account",
+      "logoutAllConfirmText": "Are you sure you want to safely log out of all accounts?",
+      "logoutConfirmText": "Are you sure you want to exit ({username})"
     },
     "clock": {
       "fri": "Friday",

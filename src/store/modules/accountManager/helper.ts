@@ -16,7 +16,7 @@ export interface AccountManagerStore {
 }
 
 export function defaultStore(): AccountManagerStore {
-  return { accounts: [] }
+  return ss.get(LOCAL_NAME)
 }
 
 export function setLocalSetting(setting: AccountManagerStore): void {

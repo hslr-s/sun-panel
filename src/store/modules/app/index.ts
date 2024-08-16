@@ -8,7 +8,6 @@ export const useAppStore = defineStore('app-store', {
   state: (): AppState => getLocalSetting(),
   actions: {
     setSiderCollapsed(collapsed: boolean) {
-      this.siderCollapsed = collapsed
       this.recordState()
     },
 
@@ -49,7 +48,7 @@ export const useAppStore = defineStore('app-store', {
       setLocalSetting(this.$state)
     },
 
-    removeToken() {
+    remove() {
       this.$state = defaultSetting()
       removeLocalState()
     },

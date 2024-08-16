@@ -250,6 +250,8 @@
     "inputPlaceholderByText": "请输入{text}",
     "language": "语言",
     "leastOne": "请至少保留一项",
+    "login": "登录",
+    "logout": "退出登录",
     "lookDoc": "查看文档",
     "networkError": "网络错误，请稍后重试",
     "nikeName": "昵称",
@@ -287,8 +289,13 @@
   },
   "deskModule": {
     "accountSwitcher": {
+      "accountExist": "账号已存在，请尝试添加其他账号",
       "accountSwitch": "账号切换",
-      "failed": "失效"
+      "addAccount": "登录其他账号",
+      "failed": "失效",
+      "loggedInAccount": "已登录账号",
+      "logoutAllConfirmText": "您确定要安全退出全部账号吗？",
+      "logoutConfirmText": "您确定要退出（{username}）"
     },
     "clock": {
       "fri": "星期五",

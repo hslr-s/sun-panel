@@ -1,10 +1,12 @@
 import { post } from '@/utils/request'
 
-// export function getInfo<T>() {
-//   return post<T>({
-//     url: '/user/getInfo',
-//   })
-// }
+export function getInfo<T>(token?: string) {
+  const headers = { token }
+  return post<T>({
+    url: '/user/getInfo',
+    headers,
+  })
+}
 
 export function getAuthInfo<T>() {
   return post<T>({
