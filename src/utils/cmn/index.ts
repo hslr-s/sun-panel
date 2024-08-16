@@ -115,6 +115,8 @@ export async function updateLocalUserInfo() {
       authStore.setUserInfo(data.user)
       authStore.setVisitMode(data.visitMode)
     }
+  }).catch((res) => {
+    apiRespErrMsgApiMessage(res)
   })
 }
 

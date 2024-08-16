@@ -62,7 +62,9 @@
       "website": "网站："
     },
     "baseSettings": {
+      "accountSwitcher": "账号切换器",
       "appName": "个性化设置",
+      "autoNetModeLinkOnOpen": "打开项目卡片时自动选择最优地址并打开",
       "bottomMargin": "底部边距",
       "clock": "时钟组件",
       "clockSecondShow": "显示秒",
@@ -79,7 +81,7 @@
       "leftRightMargin": "两侧边距",
       "mask": "遮罩",
       "maxWidth": "最大宽度",
-      "netModeChangeButtonShow": "显示网络环境切换按钮",
+      "netModeChangeButtonShow": "网络环境切换组件",
       "publicVisitModeShow": "公开模式允许显示",
       "resetAllStyleWarnText": "确定要重置所有样式吗？",
       "resetWarnText": "确定要重置此项下的所有样式吗？",

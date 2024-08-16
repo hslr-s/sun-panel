@@ -283,6 +283,38 @@ function resetPanelConfig() {
       </div>
     </NCard>
 
+    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.accountSwitcher') }}
+        </div>
+      </template>
+
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.accountSwitcherShow" />
+      </div>
+    </NCard>
+
+    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.netModeChangeButtonShow') }}
+        </div>
+      </template>
+
+      <!-- <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.auto') }}</span>
+        <STip :content="t('apps.baseSettings.autoNetModeLinkOnOpen')" class="mr-2" />
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeAuto" />
+      </div> -->
+
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" />
+      </div>
+    </NCard>
+
     <!-- 1.5.0取消此设置 -->
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
@@ -292,53 +324,6 @@ function resetPanelConfig() {
           <STip :content="t('apps.baseSettings.iconMigrateDescribe')" class="text-cyan-600 text-xl" />
         </NFlex>
       </div>
-    <!-- <div class="mt-[5px]">
-        <div>
-          {{ $t('common.style') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NSelect v-model:value="panelState.panelConfig.iconStyle" :options="iconTypeOptions" />
-        </div>
-      </div>
-
-      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info" class="mt-[5px]">
-        <div>
-          {{ $t('apps.baseSettings.hideDescription') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NSwitch v-model:value="panelState.panelConfig.iconTextInfoHideDescription" />
-        </div>
-      </div>
-
-      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon" class="mt-[5px]">
-        <div>
-          {{ $t('apps.baseSettings.hideTitle') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NSwitch v-model:value="panelState.panelConfig.iconTextIconHideTitle" />
-        </div>
-      </div>
-
-      <div class="mt-[5px]">
-        <div>
-          {{ $t('common.textColor') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NColorPicker
-            v-model:value="panelState.panelConfig.iconTextColor"
-            :show-alpha="false"
-            size="small"
-            :modes="['hex']"
-            :swatches="[
-              '#000000',
-              '#ffffff',
-              '#18A058',
-              '#2080F0',
-              '#F0A020',
-            ]"
-          />
-        </div>
-      </div> -->
     </NCard>
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <template #header>
@@ -396,13 +381,6 @@ function resetPanelConfig() {
       </template>
 
       <NGrid cols="2">
-        <NGridItem span="12 400:12">
-          <div class="flex items-center mt-[5px]">
-            <span class="mr-[10px]">{{ $t('apps.baseSettings.netModeChangeButtonShow') }}</span>
-            <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" />
-          </div>
-        </NGridItem>
-
         <NGridItem span="12 400:12">
           <div class="flex items-center mt-[10px]">
             <span class="mr-[10px]">{{ $t('apps.baseSettings.maxWidth') }}</span>

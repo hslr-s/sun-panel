@@ -2,7 +2,12 @@ import type { ConfigProviderProps } from 'naive-ui'
 import { createDiscreteApi, darkTheme, lightTheme, useOsTheme } from 'naive-ui'
 import { computed, ref } from 'vue'
 import { t } from '@/locales'
-import { useAppStore } from '@/store'
+import { useAppStore, useAuthStore } from '@/store'
+import { router } from '@/router'
+
+let loginMessageShow = false
+
+const authStore = useAuthStore()
 
 const themeRef = ref<'light' | 'dark'>('light')
 const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
@@ -17,6 +22,32 @@ export function apiRespErrMsg(res: any) {
     themeRef.value = osTheme.value as 'dark' | 'light'
   else
     themeRef.value = appStore.theme as 'dark' | 'light'
+
+  if (res.code === 1001) {
+    // 避免重复弹窗
+    if (loginMessageShow === false) {
+      loginMessageShow = true
+      message.warning(t('api.loginExpires'), {
+        // message.warning('登录过期', {
+        onLeave() {
+          loginMessageShow = false
+        },
+      })
+    }
+
+    router.push({ path: '/login' })
+    authStore.removeToken()
+    return res.data
+  }
+  else if (res.code === 1000) {
+    router.push({ path: '/login' })
+    authStore.removeToken()
+    return res.data
+  }
+  else if (res.code === 1005) {
+    message.warning(res.data.msg)
+    return res.data
+  }
 
   if (res.code) {
     const apiErrorCodeName = `apiErrorCode.${res.code}`

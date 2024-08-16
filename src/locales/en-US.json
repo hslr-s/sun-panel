@@ -62,7 +62,9 @@
       "website": "Website:"
     },
     "baseSettings": {
+      "accountSwitcher": "Account switcher",
       "appName": "Personalization",
+      "autoNetModeLinkOnOpen": "Automatically select the optimal address and open it when opening a project card",
       "bottomMargin": "Bottom margin",
       "clock": "Clock component",
       "clockSecondShow": "Show seconds",
@@ -79,7 +81,7 @@
       "leftRightMargin": "Margins on both sides",
       "mask": "Mask",
       "maxWidth": "Max width",
-      "netModeChangeButtonShow": "Show the network environment switch button",
+      "netModeChangeButtonShow": "Network environment switching component",
       "publicVisitModeShow": "Allow public mode display",
       "resetAllStyleWarnText": "Are you sure you want to reset all styles?",
       "resetWarnText": "Are you sure you want to reset all styles under this item?",

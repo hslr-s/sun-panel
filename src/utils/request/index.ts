@@ -2,7 +2,7 @@ import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axio
 import request from './axios'
 import { useAppStore, useAuthStore } from '@/store'
 
-const loginMessageShow = false
+// const loginMessageShow = false
 export interface HttpOption {
   url: string
   data?: any
