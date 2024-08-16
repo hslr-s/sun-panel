@@ -2,7 +2,7 @@
 import type { FormInst, FormRules } from 'naive-ui'
 import { NButton, NCard, NDivider, NForm, NFormItem, NInput, NSelect, useDialog, useMessage } from 'naive-ui'
 import { ref } from 'vue'
-import { useAppStore, useAuthStore, usePanelState, useUserStore } from '@/store'
+import { useAccountManagerStore, useAppStore, useAuthStore, usePanelState, useUserStore } from '@/store'
 import { languageOptions } from '@/utils/defaultData'
 import type { Language, Theme } from '@/store/modules/app/helper'
 import { logout } from '@/api'
@@ -10,11 +10,14 @@ import { RoundCardModal, SvgIcon } from '@/components/common/'
 import { updateInfo, updatePassword } from '@/api/system/user'
 import { updateLocalUserInfo } from '@/utils/cmn'
 import { t } from '@/locales'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
 const panelState = usePanelState()
+const accountManagerStore = useAccountManagerStore()
+
 const ms = useMessage()
 const dialog = useDialog()
 
@@ -63,7 +66,19 @@ const updatePasswordModalFormRules: FormRules = {
 }
 
 async function logoutApi() {
-  await logout()
+  // await logout()
+  if (panelState.panelConfig.accountSwitcherShow) {
+    for (let i = 0; i < accountManagerStore.accounts.length; i++) {
+      const element = accountManagerStore.accounts[i]
+      await logout(element.cToken).then(() => {
+        accountManagerStore.deleteAccount(element)
+      }).catch((res) => {
+        apiRespErrMsg(res)
+      })
+    }
+    accountManagerStore.clearAccount()
+  }
+
   userStore.resetUserInfo()
   authStore.removeToken()
   panelState.removeState()

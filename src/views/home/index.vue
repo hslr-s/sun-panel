@@ -470,7 +470,7 @@ function handleAddItem(itemIconGroupId?: number) {
 
       <!-- 账号管理器切换 -->
       <template
-        v-if="panelState.panelConfig.accountSwitcherShow"
+        v-if="panelState.panelConfig.accountSwitcherShow && authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
       >
         <AccountSwitcher>
           <div
