@@ -67,10 +67,10 @@ async function logoutApi() {
   userStore.resetUserInfo()
   authStore.removeToken()
   panelState.removeState()
-  appStore.removeToken()
+  // appStore.removeToken()
   ms.success(t('settingUserInfo.logoutSuccess'))
   // router.push({ path: '/login' })
-  location.reload()// 强制刷新一下页面
+  location.href = '/'// 强制刷新一下页面
 }
 
 function handleSaveInfo() {
