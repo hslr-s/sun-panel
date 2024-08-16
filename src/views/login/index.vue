@@ -2,7 +2,7 @@
 import { NButton, NCard, NForm, NFormItem, NInput, NSelect, NSwitch, useMessage, useOsTheme } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
 import { login } from '@/api'
-import { useAppStore, useAuthStore } from '@/store'
+import { useAccountManagerStore, useAppStore, useAuthStore } from '@/store'
 import { SvgIcon } from '@/components/common'
 import { router } from '@/router'
 import { t } from '@/locales'
@@ -15,6 +15,7 @@ import { defaultSetting } from '@/store/modules/app/helper'
 // const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
+const accountManagerStore = useAccountManagerStore()
 const osTheme = useOsTheme()
 const ms = useMessage()
 const loading = ref(false)
@@ -39,6 +40,15 @@ const loginPost = async () => {
     if (res.code === 0) {
       authStore.setToken(res.data.token)
       authStore.setUserInfo(res.data)
+
+      // 添加到账号管理器
+      accountManagerStore.addAccount({
+        username: res.data.username || form.value.username,
+        name: res.data.name || '',
+        id: res.data.id || 0,
+        cToken: res.data.token,
+        loginStatus: true,
+      })
 
       setTimeout(() => {
         ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
