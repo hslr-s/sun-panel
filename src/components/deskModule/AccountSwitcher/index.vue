@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { NPopover } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import { AccountSwitcherManager, RoundCardModal } from '@/components/common'
-import { t } from '@/locales'
+import { AccountSwitcherManager } from '@/components/common'
 import { useAccountManagerStore, useAuthStore } from '@/store'
 
 const settingShow = ref(false)
@@ -38,12 +37,12 @@ onMounted(() => {
       </div>
     </NPopover>
 
-    <RoundCardModal
+    <!-- <RoundCardModal
       v-model:show="settingShow"
       style="width:400px"
       :title="t('deskModule.accountSwitcher.loggedInAccount')"
     >
       <AccountSwitcherManager />
-    </RoundCardModal>
+    </RoundCardModal> -->
   </div>
 </template>

@@ -7,10 +7,10 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
   state: (): AccountManagerStore => defaultStore(),
   actions: {
 
-    // 添加账号
+    // 添加账号，已存在则先删除再添加新的记录
     addAccount(account: AccountInfo) {
       if (this.isExistAccount(account.username)) {
-        return false
+        this.deleteAccount(account)
       }
       this.accounts.push(account)
       this.recordState()
@@ -23,7 +23,7 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
 
     // 删除账号
     deleteAccount(account: AccountInfo) {
-      const index = this.accounts.findIndex(item => item.cToken === account.cToken)
+      const index = this.accounts.findIndex(item => item.username === account.username || item.cToken === account.cToken)
       if (index !== -1)
         this.accounts.splice(index, 1)
       this.recordState()

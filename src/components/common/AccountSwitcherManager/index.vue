@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { NButton, NDivider, NEllipsis, NFlex, NForm, NFormItem, NInput, NTag, NText, useDialog } from 'naive-ui'
+import { NButton, NDivider, NEllipsis, NFlex, NTag, NText, useDialog } from 'naive-ui'
 import { useAccountManagerStore, useAuthStore, usePanelState, useUserStore } from '@/store'
 import type { AccountInfo } from '@/store/modules/accountManager/helper'
-import { RoundCardModal, SvgIcon } from '@/components/common'
+import { SvgIcon } from '@/components/common'
 import { t } from '@/locales'
-import { login, logout } from '@/api'
+import { logout } from '@/api'
 import { apiRespErrMsg, message } from '@/utils/request/apiMessage'
+import { router } from '@/router'
 
 defineProps<{
   isPopup?: boolean
 }>()
 
-const emits = defineEmits<{
-  (e: 'openSetting'): void
-}>()
+// const emits = defineEmits<{
+//   (e: 'openSetting'): void
+// }>()
 
 const accountManagerStore = useAccountManagerStore()
 const authStore = useAuthStore()
@@ -22,42 +23,43 @@ const panelState = usePanelState()
 const dialog = useDialog()
 const userStore = useUserStore()
 
-const loginModalShow = ref(false)
-const loginModalLoading = ref(false)
+// const loginModalShow = ref(false)
+// const loginModalLoading = ref(false)
 const logoutAllLoading = ref(false)
 
-const loginModalForm = ref({
-  username: '',
-  password: '',
-})
+// const loginModalForm = ref({
+//   username: '',
+//   password: '',
+// })
 
-function handleOpenSetting() {
-  emits('openSetting')
+function handleGoToLogin() {
+  router.push('/login')
+  // emits('openSetting')
 }
 
-function handleSubmit() {
-  if (accountManagerStore.isExistAccount(loginModalForm.value.username)) {
-    message.warning(t('deskModule.accountSwitcher.accountExist'))
-    return
-  }
-  login<User.Info>({
-    username: loginModalForm.value.username,
-    password: loginModalForm.value.password,
-  }).then(({ data }) => {
-    console.log(data)
-    const d: AccountInfo = {
-      name: data.name as string,
-      id: data.id as number,
-      username: data.username as string,
-      cToken: data.token as string,
-      loginStatus: true,
-    }
-    accountManagerStore.addAccount(d)
-    loginModalShow.value = false
-  }).catch((res) => {
-    apiRespErrMsg(res)
-  })
-}
+// function handleSubmit() {
+//   if (accountManagerStore.isExistAccount(loginModalForm.value.username)) {
+//     message.warning(t('deskModule.accountSwitcher.accountExist'))
+//     return
+//   }
+//   login<User.Info>({
+//     username: loginModalForm.value.username,
+//     password: loginModalForm.value.password,
+//   }).then(({ data }) => {
+//     console.log(data)
+//     const d: AccountInfo = {
+//       name: data.name as string,
+//       id: data.id as number,
+//       username: data.username as string,
+//       cToken: data.token as string,
+//       loginStatus: true,
+//     }
+//     accountManagerStore.addAccount(d)
+//     loginModalShow.value = false
+//   }).catch((res) => {
+//     apiRespErrMsg(res)
+//   })
+// }
 
 // 退出
 function handleLogoutItem(item: AccountInfo) {
@@ -123,7 +125,8 @@ function handleSwitch(item: AccountInfo) {
     name: item.name,
   }
 
-  panelState.setItemGroupCacheData([])
+  panelState.resetState()
+  // panelState.setItemGroupCacheData([])
   authStore.setToken(item.cToken)
   authStore.setUserInfo(userInfo)
   location.reload()
@@ -142,16 +145,17 @@ onMounted(() => {
   <div class="p-1">
     <div v-if="isPopup" class="font-bold text-base mb-3 flex">
       <div class="mr-auto">
-        {{ t('deskModule.accountSwitcher.accountSwitch') }}
+        <!-- {{ t('deskModule.accountSwitcher.accountSwitch') }} -->
+        {{ t('deskModule.accountSwitcher.loggedInAccount') }}
       </div>
-      <NFlex justify="end" align="center">
-        <NButton v-if="isPopup" size="tiny" type="info" @click="handleOpenSetting">
+      <NFlex justify="end" align="center" :title="t('deskModule.accountSwitcher.addAccount')">
+        <NButton v-if="isPopup" size="tiny" type="info" @click="handleGoToLogin">
           <template #icon>
             <SvgIcon icon="mingcute--add-fill" />
           </template>
         </NButton>
 
-        <NButton size="tiny" type="error" @click="handleLogoutAll">
+        <NButton size="tiny" type="error" :title="t('accountSwitcher.logoutAllAccount') " @click="handleLogoutAll">
           <template #icon>
             <SvgIcon icon="tabler-logout" />
           </template>
@@ -216,9 +220,10 @@ onMounted(() => {
         </template>
       </NButton> -->
 
-      <NButton size="small" type="info" @click="loginModalShow = true">
+      <NButton size="small" type="info" @click="handleGoToLogin">
         <template #icon>
-          <SvgIcon icon="lets-icons--user-add" />
+          <SvgIcon icon="mingcute--add-fill" />
+          <!-- <SvgIcon icon="lets-icons--user-add" /> -->
         </template>
         {{ t('deskModule.accountSwitcher.addAccount') }}
       </NButton>
@@ -231,7 +236,7 @@ onMounted(() => {
       </NButton>
     </NFlex>
 
-    <div>
+    <!-- <div>
       <RoundCardModal v-model:show="loginModalShow" style="width:400px" :title="t('deskModule.accountSwitcher.addAccount')">
         <div class="mt-2">
           <NForm>
@@ -247,6 +252,6 @@ onMounted(() => {
           </NButton>
         </div>
       </RoundCardModal>
-    </div>
+    </div> -->
   </div>
 </template>

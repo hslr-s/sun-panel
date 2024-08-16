@@ -3,6 +3,7 @@ import { defaultState, defaultStatePanelConfig, getLocalState, removeLocalState,
 import { router } from '@/router'
 import type { PanelStateNetworkModeEnum } from '@/enums'
 import { get as getUserConfig } from '@/api/panel/userConfig'
+import { ErrorCode } from '@/enums/errorCode'
 export const usePanelState = defineStore('panel', {
   state: (): Panel.State => getLocalState() || defaultState(),
 
@@ -34,11 +35,22 @@ export const usePanelState = defineStore('panel', {
         else
           this.resetPanelConfig() // 重置恢复默认
         this.recordState()
+      }).catch((res) => {
+        if (res.code === ErrorCode.NoDataRecordFound) {
+          this.resetPanelConfig() // 重置恢复默认
+          this.recordState()
+        }
       })
     },
 
     resetPanelConfig() {
       this.panelConfig = defaultStatePanelConfig()
+      this.recordState()
+    },
+
+    resetState() {
+      this.$state = defaultState()
+      this.recordState()
     },
 
     setItemGroupCacheData(data: Panel.ItemGroupCardCacheData[]) {
