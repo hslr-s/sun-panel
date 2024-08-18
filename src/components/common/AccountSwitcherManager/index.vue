@@ -166,7 +166,8 @@ onMounted(() => {
     <div
       v-for="item, index in accountManagerStore.accounts"
       :key="index"
-      class="my-1 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-500 rounded-lg p-2 transform-all duration-300"
+      class="my-1 hover:bg-slate-100 dark:hover:bg-slate-500 rounded-lg p-2 transform-all duration-300"
+      :class="!item.loginStatus || authStore.userInfo?.username === item.username ? ' cursor-not-allowed' : 'cursor-pointer'"
     >
       <NFlex align="center">
         <div class="mr-auto" style="width: calc(100% - 50px);" @click="handleSwitch(item)">
@@ -181,14 +182,14 @@ onMounted(() => {
               <NTag v-if="!item.loginStatus" type="error" size="tiny" class="mr-1">
                 {{ t('deskModule.accountSwitcher.failed') }}
               </NTag>
-              <NText :depth="2">
+              <NText :depth="!item.loginStatus || authStore.userInfo?.username === item.username ? 3 : 2">
                 {{ item.name }}
               </NText>
             </NEllipsis>
           </div>
           <div>
             <NEllipsis>
-              <NText :depth="3">
+              <NText depth="3">
                 {{ item.username }}
               </NText>
             </NEllipsis>
