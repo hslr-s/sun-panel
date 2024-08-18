@@ -51,7 +51,10 @@ const dropdownShow = ref(false)
 function openPage(openMethod: number, url: string, title?: string) {
   switch (openMethod) {
     case 1:
-      window.location.href = url
+      if (window.self !== window.top)
+        window.parent.location.href = url
+      else
+        window.location.href = url
       break
     case 2:
       window.open(url)
