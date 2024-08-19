@@ -15,7 +15,7 @@ interface Prop {
 }
 
 const props = defineProps<Prop>()
-let timer: NodeJS.Timer
+let timer: any // NodeJS.Timer
 const memoryState = ref<SystemMonitor.MemoryInfo | null>(null)
 
 function formatMemorySize(v: number): string {

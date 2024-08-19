@@ -95,7 +95,7 @@ async function login(username: string, password: string) {
   loginLoading.value = false
 }
 
-async function refreshStatus(username: string, password: string) {
+async function refreshStatus() {
   refreshLoading.value = true
 
   await refreshStatusApi().then(() => {

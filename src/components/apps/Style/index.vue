@@ -4,6 +4,7 @@ import type { UploadFileInfo } from 'naive-ui'
 import {
   NButton, NCard, NColorPicker, NFlex, NGrid,
   NGridItem, NInput, NInputGroup,
+  NInputNumber,
   NPopconfirm, NSelect, NSlider, NSwitch, NUpload,
   NUploadDragger,
   useDialog, useMessage,
@@ -408,7 +409,7 @@ function resetPanelConfig() {
             <span class="mr-[10px]">{{ $t('apps.baseSettings.maxWidth') }}</span>
             <div class="flex">
               <NInputGroup>
-                <NInput v-model:value="panelState.panelConfig.maxWidth" size="small" type="number" :maxlength="10" :style="{ width: '100px' }" placeholder="1200" />
+                <NInputNumber v-model:value="panelState.panelConfig.maxWidth" size="small" :maxlength="10" :style="{ width: '100px' }" placeholder="1200" />
                 <NSelect v-model:value="panelState.panelConfig.maxWidthUnit" :style="{ width: '80px' }" :options="maxWidthUnitOption" size="small" />
               </NInputGroup>
             </div>
