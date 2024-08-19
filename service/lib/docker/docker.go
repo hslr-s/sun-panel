@@ -2,9 +2,9 @@ package docker
 
 import (
 	"context"
-	"sun-panel/global"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 )
@@ -32,8 +32,15 @@ func NewDockerClient() (*client.Client, error) {
 	return cli, nil
 }
 
+func (c Client) Close() {
+	_ = c.cli.Close()
+}
+
 func (c Client) ListAllContainers() ([]types.Container, error) {
-	var options types.ContainerListOptions
+	var (
+		options container.ListOptions
+	)
+	options.All = true
 	containers, err := c.cli.ContainerList(context.Background(), options)
 	if err != nil {
 		return nil, err
@@ -43,13 +50,15 @@ func (c Client) ListAllContainers() ([]types.Container, error) {
 
 func (c Client) ListContainersByName(names []string) ([]types.Container, error) {
 	var (
-		options types.ContainerListOptions
-		res     []types.Container
+		options  container.ListOptions
+		namesMap = make(map[string]bool)
+		res      []types.Container
 	)
 	options.All = true
 	if len(names) > 0 {
 		var array []filters.KeyValuePair
 		for _, n := range names {
+			namesMap["/"+n] = true
 			array = append(array, filters.Arg("name", n))
 		}
 		options.Filters = filters.NewArgs(array...)
@@ -58,9 +67,9 @@ func (c Client) ListContainersByName(names []string) ([]types.Container, error) 
 	if err != nil {
 		return nil, err
 	}
-	for _, container := range containers {
-		if container.Names[0] == "/"+names[0] {
-			res = append(res, container)
+	for _, con := range containers {
+		if _, ok := namesMap[con.Names[0]]; ok {
+			res = append(res, con)
 		}
 	}
 	return res, nil
@@ -135,19 +144,4 @@ func (c Client) NetworkExist(name string) bool {
 		return false
 	}
 	return len(networks) > 0
-}
-
-func CreateDefaultDockerNetwork() error {
-	cli, err := NewClient()
-	if err != nil {
-		global.Logger.Errorf("init docker client error %s", err.Error())
-		return err
-	}
-	if !cli.NetworkExist("1panel-network") {
-		if err := cli.CreateNetwork("1panel-network"); err != nil {
-			global.Logger.Errorf("create default docker network  error %s", err.Error())
-			return err
-		}
-	}
-	return nil
 }
