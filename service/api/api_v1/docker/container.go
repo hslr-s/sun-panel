@@ -9,7 +9,6 @@ import (
 	"sun-panel/lib/docker"
 	"time"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
@@ -27,20 +26,17 @@ func (a *Container) GetList(c *gin.Context) {
 	// }
 
 	var (
-		client *client.Client
+		client docker.Client
 		err    error
 	)
-	client, err = docker.NewDockerClient()
+	client, err = docker.NewClient()
 	if err != nil {
 		apiReturn.ErrorDockerClientFail(c, err.Error())
 		return
 	}
+	client.Close()
 
-	options := types.ContainerListOptions{
-		All:  true,
-		Size: true,
-	}
-	if list, err := client.ContainerList(context.Background(), options); err != nil {
+	if list, err := client.ListAllContainers(); err != nil {
 		apiReturn.ErrorDocker(c, err.Error())
 		return
 	} else {
@@ -100,7 +96,7 @@ func (a *Container) ExecSwitchActionByContainerID(c *gin.Context) {
 	ctx := context.Background()
 
 	if req.Action {
-		startOptions := types.ContainerStartOptions{}
+		startOptions := container.StartOptions{}
 		err = client.ContainerStart(ctx, req.ID, startOptions)
 	} else {
 		startOptions := container.StopOptions{}
@@ -191,5 +187,10 @@ func (a *Container) GetContainersState(c *gin.Context) {
 	}
 
 	apiReturn.SuccessData(c, resp)
+
+}
+
+// 根据名称重置容器ID
+func (a *Container) ResetContainerIDByName(c *gin.Context) {
 
 }
