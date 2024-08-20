@@ -128,13 +128,13 @@ function handleItemClick() {
 
   let jumpUrl = ''
 
-  if (props.itemInfo)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
+  if (itemCardInfo.value)
+    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? itemCardInfo.value.lanUrl : itemCardInfo.value.url) as string
 
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
+  if (itemCardInfo.value?.lanUrl === '')
+    jumpUrl = itemCardInfo.value.url
 
-  if (containerState.value.runStatus === DockerContainerInfoState.exited && props.itemInfo.expandParam.openPageAndStart === true) {
+  if (containerState.value.runStatus === DockerContainerInfoState.exited && itemCardInfo.value.expandParam.openPageAndStart === true) {
     // 判断当前是否为公开模式，公开模式进行拦截
     if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
       ms.warning(t('common.publicModeRestricted'))
@@ -142,24 +142,24 @@ function handleItemClick() {
     }
 
     execSwitchAction(true, () => {
-      openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
 
       // 容易被拦截暂时取消延时
-      // const delaySecond = props.itemInfo.expandParam.openPageAndStartDelaySecond
+      // const delaySecond = itemCardInfo.value.expandParam.openPageAndStartDelaySecond
       // if (delaySecond !== 0) {
       //   // console.log('延时打开页面')
       //   setTimeout(() => {
-      //     openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      //     openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
       //   }, delaySecond * 1000)
       // }
       // else {
       //   // console.log('不延时打开页面')
-      //   openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      //   openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
       // }
     })
   }
   else {
-    openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+    openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
   }
 }
 
@@ -182,20 +182,20 @@ function handleContextMenu(e: MouseEvent) {
 function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
   // console.log(currentRightSelectItem, key)
-  let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo?.lanUrl : props.itemInfo?.url
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
+  let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? itemCardInfo.value?.lanUrl : itemCardInfo.value?.url
+  if (itemCardInfo.value?.lanUrl === '')
+    jumpUrl = itemCardInfo.value.url
   switch (key) {
     case 'newWindows':
       window.open(jumpUrl)
       break
     case 'openWanUrl':
-      if (props.itemInfo)
-        openPage(props.itemInfo?.openMethod, props.itemInfo?.url, props.itemInfo?.title)
+      if (itemCardInfo.value)
+        openPage(itemCardInfo.value?.openMethod, itemCardInfo.value?.url, itemCardInfo.value?.title)
       break
     case 'openLanUrl':
-      if (props.itemInfo && props.itemInfo.lanUrl)
-        openPage(props.itemInfo?.openMethod, props.itemInfo.lanUrl, props.itemInfo?.title)
+      if (itemCardInfo.value && itemCardInfo.value.lanUrl)
+        openPage(itemCardInfo.value?.openMethod, itemCardInfo.value.lanUrl, itemCardInfo.value?.title)
       break
 
     case 'startContainer':
@@ -225,14 +225,14 @@ function getDropdownMenuOptions() {
 
   ]
 
-  if (props.itemInfo?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
+  if (itemCardInfo.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
     dropdownMenuOptions.push({
       label: t('panelHome.openLanUrl'),
       key: 'openLanUrl',
     })
   }
 
-  if (props.itemInfo?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
+  if (itemCardInfo.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
     dropdownMenuOptions.push({
       label: t('panelHome.openWanUrl'),
       key: 'openWanUrl',
@@ -278,9 +278,9 @@ function onClickoutside() {
 
 async function execSwitchAction(action: boolean, startSuccessCallback?: () => void) {
   loading.value = true
-  const id = props.itemInfo.expandParam.containerId
+  const containerId = itemCardInfo.value.expandParam.containerId
   await execSwitchActionApi({
-    id, action,
+    id: containerId, action,
   }).then(async () => {
     // 成功
     if (action) {
@@ -443,12 +443,12 @@ function registAndListenContainerStatsUpdate(containerId: string) {
 }
 
 onMounted(async () => {
-  if (props.itemInfo.expandParam.containerId) {
+  if (itemCardInfo.value.expandParam.containerId) {
     await getContainerStatus(true)
   }
 
-  if (props.itemInfo.expandParam.showBadgeStatus)
-    showBadgeStatus.value = props.itemInfo.expandParam.showBadgeStatus
+  if (itemCardInfo.value.expandParam.showBadgeStatus)
+    showBadgeStatus.value = itemCardInfo.value.expandParam.showBadgeStatus
 
   // intervalId = setInterval(() => {
   //   getContainerStatus()
@@ -507,12 +507,12 @@ onUnmounted(() => {
   >
     <ItemCard
       :card-type-style="cardStyle" :background-color="backgroundColor"
-      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemInfo?.title"
+      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemCardInfo?.title"
     >
       <template #small>
         <NSpin :show="loading">
           <div class="app-icon-small-icon overflow-hidden w-[70px] h-[70px] mx-auto rounded-2xl relative">
-            <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
+            <ItemIcon :item-icon="itemCardInfo?.icon" :color="textColor" />
             <div
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
               class="dot dot-small flex items-center justify-center border"
@@ -531,7 +531,7 @@ onUnmounted(() => {
             <div class="app-icon-info-icon w-[70px] h-[70px]">
               <div class="w-[70px] h-full flex items-center justify-center">
                 <ItemIcon
-                  :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl"
+                  :item-icon="itemCardInfo?.icon" :size="50" class="overflow-hidden rounded-xl"
                   :color="textColor"
                 />
               </div>
@@ -554,7 +554,7 @@ onUnmounted(() => {
               <div class="app-icon-info-text-box w-full">
                 <div class="app-icon-info-text-box-title font-semibold w-full">
                   <NEllipsis>
-                    {{ itemInfo?.title }}
+                    {{ itemCardInfo?.title }}
                   </NEllipsis>
                 </div>
                 <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
