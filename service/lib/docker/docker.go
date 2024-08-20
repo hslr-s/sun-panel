@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"errors"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -73,6 +74,25 @@ func (c Client) ListContainersByName(names []string) ([]types.Container, error) 
 		}
 	}
 	return res, nil
+}
+
+func (c Client) GetContainerByName(name string) (types.Container, error) {
+	var (
+		options container.ListOptions
+		res     types.Container
+	)
+	options.All = true
+	containers, err := c.cli.ContainerList(context.Background(), options)
+	if err != nil {
+		return res, err
+	}
+	for _, con := range containers {
+		if con.Names[0] == "/"+name {
+			res = con
+			return res, nil
+		}
+	}
+	return res, errors.New("not found")
 }
 
 func (c Client) CreateNetwork(name string) error {

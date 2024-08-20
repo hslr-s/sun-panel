@@ -9,6 +9,7 @@ import (
 	"sun-panel/lib/docker"
 	"time"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
@@ -34,7 +35,7 @@ func (a *Container) GetList(c *gin.Context) {
 		apiReturn.ErrorDockerClientFail(c, err.Error())
 		return
 	}
-	client.Close()
+	defer client.Close()
 
 	if list, err := client.ListAllContainers(); err != nil {
 		apiReturn.ErrorDocker(c, err.Error())
@@ -42,15 +43,6 @@ func (a *Container) GetList(c *gin.Context) {
 	} else {
 		resp := []dockerApiStructs.ContainerInfoResp{}
 		for _, v := range list {
-			ports := []dockerApiStructs.ContainerPort{}
-			for _, vPort := range v.Ports {
-				ports = append(ports, dockerApiStructs.ContainerPort{
-					IP:          vPort.IP,
-					PrivatePort: vPort.PrivatePort,
-					PublicPort:  vPort.PublicPort,
-					Type:        dockerApiStructs.PostType(vPort.Type),
-				})
-			}
 			resp = append(resp, dockerApiStructs.ContainerInfoResp{
 				ContainerInfo: dockerApiStructs.ContainerInfo{
 					ID:         v.ID,
@@ -59,12 +51,25 @@ func (a *Container) GetList(c *gin.Context) {
 					State:      v.State,
 					Status:     v.Status,
 					CreateTime: time.Unix(v.Created, 0).Format(cmn.TimeFormatMode1),
-					Ports:      ports,
+					Ports:      a.respPorts(v.Ports),
 				},
 			})
 		}
 		apiReturn.SuccessListData(c, resp, 0)
 	}
+}
+
+func (a *Container) respPorts(ports []types.Port) []dockerApiStructs.ContainerPort {
+	respPorts := []dockerApiStructs.ContainerPort{}
+	for _, vPort := range ports {
+		respPorts = append(respPorts, dockerApiStructs.ContainerPort{
+			IP:          vPort.IP,
+			PrivatePort: vPort.PrivatePort,
+			PublicPort:  vPort.PublicPort,
+			Type:        dockerApiStructs.PostType(vPort.Type),
+		})
+	}
+	return respPorts
 }
 
 func (a *Container) ExecSwitchActionByContainerID(c *gin.Context) {
@@ -190,7 +195,45 @@ func (a *Container) GetContainersState(c *gin.Context) {
 
 }
 
-// 根据名称重置容器ID
-func (a *Container) ResetContainerIDByName(c *gin.Context) {
+type ContainerGetContainerIDByNameReq struct {
+	Name string `json:"name"`
+}
 
+// 根据名称重置容器ID
+func (a *Container) GetContainerIDByName(c *gin.Context) {
+	req := ContainerGetContainerIDByNameReq{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	var (
+		client docker.Client
+		err    error
+	)
+	client, err = docker.NewClient()
+	if err != nil {
+		apiReturn.ErrorDockerClientFail(c, err.Error())
+		return
+	}
+	defer client.Close()
+
+	info, err := client.GetContainerByName(req.Name)
+	if err != nil {
+		apiReturn.ErrorDataNotFound(c)
+		return
+	}
+
+	apiReturn.SuccessData(c, dockerApiStructs.ContainerInfoResp{
+		ContainerInfo: dockerApiStructs.ContainerInfo{
+			ID:         info.ID,
+			Name:       info.Names[0][1:],
+			Image:      info.Image,
+			State:      info.State,
+			Status:     info.Status,
+			CreateTime: time.Unix(info.Created, 0).Format(cmn.TimeFormatMode1),
+			Ports:      a.respPorts(info.Ports),
+		},
+	})
 }
