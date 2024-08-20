@@ -307,6 +307,7 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
 }
 
 // 步骤：若容器名存在，将使用容器名查询出容器id，得到容器id后将更新卡片信息
+// 参数：stopCycle：终止循环
 async function fixCardDockerContainerIdByContainerName(containerId: string, containerName: string) {
   // 登录用户才能操作
   if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
@@ -315,6 +316,7 @@ async function fixCardDockerContainerIdByContainerName(containerId: string, cont
       // 更新卡片信息
       itemIconEditApi(itemCardInfo.value).then(() => {
         registAndListenContainerStatsUpdate(itemCardInfo.value.expandParam.containerId)
+        getContainerStatus(true)
       }).catch(() => {
         // 更新卡片失败
         badgeStatusColor.value = 'red'
@@ -332,6 +334,7 @@ async function fixCardDockerContainerIdByContainerName(containerId: string, cont
   }
 }
 
+// 获取容器状态
 async function getContainerStatus(showLoading?: boolean) {
   const containerId = itemCardInfo.value.expandParam.containerId as string
   const containerName = itemCardInfo.value.expandParam.containerName as string
@@ -346,9 +349,6 @@ async function getContainerStatus(showLoading?: boolean) {
     badgeMsg.value = ''
     registAndListenContainerStatsUpdate(containerId)
   }).catch((res) => {
-    // badgeStatusColor.value = 'red'
-    // badgeMsg.value = t('iconItem.dockerContainerError')
-
     // 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
     if (containerName) {
       (async function () {
@@ -368,6 +368,18 @@ async function getContainerStatus(showLoading?: boolean) {
 }
 
 function updateStats(data: Docker.Container.Stats) {
+  if (data) {
+    const d1 = new Date(data.shotTime || '')
+    const lt = new Date(lastTime.value || '')
+
+    // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
+    if ((data.shotTime !== '' && lastTime.value !== '') && d1 < lt) {
+      return // 不更新
+    }
+
+    lastTime.value = data.shotTime || ''
+  }
+
   containerState.value = data
   describeText.value = ''
 
@@ -394,6 +406,7 @@ function updateStats(data: Docker.Container.Stats) {
         badgeStatusColor.value = '#7B7B7B'
         break
     }
+    // console.log(describeText.value, badgeStatusColor.value)
   }
 }
 
@@ -419,21 +432,13 @@ function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
 
 function registAndListenContainerStatsUpdate(containerId: string) {
   // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
-
   if (!isRegistListenFinish) {
     isRegistListenFinish = true
 
     watch(() => store.containerRuningStats[containerId], (value) => {
-      if (value) {
-        const d1 = new Date(value.shotTime || '')
-        const lt = new Date(lastTime.value || '')
+      const isEmpty = Object.keys(value).length === 0
 
-        // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
-        if ((value.shotTime !== '' && lastTime.value !== '') && d1 < lt) {
-          return // 不更新
-        }
-
-        lastTime.value = value.shotTime || ''
+      if (!isEmpty && value.runStatus) {
         updateStats(value)
       }
     })
@@ -449,10 +454,6 @@ onMounted(async () => {
 
   if (itemCardInfo.value.expandParam.showBadgeStatus)
     showBadgeStatus.value = itemCardInfo.value.expandParam.showBadgeStatus
-
-  // intervalId = setInterval(() => {
-  //   getContainerStatus()
-  // }, 5000) // 5000毫秒，即5秒
 })
 
 function formatMemory(sizeInMB: number): string {
