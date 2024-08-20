@@ -166,6 +166,7 @@ func (a *Container) GetContainersState(c *gin.Context) {
 		temp := dockerApiStructs.ContainerStats{}
 		inspectData, err := biz.Docker.GetContainerInspect(v)
 		temp.RunStatus = inspectData.Status
+		temp.ShotTime = time.Now()
 		if err != nil {
 			temp.RunStatus = "error"
 			temp.ErrorMassage = err.Error()
@@ -187,7 +188,6 @@ func (a *Container) GetContainersState(c *gin.Context) {
 			temp.NetworkTX = stateData.NetworkTX
 
 		}
-		temp.ShotTime = time.Now()
 		resp[v] = temp
 	}
 
