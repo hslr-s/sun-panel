@@ -14,6 +14,7 @@ import { RoundCardModal, STip } from '@/components/common'
 import { message } from '@/utils/request/apiMessage'
 import { t } from '@/locales'
 import { buildTimeString } from '@/utils/cmn'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface Version {
   versionName: string
@@ -24,21 +25,14 @@ const appStore = useAppStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
 const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
-const linksDomain = 'http://links.sun-panel.top'
 const isCheckBeta = ref(false)
 const newVersionInfo = ref<About.NewVersionInfo | null>(null)
 const checkLoading = ref(false)
 const isCheckFailed = ref(false)
-
-function getLangeuageSimple() {
-  if (appStore.language === 'zh-CN')
-    return 'zh_cn'
-
-  return 'en'
-}
+const domainLinks = useDomainLinks()
 
 function link(c: string): string {
-  return `${linksDomain}/${c}_${getLangeuageSimple()}`
+  return domainLinks.linkWithLang(c)
 }
 
 function getWebsiteUrl(): string {
