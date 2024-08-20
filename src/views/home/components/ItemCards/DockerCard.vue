@@ -1,19 +1,26 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { DropdownOption } from 'naive-ui'
-import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
+import { NDropdown, NEllipsis, NFlex, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
 import { useDockerCardStore } from './dockerCard/store'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
-import { ItemCard, ItemIcon } from '@/components/common'
+import { ItemCard, ItemIcon, STip } from '@/components/common'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { useAuthStore, usePanelState } from '@/store'
-import { execSwitchAction as execSwitchActionApi, getContainerStatus as getContainerStatusApi } from '@/api/docker/container'
+import {
+  execSwitchAction as execSwitchActionApi,
+  getContainerIDByName as getContainerIDByNameApi,
+  getContainerStatus as getContainerStatusApi,
+} from '@/api/docker/container'
+
+import { edit as itemIconEditApi } from '@/api/panel/itemIcon'
 
 import { VisitMode } from '@/enums/auth'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
 import { bytesToSize } from '@/utils/cmn'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface Prop {
   itemInfo: Panel.ItemInfo
@@ -29,8 +36,12 @@ const emit = defineEmits<{
   (e: 'delete'): void
   (e: 'edit'): void
 }>()
+
+let isRegistListenFinish = false
+
 const panelState = usePanelState()
 const authStore = useAuthStore()
+const domainLinks = useDomainLinks()
 // let intervalId: any
 const showBadgeStatus = ref<DockerContainerInfoState[]>([])
 const ms = useMessage()
@@ -40,6 +51,8 @@ const windowSrc = ref<string>('')
 const windowTitle = ref<string>('')
 const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
+
+const itemCardInfo = ref(props.itemInfo)
 
 const store = useDockerCardStore()
 
@@ -121,7 +134,6 @@ function handleItemClick() {
   if (props.itemInfo?.lanUrl === '')
     jumpUrl = props.itemInfo.url
 
-  // console.log('项目呗点击', containerState.value.runStatus, props.itemInfo.expandParam.openPageAndStart)
   if (containerState.value.runStatus === DockerContainerInfoState.exited && props.itemInfo.expandParam.openPageAndStart === true) {
     // 判断当前是否为公开模式，公开模式进行拦截
     if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
@@ -294,25 +306,56 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
   })
 }
 
+// 步骤：若容器名存在，将使用容器名查询出容器id，得到容器id后将更新卡片信息
+async function fixCardDockerContainerIdByContainerName(containerId: string, containerName: string) {
+  // 登录用户才能操作
+  if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
+    await getContainerIDByNameApi(containerName).then(({ data }) => {
+      itemCardInfo.value.expandParam.containerId = data.id
+      // 更新卡片信息
+      itemIconEditApi(itemCardInfo.value).then(() => {
+        registAndListenContainerStatsUpdate(itemCardInfo.value.expandParam.containerId)
+      }).catch(() => {
+        // 更新卡片失败
+        badgeStatusColor.value = 'red'
+        badgeMsg.value = t('iconItem.dockerContainerError')
+      })
+    }).catch(() => {
+      // 容器不存在
+      badgeStatusColor.value = 'red'
+      badgeMsg.value = t('iconItem.dockerContainerError')
+    })
+  }
+  else {
+    badgeStatusColor.value = 'red'
+    badgeMsg.value = t('iconItem.dockerContainerError')
+  }
+}
+
 async function getContainerStatus(showLoading?: boolean) {
-  const id = props.itemInfo.expandParam.containerId
-  if (!id)
+  const containerId = itemCardInfo.value.expandParam.containerId as string
+  const containerName = itemCardInfo.value.expandParam.containerName as string
+  if (!containerId)
     return
 
   if (showLoading)
     loading.value = true
-  await getContainerStatusApi<Docker.Container.Stats>(id).then(({ data }) => {
-    // console.log('请求容器data', data)
+  await getContainerStatusApi<Docker.Container.Stats>(containerId).then(({ data }) => {
     lastTime.value = data.shotTime || ''
     updateStats(data)
     badgeMsg.value = ''
-    // console.log('注册', id)
-    store.registerContainerQueryStats(id)
+    registAndListenContainerStatsUpdate(containerId)
   }).catch((res) => {
-    badgeStatusColor.value = 'red'
-    badgeMsg.value = t('iconItem.dockerContainerError')
+    // badgeStatusColor.value = 'red'
+    // badgeMsg.value = t('iconItem.dockerContainerError')
 
-    // 【暂时不做了】 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
+    // 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
+    if (containerName) {
+      (async function () {
+        await fixCardDockerContainerIdByContainerName(containerId, containerName)
+      }())
+    }
+
     if (res.code === -1) {
       dockerErrorMsg.value = res.msg
       return
@@ -325,8 +368,6 @@ async function getContainerStatus(showLoading?: boolean) {
 }
 
 function updateStats(data: Docker.Container.Stats) {
-  // console.log('数据域', props.itemInfo.title, data)
-
   containerState.value = data
   describeText.value = ''
 
@@ -376,25 +417,34 @@ function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
   return inShowBadgeStatus(value) && containerState.value.runStatus === value
 }
 
-onMounted(async () => {
-  if (props.itemInfo.expandParam.containerId) {
-    await getContainerStatus(true)
+function registAndListenContainerStatsUpdate(containerId: string) {
+  // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
 
-    // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
-    watch(() => store.containerRuningStats[props.itemInfo.expandParam.containerId], (value) => {
-      // console.log('数据有变化', props.itemInfo.expandParam.containerId)
+  if (!isRegistListenFinish) {
+    isRegistListenFinish = true
+
+    watch(() => store.containerRuningStats[containerId], (value) => {
       if (value) {
         const d1 = new Date(value.shotTime || '')
         const lt = new Date(lastTime.value || '')
 
         // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
-        if ((value.shotTime === '' || lastTime.value === '') || d1 < lt)
+        if ((value.shotTime !== '' && lastTime.value !== '') && d1 < lt) {
           return // 不更新
+        }
 
         lastTime.value = value.shotTime || ''
         updateStats(value)
       }
     })
+
+    store.registerContainerQueryStats(containerId)
+  }
+}
+
+onMounted(async () => {
+  if (props.itemInfo.expandParam.containerId) {
+    await getContainerStatus(true)
   }
 
   if (props.itemInfo.expandParam.showBadgeStatus)
@@ -436,9 +486,15 @@ function formatMemory(sizeInMB: number): string {
   return `${formattedSize} ${units[unitIndex]}`
 }
 
+function handleDockerErrorMsgClick() {
+  // console.log('异常点击', domainLinks.faqLinkWithLang('docker_card_abnormal'))
+}
+
 onUnmounted(() => {
-  // clearInterval(intervalId)
-  store.cancelContainerQueryStats(props.itemInfo.expandParam.containerId)
+  // 取消监听容器的状态
+  if (isRegistListenFinish) {
+    store.cancelContainerQueryStats(itemCardInfo.value.expandParam.containerId)
+  }
 })
 </script>
 
@@ -455,7 +511,7 @@ onUnmounted(() => {
     >
       <template #small>
         <NSpin :show="loading">
-          <div class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative">
+          <div class="app-icon-small-icon overflow-hidden w-[70px] h-[70px] mx-auto rounded-2xl relative">
             <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
             <div
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
@@ -518,12 +574,19 @@ onUnmounted(() => {
                       {{ badgeMsg }}
                     </span>
                   </NEllipsis>
-                  <NEllipsis v-else :line-clamp="2" class="text-xs">
+                  <NFlex v-else :line-clamp="2" class="text-xs" align="center">
                     {{ t('iconItem.showBadgeStatusExited') }}
-                    <span class="text-[red]" :title="dockerErrorMsg">
-                      {{ badgeMsg }}
+                    <span v-if="dockerErrorMsg" class="text-[red]" :title="dockerErrorMsg" @click.stop="handleDockerErrorMsgClick">
+                      <STip>
+                        <div class="max-w-[300px]">
+                          {{ badgeMsg }}: {{ dockerErrorMsg }}
+                          <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_card_abnormal')">
+                            [{{ t('common.solution') }}]
+                          </a>
+                        </div>
+                      </STip>
                     </span>
-                  </NEllipsis>
+                  </NFlex>
                 </div>
               </div>
             </div>
