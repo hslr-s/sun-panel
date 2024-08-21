@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { WatchStopHandle } from 'vue'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { DropdownOption } from 'naive-ui'
 import { NDropdown, NEllipsis, NFlex, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
@@ -37,8 +38,6 @@ const emit = defineEmits<{
   (e: 'edit'): void
 }>()
 
-let isRegistListenFinish = false
-
 const panelState = usePanelState()
 const authStore = useAuthStore()
 const domainLinks = useDomainLinks()
@@ -53,6 +52,8 @@ const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
 
 const itemCardInfo = ref(props.itemInfo)
+
+const unRegisterListenPool: { [key: string]: WatchStopHandle } = {}
 
 const store = useDockerCardStore()
 
@@ -272,7 +273,6 @@ function getDropdownMenuOptions() {
 }
 
 function onClickoutside() {
-  // message.info('clickoutside')
   dropdownShow.value = false
 }
 
@@ -292,7 +292,7 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
     else {
       containerState.value.runStatus = DockerContainerInfoState.exited
     }
-    await getContainerStatus()
+    await getContainerStatus(itemCardInfo.value)
     loading.value = false
   }).catch((res) => {
     // 失败
@@ -308,36 +308,43 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
 
 // 步骤：若容器名存在，将使用容器名查询出容器id，得到容器id后将更新卡片信息
 // 参数：stopCycle：终止循环
-async function fixCardDockerContainerIdByContainerName(containerId: string, containerName: string) {
+async function fixCardDockerContainerIdByContainerName(info: Panel.ItemInfo) {
+  // const containerId = info.expandParam.containerId as string
+  const containerName = info.expandParam.containerName as string
+  // console.log('容器异常', containerId, containerName)
   // 登录用户才能操作
   if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
     await getContainerIDByNameApi(containerName).then(({ data }) => {
       itemCardInfo.value.expandParam.containerId = data.id
       // 更新卡片信息
       itemIconEditApi(itemCardInfo.value).then(() => {
-        registAndListenContainerStatsUpdate(itemCardInfo.value.expandParam.containerId)
-        getContainerStatus(true)
+        registAndListenContainerStatsUpdate(itemCardInfo.value)
+        getContainerStatus(info, true)
       }).catch(() => {
         // 更新卡片失败
-        badgeStatusColor.value = 'red'
-        badgeMsg.value = t('iconItem.dockerContainerError')
+        setContainerStatusError(t('iconItem.dockerContainerError'))
       })
     }).catch(() => {
       // 容器不存在
-      badgeStatusColor.value = 'red'
-      badgeMsg.value = t('iconItem.dockerContainerError')
+      setContainerStatusError(t('iconItem.dockerContainerError'))
     })
   }
   else {
-    badgeStatusColor.value = 'red'
-    badgeMsg.value = t('iconItem.dockerContainerError')
+    setContainerStatusError(t('iconItem.dockerContainerError'))
   }
 }
 
+// 设置为异常状态
+async function setContainerStatusError(errMsg: string) {
+  badgeStatusColor.value = 'red'
+  badgeMsg.value = t('iconItem.dockerContainerError')
+  dockerErrorMsg.value = errMsg
+}
+
 // 获取容器状态
-async function getContainerStatus(showLoading?: boolean) {
-  const containerId = itemCardInfo.value.expandParam.containerId as string
-  const containerName = itemCardInfo.value.expandParam.containerName as string
+async function getContainerStatus(info: Panel.ItemInfo, showLoading?: boolean) {
+  const containerId = info.expandParam.containerId as string
+  const containerName = info.expandParam.containerName as string
   if (!containerId)
     return
 
@@ -345,40 +352,51 @@ async function getContainerStatus(showLoading?: boolean) {
     loading.value = true
   await getContainerStatusApi<Docker.Container.Stats>(containerId).then(({ data }) => {
     lastTime.value = data.shotTime || ''
-    updateStats(data)
+    updateStats(info, data)
     badgeMsg.value = ''
-    registAndListenContainerStatsUpdate(containerId)
-  }).catch((res) => {
+    registAndListenContainerStatsUpdate(info)
+  }).catch(async (res) => {
     // 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
     if (containerName) {
-      (async function () {
-        await fixCardDockerContainerIdByContainerName(containerId, containerName)
-      }())
+      await fixCardDockerContainerIdByContainerName(info)
     }
+    else {
+      if (res.code === -1) {
+        setContainerStatusError(res.msg)
+        return
+      }
 
-    if (res.code === -1) {
-      dockerErrorMsg.value = res.msg
-      return
+      apiRespErrMsg(res)
     }
-
-    apiRespErrMsg(res)
   })
   if (showLoading)
     loading.value = false
 }
 
-function updateStats(data: Docker.Container.Stats) {
-  if (data) {
-    const d1 = new Date(data.shotTime || '')
-    const lt = new Date(lastTime.value || '')
-
-    // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
-    if ((data.shotTime !== '' && lastTime.value !== '') && d1 < lt) {
-      return // 不更新
-    }
-
-    lastTime.value = data.shotTime || ''
+function updateStats(info: Panel.ItemInfo, data: Docker.Container.Stats) {
+  if (!data) {
+    return
   }
+
+  const d1 = new Date(data.shotTime || '')
+  const lt = new Date(lastTime.value || '')
+
+  // 对比当前的项目和全局的项目，不相同不更新
+  if (info.id !== itemCardInfo.value.id) {
+    return
+  }
+
+  // console.log('更新的项目', info.id, '当前全局的ID', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, '状态', data)
+  // console.log(itemCardInfo.value.expandParam.containerName, '数据时间：', data.shotTime, '上次时间', lastTime.value, '不更新', d1 < lt)
+
+  // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
+  if ((data.shotTime !== '' && lastTime.value !== '') && d1 < lt) {
+    // console.log('不更新', itemCardInfo.value.expandParam.containerName)
+    return // 不更新
+  }
+  // console.log('容器状态更新', itemCardInfo.value.expandParam.containerName)
+
+  lastTime.value = data.shotTime || ''
 
   containerState.value = data
   describeText.value = ''
@@ -430,31 +448,27 @@ function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
   return inShowBadgeStatus(value) && containerState.value.runStatus === value
 }
 
-function registAndListenContainerStatsUpdate(containerId: string) {
+function registAndListenContainerStatsUpdate(info: Panel.ItemInfo) {
+  // const containerId = info.expandParam.containerId
+  const containerId = itemCardInfo.value.expandParam.containerId
+  // const containerName = info.expandParam.containerName
+  // const containerName = itemCardInfo.value.expandParam.containerName
+  // const cardId = itemCardInfo.value.id
+  // console.log('watch register', cardId, containerName, containerId)
+
   // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
-  if (!isRegistListenFinish) {
-    isRegistListenFinish = true
-
-    watch(() => store.containerRuningStats[containerId], (value) => {
-      const isEmpty = Object.keys(value).length === 0
-
-      if (!isEmpty && value.runStatus) {
-        updateStats(value)
+  if (!unRegisterListenPool[containerId]) {
+    const unRegisterListen = watch(() => store.containerRuningStats[containerId], (value) => {
+      // console.log('watch', cardId, containerName, containerId)
+      if (value && Object.keys(value).length !== 0 && value.runStatus) {
+        updateStats(info, value)
       }
     })
 
+    unRegisterListenPool[containerId] = unRegisterListen
     store.registerContainerQueryStats(containerId)
   }
 }
-
-onMounted(async () => {
-  if (itemCardInfo.value.expandParam.containerId) {
-    await getContainerStatus(true)
-  }
-
-  if (itemCardInfo.value.expandParam.showBadgeStatus)
-    showBadgeStatus.value = itemCardInfo.value.expandParam.showBadgeStatus
-})
 
 function formatMemory(sizeInMB: number): string {
   // 定义单位数组
@@ -491,11 +505,45 @@ function handleDockerErrorMsgClick() {
   // console.log('异常点击', domainLinks.faqLinkWithLang('docker_card_abnormal'))
 }
 
-onUnmounted(() => {
+function unMounted(info: Panel.ItemInfo) {
+  const containerId = info.expandParam.containerId
+  // const containerName = info.expandParam.containerName
+  // console.log('注销卡片', info.id, containerName, containerId)
   // 取消监听容器的状态
-  if (isRegistListenFinish) {
-    store.cancelContainerQueryStats(itemCardInfo.value.expandParam.containerId)
+  if (unRegisterListenPool[containerId]) {
+    unRegisterListenPool[containerId]()
+    store.cancelContainerQueryStats(containerId)
+    delete unRegisterListenPool[containerId]
+
+    // console.log('成功注销卡片', info.id, containerName, containerId)
   }
+}
+
+async function mounted(info: Panel.ItemInfo) {
+  if (info.expandParam.containerId) {
+    await getContainerStatus(info, true)
+  }
+
+  if (info.expandParam.showBadgeStatus)
+    showBadgeStatus.value = info.expandParam.showBadgeStatus
+}
+
+// 因为动态缓存卡片所以要监听变化
+watch(() => props.itemInfo, async () => {
+  // 注销之前的监听
+  unMounted(itemCardInfo.value)
+  itemCardInfo.value = props.itemInfo
+  // console.log('初始化 - 替换', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, itemCardInfo.value.title, itemCardInfo.value.expandParam.containerId)
+  mounted(itemCardInfo.value)
+})
+
+onMounted(() => {
+  // console.log('初始化', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, itemCardInfo.value.title, itemCardInfo.value.expandParam.containerId)
+  mounted(itemCardInfo.value)
+})
+
+onUnmounted(() => {
+  unMounted(itemCardInfo.value)
 })
 </script>
 
