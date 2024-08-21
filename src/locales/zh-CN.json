@@ -271,7 +271,6 @@
     "saveSuccess": "保存成功",
     "serverError": "服务器错误",
     "show": "显示",
-    "solution": "解决方案",
     "sort": "排序",
     "style": "风格",
     "success": "操作成功",
@@ -282,6 +281,7 @@
     "uploadFail": "上传失败",
     "username": "账号",
     "verify": "验证",
+    "viewSolution": "查看解决方案",
     "warning": "警告",
     "yes": "是"
   },

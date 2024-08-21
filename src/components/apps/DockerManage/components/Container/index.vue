@@ -7,10 +7,12 @@ import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { t } from '@/locales'
 import { ProTag } from '@/components/common'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 const loadingList = ref(false)
 let intervalId: any
 const dockerState = useDockerStore()
+const domainLinks = useDomainLinks()
 
 const pagination = {
   pageSize: 10,
@@ -80,38 +82,12 @@ const createColumns = ({
         )
       },
     },
-    {
-      title: t('apps.dockerManage.ports'),
-      key: 'name',
-      width: 60,
-      render(row) {
-        const group = (g: Docker.Container.Port) => {
-          return h(NTag,
-            {
-              size: 'tiny',
-              style: { margin: '0 2px' },
-              type: 'info',
-              title: `(${g.type}) ${g.ip}:${g.publicPort} => ${g.privatePort}`,
-            },
-          `${g.type} ${g.ip}:${g.publicPort}`)
-        }
 
-        const c = []
-        for (const key in row.ports) {
-          if (Object.prototype.hasOwnProperty.call(row.ports, key)) {
-            const element = row.ports[key]
-            if (element.publicPort !== 0 && element.privatePort !== 0) {
-              c.push(group(element))
-            }
-          }
-        }
-
-        return h(NEllipsis, { lineClamp: 2 }, c)
-      },
-    },
     {
       title: t('apps.dockerManage.state'),
+      align: 'center',
       key: 'state',
+      width: 100,
       render(row) {
         const tagArg: {
           type: 'default' | 'success' | 'error' | 'warning' | 'primary' | 'info' | undefined
@@ -171,6 +147,35 @@ const createColumns = ({
       },
     },
     {
+      title: t('apps.dockerManage.ports'),
+      key: 'name',
+      width: 60,
+      render(row) {
+        const group = (g: Docker.Container.Port) => {
+          return h(NTag,
+            {
+              size: 'tiny',
+              style: { margin: '0 2px' },
+              type: 'info',
+              title: `(${g.type}) ${g.ip}:${g.publicPort} => ${g.privatePort}`,
+            },
+          `${g.type} ${g.ip}:${g.publicPort}`)
+        }
+
+        const c = []
+        for (const key in row.ports) {
+          if (Object.prototype.hasOwnProperty.call(row.ports, key)) {
+            const element = row.ports[key]
+            if (element.publicPort !== 0 && element.privatePort !== 0) {
+              c.push(group(element))
+            }
+          }
+        }
+
+        return h(NEllipsis, { lineClamp: 2 }, c)
+      },
+    },
+    {
       title: t('apps.dockerManage.resourceOverview'),
       key: 'resource',
       width: 200,
@@ -225,6 +230,9 @@ const createColumns = ({
         ]
       },
       key: 'action',
+      fixed: 'right',
+      width: 100,
+      align: 'center',
       render(row) {
         return h(
           RowAction,
@@ -287,6 +295,9 @@ onUnmounted(() => {
 
     <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable>
       {{ dockerState.refreshContainerListErrorMsg }}
+      <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
+        [{{ t('common.viewSolution') }}]
+      </a>
     </NAlert>
 
     <NDataTable

@@ -630,7 +630,7 @@ onUnmounted(() => {
                         <div class="max-w-[300px]">
                           {{ badgeMsg }}: {{ dockerErrorMsg }}
                           <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_card_abnormal')">
-                            [{{ t('common.solution') }}]
+                            [{{ t('common.viewSolution') }}]
                           </a>
                         </div>
                       </STip>
