@@ -2,7 +2,7 @@
 import { NButton, NCard, NForm, NFormItem, NInput, NSelect, NSwitch, useMessage, useOsTheme } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
 import { login } from '@/api'
-import { useAppStore, useAuthStore } from '@/store'
+import { useAppStore, useAuthStore, usePanelState } from '@/store'
 import { SvgIcon } from '@/components/common'
 import { router } from '@/router'
 import { t } from '@/locales'
@@ -15,6 +15,7 @@ import { defaultSetting } from '@/store/modules/app/helper'
 // const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
+const panelState = usePanelState()
 const osTheme = useOsTheme()
 const ms = useMessage()
 const loading = ref(false)
@@ -39,6 +40,7 @@ const loginPost = async () => {
     if (res.code === 0) {
       authStore.setToken(res.data.token)
       authStore.setUserInfo(res.data)
+      panelState.reset() // 重置面板配置
 
       setTimeout(() => {
         ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
