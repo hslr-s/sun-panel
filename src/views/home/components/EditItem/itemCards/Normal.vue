@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import {
-  NButton, NCard, NDivider, NFormItem, NGrid, NGridItem, NInput,
-  NInputGroup, NSelect, useMessage,
+  NButton, NCard, NDivider, NFlex, NFormItem, NGrid, NGridItem,
+  NInput, NInputGroup, NSelect, useMessage,
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import IconEditor from '../IconEditor.vue'
 import { verifyUrlHttp } from './common'
 import { t } from '@/locales'
 import { getSiteFavicon } from '@/api/panel/itemIcon'
+import { STip } from '@/components/common'
 
 const props = defineProps<{
   itemInfo: Panel.Info
@@ -97,7 +98,16 @@ onMounted(() => {
       </NGridItem>
     </NGrid>
 
-    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
+    <NFormItem path="icon">
+      <template #label>
+        <NFlex align="center">
+          {{ $t('iconItem.icon.iconStyle') }}
+          <STip class="cursor-pointer">
+            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+          </STip>
+        </NFlex>
+      </template>
       <NCard size="small">
         <IconEditor v-model:item-icon="model.icon" />
       </NCard>
