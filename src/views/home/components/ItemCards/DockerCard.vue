@@ -319,7 +319,7 @@ async function fixCardDockerContainerIdByContainerName(info: Panel.ItemInfo) {
       // 更新卡片信息
       itemIconEditApi(itemCardInfo.value).then(() => {
         registAndListenContainerStatsUpdate(itemCardInfo.value)
-        getContainerStatus(info, true)
+        getContainerStatus(info)
       }).catch(() => {
         // 更新卡片失败
         setContainerStatusError(t('iconItem.dockerContainerError'))
@@ -530,6 +530,9 @@ async function mounted(info: Panel.ItemInfo) {
 
 // 因为动态缓存卡片所以要监听变化
 watch(() => props.itemInfo, async () => {
+  if (itemCardInfo.value.expandParam.containerId === props.itemInfo.expandParam.containerId) {
+    return
+  }
   // 注销之前的监听
   unMounted(itemCardInfo.value)
   itemCardInfo.value = props.itemInfo
