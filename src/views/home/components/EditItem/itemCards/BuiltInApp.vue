@@ -93,6 +93,7 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
             label-field="name"
             value-field="componentName"
             :options="apps"
+            filterable
             @update:value="handleSystemChange"
           />
         </NFormItem>

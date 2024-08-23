@@ -180,6 +180,7 @@ function handleChange(value: string, appInfo: SystemApp) {
           <NSelect
             v-model:value="model.expandParam.containerId"
             :loading="containerListLoading"
+            filterable
             label-field="name"
             value-field="id"
             :options="containers"
