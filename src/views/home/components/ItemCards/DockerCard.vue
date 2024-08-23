@@ -298,7 +298,7 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
     // 失败
     loading.value = false
     if (res.code === -1) {
-      dockerErrorMsg.value = res.msg
+      setContainerStatusError(res.msg)
       return
     }
 
@@ -402,8 +402,7 @@ function updateStats(info: Panel.ItemInfo, data: Docker.Container.Stats) {
   describeText.value = ''
 
   if (data.errorMessage !== '') {
-    badgeMsg.value = t('iconItem.dockerContainerError')
-    dockerErrorMsg.value = data.errorMessage
+    setContainerStatusError(data.errorMessage)
   }
 
   if (containerState.value.runStatus) {
@@ -412,16 +411,21 @@ function updateStats(info: Panel.ItemInfo, data: Docker.Container.Stats) {
     switch (containerState.value.runStatus) {
       case DockerContainerInfoState.running:
         badgeStatusColor.value = '#18A058'
+        dockerErrorMsg.value = ''
         break
+
       case DockerContainerInfoState.restarting:
         badgeStatusColor.value = '#F0A020FF'
+        dockerErrorMsg.value = ''
         break
+
       case DockerContainerInfoState.error:
         badgeStatusColor.value = 'red'
         break
 
       default:
         badgeStatusColor.value = '#7B7B7B'
+        dockerErrorMsg.value = ''
         break
     }
     // console.log(describeText.value, badgeStatusColor.value)
