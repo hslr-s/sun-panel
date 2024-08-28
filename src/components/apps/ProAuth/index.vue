@@ -101,6 +101,10 @@ async function refreshStatus() {
   await refreshStatusApi().then(() => {
     getStatus()
   }).catch((error) => {
+    if (error.code === 1414) {
+      ms.error(t('apps.proAuth.serverError'))
+      return
+    }
     apiRespErrMsg(error)
   })
   proAuthorizeStore.refreshProAuthStatus()
@@ -282,22 +286,6 @@ onMounted(() => {
       </NAlert>
 
       <br>
-
-      <!-- <NAlert type="info" title="常见问题" :bordered="false">
-      <p>
-        Q：为什么会频繁让我手动登录
-      </p>
-      <p>
-        A：可能原因：授权账号在其他客户端登录、修改了账号密码、程序升级重装或者其他破解原因造成
-      </p>
-      <br>
-      <p>
-        Q：可以离线授权吗
-      </p>
-      <p>
-        A：由于Docker容器可移植特性，暂没有好的方案离线授权，如果日后找到解决方案，会增加离线授权，目前必须在线授权
-      </p>
-    </NAlert> -->
 
       <RoundCardModal v-model:show="loginModalShow" style="width:400px" :title="t('apps.proAuth.loginSunPanel')">
         <div class="flex items-center">

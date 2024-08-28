@@ -71,8 +71,20 @@ func (p *ProAuthApi) GetStatus(c *gin.Context) {
 func (p *ProAuthApi) RefreshStatus(c *gin.Context) {
 	err := biz.ProAuth.AutoLogin()
 	if err != nil {
-		apiReturn.Error(c, err.Error())
-		return
+		if errors.Is(err, proAuth.GetError(proAuth.ErrIncorrectUsernameOrPassword)) {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeIncorrectUsernameOrPassword)
+			return
+		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountDisabled)) {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeIncorrectUsernameOrPassword)
+			return
+		} else if errors.Is(err, proAuth.GetError(proAuth.ErrAccountNotExist)) {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeIncorrectUsernameOrPassword)
+			return
+		} else {
+			global.Logger.Error("biz.ProAuth.Login:", err.Error())
+			apiReturn.Error(c, err.Error())
+			return
+		}
 	}
 	apiReturn.Success(c)
 }
