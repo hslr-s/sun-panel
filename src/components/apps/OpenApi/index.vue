@@ -24,6 +24,8 @@ const tokenInfo = ref<OpenApi.GetTokenStatusInfoResp>({
   token: '',
 })
 
+const urlPath = '/openapi/v1'
+
 function getCurrentDomain() {
   return `${location.protocol}//${location.hostname}${location.port === '' ? '' : (`:${location.port}`)}`
 }
@@ -114,7 +116,7 @@ onMounted(() => {
             {{ t('apps.openApi.apiUrl') }} <span class="text-xs text-slate-400"> {{ t('apps.openApi.autoDomainWarning')
             }}</span>
           </NH4>
-          {{ getCurrentDomain() }}
+          {{ getCurrentDomain() }}{{ urlPath }}
           <NDivider />
         </div>
 
