@@ -15,6 +15,7 @@ import Overlay from './Overlay/index.vue'
 import ProAuthOverlay from './ProAuthOverlay/index.vue'
 import STip from './STip/index.vue'
 import SModal from './SModal/index.vue'
+import Loading from './Loading/index.vue'
 import AccountSwitcherManager from './AccountSwitcherManager/index.vue'
 
 export {
@@ -35,5 +36,6 @@ export {
   ProAuthOverlay,
   STip,
   SModal,
+  Loading,
   AccountSwitcherManager,
 }

@@ -83,10 +83,15 @@ function handleSearchClick() {
   // 如果网址中存在 %s，则直接替换为关键字
   const fullUrl = replaceOrAppendKeywordToUrl(url, keyword.value)
   handleClearSearchTerm()
-  if (state.value.newWindowOpen)
+  if (state.value.newWindowOpen) {
     window.open(fullUrl)
-  else
-    window.location.href = fullUrl
+  }
+  else {
+    if (window.self !== window.top)
+      window.parent.location.href = fullUrl
+    else
+      window.location.href = fullUrl
+  }
 }
 
 function replaceOrAppendKeywordToUrl(url: string, keyword: string) {

@@ -4,7 +4,7 @@ import { NBackTop, NButton, useDialog, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { AppStarter, EditItem, ItemCards } from './components'
 import { AccountSwitcher, Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
-import { SvgIcon } from '@/components/common'
+import { Loading, SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
@@ -29,6 +29,8 @@ const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 const editItemInfoShow = ref<boolean>(false)
 const editItemInfoData = ref<Panel.ItemInfo | null>(null)
 
+const itemCardsLoading = ref(false)
+
 // const dropdownShow = ref(false)
 const currentAddItenIconGroupId = ref<number | undefined>()
 const settingModalShow = ref(false)
@@ -36,8 +38,14 @@ const settingModalShow = ref(false)
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
-function getList() {
+async function getList() {
   filterItems.value = panelState.itemGroupCardCacheData
+
+  // 当缓存的数据为0的时候，显示加载的loading
+  if (filterItems.value.length === 0) {
+    itemCardsLoading.value = true
+  }
+
   // 获取组数据
   getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ code, data, msg }) => {
     if (code === 0) {
@@ -62,6 +70,8 @@ function getList() {
     // console.log(items)
   }).catch((error) => {
     apiRespErrMsg(error)
+  }).finally(() => {
+    itemCardsLoading.value = false
   })
 }
 
@@ -311,6 +321,10 @@ function handleAddItem(itemIconGroupId?: number) {
               :allow-edit="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
               :show-title="panelState.panelConfig.systemMonitorShowTitle"
             />
+          </div>
+
+          <div v-show="itemCardsLoading" class="mt-20">
+            <Loading />
           </div>
 
           <!-- 组纵向排列 -->

@@ -115,7 +115,7 @@
       "dockerError": "Something went wrong with Docker",
       "exited": "Exited",
       "paused": "Paused",
-      "ports": "port",
+      "ports": "Ports",
       "removing": "Removing",
       "resourceOverview": "Resource overview",
       "restarting": "Restarting",
@@ -292,6 +292,7 @@
     "uploadFail": "Upload failed",
     "username": "Username",
     "verify": "Verify",
+    "viewSolution": "View solutions",
     "warning": "Warning",
     "yes": "Yes"
   },

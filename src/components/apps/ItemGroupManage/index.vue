@@ -194,7 +194,7 @@ watch(() => editModalArg.value.show, (v) => {
           <div v-for="(item, index) in groups" :key="index" class="w-full">
             <NCard size="small" style="border-radius:10px;margin-bottom: 10px;" class="card">
               <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
-                <div class="flex items-center">
+                <div class="flex items-center cursor-pointer" @click="handleEditGroup(item)">
                   <span class="mr-[10px]">
                     <SvgIcon class="text-[20px]" icon="material-symbols:ad-group-outline-rounded" />
                   <!-- <SvgIcon class="text-[20px]" :icon="item.icon" /> -->

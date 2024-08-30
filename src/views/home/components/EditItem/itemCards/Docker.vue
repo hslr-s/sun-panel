@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   NButton, NCard, NCheckbox, NCheckboxGroup,
-  NFormItem, NGrid, NGridItem, NInput,
+  NFlex, NFormItem, NGrid, NGridItem, NInput,
   NInputGroup, NSelect, NSpace, NSwitch, useMessage,
 } from 'naive-ui'
 
@@ -180,6 +180,7 @@ function handleChange(value: string, appInfo: SystemApp) {
           <NSelect
             v-model:value="model.expandParam.containerId"
             :loading="containerListLoading"
+            filterable
             label-field="name"
             value-field="id"
             :options="containers"
@@ -204,7 +205,16 @@ function handleChange(value: string, appInfo: SystemApp) {
       </NCheckboxGroup>
     </NFormItem>
 
-    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
+    <NFormItem path="icon">
+      <template #label>
+        <NFlex align="center">
+          {{ $t('iconItem.icon.iconStyle') }}
+          <STip class="cursor-pointer">
+            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+          </STip>
+        </NFlex>
+      </template>
       <NCard size="small">
         <IconEditor v-model:item-icon="model.icon" />
       </NCard>

@@ -15,6 +15,7 @@ func InitContainer(router *gin.RouterGroup) {
 	{
 		r.POST("/docker/container/getList", apiDocker.Container.GetList)
 		r.POST("/docker/container/execSwitchActionByContainerID", apiDocker.Container.ExecSwitchActionByContainerID)
+		r.POST("/docker/container/getContainerIDByName", apiDocker.Container.GetContainerIDByName)
 	}
 
 	// 公开模式（仅可以获取容器的状态）

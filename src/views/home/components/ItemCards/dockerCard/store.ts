@@ -98,7 +98,7 @@ export const useDockerCardStore = defineStore('docker-card', () => {
 
   onMounted(() => {
     refreshContainerListStats()
-    console.log('docker状态定时器启动')
+    // console.log('docker状态定时器启动')
     setInterval(() => {
       if (containerQueryIds.length !== 0)
         refreshContainerListStats()

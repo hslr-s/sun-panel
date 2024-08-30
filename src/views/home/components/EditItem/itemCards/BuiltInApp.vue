@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { NCard, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
+import { NCard, NFlex, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
 import IconEditor from '../IconEditor.vue'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
-import { AppLoader, RoundCardModal } from '@/components/common/'
+import { AppLoader, RoundCardModal, STip } from '@/components/common/'
 import { useAuthStore } from '@/store'
 import { AdminAuthRole } from '@/enums/admin'
 
@@ -93,6 +93,7 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
             label-field="name"
             value-field="componentName"
             :options="apps"
+            filterable
             @update:value="handleSystemChange"
           />
         </NFormItem>
@@ -104,7 +105,16 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
       </NGridItem>
     </NGrid>
 
-    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
+    <NFormItem path="icon">
+      <template #label>
+        <NFlex align="center">
+          {{ $t('iconItem.icon.iconStyle') }}
+          <STip class="cursor-pointer">
+            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+          </STip>
+        </NFlex>
+      </template>
       <NCard size="small">
         <IconEditor v-model:item-icon="model.icon" />
       </NCard>
