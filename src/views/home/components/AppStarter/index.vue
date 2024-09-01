@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
 import { useAuthStore } from '@/store'
 import { AppLoader, SModal, SvgIcon } from '@/components/common'
@@ -61,6 +61,12 @@ function handleResize() {
 //   height.value = 'calc(100vh - 70px)'
 //   maxWidth.value = '100vw'
 // }
+
+// 触发更新菜单
+watch(() => authStore.userInfo?.role, () => {
+  if (authStore.userInfo?.role === 1)
+    apps.value = apps.value.concat(adminSystemApps)
+})
 
 onMounted(() => {
   const adminApps = adminSystemApps
