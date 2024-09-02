@@ -249,6 +249,7 @@
     "export": "Export",
     "exportSuccess": "Exported successfully",
     "failed": "Operation failed",
+    "goToLogin": "Go to login",
     "icon": "Icon",
     "image": "Image",
     "import": "Import",
