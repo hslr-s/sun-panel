@@ -2,10 +2,10 @@
 import type { WatchStopHandle } from 'vue'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { DropdownOption } from 'naive-ui'
-import { NDropdown, NEllipsis, NFlex, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
+import { NDropdown, NEllipsis, NFlex, NSpin, useMessage } from 'naive-ui'
 import { useDockerCardStore } from './dockerCard/store'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
-import { ItemCard, ItemIcon, STip } from '@/components/common'
+import { IframeLayer, ItemCard, ItemIcon, STip } from '@/components/common'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { DockerContainerInfoState } from '@/enums/docker'
@@ -48,7 +48,7 @@ const ms = useMessage()
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
 const windowTitle = ref<string>('')
-const windowIframeRef = ref(null)
+// const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
 
 const itemCardInfo = ref(props.itemInfo)
@@ -111,9 +111,9 @@ function openPage(openMethod: number, url: string, title?: string) {
   }
 }
 
-function handWindowIframeIdLoad(payload: Event) {
-  windowIframeIsLoad.value = false
-}
+// function handWindowIframeIdLoad(payload: Event) {
+//   windowIframeIsLoad.value = false
+// }
 
 const textColor = computed(() => {
   const luminance = calculateLuminance(props.backgroundColor || defaultBackground)
@@ -659,7 +659,16 @@ onUnmounted(() => {
     />
 
     <!-- 弹窗 -->
-    <NModal
+    <IframeLayer
+      v-model:show="windowShow"
+      :title="windowTitle"
+      :src="windowSrc"
+      move
+      resize
+    />
+
+    <!-- 旧弹窗 -->
+    <!-- <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
       style="max-width: 1200px;height: 650px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
@@ -684,7 +693,7 @@ onUnmounted(() => {
           class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
         />
       </div>
-    </NModal>
+    </NModal> -->
   </div>
 </template>
 

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { NDropdown, NModal, NSkeleton, NSpin } from 'naive-ui'
+import { NDropdown } from 'naive-ui'
 import type { DropdownOption } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { useAuthStore, usePanelState } from '@/store'
+import { IframeLayer } from '@/components/common'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
@@ -30,7 +31,6 @@ const authStore = useAuthStore()
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
 const windowTitle = ref<string>('')
-const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
 
 const dropdownMenuX = ref(0)
@@ -71,9 +71,9 @@ function openPage(openMethod: number, url: string, title?: string) {
   }
 }
 
-function handWindowIframeIdLoad(payload: Event) {
-  windowIframeIsLoad.value = false
-}
+// function handWindowIframeIdLoad(payload: Event) {
+//   windowIframeIsLoad.value = false
+// }
 
 // 点击项目
 function handleItemClick() {
@@ -223,7 +223,16 @@ function onClickoutside() {
     />
 
     <!-- 弹窗 -->
-    <NModal
+    <IframeLayer
+      v-model:show="windowShow"
+      :title="windowTitle"
+      :src="windowSrc"
+      move
+      resize
+    />
+
+    <!-- 旧弹窗 -->
+    <!-- <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
       style="max-width: 1200px;height: 650px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
@@ -248,6 +257,6 @@ function onClickoutside() {
           class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
         />
       </div>
-    </NModal>
+    </NModal> -->
   </div>
 </template>

@@ -17,6 +17,8 @@ import STip from './STip/index.vue'
 import SModal from './SModal/index.vue'
 import Loading from './Loading/index.vue'
 import AccountSwitcherManager from './AccountSwitcherManager/index.vue'
+import FreeLayer from './FreeLayer/index.vue'
+import IframeLayer from './IframeLayer/index.vue'
 
 export {
   Verification,
@@ -38,4 +40,6 @@ export {
   SModal,
   Loading,
   AccountSwitcherManager,
+  FreeLayer,
+  IframeLayer,
 }
