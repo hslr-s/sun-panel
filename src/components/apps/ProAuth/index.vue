@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import moment from 'moment'
-import { onMounted, ref } from 'vue'
+import { h, onMounted, ref } from 'vue'
 import {
   NAlert, NButton, NCard, NDivider, NEllipsis, NForm,
   NFormItem, NInput, NSwitch, useDialog, useMessage,
@@ -15,6 +15,8 @@ import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
 import { useAppStore, useProAuthorizeStore } from '@/store'
+
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface ProCardParam {
   nickName?: string
@@ -95,13 +97,43 @@ async function login(username: string, password: string) {
   loginLoading.value = false
 }
 
+async function logout() {
+  await logoutApi().then(() => {
+    getStatus()
+    loginModalShow.value = false
+    proAuthorizeStore.refreshProAuthStatus()
+  })
+}
+
 async function refreshStatus() {
   refreshLoading.value = true
 
   await refreshStatusApi().then(() => {
     getStatus()
   }).catch((error) => {
-    if (error.code === 1414) {
+    if (error.code === 1009) {
+      ms.error(() => {
+        return [
+          h('span', `${t('apps.proAuth.tokenExpired')}`),
+          h(NButton, {
+            onClick: () => {
+              const { faqLinkWithLang } = useDomainLinks()
+              // faq_proAccountInvalid_zh_cn
+              window.open(faqLinkWithLang('proAccountInvalid'))
+            },
+            type: 'error',
+            style: { marginLeft: '10px' },
+            size: 'tiny',
+          }, t('common.viewReason')),
+        ]
+      }, {
+        duration: 60000,
+        closable: true,
+      })
+      logout()
+      return
+    }
+    else if (error.code === 1414) {
       ms.error(t('apps.proAuth.serverError'))
       return
     }
@@ -111,7 +143,7 @@ async function refreshStatus() {
   refreshLoading.value = false
 }
 
-function logout() {
+function handleLogout() {
   dialog.warning({
     title: t('common.warning'),
     content: t('apps.proAuth.logoutConfirm'),
@@ -120,10 +152,7 @@ function logout() {
     onPositiveClick: () => {
       const a = async () => {
         try {
-          await logoutApi()
-          getStatus()
-          loginModalShow.value = false
-          proAuthorizeStore.refreshProAuthStatus()
+          logout()
         }
         catch (error) {
           apiRespErrMsg(error)
@@ -210,7 +239,7 @@ onMounted(() => {
                   <span>
                     {{ proCardParam?.username }}
                   </span>
-                  <span class="cursor-pointer ml-2" :title="t('apps.proAuth.logout')" @click="logout">
+                  <span class="cursor-pointer ml-2" :title="t('apps.proAuth.logout')" @click="handleLogout">
                     <SvgIconOnline icon="tabler:logout" class="w-[20px] h-[20px]" :title="t('apps.proAuth.logout')" />
                   </span>
                 </div>

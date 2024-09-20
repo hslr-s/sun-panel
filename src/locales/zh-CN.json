@@ -197,6 +197,7 @@
       "registerAccount": "没有账号，去注册",
       "serverError": "授权服务器出错了，请稍后再试",
       "textDescription": "由于作者需要维持生计，故而在项目中增添了一些仅限Pro授权用户享有的特色功能。若您愿意，可以通过授权平台购买支持，这不仅是对作者辛勤开发的认可，更是激励作者继续探索、增添更多精彩功能的动力源泉。此项支持完全基于您的自愿，作者深知您的慷慨与信任，因此，即便在未来增加更多优秀Pro功能的同时，也依然会不断推出免费的功能，敬请期待...❤️❤️❤️",
+      "tokenExpired": "授权账号登录已失效，请刷新页面后重新登录",
       "username": "账号",
       "usernameWithPasswordIsNotEmpty": "账号和密码不可以为空"
     },
@@ -293,6 +294,7 @@
     "uploadFail": "上传失败",
     "username": "账号",
     "verify": "验证",
+    "viewReason": "查看原因",
     "viewSolution": "查看解决方案",
     "warning": "警告",
     "yes": "是"

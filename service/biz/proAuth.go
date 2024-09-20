@@ -355,6 +355,42 @@ func (p *ProAuthType) Ping() error {
 	return nil
 }
 
+func (p *ProAuthType) RefreshInfo() error {
+	global.Logger.Debug("API: RefreshInfo")
+	param := proAuth.RefreshInfoReq{}
+	param.Base = p.GetBase()
+
+	// 无需验证授权，正常是统计接口
+	if p.ProAuthDataShortTerm == nil {
+		p.ProAuthDataShortTerm = &ProAuthDataShortTerm{}
+	}
+	param.Token = p.ProAuthDataShortTerm.Token
+
+	// ClientId不存在将注册设备
+	if param.ClientId == nil || *param.ClientId == "" {
+		p.Register()
+	}
+	resp, err := proAuth.RefreshInfo(param)
+
+	if err != nil {
+		// p.LoginStatus = false
+		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrManualLogin, err)) {
+			p.Reset()
+		} else if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrAccountDisabled, err)) {
+			p.Reset()
+		}
+		// p.AutoLoginDisable = true
+		// 在授权期内，忽略其他错误
+		global.Logger.Error("auto login fail:", err.Error())
+		return err
+	}
+
+	p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
+	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
+
+	return nil
+}
+
 // 退出登录
 func (p *ProAuthType) Reset() {
 	p.SetAccountPassword("", "")

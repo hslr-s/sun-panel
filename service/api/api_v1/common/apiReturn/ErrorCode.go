@@ -10,6 +10,7 @@ const (
 	ErrCodeAccountDoesNotExist           = 1006
 	ErrCodeOldPasswordError              = 1007
 	ErrCodeNoPROAuthorization            = 1008
+	ErrCodeTokenExpired                  = 1009
 
 	ErrCodeDatabaseError        = 1200
 	ErrCodePleaseKeepAtLeastOne = 1201
@@ -34,6 +35,7 @@ var ErrorCodeMap = map[int]error{
 	ErrCodeAccountDoesNotExist:           errors.New("account does not exist"),              // 账号不存在
 	ErrCodeOldPasswordError:              errors.New("old password error"),                  // 旧密码不正确
 	ErrCodeNoPROAuthorization:            errors.New("no PRO authorization"),                // 没有PRO授权
+	ErrCodeTokenExpired:                  errors.New("token expired"),                       // token过期
 
 	// 数据类
 	ErrCodeDatabaseError:        errors.New("database error"),           // 数据库错误

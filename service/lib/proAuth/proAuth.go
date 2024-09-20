@@ -89,6 +89,20 @@ func Ping(req PingReq) (pingResp PingResp, err error) {
 	return
 }
 
+func RefreshInfo(req RefreshInfoReq) (pingResp RefreshInfoResp, err error) {
+	req.Timestamp = time.Now().Unix()
+	if code, err := requestCommon(Config.Url+"/api/refreshInfo", req, &pingResp); err != nil {
+		if code != 0 {
+			return pingResp, GetErrorAndDefault(code, err)
+		}
+		return pingResp, err
+	}
+	if err := CheckTimestampDifference(pingResp.Timestamp); err != nil {
+		return pingResp, err
+	}
+	return
+}
+
 func CheckVersion(req CheckVersionReq) (checkVersionResp CheckVersionResp, err error) {
 	req.Timestamp = time.Now().Unix()
 	if code, err := requestCommon(Config.Url+"/api/checkVersion", req, &checkVersionResp); err != nil {
