@@ -340,6 +340,8 @@ func (p *ProAuthType) Ping() error {
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
 	}
+
+	// 此处bug，未获取最新的ClientID
 	resp, err := proAuth.Ping(param)
 	if err != nil {
 		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrTokenExpires, err)) {
