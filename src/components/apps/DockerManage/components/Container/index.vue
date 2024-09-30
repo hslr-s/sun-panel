@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { h, onMounted, onUnmounted, ref } from 'vue'
+import { h, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { NAlert, NDataTable, NEllipsis, NSpace, NTag } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
+import type { ComponentPublicInstance } from 'vue'
 import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
@@ -13,48 +14,10 @@ const loadingList = ref(false)
 let intervalId: any
 const dockerState = useDockerStore()
 const domainLinks = useDomainLinks()
+const nSpace = ref<HTMLElement | ComponentPublicInstance | null>(null)
+const dataTableHeight = ref(0)
 
-const pagination = {
-  pageSize: 10,
-}
-
-// async function getContainerList() {
-//   await getContainerListApi<Common.ListResponse<Docker.Container.Info[]>>().then((res) => {
-//     containerList.value = res.data.list
-//     for (let i = 0; i < res.data.list.length; i++) {
-//       const element = res.data.list[i]
-//       containerRuningState.value[element.id] = {
-//       } as Docker.Container.Stats
-//       if (element.state === DockerContainerInfoState.running) {
-//         containerRuningIds.value.push(element.id)
-
-//         getContainersStats()
-//       }
-//     }
-//   }).catch((res) => {
-//     if (res.code === -1) {
-//       ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
-//         closable: true,
-//         duration: 10000,
-//         keepAliveOnHover: true,
-//       })
-//     }
-//   })
-// }
-
-// async function getContainersStats() {
-//   await getContainersStatsApi<{ [key: string]: Docker.Container.Stats }>(containerRuningIds.value).then((res) => {
-//     containerRuningState.value = res.data
-//   }).catch((res) => {
-//     // if (res.code === -1) {
-//     //   ms.error(`${t('apps.dockerManage.dockerError')}: ${res.msg}`, {
-//     //     closable: true,
-//     //     duration: 10000,
-//     //     keepAliveOnHover: true,
-//     //   })
-//     // }
-//   })
-// }
+const alertBoxRef = ref<HTMLElement | ComponentPublicInstance | null>(null)
 
 const createColumns = ({
   sendMail,
@@ -65,20 +28,14 @@ const createColumns = ({
     {
       title: t('apps.dockerManage.containerName'),
       key: 'name',
-      width: 400,
+      minWidth: 300,
+      sorter: 'default',
       render(row) {
-        const rowInfo = h(
+        return h(
           RowName,
           {
             value: row,
           },
-        )
-        return h(
-          'div',
-          {
-            style: { minWidth: 200 },
-          },
-          rowInfo,
         )
       },
     },
@@ -148,8 +105,8 @@ const createColumns = ({
     },
     {
       title: t('apps.dockerManage.ports'),
-      key: 'name',
-      width: 60,
+      key: 'port',
+      width: 200,
       render(row) {
         const group = (g: Docker.Container.Port) => {
           return h(NTag,
@@ -272,6 +229,8 @@ const columns = createColumns({
 })
 
 onMounted(async () => {
+  handleResize()
+  window.addEventListener('resize', handleResize)
   loadingList.value = true
   await dockerState.refreshContainerList()
   loadingList.value = false
@@ -281,30 +240,46 @@ onMounted(async () => {
   }, 5000) // 5000毫秒，即5秒
 })
 
+function handleResize() {
+  nextTick(() => {
+    if (nSpace.value && alertBoxRef.value) {
+      const nspaceElement = (nSpace.value as ComponentPublicInstance)?.$el || nSpace.value
+      const alertboxElement = (alertBoxRef.value as ComponentPublicInstance)?.$el || alertBoxRef.value
+      const nSpaceHeight = nspaceElement ? nspaceElement.offsetHeight : 0
+      const alertboxHeight = alertboxElement ? alertboxElement?.offsetHeight : 0
+      dataTableHeight.value = nSpaceHeight - 50 - alertboxHeight
+    }
+  })
+}
+
 onUnmounted(() => {
   clearInterval(intervalId)
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
 <template>
-  <NSpace vertical :size="12">
+  <NSpace ref="nSpace" vertical :size="12" style="height: 100%;">
     <!-- 没有PRO授权仅能查看状态，不可以操作。 -->
-    <NAlert type="info" closable>
-      {{ t('apps.dockerManage.alertText') }}
-    </NAlert>
 
-    <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable>
-      {{ dockerState.refreshContainerListErrorMsg }}
-      <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
-        [{{ t('common.viewSolution') }}]
-      </a>
-    </NAlert>
+    <div ref="alertBoxRef">
+      <NAlert type="info" closable @after-leave="handleResize">
+        {{ t('apps.dockerManage.alertText') }}
+      </NAlert>
+
+      <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable @after-leave="handleResize">
+        {{ dockerState.refreshContainerListErrorMsg }}
+        <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
+          [{{ t('common.viewSolution') }}]
+        </a>
+      </NAlert>
+    </div>
 
     <NDataTable
+      :max-height="dataTableHeight"
       :bordered="false" size="small"
       :data="dockerState.containerList"
       :columns="columns"
-      :pagination="pagination"
       :loading="loadingList"
     />
   </NSpace>
