@@ -4,7 +4,9 @@ import (
 	// "calendar-note-gin/assets"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"path"
@@ -216,4 +218,12 @@ func AssetsTakeFileToPath(assetsPath, targetPath string) error {
 // 密码加密
 func PasswordEncryption(password string) string {
 	return Md5(Md5(Md5(password)))
+}
+
+func AnyToJsonStr(anyData any) string {
+	bjson, err := json.Marshal(anyData)
+	if err != nil {
+		log.Panicln("to json error", anyData, "err:", err)
+	}
+	return string(bjson)
 }
