@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineEmits, onMounted, ref } from 'vue'
+import { defineEmits, onBeforeUnmount, onMounted, ref } from 'vue'
 import { NAvatar, NCheckbox, NModal } from 'naive-ui'
 import SearchBoxSetting from './SearchBoxSetting.vue'
 import type { SearchSaveDataType } from './base'
@@ -30,6 +30,7 @@ const moduleConfig = useModuleConfig()
 const authStore = useAuthStore()
 const searchTerm = ref('')
 const isFocused = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null) // 输入框的 ref
 const searchSelectListShow = ref(false)
 const searchBoxSettingShow = ref(false)
 
@@ -138,8 +139,33 @@ function handleUpdateOpenMethod() {
   moduleConfig.saveToCloud(moduleConfigName, state.value)
 }
 
+function handleKeyPress(event: KeyboardEvent) {
+  if (event.key === '/') {
+    // const input = document.querySelector('.search-box input') as HTMLInputElement
+    const input = searchInputRef.value
+
+    if (input) {
+      if (!input.matches(':focus')) {
+        // 如果输入框没有焦点，则设置焦点并阻止默认行为
+        event.preventDefault()
+        input.focus()
+      }
+      // else {
+      //   // 如果输入框已经有焦点，则允许默认行为（输入"/"）
+      //   // 不需要调用 event.preventDefault()
+      // }
+    }
+  }
+}
+
 onMounted(() => {
+  window.addEventListener('keydown', handleKeyPress)
+
   getData()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyPress)
 })
 </script>
 
@@ -154,7 +180,7 @@ onMounted(() => {
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>
 
-      <input v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
+      <input ref="searchInputRef" v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
 
       <div v-if="searchTerm !== ''" class="search-box-btn-clear w-[25px] mr-[10px] flex justify-center cursor-pointer" @click="handleClearSearchTerm">
         <SvgIcon style="width: 20px;height: 20px;" icon="line-md:close-small" />
