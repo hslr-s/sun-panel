@@ -274,6 +274,8 @@ func (p *ProAuthType) AutoLogin() error {
 
 	p.AutoLoginDisable = false
 	p.LoginStatus = true
+
+	global.Logger.Debugln("自动邓罗", cmn.AnyToJsonStr(p))
 	return nil
 }
 
@@ -341,7 +343,7 @@ func (p *ProAuthType) Ping() error {
 		p.Register()
 	}
 
-	// 此处bug，未获取最新的ClientID
+	param.Base = p.GetBase() // 重新获取ClientId
 	resp, err := proAuth.Ping(param)
 	if err != nil {
 		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrTokenExpires, err)) {
@@ -372,25 +374,35 @@ func (p *ProAuthType) RefreshInfo() error {
 	if param.ClientId == nil || *param.ClientId == "" {
 		p.Register()
 	}
-	resp, err := proAuth.RefreshInfo(param)
+
+	respAny, err := p.requestAndAutoUpdateToken(func() (any, error) {
+		param.Token = p.ProAuthDataShortTerm.Token
+		// global.Logger.Debugln("refreshInfo JSON:", cmn.AnyToJsonStr(param))
+		return proAuth.RefreshInfo(param)
+	})
 
 	if err != nil {
-		// p.LoginStatus = false
-		if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrManualLogin, err)) {
-			p.Reset()
-		} else if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrAccountDisabled, err)) {
-			p.Reset()
-		}
-		// p.AutoLoginDisable = true
-		// 在授权期内，忽略其他错误
-		global.Logger.Error("auto login fail:", err.Error())
+		// if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrManualLogin, err)) {
+		// 	p.Reset()
+		// } else if errors.Is(err, proAuth.GetErrorAndDefault(proAuth.ErrAccountDisabled, err)) {
+		// 	p.Reset()
+		// }
+		// // p.AutoLoginDisable = true
+		// // 在授权期内，忽略其他错误
+		global.Logger.Error("refreshInfo fail-1:", err.Error())
 		return err
 	}
 
-	p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
-	p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
+	if resp, ok := respAny.(proAuth.RefreshInfoResp); ok {
+		p.ProAuthDataShortTerm.UserInfo = resp.UserInfo
+		p.ProAuthDataShortTerm.ProExpiration = resp.ProExpiration
+		return nil
+	}
 
-	return nil
+	respErr := errors.New("request data error")
+	global.Logger.Error("refreshInfo fail-2:", respErr)
+
+	return respErr
 }
 
 // 退出登录
@@ -584,4 +596,32 @@ func (p *ProAuthType) CheckNewVersion(versionType VersionType) (*LatestVersion, 
 	}
 
 	return v, nil
+}
+
+func (p *ProAuthType) requestAndAutoUpdateToken(request func() (any, error)) (any, error) {
+	// 第一次请求
+	d, reqErr := request()
+	if reqErr == nil {
+		return d, nil // 请求成功，返回数据和 nil 错误
+	}
+
+	// 如果错误是 token 过期
+	if errors.Is(reqErr, proAuth.GetErrorAndDefault(proAuth.ErrTokenExpires, reqErr)) {
+		// 自动更新 token
+		autoErr := p.AutoLogin()
+		if autoErr != nil {
+			return nil, autoErr // 自动登录失败，返回错误
+		}
+
+		global.Logger.Errorln("自动重新登录成功，准备二次调用")
+		// 自动登录成功后，重新尝试请求
+		d, reqErr = request()
+		if reqErr != nil {
+			return nil, reqErr // 第二次请求仍然失败，返回错误
+		}
+		return d, nil // 成功返回数据和 nil 错误
+	}
+
+	// 其他错误直接返回
+	return nil, reqErr
 }
