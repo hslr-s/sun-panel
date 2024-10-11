@@ -45,6 +45,7 @@ const createColumns = ({
       align: 'center',
       key: 'state',
       width: 100,
+      sorter: 'default',
       render(row) {
         const tagArg: {
           type: 'default' | 'success' | 'error' | 'warning' | 'primary' | 'info' | undefined
@@ -267,7 +268,7 @@ onUnmounted(() => {
         {{ t('apps.dockerManage.alertText') }}
       </NAlert>
 
-      <NAlert v-if="dockerState.refreshContainerListErrorMsg" type="error" closable @after-leave="handleResize">
+      <NAlert v-if="dockerState.refreshContainerListErrorMsg" class="mt-2" type="error" closable @after-leave="handleResize">
         {{ dockerState.refreshContainerListErrorMsg }}
         <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
           [{{ t('common.viewSolution') }}]
