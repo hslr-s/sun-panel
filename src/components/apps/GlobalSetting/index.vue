@@ -4,7 +4,7 @@ import axios from 'axios'
 import type { UploadFileInfo } from 'naive-ui'
 import {
   NAlert, NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
-  NInput, NPopconfirm, NUpload, NUploadDragger, useMessage,
+  NInput, NPopconfirm, NSwitch, NUpload, NUploadDragger, useMessage,
 } from 'naive-ui'
 import Custom from './Custom.vue'
 import { useGlobalSitesettingStore } from './store'
@@ -187,6 +187,21 @@ onMounted(() => {
       </div>
 
       <NDivider />
+
+      <div>
+        <div class="text-slate-500 mb-[5px] font-bold">
+          {{ $t('apps.globalSetting.isEnableLoginCaptcha') }}
+          <ProTag />
+        </div>
+        <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
+          <div class="flex items-center mt-[5px]">
+            <NSwitch v-model:value="siteSetting.isEnableLoginCaptcha" />
+          </div>
+        </ProAuthOverlay>
+      </div>
+
+      <NDivider />
+
       <div>
         <div class="text-slate-500 mb-[5px] font-bold">
           {{ $t('apps.globalSetting.loginBackgroundImage') }}

@@ -8,4 +8,5 @@ var (
 	OpenApi       = OpanApiType{}
 	Docker        = DockerType{}
 	Version       = VersionStruct{}
+	Captcha       = CaptchaType{}
 )

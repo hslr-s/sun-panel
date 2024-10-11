@@ -23,6 +23,7 @@ export function defaultSetting(): AppState {
     title: 'Sun-Panel',
     favicoUrl: '',
     loginBackgroundUrl: loginDefaultBackgroundUrl,
+    isEnableLoginCaptcha: false,
   }
 
   return { theme: 'auto', language, siteSetting }

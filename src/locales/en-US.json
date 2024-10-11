@@ -149,6 +149,7 @@
       "customJSAndCssAlert": "If you do not have PRO authorization, you can enter the NAS or server where Sun-Panel is installed, find the \"custom\" path ({path}), modify and save the file directly, and it will still be effective.",
       "favicon": "site icon",
       "iconChangeClearCache": "After saving, clear the browser cache or restart the browser to see the effect.",
+      "isEnableLoginCaptcha": "Enable login captcha",
       "loginBackgroundImage": "Login page background image",
       "personalise": "Site settings",
       "resetWarnText": "Are you sure you want to reset these data?",
@@ -401,6 +402,7 @@
     "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },
   "login": {
+    "captchaCodePlaceholder": "Please enter the captcha",
     "loginButton": "Login",
     "passwordPlaceholder": "Password",
     "usernamePlaceholder": "Username",

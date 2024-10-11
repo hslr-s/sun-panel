@@ -110,7 +110,7 @@ func VerificationCheck(verificationId, vCode string) (errCode int, verificationI
 	}
 
 	// 验证码错误
-	if !captcha.CaptchaVerifyHandle(verificationId, vCode) {
+	if !captcha.CaptchaVerifyHandle(verificationId, vCode, true) {
 		errCode = apiReturn.ERROR_CODE_VERIFICATION_FAIL
 		return
 	}

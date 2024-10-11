@@ -149,6 +149,7 @@
       "customJSAndCssAlert": "如果没有PRO授权，可以进入到安装Sun-Panel的NAS或服务器，找到“自定义”的路径（{path}）直接修改和保存文件，仍然是生效的",
       "favicon": "站点图标",
       "iconChangeClearCache": "保存后，清理浏览器缓存或重启浏览器后可见效果",
+      "isEnableLoginCaptcha": "启用登录验证码",
       "loginBackgroundImage": "登录页背景图片",
       "personalise": "站点设置",
       "resetWarnText": "确定要重置这些数据吗？",
@@ -401,6 +402,7 @@
     "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },
   "login": {
+    "captchaCodePlaceholder": "请输入图中验证码",
     "loginButton": "登录",
     "passwordPlaceholder": "密码",
     "usernamePlaceholder": "账号",

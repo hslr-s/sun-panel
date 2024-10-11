@@ -3,9 +3,9 @@ import { NButton, NCard, NForm, NFormItem, NInput, NSelect, NSwitch, useMessage,
 import type { InputInst } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { Captcha, SvgIcon } from '@/components/common'
 import { login } from '@/api'
 import { useAccountManagerStore, useAppStore, useAuthStore, usePanelState } from '@/store'
-import { SvgIcon } from '@/components/common'
 import { router } from '@/router'
 import { t } from '@/locales'
 import { languageOptions } from '@/utils/defaultData'
@@ -33,6 +33,7 @@ const isDark = computed(() => {
 })
 const languageValue = ref<Language>(appStore.language)
 const siteSetting = ref<GlobalSetting.SiteSetting>(defaultSetting().siteSetting)
+const captchaRef = ref()
 
 const form = ref<Login.LoginReqest>({
   username: defaultUsername.value,
@@ -68,6 +69,9 @@ const loginPost = async () => {
     }
   }
   catch (error) {
+    if (appStore.siteSetting.isEnableLoginCaptcha)
+      captchaRef.value.refresh()
+
     apiRespErrMsg(error)
     loading.value = false
   }
@@ -168,6 +172,13 @@ onMounted(() => {
                 <SvgIcon icon="mdi:password-outline" />
               </template>
             </NInput>
+          </NFormItem>
+
+          <NFormItem v-if="appStore.siteSetting.isEnableLoginCaptcha">
+            <div class="w-[130px] h-[40px] mr-[20px] rounded border flex cursor-pointer">
+              <Captcha ref="captchaRef" src="/api/captcha/getImage" />
+            </div>
+            <NInput v-model:value="form.vcode" size="large" type="text" clearable :placeholder="t('login.captchaCodePlaceholder')" />
           </NFormItem>
 
           <NFormItem style="margin-top: 10px">
