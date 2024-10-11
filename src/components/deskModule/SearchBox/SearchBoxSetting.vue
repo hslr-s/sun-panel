@@ -209,7 +209,7 @@ onMounted(() => {
 
           <div class="ml-auto">
             <div class="flex justify-end">
-              <NButton size="tiny" style="margin-right: 2px;" type="info" quaternary @click="handleEdit(item, index)">
+              <NButton size="tiny" style="margin-right: 2px;" type="success" quaternary @click="handleEdit(item, index)">
                 {{ t('common.edit') }}
               </NButton>
               <NButton size="tiny" type="error" quaternary @click="deleteByIndex(index)">

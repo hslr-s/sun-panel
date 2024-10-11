@@ -169,7 +169,7 @@ function handleChangeTheme(value: Theme) {
         <div v-if="!isEditNickNameStatus">
           {{ authStore.userInfo?.name }}
 
-          <NButton size="small" text type="info" @click="isEditNickNameStatus = !isEditNickNameStatus">
+          <NButton size="small" text type="success" @click="isEditNickNameStatus = !isEditNickNameStatus">
             {{ $t('common.edit') }}
           </NButton>
         </div>
@@ -178,7 +178,7 @@ function handleChangeTheme(value: Theme) {
           <div class="max-w-[150px]">
             <NInput v-model:value="nickName" type="text" :placeholder="$t('common.inputPlaceholder')" />
           </div>
-          <NButton size="small" quaternary type="info" @click="handleSaveInfo">
+          <NButton size="small" quaternary type="success" @click="handleSaveInfo">
             {{ $t('common.save') }}
           </NButton>
         </div>
@@ -186,7 +186,7 @@ function handleChangeTheme(value: Theme) {
 
       <NDivider style="margin: 10px 0;" dashed />
       <div>
-        <NButton size="small" text type="info" @click="updatePasswordModalState.show = !updatePasswordModalState.show">
+        <NButton size="small" text type="success" @click="updatePasswordModalState.show = !updatePasswordModalState.show">
           {{ $t('settingUserInfo.updatePassword') }}
         </NButton>
       </div>
