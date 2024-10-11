@@ -248,7 +248,7 @@ function handleResize() {
       const alertboxElement = (alertBoxRef.value as ComponentPublicInstance)?.$el || alertBoxRef.value
       const nSpaceHeight = nspaceElement ? nspaceElement.offsetHeight : 0
       const alertboxHeight = alertboxElement ? alertboxElement?.offsetHeight : 0
-      dataTableHeight.value = nSpaceHeight - 50 - alertboxHeight
+      dataTableHeight.value = nSpaceHeight - 60 - alertboxHeight
     }
   })
 }
@@ -260,7 +260,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <NSpace ref="nSpace" vertical :size="12" style="height: 100%;">
+  <NSpace ref="nSpace" vertical :size="12" style="height: 100%;overflow-y: auto;">
     <!-- 没有PRO授权仅能查看状态，不可以操作。 -->
 
     <div ref="alertBoxRef">
