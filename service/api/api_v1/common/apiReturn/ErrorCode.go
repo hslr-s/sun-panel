@@ -4,6 +4,7 @@ import "errors"
 
 const (
 	ErrCodeNotLoggedIn                   = 1000
+	ErrCodeTokenExpired                  = 1001
 	ErrCodeCaptchaError                  = 1002
 	ErrCodeIncorrectUsernameOrPassword   = 1003
 	ErrCodeAccountDisabledOrNotActivated = 1004
@@ -11,7 +12,6 @@ const (
 	ErrCodeAccountDoesNotExist           = 1006
 	ErrCodeOldPasswordError              = 1007
 	ErrCodeNoPROAuthorization            = 1008
-	ErrCodeTokenExpired                  = 1009
 
 	ErrCodeDatabaseError        = 1200
 	ErrCodePleaseKeepAtLeastOne = 1201
@@ -30,6 +30,7 @@ const (
 
 var ErrorCodeMap = map[int]error{
 	ErrCodeNotLoggedIn:                   errors.New("not logged in yet"),                   // 还未登录
+	ErrCodeTokenExpired:                  errors.New("token expired"),                       // token过期
 	ErrCodeCaptchaError:                  errors.New("captcha Error"),                       // 验证码错误
 	ErrCodeIncorrectUsernameOrPassword:   errors.New("incorrect username or password"),      // 用户名或密码错误
 	ErrCodeAccountDisabledOrNotActivated: errors.New("account disabled or not activated"),   // 账号已停用或未激活
@@ -37,7 +38,6 @@ var ErrorCodeMap = map[int]error{
 	ErrCodeAccountDoesNotExist:           errors.New("account does not exist"),              // 账号不存在
 	ErrCodeOldPasswordError:              errors.New("old password error"),                  // 旧密码不正确
 	ErrCodeNoPROAuthorization:            errors.New("no PRO authorization"),                // 没有PRO授权
-	ErrCodeTokenExpired:                  errors.New("token expired"),                       // token过期
 
 	// 数据类
 	ErrCodeDatabaseError:        errors.New("database error"),           // 数据库错误

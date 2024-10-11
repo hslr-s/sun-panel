@@ -18,7 +18,7 @@ func LoginInterceptor(c *gin.Context) {
 
 	// 没有token信息视为未登录
 	if cToken == "" {
-		apiReturn.ErrorByCode(c, 1000)
+		apiReturn.ErrorByCode(c, apiReturn.ErrCodeNotLoggedIn)
 		c.Abort() // 终止执行后续的操作，一般配合return使用
 		return
 	}
@@ -29,7 +29,7 @@ func LoginInterceptor(c *gin.Context) {
 		token, ok = global.CUserToken.Get(cToken)
 		// 可能已经安全退出或者很久没有使用已过期
 		if !ok || token == "" {
-			apiReturn.ErrorByCode(c, 1001)
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeTokenExpired)
 			c.Abort() // 终止执行后续的操作，一般配合return使用
 			return
 		}
@@ -46,7 +46,7 @@ func LoginInterceptor(c *gin.Context) {
 	mUser := models.User{}
 	// 去库中查询是否存在该用户；否则返回错误
 	if info, err := mUser.GetUserInfoByToken(token); err != nil || info.Token == "" || info.ID == 0 {
-		apiReturn.ErrorCode(c, 1001, global.Lang.Get("login.err_token_expire"), nil)
+		apiReturn.ErrorByCode(c, apiReturn.ErrCodeTokenExpired)
 		c.Abort()
 		return
 	} else {
@@ -67,7 +67,7 @@ func LoginInterceptorDev(c *gin.Context) {
 
 	// 去库中查询是否存在该用户；否则返回错误
 	if info, err := mUser.GetUserInfoByToken(token); err != nil || info.ID == 0 {
-		apiReturn.ErrorCode(c, 1001, global.Lang.Get("login.err_token_expire"), nil)
+		apiReturn.ErrorByCode(c, apiReturn.ErrCodeTokenExpired)
 		c.Abort()
 		return
 	} else {
@@ -82,7 +82,7 @@ func LoginInterceptorDebug(c *gin.Context) {
 	mUser := models.User{}
 	// 去库中查询是否存在该用户；否则返回错误
 	if info, err := mUser.GetUserInfoByUid(1); err != nil || info.ID == 0 {
-		apiReturn.ErrorCode(c, 1001, global.Lang.Get("login.err_token_expire"), nil)
+		apiReturn.ErrorByCode(c, apiReturn.ErrCodeTokenExpired)
 		c.Abort()
 		return
 	} else {
