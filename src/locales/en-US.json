@@ -26,6 +26,7 @@
   },
   "apiErrorCode": {
     "1000": "Not logged in",
+    "1002": "captcha error",
     "1003": "wrong user name or password",
     "1004": "Account has been deactivated or inactivated",
     "1005": "Currently no permission to operate",

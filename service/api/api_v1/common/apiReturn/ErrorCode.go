@@ -4,6 +4,7 @@ import "errors"
 
 const (
 	ErrCodeNotLoggedIn                   = 1000
+	ErrCodeCaptchaError                  = 1002
 	ErrCodeIncorrectUsernameOrPassword   = 1003
 	ErrCodeAccountDisabledOrNotActivated = 1004
 	ErrCodeNoCurrentPermission           = 1005
@@ -29,6 +30,7 @@ const (
 
 var ErrorCodeMap = map[int]error{
 	ErrCodeNotLoggedIn:                   errors.New("not logged in yet"),                   // 还未登录
+	ErrCodeCaptchaError:                  errors.New("captcha Error"),                       // 验证码错误
 	ErrCodeIncorrectUsernameOrPassword:   errors.New("incorrect username or password"),      // 用户名或密码错误
 	ErrCodeAccountDisabledOrNotActivated: errors.New("account disabled or not activated"),   // 账号已停用或未激活
 	ErrCodeNoCurrentPermission:           errors.New("no current permission for operation"), // 当前无权限操作

@@ -51,7 +51,7 @@ func (l LoginApi) Login(c *gin.Context) {
 	if settings.GlobalSettingSiteSetting.IsEnableLoginCaptcha {
 		if err := biz.Captcha.CaptchaVerifyHandle(c, param.VCode, true); err != nil {
 			global.Logger.Errorln("Login error:", err.Error())
-			apiReturn.Error(c, err.Error())
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeCaptchaError)
 			return
 		}
 	}
