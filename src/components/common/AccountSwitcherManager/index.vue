@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { NButton, NDivider, NEllipsis, NFlex, NTag, NText, useDialog } from 'naive-ui'
+import { NButton, NDivider, NEllipsis, NFlex, NSpin, NTag, NText, useDialog } from 'naive-ui'
 import { useAccountManagerStore, useAuthStore, usePanelState, useUserStore } from '@/store'
 import type { AccountInfo } from '@/store/modules/accountManager/helper'
 import { SvgIcon } from '@/components/common'
@@ -26,6 +26,7 @@ const userStore = useUserStore()
 // const loginModalShow = ref(false)
 // const loginModalLoading = ref(false)
 const logoutAllLoading = ref(false)
+const changingUsername = ref('')
 
 // const loginModalForm = ref({
 //   username: '',
@@ -110,13 +111,15 @@ function handleLogoutAll() {
 }
 
 function handleSwitch(item: AccountInfo) {
-  if (!item.loginStatus) {
-    router.push({ path: '/login', query: { username: item.username } })
+  // 当前账号不切换
+  if (item.username === authStore.userInfo?.username) {
     return
   }
 
-  // 当前账号不切换
-  if (item.username === authStore.userInfo?.username) {
+  changingUsername.value = item.username
+
+  if (!item.loginStatus) {
+    router.push({ path: '/login', query: { username: item.username } })
     return
   }
 
@@ -127,7 +130,6 @@ function handleSwitch(item: AccountInfo) {
   }
 
   panelState.resetState()
-  // panelState.setItemGroupCacheData([])
   authStore.setToken(item.cToken)
   authStore.setUserInfo(userInfo)
   location.reload()
@@ -150,7 +152,7 @@ onMounted(() => {
         {{ t('deskModule.accountSwitcher.loggedInAccount') }}
       </div>
       <NFlex justify="end" align="center" :title="t('deskModule.accountSwitcher.addAccount')">
-        <NButton v-if="isPopup" size="tiny" type="info" @click="handleGoToLogin">
+        <NButton v-if="isPopup" size="tiny" type="success" @click="handleGoToLogin">
           <template #icon>
             <SvgIcon icon="mingcute--add-fill" />
           </template>
@@ -176,7 +178,7 @@ onMounted(() => {
             <NEllipsis>
               <NTag
                 v-if="authStore.userInfo?.username === item.username"
-                type="info" size="tiny" class="mr-1"
+                type="success" size="tiny" class="mr-1"
               >
                 {{ t('common.current') }}
               </NTag>
@@ -197,19 +199,29 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- 按钮 -->
-        <NFlex v-if="!(authStore.userInfo?.username === item.username)">
-          <NButton v-if="item.loginStatus" size="tiny" dashed :title="t('common.logout')" @click="handleLogoutItem(item)">
-            <template #icon>
-              <SvgIcon icon="tabler-logout" />
-            </template>
-          </NButton>
+        <!-- 按钮操作区 -->
+        <NFlex>
+          <template v-if="item.username === changingUsername">
+            <NSpin size="tiny">
+              <template #icon>
+                <SvgIcon icon="tabler--refresh" />
+              </template>
+            </NSpin>
+          </template>
 
-          <NButton v-else size="tiny" dashed :title="t('common.delete')" @click="handleDeleteItem(item)">
-            <template #icon>
-              <SvgIcon icon="material-symbols-delete" />
-            </template>
-          </NButton>
+          <template v-else-if="!(authStore.userInfo?.username === item.username)">
+            <NButton v-if="item.loginStatus" size="tiny" dashed :title="t('common.logout')" @click="handleLogoutItem(item)">
+              <template #icon>
+                <SvgIcon icon="tabler-logout" />
+              </template>
+            </NButton>
+
+            <NButton v-else size="tiny" dashed :title="t('common.delete')" @click="handleDeleteItem(item)">
+              <template #icon>
+                <SvgIcon icon="material-symbols-delete" />
+              </template>
+            </NButton>
+          </template>
         </NFlex>
       </NFlex>
     </div>
@@ -222,7 +234,7 @@ onMounted(() => {
         </template>
       </NButton> -->
 
-      <NButton size="small" type="info" @click="handleGoToLogin">
+      <NButton size="small" type="success" @click="handleGoToLogin">
         <template #icon>
           <SvgIcon icon="mingcute--add-fill" />
           <!-- <SvgIcon icon="lets-icons--user-add" /> -->

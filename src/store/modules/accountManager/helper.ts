@@ -8,7 +8,6 @@ export interface AccountInfo {
   username: string
   cToken: string
   loginStatus: boolean // 登录状态 false 为失效账号
-
 }
 
 export interface AccountManagerStore {
