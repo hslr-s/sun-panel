@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { NButton, NCard, NForm, NFormItem, NInput, NSelect, NSwitch, useMessage, useOsTheme } from 'naive-ui'
+import type { InputInst } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { login } from '@/api'
 import { useAccountManagerStore, useAppStore, useAuthStore, usePanelState } from '@/store'
 import { SvgIcon } from '@/components/common'
@@ -12,6 +14,7 @@ import { getSiteStting } from '@/api/openness'
 import { apiRespErrMsg, setTitle } from '@/utils/cmn'
 import { defaultSetting } from '@/store/modules/app/helper'
 
+const route = useRoute()
 // const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -20,6 +23,8 @@ const accountManagerStore = useAccountManagerStore()
 const osTheme = useOsTheme()
 const ms = useMessage()
 const loading = ref(false)
+const defaultUsername = ref<string>(route.query.username as string || '')
+const inputpasswordRef = ref<InputInst | null>(null)
 const isDark = computed(() => {
   if (appStore.theme === 'auto')
     return osTheme.value === 'dark'
@@ -30,7 +35,7 @@ const languageValue = ref<Language>(appStore.language)
 const siteSetting = ref<GlobalSetting.SiteSetting>(defaultSetting().siteSetting)
 
 const form = ref<Login.LoginReqest>({
-  username: '',
+  username: defaultUsername.value,
   password: '',
 })
 
@@ -104,6 +109,10 @@ function handleTheme(value: boolean) {
 onMounted(() => {
   setTitle(appStore.siteSetting.title)
   getConfig()
+  if (defaultUsername.value !== '') {
+    form.value.username = defaultUsername.value
+    inputpasswordRef.value?.focus()
+  }
 })
 </script>
 
@@ -154,7 +163,7 @@ onMounted(() => {
           </NFormItem>
 
           <NFormItem>
-            <NInput v-model:value="form.password" type="password" :placeholder="$t('login.passwordPlaceholder')">
+            <NInput ref="inputpasswordRef" v-model:value="form.password" type="password" :placeholder="$t('login.passwordPlaceholder')">
               <template #prefix>
                 <SvgIcon icon="mdi:password-outline" />
               </template>

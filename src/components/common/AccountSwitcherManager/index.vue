@@ -111,6 +111,7 @@ function handleLogoutAll() {
 
 function handleSwitch(item: AccountInfo) {
   if (!item.loginStatus) {
+    router.push({ path: '/login', query: { username: item.username } })
     return
   }
 
@@ -167,7 +168,7 @@ onMounted(() => {
       v-for="item, index in accountManagerStore.accounts"
       :key="index"
       class="my-1 hover:bg-slate-100 dark:hover:bg-slate-500 rounded-lg p-2 transform-all duration-300"
-      :class="!item.loginStatus || authStore.userInfo?.username === item.username ? ' cursor-not-allowed' : 'cursor-pointer'"
+      :class="authStore.userInfo?.username === item.username ? ' cursor-not-allowed' : 'cursor-pointer'"
     >
       <NFlex align="center">
         <div class="mr-auto" style="width: calc(100% - 50px);" @click="handleSwitch(item)">
