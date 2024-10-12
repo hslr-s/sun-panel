@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { NButton, NDivider, NEllipsis, NFlex, NSpin, NTag, NText, useDialog } from 'naive-ui'
-import { useAccountManagerStore, useAuthStore, usePanelState, useUserStore } from '@/store'
+import { useAccountManagerStore, useAuthStore, usePanelState, useProAuthorizeStore, useUserStore } from '@/store'
 import type { AccountInfo } from '@/store/modules/accountManager/helper'
 import { SvgIcon } from '@/components/common'
 import { t } from '@/locales'
@@ -22,11 +22,13 @@ const authStore = useAuthStore()
 const panelState = usePanelState()
 const dialog = useDialog()
 const userStore = useUserStore()
+const proAuthorizeStore = useProAuthorizeStore()
 
 // const loginModalShow = ref(false)
 // const loginModalLoading = ref(false)
 const logoutAllLoading = ref(false)
 const changingUsername = ref('')
+const noProLimitNumber = 2
 
 // const loginModalForm = ref({
 //   username: '',
@@ -34,8 +36,12 @@ const changingUsername = ref('')
 // })
 
 function handleGoToLogin() {
+  if (proAuthorizeStore.isExpired && accountManagerStore.accounts.length > noProLimitNumber) {
+    message.warning(t('deskModule.accountSwitcher.addAccountQuantityLimit', { number: noProLimitNumber }))
+    return
+  }
+
   router.push('/login')
-  // emits('openSetting')
 }
 
 // function handleSubmit() {
@@ -110,6 +116,10 @@ function handleLogoutAll() {
   })
 }
 
+function handleNoProSwitch() {
+  message.warning(t('deskModule.accountSwitcher.addAccountQuantityLimit', { number: noProLimitNumber }))
+}
+
 function handleSwitch(item: AccountInfo) {
   // 当前账号不切换
   if (item.username === authStore.userInfo?.username) {
@@ -170,10 +180,11 @@ onMounted(() => {
       v-for="item, index in accountManagerStore.accounts"
       :key="index"
       class="my-1 hover:bg-slate-100 dark:hover:bg-slate-500 rounded-lg p-2 transform-all duration-300"
-      :class="authStore.userInfo?.username === item.username ? ' cursor-not-allowed' : 'cursor-pointer'"
+      :class="authStore.userInfo?.username === item.username || proAuthorizeStore.isExpired && index > noProLimitNumber - 1 ? ' cursor-not-allowed' : 'cursor-pointer'"
+      :title="proAuthorizeStore.isExpired && index > 1 ? t('deskModule.accountSwitcher.addAccountQuantityLimit', { number: noProLimitNumber }) : ''"
     >
       <NFlex align="center">
-        <div class="mr-auto" style="width: calc(100% - 50px);" @click="handleSwitch(item)">
+        <div class="mr-auto" style="width: calc(100% - 50px);" @click="proAuthorizeStore.isExpired && index > 1 ? handleNoProSwitch() : handleSwitch(item)">
           <div>
             <NEllipsis>
               <NTag

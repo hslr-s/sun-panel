@@ -306,6 +306,7 @@
       "accountExist": "账号已存在，请尝试添加其他账号",
       "accountSwitch": "账号切换",
       "addAccount": "添加其他账号",
+      "addAccountQuantityLimit": "非 RPO 授权，限制账号切换数量为{number}个",
       "failed": "失效",
       "loggedInAccount": "已登录账号",
       "logoutAllConfirmText": "您确定要安全退出全部账号吗？",

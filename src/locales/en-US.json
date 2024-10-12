@@ -306,6 +306,7 @@
       "accountExist": "The account already exists, please try to add another account",
       "accountSwitch": "Account switch",
       "addAccount": "Add another account",
+      "addAccountQuantityLimit": "Non-RPO authorization, the number of account switching is limited to {number}",
       "failed": "Invalid",
       "loggedInAccount": "Already logged in account",
       "logoutAllConfirmText": "Are you sure you want to safely log out of all accounts?",
