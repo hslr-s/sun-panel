@@ -374,7 +374,12 @@ function handleAddItem(itemIconGroupId?: number) {
                 class="icon-info-box"
                 :disabled="!itemGroup.sortStatus"
               >
-                <div v-for="item, index in itemGroup.items" :key="index">
+                <div
+                  v-for="item, index in itemGroup.items"
+                  :id="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                  :key="index"
+                  :class="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
                     :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
@@ -413,7 +418,12 @@ function handleAddItem(itemIconGroupId?: number) {
                 filter=".not-drag"
                 :disabled="!itemGroup.sortStatus"
               >
-                <div v-for="item, index in itemGroup.items" :key="index">
+                <div
+                  v-for="item, index in itemGroup.items"
+                  :id="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                  :key="index"
+                  :class="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
                     :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
