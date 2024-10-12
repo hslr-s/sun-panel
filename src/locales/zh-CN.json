@@ -81,7 +81,7 @@
       "detailIcon": "详情图标",
       "hideDescription": "隐藏描述信息",
       "hideTitle": "隐藏标题",
-      "iconMigrateDescribe": "图标样式已经迁移到分组设置，并支持按分组单独设置样式",
+      "iconMigrateDescribe": "图标样式已经迁移到【分组管理】，并支持按分组单独设置样式",
       "leftRightMargin": "两侧边距",
       "mask": "遮罩",
       "maxWidth": "最大宽度",

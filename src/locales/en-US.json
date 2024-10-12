@@ -81,7 +81,7 @@
       "detailIcon": "Detail icon",
       "hideDescription": "Hide description information",
       "hideTitle": "Hide title",
-      "iconMigrateDescribe": "Icon styles have been migrated to group settings and support setting styles individually by group",
+      "iconMigrateDescribe": "Icon styles have been migrated to [Group Management] and support setting styles individually by group.",
       "leftRightMargin": "Margins on both sides",
       "mask": "Mask",
       "maxWidth": "Max width",
