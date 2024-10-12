@@ -376,9 +376,9 @@ function handleAddItem(itemIconGroupId?: number) {
               >
                 <div
                   v-for="item, index in itemGroup.items"
-                  :id="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                  :id="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
                   :key="index"
-                  :class="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                  :class="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
                 >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
@@ -420,9 +420,9 @@ function handleAddItem(itemIconGroupId?: number) {
               >
                 <div
                   v-for="item, index in itemGroup.items"
-                  :id="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                  :id="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
                   :key="index"
-                  :class="item.onlyName ? `item-name-${item.onlyName}` : ''"
+                  :class="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
                 >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
