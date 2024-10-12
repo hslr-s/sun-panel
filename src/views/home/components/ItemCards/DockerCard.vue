@@ -534,10 +534,13 @@ async function mounted(info: Panel.ItemInfo) {
 
 // 因为动态缓存卡片所以要监听变化
 watch(() => props.itemInfo, async () => {
+  // 修复docker卡片更新，但是容器id没有变化，导致重复加载数据 (2024-08-22)
   if (itemCardInfo.value.expandParam.containerId === props.itemInfo.expandParam.containerId) {
+    itemCardInfo.value = props.itemInfo // 修复编辑卡片之后所有的修改未生效， 2024-10-12
     return
   }
-  // 注销之前的监听
+
+  // docker卡片更新并且 containerId 变化了， 注销之前的监听
   unMounted(itemCardInfo.value)
   itemCardInfo.value = props.itemInfo
   // console.log('初始化 - 替换', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, itemCardInfo.value.title, itemCardInfo.value.expandParam.containerId)
