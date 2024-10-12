@@ -12,7 +12,7 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     addAccount(account: AccountInfo) {
       const info = this.getAccountInfo(account.username)
       if (info) {
-        if (info.loginStatus) {
+        if (info.loginStatus && account.cToken !== info.cToken) {
           this.logoutAndDeleteAccount(info) // 安全退出之前登录的账号
         }
         else {
