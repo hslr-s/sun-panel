@@ -62,6 +62,7 @@ const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 const badgeStatusColor = ref('')
 const loading = ref(false)
+const operationLoading = ref(false) // 操作的loading 启动或者关闭容器
 const badgeMsg = ref('')
 const dockerErrorMsg = ref('')
 const lastTime = ref('')
@@ -277,7 +278,7 @@ function onClickoutside() {
 }
 
 async function execSwitchAction(action: boolean, startSuccessCallback?: () => void) {
-  loading.value = true
+  operationLoading.value = true
   const containerId = itemCardInfo.value.expandParam.containerId
   await execSwitchActionApi({
     id: containerId, action,
@@ -293,10 +294,10 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
       containerState.value.runStatus = DockerContainerInfoState.exited
     }
     await getContainerStatus(itemCardInfo.value)
-    loading.value = false
+    operationLoading.value = false
   }).catch((res) => {
     // 失败
-    loading.value = false
+    operationLoading.value = false
     if (res.code === -1) {
       setContainerStatusError(res.msg)
       return
@@ -569,7 +570,7 @@ onUnmounted(() => {
       :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemCardInfo?.title"
     >
       <template #small>
-        <NSpin :show="loading">
+        <NSpin :show="operationLoading">
           <div class="app-icon-small-icon overflow-hidden w-[70px] h-[70px] mx-auto rounded-2xl relative">
             <ItemIcon :item-icon="itemCardInfo?.icon" :color="textColor" />
             <div
@@ -584,7 +585,7 @@ onUnmounted(() => {
       </template>
 
       <template #info>
-        <NSpin :show="loading" style="width: 100%;">
+        <NSpin :show="operationLoading" style="width: 100%;">
           <div class="flex">
             <!-- 图标 -->
             <div class="app-icon-info-icon w-[70px] h-[70px]">
@@ -601,7 +602,7 @@ onUnmounted(() => {
               class="dot dot-info flex items-center justify-center border"
               :style="{ backgroundColor: badgeStatusColor }" :title="badgeMsg"
             >
-              <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
+            <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
             </div>
 
             <!-- 文字 -->
@@ -618,7 +619,13 @@ onUnmounted(() => {
                 </div>
                 <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
                   <NEllipsis
-                    v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2"
+                    v-if="loading" :line-clamp="2"
+                    class="text-xs"
+                  >
+                    loading...
+                  </NEllipsis>
+                  <NEllipsis
+                    v-else-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2"
                     class="text-xs"
                   >
                     CPU:{{ roundNumberToOneDecimalPlaces(containerState.cpuPercent) }}%
