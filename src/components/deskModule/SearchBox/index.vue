@@ -140,20 +140,17 @@ function handleUpdateOpenMethod() {
 }
 
 function handleKeyPress(event: KeyboardEvent) {
-  if (event.key === '/') {
-    // const input = document.querySelector('.search-box input') as HTMLInputElement
+  // 检查当前是否是输入框
+  const target = event.target as HTMLElement
+  const isInputElement = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+
+  if (event.key === '/' && !isInputElement) {
     const input = searchInputRef.value
 
-    if (input) {
-      if (!input.matches(':focus')) {
-        // 如果输入框没有焦点，则设置焦点并阻止默认行为
-        event.preventDefault()
-        input.focus()
-      }
-      // else {
-      //   // 如果输入框已经有焦点，则允许默认行为（输入"/"）
-      //   // 不需要调用 event.preventDefault()
-      // }
+    if (input && !input.matches(':focus')) {
+      // 如果输入框没有焦点，则设置焦点并阻止默认行为
+      event.preventDefault()
+      input.focus()
     }
   }
 }
@@ -206,6 +203,7 @@ onBeforeUnmount(() => {
 
           <!-- 搜索引擎管理 -->
           <div
+            v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
             class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl my-1"
             @click="handleOpenModalSetting"
           >
