@@ -12,11 +12,15 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     addAccount(account: AccountInfo) {
       const info = this.getAccountInfo(account.username)
       if (info) {
-        if (info.loginStatus && account.cToken !== info.cToken) {
-          this.logoutAndDeleteAccount(info) // 安全退出之前登录的账号
-        }
-        else {
-          this.deleteAccount(info)
+        if (account.cToken !== info.cToken) {
+          if (info.loginStatus) {
+            // console.log('账号存在并退出登录')
+            this.logoutAndDeleteAccount(info) // 安全退出之前登录的账号
+          }
+          else {
+            // console.log('账号存在未登录，删除账号')
+            this.deleteAccount(info)
+          }
         }
       }
       this.accounts.push(account)
@@ -65,9 +69,8 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     },
 
     async logoutAndDeleteAccount(account: AccountInfo) {
-      await logout(account.cToken).then(() => {
-        this.deleteAccount(account)
-      })
+      await logout(account.cToken).then()
+      this.deleteAccount(account)
       this.recordState()
     },
 
