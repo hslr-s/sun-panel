@@ -14,7 +14,10 @@ var (
 	GlobalConfigPath = "conf"
 )
 
-func ConfigInit(cfgPath string) (*iniConfig.IniConfig, error) {
+// 初始化配置文件, 并返回配置文件对象
+// 正常情况`conf.example.ini` 是默认覆盖原有的 `conf.example.ini`。
+// `conf.ini` 则是根据 'coverageConfIni' 参数来决定是否覆盖
+func ConfigInit(cfgPath string, coverageConfIni bool) (*iniConfig.IniConfig, error) {
 
 	// 创建示例配置文件,强制覆盖最新的示例配置文件
 	if err := CreateConf("conf.example.ini", cfgPath+"/conf.example.ini", true); err != nil {
@@ -23,7 +26,7 @@ func ConfigInit(cfgPath string) (*iniConfig.IniConfig, error) {
 	}
 
 	// 生成配置文件,如果文件存在忽略
-	if err := CreateConf("conf.example.ini", cfgPath+"/conf.ini", false); err != nil {
+	if err := CreateConf("conf.example.ini", cfgPath+"/conf.ini", coverageConfIni); err != nil {
 		return nil, err
 	}
 
@@ -61,7 +64,7 @@ func CreateConf(assetsConfName string, targetFile string, forced bool) error {
 			}
 
 			global.Logger.Debugln("当前环境是否为docker:", global.ISDOCKER)
-			configFileBytes := bytes.Replace(originalBytes, oldStr, newStr, -1)
+			configFileBytes := bytes.ReplaceAll(originalBytes, oldStr, newStr)
 			return os.WriteFile(targetFile, configFileBytes, 0666)
 		}
 	}
