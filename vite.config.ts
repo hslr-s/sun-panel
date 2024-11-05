@@ -8,17 +8,42 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   return [
     vue(),
+
     env.VITE_GLOB_APP_PWA === 'true' && VitePWA({
-      injectRegister: 'auto',
-      manifest: {
-        name: 'Sun-Panel',
-        short_name: 'Sun-Panel',
-        icons: [
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
-        ],
+      registerType: 'prompt',
+      manifest: false,
+      injectRegister: false,
+      workbox: {
+        cleanupOutdatedCaches: true, // 清理旧缓存
+        cacheId: env.VITE_APP_VERSION,
+        clientsClaim: true,
+        // skipWaiting: true,
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg}'], // 缓存相关静态资源
+        // runtimeCaching: [
+        //   // 静态文件缓存优先策略
+        //   {
+        //     urlPattern: ({ request }) =>
+        //       request.destination === 'script'
+        //       || request.destination === 'style'
+        //       || request.destination === 'image'
+        //       || request.destination === 'font'
+        //       || request.destination === 'document',
+        //     handler: 'CacheFirst', // 优先从缓存中读取静态文件
+        //     options: {
+        //       cacheName: `static-resources-${env.VITE_APP_VERSION}`, // 静态资源缓存
+        //       expiration: {
+        //         maxEntries: 100, // 最大缓存条目数
+        //         maxAgeSeconds: 30 * 24 * 60 * 60, // 缓存有效期，30天
+        //       },
+        //     },
+        //   },
+        // ],
+      },
+      devOptions: {
+        enabled: true,
       },
     }),
+
     createSvgIconsPlugin({
       iconDirs: [path.resolve(process.cwd(), 'src/assets/svg-icons')],
       symbolId: '[name]',
