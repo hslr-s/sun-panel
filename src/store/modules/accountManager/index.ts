@@ -11,16 +11,15 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     // 添加账号，已存在并且登录状态为失效状态 则先删除记录，再添加新的记录
     addAccount(account: AccountInfo) {
       const info = this.getAccountInfo(account.username)
+
       if (info) {
-        if (account.cToken !== info.cToken) {
-          if (info.loginStatus) {
-            // console.log('账号存在并退出登录')
-            this.logoutAndDeleteAccount(info) // 安全退出之前登录的账号
-          }
-          else {
-            // console.log('账号存在未登录，删除账号')
-            this.deleteAccount(info)
-          }
+        if (info.loginStatus) {
+          // console.log('账号存在并退出登录', info.username)
+          this.logoutAndDeleteAccount(info) // 安全退出之前登录的账号
+        }
+        else {
+          // console.log('账号存在未登录，删除账号', info.username)
+          this.deleteAccount(info)
         }
       }
       this.accounts.push(account)
@@ -36,6 +35,7 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     deleteAccount(account: AccountInfo) {
       for (let i = 0; i < this.accounts.length; i++) {
         const element = this.accounts[i]
+
         if (element.username === account.username || element.cToken === account.cToken) {
           this.accounts.splice(i, 1)
           this.recordState()
@@ -69,9 +69,9 @@ export const useAccountManagerStore = defineStore('account-manager-store', {
     },
 
     async logoutAndDeleteAccount(account: AccountInfo) {
-      await logout(account.cToken).then()
+      const ctoken = account.cToken
       this.deleteAccount(account)
-      this.recordState()
+      return await logout(ctoken)
     },
 
     clearAccount() {
