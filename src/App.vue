@@ -16,8 +16,11 @@ const { language } = useLanguage()
     :locale="language"
   >
     <NaiveProvider>
+      <!-- 页面 -->
       <RouterView />
+
+      <!-- pwa 更新通知 -->
+      <PwaReloadPrompt />
     </NaiveProvider>
   </NConfigProvider>
-  <PwaReloadPrompt />
 </template>

@@ -40,7 +40,7 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
         // ],
       },
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
     }),
 

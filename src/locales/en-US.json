@@ -273,6 +273,7 @@
     "publicModeRestricted": "This feature is restricted in public mode.",
     "refresh": "Refresh",
     "refreshPage": "Please refresh the page",
+    "reload": "Reload",
     "repeatLater": "Please try again later",
     "reset": "Reset",
     "role": {
@@ -300,6 +301,11 @@
     "viewSolution": "View solutions",
     "warning": "Warning",
     "yes": "Yes"
+  },
+  "components": {
+    "pwaReloadPrompt": {
+      "promptContent": "The current page is a cached old version. Click \"Reload\" to update to the latest version."
+    }
   },
   "deskModule": {
     "accountSwitcher": {

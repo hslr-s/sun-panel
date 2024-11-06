@@ -273,6 +273,7 @@
     "publicModeRestricted": "在公开模式下此功能受限",
     "refresh": "刷新",
     "refreshPage": "请刷新页面",
+    "reload": "重新加载",
     "repeatLater": "请稍后重试",
     "reset": "重置",
     "role": {
@@ -300,6 +301,11 @@
     "viewSolution": "查看解决方案",
     "warning": "警告",
     "yes": "是"
+  },
+  "components": {
+    "pwaReloadPrompt": {
+      "promptContent": "当前页面为缓存的旧版本，点击“重新加载”来更新到最新版本。"
+    }
   },
   "deskModule": {
     "accountSwitcher": {
