@@ -22,9 +22,9 @@ import (
 // 初始化总路由
 func InitRouters() {
 
-	httpPort := global.Config.GetValueInt("base", "http_port")
-	httpsPort := global.Config.GetValueInt("base", "https_port")
 	addr := global.Config.GetValueStringOrDefault("base", "http_address")
+	httpPort := global.Config.GetValueInt("base", "http_port")
+	httpsPort := global.Config.GetValueIntOrDefault("base", "https_port", 3003)
 
 	certPath := global.Config.GetValueString("cert", "cert_path")
 	keyPath := global.Config.GetValueString("cert", "key_path")
