@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -19,8 +20,42 @@ import (
 )
 
 // 初始化总路由
-func InitRouters(addr string) error {
-	router := gin.Default()
+func InitRouters() {
+
+	httpPort := global.Config.GetValueInt("base", "http_port")
+	httpsPort := global.Config.GetValueInt("base", "https_port")
+	addr := global.Config.GetValueStringOrDefault("base", "http_address")
+
+	certPath := global.Config.GetValueString("cert", "cert_path")
+	keyPath := global.Config.GetValueString("cert", "key_path")
+
+	httpRouter := gin.Default()
+	httpsRouter := gin.Default()
+
+	httpRouter = InitRouter(httpRouter)
+	httpsRouter = InitRouter(httpsRouter)
+
+	httpAddress := fmt.Sprintf("%s:%d", addr, httpPort)
+	httpsAddress := fmt.Sprintf("%s:%d", addr, httpsPort)
+
+	global.Logger.Info("Sun-Panel is Started.")
+
+	global.Logger.Info("HTTP: ", httpAddress)
+
+	// 开启HTTPS服务
+	if certPath != "" {
+		go func() {
+			global.Logger.Info("HTTPS: ", httpsAddress)
+			err := httpsRouter.RunTLS(fmt.Sprintf("%s:%d", addr, httpsPort), certPath, keyPath)
+			log.Fatalln(err)
+		}()
+	}
+
+	err := httpRouter.Run(fmt.Sprintf("%s:%d", addr, httpPort))
+	log.Fatalln(err)
+}
+
+func InitRouter(router *gin.Engine) *gin.Engine {
 	rootRouter := router.Group("/")
 	routerGroup := rootRouter.Group("api")
 
@@ -86,8 +121,7 @@ func InitRouters(addr string) error {
 
 	}
 
-	global.Logger.Info("Sun-Panel is Started.  Listening and serving HTTP on http://", addr)
-	return router.Run(addr)
+	return router
 }
 
 // 动态绑定web目录的路由

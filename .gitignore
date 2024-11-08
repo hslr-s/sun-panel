@@ -43,3 +43,4 @@ service/web
 service/uploads
 service/plugins
 service/custom
+service/cert
