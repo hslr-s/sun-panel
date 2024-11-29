@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sun-panel/biz"
 	"sun-panel/global"
 
@@ -91,20 +92,37 @@ func InitRouter(router *gin.Engine) *gin.Engine {
 		// 后端无法匹配的路由，将其重定向到前端
 		router.NoRoute(func(c *gin.Context) {
 			// 兼容前端history模式，后端路由匹配不到将其重定向到前端index.html
-			c.File(webPath + "/index.html")
+			// c.File(webPath + "/index.html")
+
+			// 读取文件并替换模版变量
+			content, err := os.ReadFile(webPath + "/index.html")
+			if err != nil {
+				c.String(500, "Failed to load file: %v", err)
+				return
+			}
+
+			globalSettingSiteSetting := biz.GlobalSettingSiteSetting{}
+			biz.GlobalSetting.GetSiteStting(&globalSettingSiteSetting)
+
+			// 设置默认值
+			if globalSettingSiteSetting.FaviconUrl == "" || globalSettingSiteSetting.FaviconUrl == "favicon.ico" || globalSettingSiteSetting.FaviconUrl == "./favicon.ico" {
+				globalSettingSiteSetting.FaviconUrl = "/favicon.ico"
+			}
+
+			if globalSettingSiteSetting.Title == "" {
+				globalSettingSiteSetting.Title = "Sun-Panel"
+			}
+
+			// 替换内容中的占位符 ( 模版变量格式:{{__VAR__}} )
+			htmlContent := string(content)
+			htmlContent = strings.ReplaceAll(htmlContent, "{{__title__}}", globalSettingSiteSetting.Title)
+			htmlContent = strings.ReplaceAll(htmlContent, "{{__faviconSrc__}}", globalSettingSiteSetting.FaviconUrl)
+
+			// 返回修改后的 HTML
+			c.Data(200, "text/html; charset=utf-8", []byte(htmlContent))
 		})
 
 		// 其他特殊要绑定的路由
-
-		// 动态返回favicon，这里要改为支持ico路径（2024-11-4 备注）
-		router.Any("/favicon.ico", func(c *gin.Context) {
-			setting := biz.GlobalSettingSiteSetting{}
-			biz.GlobalSetting.GetSiteStting(&setting)
-			if setting.FaviconUrl == "" || setting.FaviconUrl == "favicon.ico" || setting.FaviconUrl == "./favicon.ico" {
-				setting.FaviconUrl = webPath + "/favicon.ico"
-			}
-			c.File(setting.FaviconUrl)
-		})
 
 		// 绑定上传目录的路由
 		sourcePath := global.Config.GetValueString("base", "source_path")
