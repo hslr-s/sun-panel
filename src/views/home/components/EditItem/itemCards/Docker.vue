@@ -12,7 +12,6 @@ import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
 import { AppLoader, ProAuthOverlay, ProTag, RoundCardModal, STip } from '@/components/common/'
 import { getList as getContainerListApi } from '@/api/docker/container'
-import { getSiteFavicon } from '@/api/panel/itemIcon'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { useProAuthorizeStore } from '@/store'
 
@@ -27,7 +26,7 @@ const emit = defineEmits<{
   (e: 'update:rules', info?: FormRules): void
 }>()
 
-const getIconLoading = ref([false, false])
+// const getIconLoading = ref([false, false])
 const containerListLoading = ref(false)
 const ms = useMessage()
 const proAuthStore = useProAuthorizeStore()
@@ -124,25 +123,25 @@ onMounted(() => {
   }
 })
 
-async function getIconByUrl(url: string, loadingIndex: number) {
-  getIconLoading.value[loadingIndex] = true
-  try {
-    const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-    if (code === 0) {
-      model.value.icon = {
-        itemType: 2,
-        src: data.iconUrl,
-      }
-    }
-    else {
-      ms.error(t('iconItem.geticonFail'))
-    }
-  }
-  catch (error) {
-    ms.error(t('iconItem.geticonFail'))
-  }
-  getIconLoading.value[loadingIndex] = false
-}
+// async function getIconByUrl(url: string, loadingIndex: number) {
+//   getIconLoading.value[loadingIndex] = true
+//   try {
+//     const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
+//     if (code === 0) {
+//       model.value.icon = {
+//         itemType: 2,
+//         src: data.iconUrl,
+//       }
+//     }
+//     else {
+//       ms.error(t('iconItem.geticonFail'))
+//     }
+//   }
+//   catch (error) {
+//     ms.error(t('iconItem.geticonFail'))
+//   }
+//   getIconLoading.value[loadingIndex] = false
+// }
 
 function handleUpdateshowBadgeStatusValue(value: (string | number)[]) {
   model.value.expandParam.showBadgeStatus = value

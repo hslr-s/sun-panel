@@ -2,13 +2,12 @@
 import { onMounted, ref, watch } from 'vue'
 import {
   NCard, NDivider, NFlex, NFormItem, NGrid, NGridItem,
-  NInput, NSelect, useMessage,
+  NInput, NSelect,
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import IconEditor from '../IconEditor.vue'
 import UrlAddressInput from './components/UrlAddressInput.vue'
 import { t } from '@/locales'
-import { getSiteFavicon } from '@/api/panel/itemIcon'
 import { STip } from '@/components/common'
 
 const props = defineProps<{
@@ -20,8 +19,8 @@ const emit = defineEmits<{
   (e: 'update:itemInfo', info?: Panel.Info): void
   (e: 'update:rules', info?: FormRules): void
 }>()
-const getIconLoading = ref([false, false])
-const ms = useMessage()
+// const getIconLoading = ref([false, false])
+// const ms = useMessage()
 const model = ref(props.itemInfo)
 
 // 打开方式
@@ -52,25 +51,25 @@ const rulesExtends: FormRules = {
   ],
 }
 
-async function getIconByUrl(url: string, loadingIndex: number) {
-  getIconLoading.value[loadingIndex] = true
-  try {
-    const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-    if (code === 0) {
-      model.value.icon = {
-        itemType: 2,
-        src: data.iconUrl,
-      }
-    }
-    else {
-      ms.error(t('iconItem.geticonFail'))
-    }
-  }
-  catch (error) {
-    ms.error(t('iconItem.geticonFail'))
-  }
-  getIconLoading.value[loadingIndex] = false
-}
+// async function getIconByUrl(url: string, loadingIndex: number) {
+//   getIconLoading.value[loadingIndex] = true
+//   try {
+//     const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
+//     if (code === 0) {
+//       model.value.icon = {
+//         itemType: 2,
+//         src: data.iconUrl,
+//       }
+//     }
+//     else {
+//       ms.error(t('iconItem.geticonFail'))
+//     }
+//   }
+//   catch (error) {
+//     ms.error(t('iconItem.geticonFail'))
+//   }
+//   getIconLoading.value[loadingIndex] = false
+// }
 
 watch(model.value, () => {
   // console.log('models 跟新', model.value)
