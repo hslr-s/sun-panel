@@ -144,7 +144,7 @@
       "appName": "Global Setting",
       "clearIcoImage": "Clear image",
       "customDanger": "Danger warning",
-      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code. This may lead to privacy leaks, layout confusion, or attacks.",
+      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code, which may lead to privacy leaks, layout confusion, or attacks. \nIf it does not take effect, please clear your browser cache.",
       "customImageAddress": "Custom image address",
       "customJSAndCss": "Custom JS and CSS files",
       "customJSAndCssAlert": "If you do not have PRO authorization, you can enter the NAS or server where Sun-Panel is installed, find the \"custom\" path ({path}), modify and save the file directly, and it will still be effective.",

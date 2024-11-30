@@ -144,7 +144,7 @@
       "appName": "全局设置",
       "clearIcoImage": "清除图像",
       "customDanger": "危险警告",
-      "customDangerAlert": "这是一个危险的操作，请不要填入不被信任的代码，这样可能会导致隐私泄露、布局错乱或者被攻击等",
+      "customDangerAlert": "这是一个危险的操作，请不要填入不被信任的代码，这样可能会导致隐私泄露、布局错乱或者被攻击等。如果未生效请清理浏览器缓存",
       "customImageAddress": "自定义图片地址",
       "customJSAndCss": "自定义JS和CSS文件",
       "customJSAndCssAlert": "如果没有PRO授权，可以进入到安装Sun-Panel的NAS或服务器，找到“自定义”的路径（{path}）直接修改和保存文件，仍然是生效的",
