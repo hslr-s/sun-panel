@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -239,7 +242,7 @@ func (a *ItemIcon) SaveSort(c *gin.Context) {
 	apiReturn.Success(c)
 }
 
-// 支持获取并直接下载对方网站图标到服务器
+// 支持获取并直接下载对方网站图标到服务器[将被弃用] 2024年11月30日修改
 func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	req := panelApiStructs.ItemIconGetSiteFaviconReq{}
@@ -322,5 +325,113 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 		return
 	}
 	resp.IconUrl = global.UPLOAD_ROUTE + pureFilePath
+	apiReturn.SuccessData(c, resp)
+}
+
+func (a *ItemIcon) GetSiteFaviconList(c *gin.Context) {
+	// userInfo, _ := base.GetCurrentUserInfo(c)
+	req := panelApiStructs.ItemIconGetSiteFaviconReq{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	fullUrls := []string{}
+	if iconUrls, err := siteFavicon.GetFaviconURLs(req.Url); err != nil {
+		// 尝试使用最原始的方式获取图标 https://域名/favicon.ico
+		if urlInfo, err := url.Parse(req.Url); err != nil {
+			errMsg := "acquisition failed: get ico error:" + err.Error()
+			global.Logger.Error(errMsg)
+			apiReturn.Error(c, errMsg)
+			return
+		} else {
+			fullUrls = append(fullUrls, urlInfo.Scheme+"://"+urlInfo.Host+"/favicon.ico")
+		}
+
+	} else {
+		fullUrls = iconUrls
+	}
+
+	parsedURL, err := url.Parse(req.Url)
+	if err != nil {
+		apiReturn.Error(c, "acquisition failed:"+err.Error())
+		return
+	}
+
+	protocol := parsedURL.Scheme
+	global.Logger.Debug("protocol:", protocol)
+	global.Logger.Debug("fullUrls:", fullUrls)
+
+	// 调整地址
+	for key, fullUrl := range fullUrls {
+		// 如果URL以双斜杠（//）开头，则使用当前页面协议
+		if strings.HasPrefix(fullUrl, "//") {
+			fullUrl = protocol + "://" + fullUrl[2:]
+		} else if !strings.HasPrefix(fullUrl, "http://") && !strings.HasPrefix(fullUrl, "https://") {
+			// 如果URL既不以http://开头也不以https://开头，则默认为http协议
+			fullUrls[key] = "http://" + fullUrl
+		}
+
+		// 去除图标的get参数
+		{
+			parsedIcoURL, err := url.Parse(fullUrl)
+			if err != nil {
+				apiReturn.Error(c, "acquisition failed: parsed ico URL :"+err.Error())
+				return
+			}
+			fullUrls[key] = parsedIcoURL.Scheme + "://" + parsedIcoURL.Host + parsedIcoURL.Path
+		}
+
+		global.Logger.Debug("fullUrl:", fullUrl)
+	}
+
+	apiReturn.SuccessListData(c, fullUrls, int64(len(fullUrls)))
+}
+
+// 图片代理
+func (a *ItemIcon) ImageProxy(c *gin.Context) {
+	imageUrl := c.Request.URL.Query().Get("imageUrl")
+	if imageUrl == "" {
+		http.Error(c.Writer, "imageUrl parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	resp, err := http.Get(imageUrl)
+	if err != nil {
+		http.Error(c.Writer, "Failed to fetch image", http.StatusInternalServerError)
+		log.Printf("Error fetching image: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Copy the response body to our response writer
+	_, err = io.Copy(c.Writer, resp.Body)
+	if err != nil {
+		http.Error(c.Writer, "Failed to copy image", http.StatusInternalServerError)
+		log.Printf("Error copying image: %v", err)
+		return
+	}
+}
+
+// 下载图标图像
+func (a *ItemIcon) DownloadFavicon(c *gin.Context) {
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	req := panelApiStructs.ItemIconGetSiteFaviconReq{}
+
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		apiReturn.ErrorParamFomat(c, err.Error())
+		return
+	}
+
+	info, err := base.DownloadFileAndSave(req.Url, userInfo.ID)
+	if err != nil {
+		apiReturn.Error(c, err.Error())
+		return
+	}
+
+	resp := panelApiStructs.ItemIconGetSiteFaviconResp{}
+	resp.IconUrl = global.UPLOAD_ROUTE + info.Src
+	// global.Logger.Debug("download:", resp.IconUrl)
 	apiReturn.SuccessData(c, resp)
 }

@@ -2,11 +2,13 @@
 import { computed, ref } from 'vue'
 
 import {
-  NButton, NInput, NInputGroup, useMessage,
+  NButton, NImage, NInput, NInputGroup, NSpin, useMessage,
 } from 'naive-ui'
 import { verifyUrlHttp } from '../common'
-import { getSiteFavicon } from '@/api/panel/itemIcon'
+import { downloadFavicon, getSiteFaviconList } from '@/api/panel/itemIcon'
 import { t } from '@/locales'
+import { RoundCardModal } from '@/components/common'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 
 const props = defineProps<{
   url?: string
@@ -16,20 +18,20 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:url', info?: string): void
   (e: 'update:iconInfo', icon?: Panel.ItemIcon | null): void
-  // (e: 'updateFaviconUrl', faviconUrl?: string): void
-
 }>()
 
 const ms = useMessage()
 
-// const faviconUrl = ref('')
+const selectIconModalShow = ref(false)
+const faviconList = ref<string[]>([])
+const downloadingFavicon = ref(false)
+
 const modelUrl = computed({
   get() {
     return props.url
   },
   set(value) {
     emit('update:url', value)
-    // emit('updateFaviconUrl', faviconUrl.value)
   },
 })
 const modelIconInfo = computed({
@@ -44,23 +46,42 @@ const modelIconInfo = computed({
 const getIconLoading = ref(false)
 async function getIconByUrl(url: string) {
   getIconLoading.value = true
-  try {
-    const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-    if (code === 0) {
-      modelIconInfo.value = {
-        itemType: 2,
-        src: data.iconUrl,
-      }
-      // faviconUrl.value = data.iconUrl
+  await getSiteFaviconList < Common.ListResponse<string[]>>(url).then(({ data }) => {
+    // 当有多个图标的时候，弹出选择框，让用户选择
+    if (data.list.length > 1) {
+      faviconList.value = data.list
+      selectIconModalShow.value = true
     }
     else {
-      ms.error(t('iconItem.geticonFail'))
+      setIconInfo(data.list[0])
     }
-  }
-  catch (error) {
-    ms.error(t('iconItem.geticonFail'))
-  }
+  }).catch((res) => {
+    if (res.code === -1) {
+      ms.error(t('iconItem.geticonFail'))
+      return
+    }
+    apiRespErrMsg(res)
+  })
+
   getIconLoading.value = false
+}
+
+async function setIconInfo(url: string) {
+  downloadingFavicon.value = true
+  await downloadFavicon<{ iconUrl: string }>(url).then(({ data }) => {
+    modelIconInfo.value = {
+      itemType: 2,
+      src: data.iconUrl,
+    }
+    selectIconModalShow.value = false
+  }).catch((res) => {
+    if (res.code === -1) {
+      ms.error(t('iconItem.geticonFail'))
+      return
+    }
+    apiRespErrMsg(res)
+  })
+  downloadingFavicon.value = false
 }
 </script>
 
@@ -75,10 +96,12 @@ async function getIconByUrl(url: string) {
     <span v-if="!verifyUrlHttp(modelUrl || '')" class="text-xs text-orange-400">
       {{ t("iconItem.urlNoHttpStartWarn") }}
     </span>
-    <!-- <RoundCardModal>
-      <template #title>
-        <span>选择头像</span>
-      </template>
-    </RoundCardModal> -->
+    <RoundCardModal v-model:show="selectIconModalShow" size="small" style="width: 500px;" :title="t('iconItem.selectOneIcon')">
+      <NSpin :show="downloadingFavicon">
+        <span v-for="item, index in faviconList" :key="index" style="margin: 5px;cursor: pointer;" @click="setIconInfo(item)">
+          <NImage :src="item" style="width: 80px;height: 80px;border-radius: 5px;" preview-disabled />
+        </span>
+      </NSpin>
+    </RoundCardModal>
   </div>
 </template>

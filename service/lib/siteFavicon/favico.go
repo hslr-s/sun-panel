@@ -27,7 +27,7 @@ func IsHTTPURL(url string) bool {
 }
 
 func GetOneFaviconURL(urlStr string) (string, error) {
-	iconURLs, err := getFaviconURL(urlStr)
+	iconURLs, err := GetFaviconURLs(urlStr)
 	if err != nil {
 		return "", err
 	}
@@ -111,7 +111,7 @@ func DownloadImage(url, savePath string, maxSize int64) (*os.File, error) {
 
 func GetOneFaviconURLAndUpload(urlStr string) (string, bool) {
 	//www.iqiyipic.com/pcwimg/128-128-logo.png
-	iconURLs, err := getFaviconURL(urlStr)
+	iconURLs, err := GetFaviconURLs(urlStr)
 	if err != nil {
 		return "", false
 	}
@@ -129,7 +129,7 @@ func GetOneFaviconURLAndUpload(urlStr string) (string, bool) {
 	return "", false
 }
 
-func getFaviconURL(url string) ([]string, error) {
+func GetFaviconURLs(url string) ([]string, error) {
 	var icons []string
 	icons = make([]string, 0)
 	client := &http.Client{}
