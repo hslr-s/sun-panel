@@ -18,3 +18,9 @@ export enum PanelCardType {
   BuiltInApp = 3, // 内置应用
 
 }
+
+export enum FileType {
+  Unknown = 0,
+  Wallpaper = 1,
+  CardIcon = 2,
+}

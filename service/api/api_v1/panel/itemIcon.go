@@ -317,7 +317,7 @@ func (a *ItemIcon) GetSiteFavicon(c *gin.Context) {
 	// 保存到数据库
 	ext := path.Ext(fullUrl)
 	mFile := models.File{}
-	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, pureFilePath); err != nil {
+	if _, err := mFile.AddFile(userInfo.ID, parsedURL.Host, ext, pureFilePath, models.FileTypeCardIcon); err != nil {
 		apiReturn.ErrorDatabase(c, err.Error())
 		return
 	}

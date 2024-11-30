@@ -14,6 +14,7 @@ import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn'
 import { defaultSetting } from '@/store/modules/app/helper'
+import { FileType } from '@/enums'
 
 const authStore = useAuthStore()
 const globalSitesettingStore = useGlobalSitesettingStore()
@@ -79,6 +80,7 @@ async function handleUploadIco(): Promise<string> {
   if (icoImageFile.value) {
     const formData = new FormData()
     formData.append('imgfile', icoImageFile.value)
+    formData.append('type', String(FileType.CardIcon))
     await axios.post('/api/panel/globalSetting/uploadFaviconImage', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -91,7 +93,7 @@ async function handleUploadIco(): Promise<string> {
         // Handle response
       })
       .catch((error) => {
-        console.log('上传错误', error)
+        console.log('upload error', error)
         // Handle error
       })
     return imgurl
@@ -213,6 +215,7 @@ onMounted(() => {
           :headers="{
             token: authStore.token as string,
           }"
+          :data="{ type: FileType.Wallpaper }"
           :directory-dnd="true"
           @finish="handleUploadBackgroundFinish"
         >

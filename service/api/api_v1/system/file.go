@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
@@ -23,6 +24,11 @@ type FileApi struct{}
 func (a *FileApi) UploadImg(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	configUpload := global.Config.GetValueString("base", "source_path")
+
+	// 文件类型
+	fileTypeStr := c.PostForm("type")
+	fileType, _ := strconv.Atoi(fileTypeStr)
+
 	f, err := c.FormFile("imgfile")
 	if err != nil {
 		apiReturn.ErrorByCode(c, 1300)
@@ -57,7 +63,7 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 		pureFilePath := filepath[len(configUpload):]
 		// 向数据库添加记录
 		mFile := models.File{}
-		mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath)
+		mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath, fileType)
 		apiReturn.SuccessData(c, gin.H{
 			"imageUrl": global.UPLOAD_ROUTE + pureFilePath,
 		})
@@ -68,6 +74,10 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 func (a *FileApi) UploadFiles(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	configUpload := global.Config.GetValueString("base", "source_path")
+
+	// 文件类型
+	fileTypeStr := c.PostForm("type")
+	fileType, _ := strconv.Atoi(fileTypeStr)
 
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -93,7 +103,7 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 			pureFilePath := filepath[len(configUpload):]
 			// 向数据库添加记录
 			mFile := models.File{}
-			mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath)
+			mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath, fileType)
 			succMap[f.Filename] = global.UPLOAD_ROUTE + pureFilePath
 		}
 	}

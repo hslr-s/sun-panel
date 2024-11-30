@@ -15,7 +15,7 @@ import { set as setUserConfig } from '@/api/panel/userConfig'
 // import { PanelPanelConfigStyleEnum } from '@/enums/panel'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
-import { PanelPanelConfigStyleEnum } from '@/enums'
+import { FileType, PanelPanelConfigStyleEnum } from '@/enums'
 import { STip } from '@/components/common'
 
 const authStore = useAuthStore()
@@ -327,6 +327,7 @@ function resetPanelConfig() {
         :headers="{
           token: authStore.token as string,
         }"
+        :data="{ type: FileType.Wallpaper }"
         :directory-dnd="true"
         @finish="handleUploadBackgroundFinish"
       >

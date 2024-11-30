@@ -6,6 +6,7 @@ import { computed, defineProps } from 'vue'
 import { useAuthStore } from '@/store'
 import { apiRespErrMsg } from '@/utils/cmn'
 import { t } from '@/locales'
+import { FileType } from '@/enums'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null
@@ -147,6 +148,7 @@ const handleUploadFinish = ({
             :headers="{
               token: authStore.token as string,
             }"
+            :data="{ type: FileType.CardIcon }"
             @finish="handleUploadFinish"
           >
             <NButton size="small">
