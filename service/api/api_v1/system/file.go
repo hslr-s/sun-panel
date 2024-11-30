@@ -21,7 +21,7 @@ import (
 
 type FileApi struct{}
 
-func (a *FileApi) UploadImg(c *gin.Context) {
+func (a *FileApi) UploadImgOld(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	configUpload := global.Config.GetValueString("base", "source_path")
 
@@ -68,6 +68,35 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 			"imageUrl": global.UPLOAD_ROUTE + pureFilePath,
 		})
 	}
+}
+
+func (a *FileApi) UploadImg(c *gin.Context) {
+	fileInfo, err := base.UploadFileAndSave(c, []string{
+		".png",
+		".jpg",
+		".gif",
+		".jpeg",
+		".webp",
+		".svg",
+		".ico",
+		".avif",
+		".heic",
+	}, 0)
+
+	if err != nil {
+		switch err {
+		case base.ErrUploadExtensionNameNotAllowed:
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeUnsupportedFileFormat)
+		default:
+			global.Logger.Error(err.Error())
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeUploadFailed)
+		}
+		return
+	}
+
+	apiReturn.SuccessData(c, gin.H{
+		"imageUrl": global.UPLOAD_ROUTE + fileInfo.Src,
+	})
 }
 
 // 一直未使用有待测试

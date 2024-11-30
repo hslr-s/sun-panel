@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import type { UploadFileInfo } from 'naive-ui'
 import {
-  NAlert, NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
+  NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
   NInput, NPopconfirm, NSwitch, NUpload, NUploadDragger, useMessage,
 } from 'naive-ui'
 import Custom from './Custom.vue'
@@ -40,8 +40,14 @@ function handleUploadBackgroundFinish({
 
 async function handleSaveSiteSetting() {
   let icoImage = icoThumbnailUrl.value
-  if (icoIsNeedUpload.value)
-    icoImage = await handleUploadIco()
+  if (icoIsNeedUpload.value) {
+    try {
+      icoImage = await handleUploadIco()
+    }
+    catch (error) {
+      return
+    }
+  }
 
   siteSetting.value.favicoUrl = icoImage
   icoIsNeedUpload.value = false
@@ -63,7 +69,7 @@ async function saveSiteSetting() {
 
 function handleFileIcoUploadChange(event: Event) {
   const target = event.target as HTMLInputElement
-  console.log(target)
+  // console.log(target)
 
   if (target.files && target.files[0]) {
     // console.log(target.files)
@@ -89,14 +95,19 @@ async function handleUploadIco(): Promise<string> {
     })
       .then((response) => {
         // console.log('上传', response)
+        if (response.data.code !== 0) {
+          if (response.data.code === 1301) {
+            ms.error(`${t('apps.globalSetting.favicon')}: ${t('apiErrorCode.1301')}`)
+          }
+
+          throw new Error(`upload error API:${response.data.msg}`)
+        }
         imgurl = response.data.data.imageUrl
-        // Handle response
       })
       .catch((error) => {
-        console.log('upload error', error)
-        // Handle error
+        console.error('upload error', error)
+        throw error
       })
-    return imgurl
   }
 
   return imgurl
@@ -162,15 +173,11 @@ onMounted(() => {
           <ProTag />
         </div>
 
-        <NAlert type="info" style="border-radius: 5px;" :bordered="false">
-          <p class="text-sm">
-            {{ t("apps.globalSetting.iconChangeClearCache") }}
-          </p>
-        </NAlert>
         <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
           <div>
             <NImage
               width="100"
+              style="width: 80px; height: 80px;border: 1px solid #e9e9e9;"
               :src="icoThumbnailUrl"
               preview-disabled
             />
@@ -179,7 +186,7 @@ onMounted(() => {
               <NButton for="fileIcoUpload" @click="handleSelectIcoFile">
                 {{ t('apps.globalSetting.selectIcoImage') }}
               </NButton>
-              <NButton for="fileIcoUpload" @click="handleDeleteIcoFile">
+              <NButton for="fileIcoUpload" :disabled="icoThumbnailUrl === ''" @click="handleDeleteIcoFile">
                 {{ t('apps.globalSetting.clearIcoImage') }}
               </NButton>
             </NButtonGroup>

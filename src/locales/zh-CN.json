@@ -149,7 +149,6 @@
       "customJSAndCss": "自定义JS和CSS文件",
       "customJSAndCssAlert": "如果没有PRO授权，可以进入到安装Sun-Panel的NAS或服务器，找到“自定义”的路径（{path}）直接修改和保存文件，仍然是生效的",
       "favicon": "站点图标",
-      "iconChangeClearCache": "保存后，清理浏览器缓存或重启浏览器后可见效果",
       "isEnableLoginCaptcha": "启用登录验证码",
       "loginBackgroundImage": "登录页背景图片",
       "personalise": "站点设置",
