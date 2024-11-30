@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import {
-  NButton, NCard, NDivider, NFlex, NFormItem, NGrid, NGridItem,
-  NInput, NInputGroup, NSelect, useMessage,
+  NCard, NDivider, NFlex, NFormItem, NGrid, NGridItem,
+  NInput, NSelect, useMessage,
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import IconEditor from '../IconEditor.vue'
-import { verifyUrlHttp } from './common'
+import UrlAddressInput from './components/UrlAddressInput.vue'
 import { t } from '@/locales'
 import { getSiteFavicon } from '@/api/panel/itemIcon'
 import { STip } from '@/components/common'
@@ -115,7 +115,19 @@ onMounted(() => {
 
     <NDivider class="!my-2" />
 
-    <NFormItem path="url" :label="$t('iconItem.url')">
+    <NFormItem path="url" :label="`${$t('iconItem.url')}`">
+      <div class="w-full">
+        <UrlAddressInput v-model:url="model.url" v-model:icon-info="model.icon" />
+      </div>
+    </NFormItem>
+
+    <NFormItem path="lanUrl" :label="`${$t('iconItem.lanUrl')}`">
+      <div class="w-full">
+        <UrlAddressInput v-model:url="model.lanUrl" v-model:icon-info="model.icon" />
+      </div>
+    </NFormItem>
+
+    <!-- <NFormItem path="url" :label="$t('iconItem.url')">
       <div class="w-full">
         <NInputGroup>
           <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
@@ -141,7 +153,7 @@ onMounted(() => {
           {{ t("iconItem.urlNoHttpStartWarn") }}
         </span>
       </div>
-    </NFormItem>
+    </NFormItem> -->
 
     <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
       <NSelect v-model:value="model.openMethod" :options="options" />

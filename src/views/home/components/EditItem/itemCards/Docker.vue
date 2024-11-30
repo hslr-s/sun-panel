@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import {
-  NButton, NCard, NCheckbox, NCheckboxGroup,
-  NFlex, NFormItem, NGrid, NGridItem, NInput,
-  NInputGroup, NSelect, NSpace, NSwitch, useMessage,
+  NCard, NCheckbox, NCheckboxGroup,
+  NFlex, NFormItem, NGrid, NGridItem, NInput, NSelect, NSpace, NSwitch, useMessage,
 } from 'naive-ui'
 
 import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
 import IconEditor from '../IconEditor.vue'
-import { verifyUrlHttp } from './common'
+import UrlAddressInput from './components/UrlAddressInput.vue'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
 import { AppLoader, ProAuthOverlay, ProTag, RoundCardModal, STip } from '@/components/common/'
@@ -220,7 +219,19 @@ function handleChange(value: string, appInfo: SystemApp) {
       </NCard>
     </NFormItem>
 
-    <NFormItem path="url" :label="$t('iconItem.url')">
+    <NFormItem path="url" :label="`${$t('iconItem.url')}`">
+      <div class="w-full">
+        <UrlAddressInput v-model:url="model.url" v-model:icon-info="model.icon" />
+      </div>
+    </NFormItem>
+
+    <NFormItem path="lanUrl" :label="`${$t('iconItem.lanUrl')}`">
+      <div class="w-full">
+        <UrlAddressInput v-model:url="model.lanUrl" v-model:icon-info="model.icon" />
+      </div>
+    </NFormItem>
+
+    <!-- <NFormItem path="url" :label="$t('iconItem.url')">
       <div class="w-full">
         <NInputGroup>
           <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
@@ -232,9 +243,9 @@ function handleChange(value: string, appInfo: SystemApp) {
           {{ t("iconItem.urlNoHttpStartWarn") }}
         </span>
       </div>
-    </NFormItem>
+    </NFormItem> -->
 
-    <NFormItem path="lanUrl" :label="$t('iconItem.lanUrl')">
+    <!-- <NFormItem path="lanUrl" :label="$t('iconItem.lanUrl')">
       <div class="w-full">
         <NInputGroup>
           <NInput v-model:value="model.lanUrl" type="text" :maxlength="1000" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
@@ -246,7 +257,7 @@ function handleChange(value: string, appInfo: SystemApp) {
           {{ t("iconItem.urlNoHttpStartWarn") }}
         </span>
       </div>
-    </NFormItem>
+    </NFormItem> -->
 
     <!-- <NFormItem path="description" :label="$t('common.description')">
       <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
