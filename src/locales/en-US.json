@@ -362,6 +362,7 @@
     "containerName": "Container",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",
+    "defaultUrl": "Default URL",
     "dockerAction": {
       "startContainer": "Start container",
       "stopContainer": "Stop container"
@@ -407,7 +408,6 @@
     "showBadgeStatusRestarting": "Restarting",
     "showBadgeStatusRunning": "Running",
     "systemApp": "system applications",
-    "url": "URL",
     "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },
   "login": {

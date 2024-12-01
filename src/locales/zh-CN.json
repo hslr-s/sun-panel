@@ -362,6 +362,7 @@
     "containerName": "容器",
     "currentPageLayerOpen": "当前页面弹窗打开",
     "currentPageOpen": "当前页面打开",
+    "defaultUrl": "默认地址",
     "dockerAction": {
       "startContainer": "启动容器",
       "stopContainer": "停止容器"
@@ -407,7 +408,6 @@
     "showBadgeStatusRestarting": "重启中",
     "showBadgeStatusRunning": "运行中",
     "systemApp": "系统应用",
-    "url": "地址",
     "urlNoHttpStartWarn": "提醒：链接没有以标准的“http://”或“https://”开头，如果确认无误请忽略本提醒"
   },
   "login": {

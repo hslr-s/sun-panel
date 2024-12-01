@@ -13,6 +13,7 @@ import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 const props = defineProps<{
   url?: string
   iconInfo: Panel.ItemIcon | null
+  placeholder?: string
 }>()
 
 const emit = defineEmits<{
@@ -88,7 +89,7 @@ async function setIconInfo(url: string) {
 <template>
   <div>
     <NInputGroup>
-      <NInput v-model:value="modelUrl" type="text" :maxlength="1000" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
+      <NInput v-model:value="modelUrl" type="text" :maxlength="1000" :placeholder="placeholder" />
       <NButton :disabled="!modelUrl" :loading="getIconLoading" @click="getIconByUrl(modelUrl || '')">
         {{ $t('iconItem.getIcon') }}
       </NButton>
@@ -98,8 +99,16 @@ async function setIconInfo(url: string) {
     </span>
     <RoundCardModal v-model:show="selectIconModalShow" size="small" style="width: 500px;" :title="t('iconItem.selectOneIcon')">
       <NSpin :show="downloadingFavicon">
-        <span v-for="item, index in faviconList" :key="index" style="margin: 5px;cursor: pointer;" @click="setIconInfo(item)">
-          <NImage :src="item" style="width: 80px;height: 80px;border-radius: 5px;" preview-disabled />
+        <span
+          v-for="item, index in faviconList" :key="index"
+          style="margin: 5px;cursor: pointer;padding: 2px;"
+          class="rounded-xl border inline-block w-[80px] h-[80px] "
+          @click="setIconInfo(item)"
+        >
+          <NImage
+            :src="item" style="width: 100%;height: 100%;border-radius: 5px;" preview-disabled
+            class="hover:brightness-105 transition-all hover:scale-95"
+          />
         </span>
       </NSpin>
     </RoundCardModal>

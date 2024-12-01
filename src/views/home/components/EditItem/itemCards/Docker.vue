@@ -218,19 +218,19 @@ function handleChange(value: string, appInfo: SystemApp) {
       </NCard>
     </NFormItem>
 
-    <NFormItem path="url" :label="`${$t('iconItem.url')}`">
+    <NFormItem path="url" :label="`${$t('iconItem.defaultUrl')}`">
       <div class="w-full">
-        <UrlAddressInput v-model:url="model.url" v-model:icon-info="model.icon" />
+        <UrlAddressInput v-model:url="model.url" v-model:icon-info="model.icon" placeholder="http(s)://" />
       </div>
     </NFormItem>
 
     <NFormItem path="lanUrl" :label="`${$t('iconItem.lanUrl')}`">
       <div class="w-full">
-        <UrlAddressInput v-model:url="model.lanUrl" v-model:icon-info="model.icon" />
+        <UrlAddressInput v-model:url="model.lanUrl" v-model:icon-info="model.icon" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
       </div>
     </NFormItem>
 
-    <!-- <NFormItem path="url" :label="$t('iconItem.url')">
+    <!-- <NFormItem path="url" :label="$t('iconItem.defaultUrl')">
       <div class="w-full">
         <NInputGroup>
           <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
