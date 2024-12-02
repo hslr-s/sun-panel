@@ -32,16 +32,10 @@ func GetOneFaviconURL(urlStr string) (string, error) {
 		return "", err
 	}
 
-	for _, v := range iconURLs {
-		// 标准的路径地址
-		if IsHTTPURL(v) {
-			return v, nil
-		} else {
-			urlInfo, _ := url.Parse(urlStr)
-			fullUrl := urlInfo.Scheme + "://" + urlInfo.Host + "/" + strings.TrimPrefix(v, "/")
-			return fullUrl, nil
-		}
+	if len(iconURLs) > 0 {
+		return iconURLs[0], fmt.Errorf("not found ico")
 	}
+
 	return "", fmt.Errorf("not found ico")
 }
 
@@ -129,11 +123,11 @@ func GetOneFaviconURLAndUpload(urlStr string) (string, bool) {
 	return "", false
 }
 
-func GetFaviconURLs(url string) ([]string, error) {
+func GetFaviconURLs(urlStr string) ([]string, error) {
 	var icons []string
 	icons = make([]string, 0)
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", urlStr, nil)
 	if err != nil {
 		return icons, err
 	}
@@ -170,6 +164,16 @@ func GetFaviconURLs(url string) ([]string, error) {
 
 	if len(icons) == 0 {
 		return icons, errors.New("favicon not found on the page")
+	}
+
+	// 获取源地址的协议和主机名（域名）
+	sourceUrlInfo, _ := url.Parse(urlStr)
+	for k, v := range icons {
+		// 标准的路径地址
+		if !IsHTTPURL(v) {
+			fullUrl := sourceUrlInfo.Scheme + "://" + sourceUrlInfo.Host + "/" + strings.TrimPrefix(v, "/")
+			icons[k] = fullUrl
+		}
 	}
 
 	return icons, nil
