@@ -116,12 +116,17 @@ function resetPanelConfig() {
         </div>
       </template>
 
-      <div>
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.logoShow" size="small" />
+      </div>
+
+      <div class="items-center mt-[5px]">
         <div>
           {{ $t('apps.baseSettings.textContent') }}
         </div>
         <div class="flex items-center mt-[5px]">
-          <NInput v-model:value="panelState.panelConfig.logoText" type="text" show-count :maxlength="20" placeholder="请输入文字" />
+          <NInput v-model:value="panelState.panelConfig.logoText" :disabled="!panelState.panelConfig.logoShow" type="text" show-count :maxlength="20" placeholder="请输入文字" />
         </div>
       </div>
     </NCard>
@@ -134,8 +139,13 @@ function resetPanelConfig() {
       </template>
 
       <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.clockShow" size="small" />
+      </div>
+
+      <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.clockSecondShow') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.clockShowSecond" />
+        <NSwitch v-model:value="panelState.panelConfig.clockShowSecond" size="small" :disabled="!panelState.panelConfig.clockShow" />
       </div>
     </NCard>
 
@@ -160,12 +170,12 @@ function resetPanelConfig() {
       </template>
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.searchBoxShow" />
+        <NSwitch v-model:value="panelState.panelConfig.searchBoxShow" size="small" />
       </div>
       <template v-if="panelState.panelConfig.searchBoxShow">
         <div class="flex items-center mt-[5px]">
           <span class="mr-[10px]">{{ $t('apps.baseSettings.searchBarSearchItem') }}</span>
-          <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" />
+          <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" size="small" />
         </div>
 
         <NFlex class="mt-[5px]" align="center">
@@ -263,15 +273,15 @@ function resetPanelConfig() {
 
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShow" />
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShow" size="small" />
       </div>
       <div v-if="panelState.panelConfig.systemMonitorShow" class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.showTitle') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShowTitle" />
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShowTitle" size="small" />
       </div>
       <div v-if="panelState.panelConfig.systemMonitorShow" class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.publicVisitModeShow') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.systemMonitorPublicVisitModeShow" />
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorPublicVisitModeShow" size="small" />
       </div>
 
       <div class="flex items-center mt-[5px]">
@@ -299,7 +309,7 @@ function resetPanelConfig() {
 
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" />
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" size="small" />
       </div>
     </NCard>
 
@@ -345,7 +355,7 @@ function resetPanelConfig() {
 
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.customImageAddress') }}</span>
-        <NSwitch v-model:value="showWallpaperInput" />
+        <NSwitch v-model:value="showWallpaperInput" size="small" />
       </div>
       <div v-if="showWallpaperInput" class="mt-1">
         <NInput v-model:value="panelState.panelConfig.backgroundImageSrc" type="text" size="small" clearable />

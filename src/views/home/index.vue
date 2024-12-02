@@ -281,18 +281,21 @@ function handleAddItem(itemIconGroupId?: number) {
         }"
       >
         <!-- 头 -->
-        <div class="mx-[auto] w-[80%]">
-          <!-- 时钟组件 -->
-          <div class="flex mx-[auto] items-center justify-center text-white">
-            <div class="logo">
+        <div
+          v-if="panelState.panelConfig.clockShow || panelState.panelConfig.logoShow || panelState.panelConfig.searchBoxShow"
+          class="mx-[auto] w-[80%]"
+        >
+          <!-- LOGO及时钟组件 -->
+          <div v-if="panelState.panelConfig.clockShow || panelState.panelConfig.logoShow" class="flex mx-[auto] items-center justify-center text-white">
+            <div v-if="panelState.panelConfig.logoShow" class="logo">
               <span class="text-2xl md:text-6xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>
-            <div class="divider text-base lg:text-2xl mx-[10px]">
+            <div v-if="panelState.panelConfig.clockShow && panelState.panelConfig.logoShow" class="divider text-base lg:text-2xl mx-[10px]">
               |
             </div>
-            <div class="text-shadow">
+            <div v-if="panelState.panelConfig.clockShow" class="text-shadow">
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
@@ -303,7 +306,7 @@ function handleAddItem(itemIconGroupId?: number) {
               :background="panelState.panelConfig.searchBoxBackground"
               :text-color="panelState.panelConfig.searchBoxTextColor"
               :border-color="panelState.panelConfig.searchBoxBorderColor"
-              @itemSearch="itemFrontEndSearch"
+              @item-search="itemFrontEndSearch"
             />
           </div>
         </div>
@@ -357,11 +360,11 @@ function handleAddItem(itemIconGroupId?: number) {
 
             <!-- 编辑栏 -->
             <div v-if="itemGroup.sortStatus" class="flex my-4">
-              <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
+              <NButton color="#2a2a2a6b" size="small" @click="handleSaveSort(itemGroup)">
                 <template #icon>
                   <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
                 </template>
-                <div>
+                <div class="text-white">
                   {{ $t('common.saveSort') }}
                 </div>
               </NButton>
@@ -455,7 +458,7 @@ function handleAddItem(itemIconGroupId?: number) {
             </templete>
 
             <!-- 编辑栏 -->
-            <div v-if="itemGroup.sortStatus" class="flex my-4">
+            <!-- <div v-if="itemGroup.sortStatus" class="flex my-4">
               <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
                 <template #icon>
                   <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
@@ -464,7 +467,7 @@ function handleAddItem(itemIconGroupId?: number) {
                   {{ $t('common.saveSort') }}
                 </div>
               </NButton>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="mt-5 footer custom-footer" v-html="panelState.panelConfig.footerHtml" />

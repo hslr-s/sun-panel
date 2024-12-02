@@ -369,7 +369,7 @@
     },
     "dockerContainerError": "容器异常",
     "dockerGetContainerListFailed": "获取容器列表失败",
-    "dockerStatusCard": "Docker容器状态卡片",
+    "dockerStatusCard": "容器状态",
     "edit": "修改项目",
     "getGroupFail": "分组信息获取失败",
     "getIcon": "获取图标",

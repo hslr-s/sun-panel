@@ -369,7 +369,7 @@
     },
     "dockerContainerError": "Container exception",
     "dockerGetContainerListFailed": "Failed to get container list",
-    "dockerStatusCard": "Docker container status card",
+    "dockerStatusCard": "Container status",
     "edit": "Edit item",
     "getGroupFail": "Failed to get group information",
     "getIcon": "Get icon",
