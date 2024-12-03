@@ -2,9 +2,9 @@
 import { computed, defineEmits, defineProps, ref, watch } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import {
-  NButton, NCheckbox, NColorPicker, NDivider, NFlex, NForm,
-  NFormItem, NGrid, NGridItem, NInput, NModal,
-  NSelect, useDialog, useMessage,
+  NButton,
+  NCheckbox, NColorPicker, NFlex, NForm, NFormItem, NGrid, NGridItem,
+  NInput, NModal, NSelect, useDialog, useMessage,
 } from 'naive-ui'
 
 import NormalCard from './itemCards/Normal.vue'
@@ -248,13 +248,13 @@ function handleUpdateCardType() {
       </div>
     </div>
 
-    <NDivider class="!my-2" />
+    <!-- <NDivider class="!my-2" /> -->
     <!-- {{ JSON.stringify(rules) }} -->
 
     <!-- 基础设置 -->
     <div class="h-[500px] overflow-auto p-[5px]">
       <NForm ref="formRef" :model="model" :rules="rules" size="small">
-        <NGrid cols="3" :x-gap="10" item-responsive>
+        <!-- <NGrid cols="3" :x-gap="10" item-responsive>
           <NGridItem span="3 500:1">
             <NFormItem path="itemIconGroupId" :label="t('iconItem.iconGroup')">
               <NSelect v-model:value="model.itemIconGroupId" :options="itemIconGroupOptions" />
@@ -291,9 +291,9 @@ function handleUpdateCardType() {
               </div>
             </NFormItem>
           </NGridItem>
-        </NGrid>
+        </NGrid> -->
 
-        <NDivider class="!my-2" />
+        <!-- <NDivider class="!my-2" /> -->
         <!-- 个性化卡片的设置了 -->
         <template v-if="model.cardType === PanelCardType.Normal">
           <NormalCard v-model:itemInfo="model" v-model:rules="rules" />
@@ -305,15 +305,76 @@ function handleUpdateCardType() {
           <SystemAppCard v-model:itemInfo="model" v-model:rules="rules" />
         </template>
 
-        <NDivider class="!my-2" />
+        <!-- <NDivider class="!my-2" /> -->
 
         <!-- 高级功能 -->
-        <NCheckbox v-model:checked="expandAdvancedFeatures" class="my-2">
+        <NCheckbox v-model:checked="expandAdvancedFeatures" class="mb-2" size="small">
           {{ $t('iconItem.advancedFeatures') }}
         </NCheckbox>
 
         <div v-if="expandAdvancedFeatures">
-          <NFormItem path="onlyName" :label="$t('iconItem.onlyName')">
+          <NGrid cols="3" :x-gap="10" item-responsive>
+            <NGridItem span="3 500:1">
+              <NFormItem>
+                <template #label>
+                  <span class="font-bold">
+                    {{ $t('iconItem.cardBackground') }}
+                  </span>
+                </template>
+                <div class="flex w-full mr-1">
+                  <NColorPicker
+                    v-model:value="model.backgroundColor"
+                    size="small"
+                    :modes="['hex']"
+                    :swatches="[
+                      '#00000000',
+                      '#000000',
+                      '#ffffff',
+                      '#18A058',
+                      '#2080F0',
+                      '#F0A020',
+                      '#D03050',
+                      '#C418D1',
+                    ]"
+                  />
+                </div>
+                <div v-if="model.backgroundColor !== defaultItemCardBackgroundColor" class="ml-auto">
+                  <NButton @click="model.backgroundColor = defaultItemCardBackgroundColor">
+                    {{ t('iconItem.resetBackground') }}
+                  </NButton>
+                </div>
+              </NFormItem>
+            </NGridItem>
+
+            <NGridItem span="3 500:1">
+              <NFormItem path="itemIconGroupId">
+                <template #label>
+                  <span class="font-bold">
+                    {{ $t('iconItem.iconGroup') }}
+                  </span>
+                </template>
+                <NSelect v-model:value="model.itemIconGroupId" :options="itemIconGroupOptions" />
+              </NFormItem>
+            </NGridItem>
+
+            <NGridItem span="3 500:1">
+              <NFormItem>
+                <template #label>
+                  <span class="font-bold">
+                    {{ $t('iconItem.cardType') }}
+                  </span>
+                </template>
+                <NSelect v-model:value="model.cardType" :options="optionsCardType" @update:value="handleUpdateCardType" />
+              </NFormItem>
+            </NGridItem>
+          </NGrid>
+
+          <NFormItem path="onlyName">
+            <template #label>
+              <span class="font-bold">
+                {{ $t('iconItem.onlyName') }}
+              </span>
+            </template>
             <NInput v-model:value="model.onlyName" type="text" show-count :maxlength="20" />
           </NFormItem>
         </div>

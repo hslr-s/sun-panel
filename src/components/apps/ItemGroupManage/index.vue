@@ -15,6 +15,7 @@ import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
 import { apiRespErrMsg } from '@/utils/request/apiMessage'
 import { useAppStore } from '@/store'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
 
 interface EditModalArg {
   show: boolean
@@ -29,6 +30,7 @@ const formRef = ref<FormInst | null>(null)
 const ms = useMessage()
 const dialog = useDialog()
 const sortStatus = ref(false)
+const triggerUpdateItemData = useTriggerUpdateItemData()
 
 const defaultItemGroupInfo: Panel.ItemGroupInfo = {
   title: '',
@@ -92,6 +94,7 @@ function handleSaveSort() {
   saveSort(saveItems).then(({ code, msg }) => {
     ms.success(t('common.saveSuccess'))
     sortStatus.value = false
+    triggerUpdateItemData.triggerUpdate()
   }).catch(() => {
     ms.error(t('common.saveFail'))
   })
@@ -128,6 +131,7 @@ function handleSaveGroup() {
           ms.error(t('common.saveFail'))
 
         refreshList()
+        triggerUpdateItemData.triggerUpdate()
         editModalArg.value.show = false
         editModalArg.value.model = { ...defaultItemGroupInfo }
       }).catch((res) => {

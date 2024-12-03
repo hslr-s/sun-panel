@@ -8,6 +8,7 @@ import { Loading, SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
 
 import { useAccountManagerStore, useAuthStore, usePanelState } from '@/store'
 import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
@@ -23,6 +24,7 @@ const dialog = useDialog()
 const panelState = usePanelState()
 const authStore = useAuthStore()
 const accountManagerStore = useAccountManagerStore()
+const triggerUpdateItemDatas = useTriggerUpdateItemData()
 
 const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
@@ -201,6 +203,8 @@ onMounted(async () => {
   if (panelState.panelConfig.logoText)
     setTitle(panelState.panelConfig.logoText)
 
+  // 监听触发更新列表
+  triggerUpdateItemDatas.onTriggered(getList)
   runFooterJSCode()
 })
 

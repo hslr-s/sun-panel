@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
+import { EditItem } from '@/views/home/components'
 import { useAuthStore } from '@/store'
 import { AppLoader, SModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
@@ -134,22 +135,24 @@ onUnmounted(() => {
                   <div
                     v-for=" (item, index) in apps"
                     :key="index"
-                    :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
                     @click="handleClickApp(item)"
                   >
                     <div
                       class="bg-white dark:bg-zinc-800 p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center hover:bg-slate-50 focus:bg-slate-50"
                     >
-                      <div class="flex items-center justify-center">
+                      <div
+                        class="flex items-center justify-center"
+                        :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
+                      >
                         <div class="text-lg">
                           <SvgIcon :icon="item.icon" />
                         </div>
                         <span class="ml-2">{{ item.name }}</span>
                       </div>
-                    <!-- 更多按钮 -->
-                    <!-- <div class="ml-auto">
-                      <SvgIcon icon="mingcute-more-1-fill" />
-                    </div> -->
+                      <!-- 更多按钮 -->
+                      <div v-if="componentName === item.componentName" class="ml-auto flex hover:text-[var(--n-color-target)]">
+                        <SvgIcon icon="fluent--square-add-16-regular" style="width: 16px;height: 16px;" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -164,6 +167,8 @@ onUnmounted(() => {
         </NSpace>
       </div>
     </SModal>
+
+    <EditItem v-model:visible="editItemInfoShow" :item-group-id="currentAddItenIconGroupId" @done="handleEditSuccess" />
   </div>
 </template>
 

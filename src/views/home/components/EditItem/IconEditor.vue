@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NButton, NInput, NRadio, NUpload } from 'naive-ui'
+import { NButton, NInput, NRadioButton, NRadioGroup, NUpload } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import { computed, defineProps } from 'vue'
 // import { ItemIcon } from '@/components/common'
@@ -57,6 +57,13 @@ function handleChange() {
   emit('update:itemIcon', itemIconInfo.value || null)
 }
 
+// watch(() => itemIconInfo.value.itemType, (newVal: number) => {
+//   console.log('itemIconInfo.itemType change', newVal)
+//   handleChange()
+// }, {
+//   deep: true,
+// })
+
 const handleUploadFinish = ({
   file,
   event,
@@ -82,32 +89,22 @@ const handleUploadFinish = ({
 <template>
   <div class="w-full">
     <div class="mb-[10px] flex items-center">
-      <NRadio
-        :checked="itemIconInfo.itemType === 1 "
-        :value="1"
-        name="iconType"
-        @change="handleIconTypeRadioChange(1)"
+      <NRadioGroup
+        v-model:value="itemIconInfo.itemType" name="iconType"
+        @update-value="handleIconTypeRadioChange"
       >
-        {{ $t('common.text') }}
-      </NRadio>
+        <NRadioButton :value="1">
+          {{ $t('common.text') }}
+        </NRadioButton>
 
-      <NRadio
-        :checked="itemIconInfo.itemType === 2"
-        :value="2"
-        name="iconType"
-        @change="handleIconTypeRadioChange(2)"
-      >
-        {{ $t('common.image') }}
-      </NRadio>
+        <NRadioButton :value="2">
+          {{ $t('common.image') }}
+        </NRadioButton>
 
-      <NRadio
-        :checked="itemIconInfo.itemType === 3"
-        :value="3"
-        name="iconType"
-        @change="handleIconTypeRadioChange(3)"
-      >
-        {{ t('iconItem.onlineIcon') }}
-      </NRadio>
+        <NRadioButton :value="3">
+          {{ t('iconItem.onlineIcon') }}
+        </NRadioButton>
+      </NRadioGroup>
     </div>
 
     <div class="w-full flex">

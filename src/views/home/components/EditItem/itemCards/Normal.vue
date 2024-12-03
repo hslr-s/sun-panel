@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import {
-  NCard, NDivider, NFlex, NFormItem, NGrid, NGridItem,
+  NFlex, NFormItem, NGrid, NGridItem,
   NInput, NSelect,
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
@@ -84,43 +84,67 @@ onMounted(() => {
 
 <template>
   <div>
-    <NGrid cols="2" :x-gap="10" item-responsive>
-      <NGridItem span="2 500:1">
-        <NFormItem path="title" :label="$t('common.title')">
-          <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
-        </NFormItem>
-      </NGridItem>
-      <NGridItem span="2 500:1">
-        <NFormItem path="description" :label="$t('common.description')">
-          <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
-        </NFormItem>
-      </NGridItem>
-    </NGrid>
-
     <NFormItem path="icon">
       <template #label>
         <NFlex align="center">
-          {{ $t('iconItem.icon.iconStyle') }}
+          <span class="font-bold">
+            {{ $t('iconItem.icon.iconStyle') }}
+          </span>
           <STip class="cursor-pointer">
             <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
             <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
           </STip>
         </NFlex>
       </template>
-      <NCard size="small">
-        <IconEditor v-model:item-icon="model.icon" />
-      </NCard>
+      <!-- <NCard size="small"> -->
+      <IconEditor v-model:item-icon="model.icon" />
+      <!-- </NCard> -->
     </NFormItem>
 
-    <NDivider class="!my-2" />
+    <!-- <NDivider class="!my-2" /> -->
 
-    <NFormItem path="url" :label="`${$t('iconItem.defaultUrl')}`">
+    <NGrid cols="2" :x-gap="10" item-responsive>
+      <NGridItem span="2 500:1">
+        <NFormItem path="title">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('common.title') }}
+            </span>
+          </template>
+          <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
+        </NFormItem>
+      </NGridItem>
+      <NGridItem span="2 500:1">
+        <NFormItem path="description">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('common.description') }}
+            </span>
+          </template>
+          <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
+        </NFormItem>
+      </NGridItem>
+    </NGrid>
+
+    <!-- <NDivider class="!my-2" /> -->
+
+    <NFormItem path="url">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('iconItem.defaultUrl') }}
+        </span>
+      </template>
       <div class="w-full">
         <UrlAddressInput v-model:url="model.url" v-model:icon-info="model.icon" placeholder="http(s)://" />
       </div>
     </NFormItem>
 
-    <NFormItem path="lanUrl" :label="`${$t('iconItem.lanUrl')}`">
+    <NFormItem path="lanUrl">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('iconItem.lanUrl') }}
+        </span>
+      </template>
       <div class="w-full">
         <UrlAddressInput v-model:url="model.lanUrl" v-model:icon-info="model.icon" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
       </div>
@@ -154,7 +178,12 @@ onMounted(() => {
       </div>
     </NFormItem> -->
 
-    <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
+    <NFormItem path="openMethod">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('iconItem.openMethod') }}
+        </span>
+      </template>
       <NSelect v-model:value="model.openMethod" :options="options" />
     </NFormItem>
   </div>

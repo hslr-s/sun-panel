@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NCard, NFlex, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
+import { NFlex, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
 import IconEditor from '../IconEditor.vue'
@@ -85,9 +85,33 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
 
 <template>
   <div>
+    <NFormItem path="icon">
+      <template #label>
+        <NFlex align="center">
+          <span class="font-bold">
+            {{ $t('iconItem.icon.iconStyle') }}
+          </span>
+
+          <STip class="cursor-pointer">
+            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+          </STip>
+        </NFlex>
+      </template>
+      <!-- <NCard size="small"> -->
+      <IconEditor v-model:item-icon="model.icon" />
+      <!-- </NCard> -->
+    </NFormItem>
+
     <NGrid cols="2" :x-gap="10" item-responsive>
       <NGridItem span="2 500:1">
-        <NFormItem path="expandParam.systemAppName" :label="$t('iconItem.builtInAppOpen')">
+        <NFormItem path="expandParam.systemAppName">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('iconItem.builtInAppOpen') }}
+            </span>
+          </template>
+
           <NSelect
             v-model:value="model.expandParam.systemAppName"
             label-field="name"
@@ -99,28 +123,24 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
         </NFormItem>
       </NGridItem>
       <NGridItem span="2 500:1">
-        <NFormItem path="title" :label="$t('common.title')">
+        <NFormItem path="title">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('common.title') }}
+            </span>
+          </template>
+
           <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
         </NFormItem>
       </NGridItem>
     </NGrid>
 
-    <NFormItem path="icon">
+    <NFormItem path="description">
       <template #label>
-        <NFlex align="center">
-          {{ $t('iconItem.icon.iconStyle') }}
-          <STip class="cursor-pointer">
-            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
-            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
-          </STip>
-        </NFlex>
+        <span class="font-bold">
+          {{ $t('common.description') }}
+        </span>
       </template>
-      <NCard size="small">
-        <IconEditor v-model:item-icon="model.icon" />
-      </NCard>
-    </NFormItem>
-
-    <NFormItem path="description" :label="$t('common.description')">
       <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
     </NFormItem>
 
