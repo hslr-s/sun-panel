@@ -23,6 +23,7 @@ interface Props {
   visible: boolean
   itemInfo: Panel.Info | null
   itemGroupId?: number
+  isOutAdd?: boolean // 从外部添加,需要优先展示分组
 }
 
 const props = defineProps<Props>()
@@ -207,7 +208,10 @@ function handleUpdateCardType() {
 </script>
 
 <template>
-  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')">
+  <NModal
+    v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;"
+    :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')"
+  >
     <!-- 卡片预览 -->
     <div class="mb-2">
       <span class="flex mb-1">
@@ -218,30 +222,24 @@ function handleUpdateCardType() {
           {{ t('iconItem.previewTransparentCanvas') }}
         </NCheckbox>
       </span>
-      <div v-if="showPreview" class="preview-box rounded-xl border" :class="previewTransparentCanvas ? 'transparent-grid' : 'bg-[#f1f8ff]'">
+      <div
+        v-if="showPreview" class="preview-box rounded-xl border"
+        :class="previewTransparentCanvas ? 'transparent-grid' : 'bg-[#f1f8ff]'"
+      >
         <div class="flex justify-center p-2">
           <div class="w-[210px] mr-4 z-[-1]">
             <ItemCards
-              :sort-status="false"
-              class="cursor-pointer"
-              :card-info="model"
-              :icon-text-info-hide-description="false"
-              :icon-text-icon-hide-title="false"
-              :card-style="PanelPanelConfigStyleEnum.info"
-              :card-type="PanelCardType.Normal"
+              :sort-status="false" class="cursor-pointer" :card-info="model"
+              :icon-text-info-hide-description="false" :icon-text-icon-hide-title="false"
+              :card-style="PanelPanelConfigStyleEnum.info" :card-type="PanelCardType.Normal"
             />
           </div>
 
           <div class="z-[-1]">
             <ItemCards
-              :sort-status="false"
-              class="cursor-pointer"
-              :card-info="model"
-              icon-text-color="#000"
-              :icon-text-info-hide-description="false"
-              :icon-text-icon-hide-title="false"
-              :card-style="PanelPanelConfigStyleEnum.small"
-              :card-type="PanelCardType.Normal"
+              :sort-status="false" class="cursor-pointer" :card-info="model" icon-text-color="#000"
+              :icon-text-info-hide-description="false" :icon-text-icon-hide-title="false"
+              :card-style="PanelPanelConfigStyleEnum.small" :card-type="PanelCardType.Normal"
             />
           </div>
         </div>
@@ -254,6 +252,16 @@ function handleUpdateCardType() {
     <!-- 基础设置 -->
     <div class="h-[500px] overflow-auto p-[5px]">
       <NForm ref="formRef" :model="model" :rules="rules" size="small">
+        <!-- 其他窗口添加图标的时候所使用的分组 正常情况下隐藏 -->
+        <NFormItem v-if="isOutAdd" path="itemIconGroupId">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('iconItem.iconGroup') }}
+            </span>
+          </template>
+          <NSelect v-model:value="model.itemIconGroupId" :options="itemIconGroupOptions" />
+        </NFormItem>
+
         <!-- <NGrid cols="3" :x-gap="10" item-responsive>
           <NGridItem span="3 500:1">
             <NFormItem path="itemIconGroupId" :label="t('iconItem.iconGroup')">
@@ -307,11 +315,6 @@ function handleUpdateCardType() {
 
         <!-- <NDivider class="!my-2" /> -->
 
-        <!-- 高级功能 -->
-        <NCheckbox v-model:checked="expandAdvancedFeatures" class="mb-2" size="small">
-          {{ $t('iconItem.advancedFeatures') }}
-        </NCheckbox>
-
         <div v-if="expandAdvancedFeatures">
           <NGrid cols="3" :x-gap="10" item-responsive>
             <NGridItem span="3 500:1">
@@ -323,10 +326,7 @@ function handleUpdateCardType() {
                 </template>
                 <div class="flex w-full mr-1">
                   <NColorPicker
-                    v-model:value="model.backgroundColor"
-                    size="small"
-                    :modes="['hex']"
-                    :swatches="[
+                    v-model:value="model.backgroundColor" size="small" :modes="['hex']" :swatches="[
                       '#00000000',
                       '#000000',
                       '#ffffff',
@@ -346,7 +346,7 @@ function handleUpdateCardType() {
               </NFormItem>
             </NGridItem>
 
-            <NGridItem span="3 500:1">
+            <NGridItem v-if="!isOutAdd" span="3 500:1">
               <NFormItem path="itemIconGroupId">
                 <template #label>
                   <span class="font-bold">
@@ -364,7 +364,10 @@ function handleUpdateCardType() {
                     {{ $t('iconItem.cardType') }}
                   </span>
                 </template>
-                <NSelect v-model:value="model.cardType" :options="optionsCardType" @update:value="handleUpdateCardType" />
+                <NSelect
+                  v-model:value="model.cardType" :options="optionsCardType"
+                  @update:value="handleUpdateCardType"
+                />
               </NFormItem>
             </NGridItem>
           </NGrid>
@@ -378,6 +381,11 @@ function handleUpdateCardType() {
             <NInput v-model:value="model.onlyName" type="text" show-count :maxlength="20" />
           </NFormItem>
         </div>
+
+        <!-- 更多不常用的功能进行隐藏 -->
+        <NCheckbox v-model:checked="expandAdvancedFeatures" class="mb-2" size="small">
+          {{ $t('iconItem.moreOptions') }}
+        </NCheckbox>
       </NForm>
     </div>
 

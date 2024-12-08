@@ -7,8 +7,11 @@ import { useDockerStore } from '../../store/docker'
 import { RowAction, RowName } from './table'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { t } from '@/locales'
-import { ProTag } from '@/components/common'
+import { ProTag, SvgIcon } from '@/components/common'
 import { useDomainLinks } from '@/hooks/useDomainLinks'
+import { PanelCardType, PanelItemIconTypeEnum, PanelItemOpenMethodEnum } from '@/enums'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
+import { EditItem } from '@/views/home/components'
 
 const loadingList = ref(false)
 let intervalId: any
@@ -18,6 +21,8 @@ const nSpace = ref<HTMLElement | ComponentPublicInstance | null>(null)
 const dataTableHeight = ref(0)
 
 const alertBoxRef = ref<HTMLElement | ComponentPublicInstance | null>(null)
+const editItemInfo = ref<Panel.Info | null>(null)
+const editItemInfoShow = ref(false)
 
 const createColumns = ({
   sendMail,
@@ -117,7 +122,7 @@ const createColumns = ({
               type: 'info',
               title: `(${g.type}) ${g.ip}:${g.publicPort} => ${g.privatePort}`,
             },
-          `${g.type} ${g.ip}:${g.publicPort}`)
+            `${g.type} ${g.ip}:${g.publicPort}`)
         }
 
         const c = []
@@ -200,6 +205,31 @@ const createColumns = ({
         )
       },
     },
+    {
+      key: 'add',
+      fixed: 'right',
+      width: 100,
+      align: 'center',
+      render(row) {
+        return h('div', {
+          title: t('common.addCardToGroup'),
+          onClick: () => addToGroupCard(row),
+        },
+        h(
+          SvgIcon,
+          {
+            class: 'add-card',
+            style: {
+              width: '20px',
+              height: '20px',
+              cursor: 'pointer',
+            },
+            icon: 'fluent--square-add-16-regular',
+
+          },
+        ))
+      },
+    },
 
     // {
     //   title: '更多',
@@ -253,6 +283,30 @@ function handleResize() {
   })
 }
 
+// 添加卡片分组
+function addToGroupCard(row: Docker.Container.Info) {
+  console.log('点击了添加卡片分组')
+  editItemInfo.value = {
+    title: row.name,
+    icon: {
+      text: row.name,
+      itemType: PanelItemIconTypeEnum.url,
+    },
+    cardType: PanelCardType.Docker,
+    openMethod: PanelItemOpenMethodEnum.newTab,
+    url: '',
+    expandParam: {
+      containerId: row.id,
+      containerName: row.name,
+    },
+  }
+  editItemInfoShow.value = true
+}
+
+function handleEditSuccess() {
+  editItemInfoShow.value = false
+  useTriggerUpdateItemData().triggerUpdate()
+}
 onUnmounted(() => {
   clearInterval(intervalId)
   window.removeEventListener('resize', handleResize)
@@ -268,7 +322,10 @@ onUnmounted(() => {
         {{ t('apps.dockerManage.alertText') }}
       </NAlert>
 
-      <NAlert v-if="dockerState.refreshContainerListErrorMsg" class="mt-2" type="error" closable @after-leave="handleResize">
+      <NAlert
+        v-if="dockerState.refreshContainerListErrorMsg" class="mt-2" type="error" closable
+        @after-leave="handleResize"
+      >
         {{ dockerState.refreshContainerListErrorMsg }}
         <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
           [{{ t('common.viewSolution') }}]
@@ -277,11 +334,19 @@ onUnmounted(() => {
     </div>
 
     <NDataTable
-      :max-height="dataTableHeight"
-      :bordered="false" size="small"
-      :data="dockerState.containerList"
-      :columns="columns"
-      :loading="loadingList"
+      :max-height="dataTableHeight" :bordered="false" size="small" :data="dockerState.containerList"
+      :columns="columns" :loading="loadingList"
     />
+
+    <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfo" is-out-add @done="handleEditSuccess" />
   </NSpace>
 </template>
+
+<style scoped>
+:deep(.add-card:hover) {
+  color: var(--n-color-target);
+}
+:deep(.add-card) {
+  transition: color 0.3s ease;
+}
+</style>

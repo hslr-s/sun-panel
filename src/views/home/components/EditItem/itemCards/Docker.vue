@@ -67,14 +67,15 @@ const options = [
   },
 ]
 const rulesExtends: FormRules = {
-  url: [
-    {
-      required: true,
-      trigger: 'blur',
-      type: 'string',
-      message: t('form.required'),
-    },
-  ],
+  // 不再设定为必填项
+  // url: [
+  //   {
+  //     required: true,
+  //     trigger: 'blur',
+  //     type: 'string',
+  //     message: t('form.required'),
+  //   },
+  // ],
   expandParam: {
     containerId: {
       required: true,

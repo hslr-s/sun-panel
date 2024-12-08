@@ -231,6 +231,7 @@
   "common": {
     "action": "操作",
     "add": "添加",
+    "addCardToGroup": "添加到卡片分组",
     "addSuccess": "添加成功",
     "appName": "Sun-Panel",
     "backgroundColor": "背景颜色",
@@ -352,7 +353,6 @@
   },
   "iconItem": {
     "add": "添加项目",
-    "advancedFeatures": "高级功能",
     "builtInApp": "内置应用",
     "builtInAppOpen": "内置应用",
     "builtinApp": "内置应用",
@@ -388,6 +388,7 @@
     "inputIconUrlOrUpload": "输入图标地址或上传",
     "lanUrl": "内网地址",
     "lanUrlInputPlaceholder": "http(s)://（内网环境，会跳转该地址）",
+    "moreOptions": "更多选项",
     "newWindowOpen": "新窗口打开",
     "onlineIcon": "在线图标",
     "onlineIconLibrary": "在线图标库",

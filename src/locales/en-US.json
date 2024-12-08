@@ -231,6 +231,7 @@
   "common": {
     "action": "Action",
     "add": "Add",
+    "addCardToGroup": "Add to card group",
     "addSuccess": "Added successfully",
     "appName": "Sun-Panel",
     "backgroundColor": "Background color",
@@ -352,7 +353,6 @@
   },
   "iconItem": {
     "add": "Add item",
-    "advancedFeatures": "Advanced Features",
     "builtInApp": "Built-in app",
     "builtInAppOpen": "Built-in app",
     "builtinApp": "Built-in app",
@@ -388,6 +388,7 @@
     "inputIconUrlOrUpload": "Enter icon URL or upload",
     "lanUrl": "LAN URL",
     "lanUrlInputPlaceholder": "http(s):// (Intranet environment, will redirect to this address)",
+    "moreOptions": "More options",
     "newWindowOpen": "Open in new window",
     "onlineIcon": "Online icon",
     "onlineIconLibrary": "Online icon library",

@@ -7,6 +7,8 @@ import { AppLoader, SModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
 import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
+import { PanelCardType, PanelItemIconTypeEnum, PanelItemOpenMethodEnum } from '@/enums'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
 
 const props = defineProps<{
   visible: boolean
@@ -24,6 +26,18 @@ const defaultTitle = t('appLauncher.title')
 const title = ref('')
 const height = ref('600px')
 const maxWidth = ref('1000px')
+
+const editItemInfoShow = ref(false)
+const editItemInfo = ref<Panel.Info | null>({
+  icon: {
+    itemType: PanelItemIconTypeEnum.url,
+    src: '',
+  },
+  title: '',
+  cardType: PanelCardType.BuiltInApp,
+  openMethod: PanelItemOpenMethodEnum.currentTab,
+  url: '',
+})
 
 const apps = ref(systemApps)
 
@@ -56,6 +70,27 @@ function handleResize() {
     collapsed.value = false
     isSmallScreen.value = false
   }
+}
+function handleClickAppAdd(app: SystemApp) {
+  editItemInfo.value = {
+    icon: {
+      itemType: PanelItemIconTypeEnum.online,
+      text: app.icon,
+    },
+    title: app.name,
+    cardType: PanelCardType.BuiltInApp,
+    openMethod: PanelItemOpenMethodEnum.currentTab,
+    url: '',
+    description: t('iconItem.builtinApp'),
+    expandParam: {
+      systemAppName: app.componentName,
+    },
+  }
+  editItemInfoShow.value = true
+}
+function handleEditSuccess() {
+  useTriggerUpdateItemData().triggerUpdate()
+  editItemInfoShow.value = false
 }
 
 // function handleMaxMinButton() {
@@ -150,7 +185,11 @@ onUnmounted(() => {
                         <span class="ml-2">{{ item.name }}</span>
                       </div>
                       <!-- 更多按钮 -->
-                      <div v-if="componentName === item.componentName" class="ml-auto flex hover:text-[var(--n-color-target)]">
+                      <div
+                        v-if="componentName === item.componentName"
+                        class="ml-auto flex hover:text-[var(--n-color-target)]"
+                        @click="handleClickAppAdd(item)"
+                      >
                         <SvgIcon icon="fluent--square-add-16-regular" style="width: 16px;height: 16px;" />
                       </div>
                     </div>
@@ -168,7 +207,7 @@ onUnmounted(() => {
       </div>
     </SModal>
 
-    <EditItem v-model:visible="editItemInfoShow" :item-group-id="currentAddItenIconGroupId" @done="handleEditSuccess" />
+    <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfo" is-out-add @done="handleEditSuccess" />
   </div>
 </template>
 
