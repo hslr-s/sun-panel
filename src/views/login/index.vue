@@ -77,9 +77,14 @@ const loginPost = async () => {
   }
 }
 
-function handleSubmit() {
-  // 点击登录按钮触发
-  loginPost()
+function handleSubmit(e: any) {
+  // 修复Mac safari浏览器中文输入法回车触发
+  if (e.keyCode === 229)
+    return
+  if (e.key === 'Enter' && !e.isComposing) {
+    // 点击登录按钮触发
+    loginPost()
+  }
 }
 
 function handleChangeLanuage(value: Language) {
