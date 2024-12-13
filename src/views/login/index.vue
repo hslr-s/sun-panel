@@ -77,7 +77,7 @@ const loginPost = async () => {
   }
 }
 
-function handleSubmit(e: any) {
+function handleEnterDown(e: any) {
   // 修复Mac safari浏览器中文输入法回车触发
   if (e.keyCode === 229)
     return
@@ -162,7 +162,7 @@ onMounted(() => {
           {{ appStore.siteSetting.title }}
           <!-- </NGradientText> -->
         </div>
-        <NForm :model="form" label-width="100px" @keydown.enter="handleSubmit">
+        <NForm :model="form" label-width="100px" @keydown.enter="handleEnterDown">
           <NFormItem>
             <NInput v-model:value="form.username" :placeholder="$t('login.usernamePlaceholder')">
               <template #prefix>
@@ -187,7 +187,7 @@ onMounted(() => {
           </NFormItem>
 
           <NFormItem style="margin-top: 10px">
-            <NButton :loading="loading" class="login-button" @click="handleSubmit">
+            <NButton :loading="loading" class="login-button" @click="loginPost">
               {{ $t('login.loginButton') }}
             </NButton>
           </NFormItem>
