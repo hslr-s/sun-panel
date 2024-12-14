@@ -109,14 +109,18 @@ const handleUploadFinish = ({
 
     <div class="w-full flex">
       <!-- 文字 -->
-      <div v-if="itemIconInfo.itemType === 1" class="flex items-center">
-        <span class="w-auto mr-2 whitespace-nowrap">{{ t('iconItem.icon.textContent') }}</span>
+      <div v-if="itemIconInfo.itemType === 1" class="items-center">
+        <div class="w-auto mr-2 whitespace-nowrap">
+          {{ t('iconItem.icon.textContent') }}
+        </div>
         <NInput v-model:value="itemIconInfo.text" :maxlength="10" type="text" show-count clearable @input="handleChange" />
       </div>
 
       <!-- 在线图标 -->
-      <div v-if="itemIconInfo.itemType === 3" class="flex items-center">
-        <span class="w-auto mr-2">{{ t('iconItem.icon.iconName') }}</span>
+      <div v-if="itemIconInfo.itemType === 3" class="items-center">
+        <div class="w-auto mr-2">
+          {{ t('iconItem.icon.iconName') }}
+        </div>
         <div class="flex">
           <NInput v-model:value="itemIconInfo.text" type="text" class="mr-1" :placeholder="$t('iconItem.inputIconName')" clearable @input="handleChange" />
           <NButton quaternary type="info">
@@ -126,8 +130,10 @@ const handleUploadFinish = ({
       </div>
 
       <!-- 图片 -->
-      <div v-if="itemIconInfo.itemType === 2" class="flex items-center w-full">
-        <span class="w-auto mr-2 whitespace-nowrap">{{ t('iconItem.icon.imageUrl') }}</span>
+      <div v-if="itemIconInfo.itemType === 2" class="items-center w-full">
+        <div class="w-auto mr-2 whitespace-nowrap">
+          {{ t('iconItem.icon.imageUrl') }}
+        </div>
         <div class="flex w-full">
           <NInput
             v-model:value="itemIconInfo.src"
