@@ -105,6 +105,7 @@ function handleContextMenu(event: MouseEvent) {
 }
 
 async function handleMousedowClick(event: MouseEvent) {
+  // 鼠标中间键点击
   if (event.button === 1 && !props.sortStatus) {
     event.preventDefault()
     window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
