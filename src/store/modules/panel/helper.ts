@@ -35,7 +35,7 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     systemMonitorPublicVisitModeShow: false,
     netModeChangeButtonShow: true,
     netModeChangeAuto: false,
-
+    netModeChangeAutoMaxPingMs: 200,
   }
 }
 

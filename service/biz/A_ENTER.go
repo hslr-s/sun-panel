@@ -9,4 +9,5 @@ var (
 	Docker        = DockerType{}
 	Version       = VersionStruct{}
 	Captcha       = CaptchaType{}
+	File          = FileType{}
 )

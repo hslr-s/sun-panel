@@ -4,8 +4,8 @@ import type { UploadFileInfo } from 'naive-ui'
 import {
   NButton, NCard, NColorPicker, NFlex, NGrid,
   NGridItem, NInput, NInputGroup,
-  NInputNumber,
-  NPopconfirm, NSelect, NSlider, NSwitch, NUpload,
+  NInputNumber, NPopconfirm,
+  NSelect, NSlider, NSwitch, NTag, NUpload,
   NUploadDragger,
   useDialog, useMessage,
 } from 'naive-ui'
@@ -104,6 +104,17 @@ function resetPanelConfig() {
       uploadCloud()
     },
   })
+}
+
+// 开启自动识别网络将隐藏手动切换按钮
+function handleNetModeChangeAutoChange(value: boolean) {
+  panelState.panelConfig.netModeChangeButtonShow = !value
+}
+
+function handleNetModeChangeAutoMaxPingMsChange(value: number) {
+  if (value < 100) {
+    panelState.panelConfig.netModeChangeAutoMaxPingMs = 100
+  }
 }
 </script>
 
@@ -308,8 +319,33 @@ function resetPanelConfig() {
       </div> -->
 
       <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('apps.baseSettings.netModeChangeAuto') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeAuto" @update:value="handleNetModeChangeAutoChange" />
+
+        <span class="ml-2">
+          <STip>
+            <div class=" max-w-[500px]">
+              <NTag type="warning" size="small">BETA</NTag>
+              {{ t('apps.baseSettings.netModeChangeAutoTip') }}
+            </div>
+          </STip>
+        </span>
+      </div>
+
+      <div v-if="panelState.panelConfig.netModeChangeAuto" class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ `${$t('apps.baseSettings.netModeChangeAutoMaxPingMs')} (ms)` }}</span>
+        <NInputNumber
+          v-model:value="panelState.panelConfig.netModeChangeAutoMaxPingMs"
+          :step="100" size="small"
+          :max="2000" :min="100"
+          :style="{ width: '100px' }" placeholder="200"
+          @update:value="handleNetModeChangeAutoMaxPingMsChange"
+        />
+      </div>
+
+      <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" size="small" />
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" :disabled="panelState.panelConfig.netModeChangeAuto" size="small" />
       </div>
     </NCard>
 

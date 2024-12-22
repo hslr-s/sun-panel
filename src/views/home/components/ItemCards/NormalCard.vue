@@ -3,6 +3,7 @@ import { nextTick, ref } from 'vue'
 import { NDropdown } from 'naive-ui'
 import type { DropdownOption } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
+import { getItemUrl } from './common'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
@@ -76,13 +77,13 @@ function openPage(openMethod: number, url: string, title?: string) {
 // }
 
 // 点击项目
-function handleItemClick() {
+async function handleItemClick() {
   if (props.sortStatus) {
     emit('edit')
     return
   }
 
-  const jumpUrl = getItemUrl()
+  const jumpUrl = await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs)
 
   openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
 }
@@ -103,24 +104,24 @@ function handleContextMenu(event: MouseEvent) {
   })
 }
 
-function handleMousedowClick(event: MouseEvent) {
+async function handleMousedowClick(event: MouseEvent) {
   if (event.button === 1 && !props.sortStatus) {
     event.preventDefault()
-    window.open(getItemUrl())
+    window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
   }
 }
 
-// 获取项目地址，自动识别内外网
-function getItemUrl() {
-  let jumpUrl = ''
-  if (props.itemInfo)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
+// // 获取项目地址，识别当前内外网环境返回地址，废弃-采用 import { getItemUrl } from './common' 2024年12月1日记录
+// function getItemUrl() {
+//   let jumpUrl = ''
+//   if (props.itemInfo)
+//     jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
 
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
+//   if (props.itemInfo?.lanUrl === '')
+//     jumpUrl = props.itemInfo.url
 
-  return jumpUrl
-}
+//   return jumpUrl
+// }
 
 function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false

@@ -88,6 +88,7 @@ declare namespace Panel {
         systemMonitorPublicVisitModeShow?: boolean
         netModeChangeButtonShow?: boolean
         netModeChangeAuto?: boolean
+        netModeChangeAutoMaxPingMs?: number
     }
 
     interface userConfig {

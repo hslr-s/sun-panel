@@ -4,6 +4,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { DropdownOption } from 'naive-ui'
 import { NDropdown, NEllipsis, NFlex, NSpin, useMessage } from 'naive-ui'
 import { useDockerCardStore } from './dockerCard/store'
+import { getItemUrl } from './common'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { IframeLayer, ItemCard, ItemIcon, STip } from '@/components/common'
 import { t } from '@/locales'
@@ -122,19 +123,13 @@ const textColor = computed(() => {
 })
 
 // 点击项目
-function handleItemClick() {
+async function handleItemClick() {
   if (props.sortStatus) {
     emit('edit')
     return
   }
 
-  let jumpUrl = ''
-
-  if (itemCardInfo.value)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? itemCardInfo.value.lanUrl : itemCardInfo.value.url) as string
-
-  if (itemCardInfo.value?.lanUrl === '')
-    jumpUrl = itemCardInfo.value.url
+  const jumpUrl = await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs)
 
   if (containerState.value.runStatus === DockerContainerInfoState.exited && itemCardInfo.value.expandParam.openPageAndStart === true) {
     // 判断当前是否为公开模式，公开模式进行拦截
