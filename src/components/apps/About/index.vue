@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { NBadge, NButton, NCheckbox, NDivider, NFlex, NGradientText, NTag } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { checkNewVersion as checkNewVersionApi, get } from '@/api/system/about'
-import { useAppStore } from '@/store'
+import { useAppStore, useAuthStore } from '@/store'
 import srcSvglogo from '@/assets/logo.svg'
 import srcGitee from '@/assets/about_image/gitee.png'
 import srcGithub from '@/assets/about_image/github.png'
@@ -22,6 +22,7 @@ interface Version {
 }
 
 const appStore = useAppStore()
+const uauthStore = useAuthStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
 const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
@@ -30,6 +31,7 @@ const newVersionInfo = ref<About.NewVersionInfo | null>(null)
 const checkLoading = ref(false)
 const isCheckFailed = ref(false)
 const domainLinks = useDomainLinks()
+const isAdmin = computed(() => uauthStore.userInfo?.role === 1)
 
 function link(c: string): string {
   return domainLinks.linkWithLang(c)
@@ -59,8 +61,8 @@ onMounted(() => {
     if (res.code === 0)
       versionName.value = res.data.versionName
   })
-
-  checkNewVersion()
+  if (isAdmin.value)
+    checkNewVersion()
 })
 </script>
 
@@ -77,7 +79,7 @@ onMounted(() => {
         </NGradientText>
       </div>
 
-      <div v-if="!checkLoading" class="mt-2">
+      <div v-if="!checkLoading && isAdmin" class="mt-2">
         <NFlex v-if="newVersionInfo !== null" justify="center" align="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
           {{ t('apps.about.haveNewVersion') }}
           <NBadge value="New" processing :offset="[5, -5]">
@@ -103,7 +105,7 @@ onMounted(() => {
         </NFlex>
       </div>
 
-      <NFlex align="center" justify="center">
+      <NFlex v-if="isAdmin" align="center" justify="center">
         <NCheckbox v-model:checked="isCheckBeta">
           Beta
         </NCheckbox>
