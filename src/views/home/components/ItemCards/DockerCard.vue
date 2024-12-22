@@ -176,6 +176,18 @@ function handleContextMenu(e: MouseEvent) {
   })
 }
 
+async function handleMousedowClick(event: MouseEvent) {
+  if (event.button === 1 && !props.sortStatus) {
+    // 暂时注释掉，因为此处可能需要优先启动容器再打开地址
+    // // 鼠标中间键点击,如果没有任何地址将忽略点击
+    // if (props.itemInfo.lanUrl === '' && props.itemInfo.url === '') {
+    //   return
+    // }
+    // event.preventDefault()
+    // window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
+  }
+}
+
 function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
   // console.log(currentRightSelectItem, key)
@@ -555,14 +567,15 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="app-icon w-full"
-    :title="describeText"
+    class="app-icon w-full" :title="describeText"
     @click="handleItemClick"
     @contextmenu="(e) => handleContextMenu(e)"
+    @mousedown="handleMousedowClick"
   >
     <ItemCard
       :card-type-style="cardStyle" :background-color="backgroundColor"
-      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemCardInfo?.title"
+      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor"
+      :icon-text="itemCardInfo?.title"
     >
       <template #small>
         <NSpin :show="operationLoading">
@@ -597,7 +610,7 @@ onUnmounted(() => {
               class="dot dot-info flex items-center justify-center border"
               :style="{ backgroundColor: badgeStatusColor }" :title="badgeMsg"
             >
-            <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
+              <!-- <SvgIconOnline icon="tabler:activity-heartbeat" /> -->
             </div>
 
             <!-- 文字 -->
@@ -613,10 +626,7 @@ onUnmounted(() => {
                   </NEllipsis>
                 </div>
                 <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
-                  <NEllipsis
-                    v-if="loading" :line-clamp="2"
-                    class="text-xs"
-                  >
+                  <NEllipsis v-if="loading" :line-clamp="2" class="text-xs">
                     loading...
                   </NEllipsis>
                   <NEllipsis
@@ -637,11 +647,17 @@ onUnmounted(() => {
                   </NEllipsis>
                   <NFlex v-else :line-clamp="2" class="text-xs" align="center">
                     {{ t('iconItem.showBadgeStatusExited') }}
-                    <span v-if="dockerErrorMsg" class="text-[red]" :title="dockerErrorMsg" @click.stop="handleDockerErrorMsgClick">
+                    <span
+                      v-if="dockerErrorMsg" class="text-[red]" :title="dockerErrorMsg"
+                      @click.stop="handleDockerErrorMsgClick"
+                    >
                       <STip>
                         <div class="max-w-[300px]">
                           {{ badgeMsg }}: {{ dockerErrorMsg }}
-                          <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_card_abnormal')">
+                          <a
+                            target="_blank" class="text-lime-600"
+                            :href="domainLinks.faqLinkWithLang('docker_card_abnormal')"
+                          >
                             [{{ t('common.viewSolution') }}]
                           </a>
                         </div>
@@ -664,13 +680,7 @@ onUnmounted(() => {
     />
 
     <!-- 弹窗 -->
-    <IframeLayer
-      v-model:show="windowShow"
-      :title="windowTitle"
-      :src="windowSrc"
-      move
-      resize
-    />
+    <IframeLayer v-model:show="windowShow" :title="windowTitle" :src="windowSrc" move resize />
 
     <!-- 旧弹窗 -->
     <!-- <NModal
