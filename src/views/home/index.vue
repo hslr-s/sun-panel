@@ -41,11 +41,13 @@ const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
 async function getList() {
+  let isEnableSyncCache = false // 是否开启同步缓存数据
   filterItems.value = panelState.itemGroupCardCacheData
 
   // 当缓存的数据为0的时候，显示加载的loading
   if (filterItems.value.length === 0) {
     itemCardsLoading.value = true
+    isEnableSyncCache = true // 如果之前没有缓存数据将开启
   }
 
   // 获取组数据
@@ -59,6 +61,13 @@ async function getList() {
         // console.log('正在组', element.id)
         if (element.id) {
           await updateItemIconGroupByNet(i, element.id)
+        }
+
+        // 如果之前没有缓存数据将开启同步缓存数据
+        // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
+        if (isEnableSyncCache) {
+          filterItems.value = items.value
+          panelState.setItemGroupCacheData(items.value)
         }
       }
     }
