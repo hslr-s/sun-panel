@@ -81,7 +81,7 @@ func InitRouter(router *gin.Engine) *gin.Engine {
 
 		// 要跳过的文件列表
 		skipFiles := map[string]bool{
-			"favicon.ico": true,
+			// "favicon.ico": true,
 		}
 
 		// 动态绑定web目录的路由
