@@ -8,7 +8,6 @@ import (
 	"sun-panel/lib/language"
 	"sun-panel/models"
 
-	redis "github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -33,7 +32,6 @@ var (
 	VerifyCodeCachePool cache.Cacher[string]
 	Config              *iniConfig.IniConfig
 	Db                  *gorm.DB
-	RedisDb             *redis.Client
 	SystemSetting       *systemSetting.SystemSettingCache
 	SystemMonitor       cache.Cacher[interface{}]
 	RateLimit           *RateLimiter

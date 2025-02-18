@@ -10,13 +10,11 @@ import (
 	"sun-panel/initialize/database"
 	"sun-panel/initialize/lang"
 	"sun-panel/initialize/other"
-	"sun-panel/initialize/redis"
 	"sun-panel/initialize/runlog"
 	"sun-panel/initialize/systemSettingCache"
 	"sun-panel/initialize/userToken"
 	"sun-panel/lib/cmn"
 	"sun-panel/models"
-	"sun-panel/structs"
 	"time"
 
 	"log"
@@ -58,29 +56,6 @@ func InitApp() error {
 	lang.LangInit("zh-cn") // en-us
 
 	DatabaseConnect()
-
-	// Redis 连接
-	{
-		// 判断是否有使用redis的驱动，没有将不连接
-		cacheDrive := global.Config.GetValueString("base", "cache_drive")
-		queueDrive := global.Config.GetValueString("base", "queue_drive")
-		if cacheDrive == "redis" || queueDrive == "redis" {
-			redisConfig := structs.IniConfigRedis{}
-			global.Config.GetSection("redis", &redisConfig)
-			rdb, err := redis.InitRedis(redis.Options{
-				Addr:     redisConfig.Address,
-				Password: redisConfig.Password,
-				DB:       redisConfig.Db,
-			})
-
-			if err != nil {
-				log.Panicln("Redis initialization error", err)
-				panic(err)
-				// return err
-			}
-			global.RedisDb = rdb
-		}
-	}
 
 	// 初始化用户token
 	global.UserToken = userToken.InitUserToken()
