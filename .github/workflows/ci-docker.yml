@@ -30,8 +30,10 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Read version from file
-        run: APP_VERSION=$(cut -d '|' -f 2 ./service/assets/version)
-      
+        run: |
+          VERSION=$(cut -d '|' -f 2 ./service/assets/version)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -40,5 +42,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ env.APP_VERSION }}
+            ghcr.io/${{ github.repository,,''}:latest
+            ghcr.io/${{ github.repository,,''}:${{ env.VERSION }}
