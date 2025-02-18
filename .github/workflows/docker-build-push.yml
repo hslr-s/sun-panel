@@ -2,10 +2,9 @@ name: docker-push
 
 on:
   workflow_dispatch:
-  # 暂时取消自动编译，优化后重新开启
-  # push:
-  #   tags:
-  #     - 'v*'
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -20,20 +19,14 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx 
+				
+      - name: Set up docker buildx 
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
       - name: Build and push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
-          context: .  # 这里在项目根目录找Dockerfile构建
-          platforms: linux/amd64,linux/arm,linux/arm64
-          push: true 
-          tags: ${{ vars.DOCKER_IMAGE_NAME }}:${{ env.APP_VERSION }}, ${{ vars.DOCKER_IMAGE_NAME }}
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ github.repository }}:${{ steps.read_version.outputs.APP_VERSION }}
