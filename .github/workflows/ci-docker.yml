@@ -34,6 +34,10 @@ jobs:
           VERSION=$(cut -d '|' -f 2 ./service/assets/version)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      - name: Convert repository name to lowercase
+        run: |
+          echo "REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -42,5 +46,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ github.repository,,''}:latest
-            ghcr.io/${{ github.repository,,''}:${{ env.VERSION }}
+            ghcr.io/${{ env.REPO_LOWER }}:latest
+            ghcr.io/${{ env.REPO_LOWER }}:${{ env.VERSION }}
