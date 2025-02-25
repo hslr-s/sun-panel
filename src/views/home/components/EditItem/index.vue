@@ -210,7 +210,7 @@ function handleUpdateCardType() {
 <template>
   <NModal
     v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;"
-    :title="itemInfo ? t('iconItem.edit') : t('iconItem.add')"
+    :title="itemInfo?.id ? t('iconItem.edit') : t('iconItem.add')"
   >
     <!-- 卡片预览 -->
     <div class="mb-2">
