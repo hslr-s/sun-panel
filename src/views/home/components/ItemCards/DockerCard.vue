@@ -181,14 +181,10 @@ function handleContextMenu(e: MouseEvent) {
 }
 
 async function handleMousedowClick(event: MouseEvent) {
+  // 鼠标中间键点击
   if (event.button === 1 && !props.sortStatus) {
-    // 暂时注释掉，因为此处可能需要优先启动容器再打开地址
-    // // 鼠标中间键点击,如果没有任何地址将忽略点击
-    // if (props.itemInfo.lanUrl === '' && props.itemInfo.url === '') {
-    //   return
-    // }
-    // event.preventDefault()
-    // window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
+    event.preventDefault()
+    window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
   }
 }
 
