@@ -120,26 +120,36 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <NModal v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;" :title="monitorData ? t('common.edit') : t('common.add')">
-    <!-- 选择监视器 -->
-    <!-- <div>
+  <NModal
+    v-model:show="show" preset="card" size="small" style="width: 600px;border-radius: 1rem;"
+    :title="monitorData ? t('common.edit') : t('common.add')"
+  >
+    <div class="max-h-[calc(100vh-200px)] overflow-auto">
+      <!-- 选择监视器 -->
+      <!-- <div>
       {{ JSON.stringify(currentGenericProgressStyleExtendParam) }}
       {{ JSON.stringify(currentDiskExtendParam) }}
     </div> -->
-    <NTabs v-model:value="active" type="segment">
-      <NTabPane :name="MonitorType.cpu" :tab="$t('deskModule.systemMonitor.cpuState')">
-        <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
-      </NTabPane>
-      <NTabPane :name="MonitorType.memory" :tab="$t('deskModule.systemMonitor.memoryState')">
-        <GenericProgressStyleEditor v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam" />
-      </NTabPane>
-      <NTabPane :name="MonitorType.disk" :tab="$t('deskModule.systemMonitor.diskState')">
-        <DiskEditor ref="DiskEditorRef" v-model:disk-extend-param="currentDiskExtendParam" />
-      </NTabPane>
-    </NTabs>
-    <NButton @click="handleResetExtendParam">
-      {{ t('common.reset') }}
-    </NButton>
+      <NTabs v-model:value="active" type="segment">
+        <NTabPane :name="MonitorType.cpu" :tab="$t('deskModule.systemMonitor.cpuState')">
+          <GenericProgressStyleEditor
+            v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam"
+          />
+        </NTabPane>
+        <NTabPane :name="MonitorType.memory" :tab="$t('deskModule.systemMonitor.memoryState')">
+          <GenericProgressStyleEditor
+            v-model:genericProgressStyleExtendParam="currentGenericProgressStyleExtendParam"
+          />
+        </NTabPane>
+        <NTabPane :name="MonitorType.disk" :tab="$t('deskModule.systemMonitor.diskState')">
+          <DiskEditor ref="DiskEditorRef" v-model:disk-extend-param="currentDiskExtendParam" />
+        </NTabPane>
+      </NTabs>
+      <NButton @click="handleResetExtendParam">
+        {{ t('common.reset') }}
+      </NButton>
+    </div>
+
     <template #footer>
       <NButton type="success" :loading="submitLoading" style="float: right;" @click="handleSubmit">
         {{ t('common.confirm') }}
