@@ -239,7 +239,7 @@ async function deletes(ids: number[]) {
   }
   catch (error) {
     const err = error as Common.Response
-    message.error(`${t('common.deleteSuccess')}:${err.msg}`)
+    message.error(`${t('common.deleteFail')}:${err.msg}`)
   }
 }
 
