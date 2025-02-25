@@ -9,7 +9,7 @@ import { useModuleConfig } from '@/store/modules'
 import { useAuthStore } from '@/store'
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
-import { message } from '@/utils/request/apiMessage'
+import { message } from '@/utils/cmn/apiMessage'
 
 withDefaults(defineProps<{
   background?: string

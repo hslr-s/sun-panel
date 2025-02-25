@@ -13,7 +13,7 @@ import { RoundCardModal, STip, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 import { useAppStore } from '@/store'
 import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
 

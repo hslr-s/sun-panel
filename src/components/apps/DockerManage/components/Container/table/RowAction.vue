@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { useDockerStore } from '../../../store/docker'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { execSwitchAction } from '@/api/docker/container'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 import { t } from '@/locales'
 
 const props = defineProps<{

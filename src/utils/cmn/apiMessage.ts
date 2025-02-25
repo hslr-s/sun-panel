@@ -7,8 +7,6 @@ import { router } from '@/router'
 
 let loginMessageShow = false
 
-const authStore = useAuthStore()
-
 const themeRef = ref<'light' | 'dark'>('light')
 const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
   theme: themeRef.value === 'light' ? lightTheme : darkTheme,
@@ -18,6 +16,8 @@ export const { message } = createDiscreteApi(['message'], { configProviderProps:
 export function apiRespErrMsg(res: any) {
   const appStore = useAppStore()
   const osTheme = useOsTheme()
+  const authStore = useAuthStore()
+
   if (appStore.theme === 'auto')
     themeRef.value = osTheme.value as 'dark' | 'light'
   else

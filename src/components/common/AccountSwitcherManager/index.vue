@@ -6,7 +6,7 @@ import type { AccountInfo } from '@/store/modules/accountManager/helper'
 import { SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import { logout } from '@/api'
-import { apiRespErrMsg, message } from '@/utils/request/apiMessage'
+import { apiRespErrMsg, message } from '@/utils/cmn/apiMessage'
 import { router } from '@/router'
 
 defineProps<{

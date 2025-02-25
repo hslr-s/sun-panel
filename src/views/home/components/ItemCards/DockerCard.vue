@@ -20,7 +20,7 @@ import {
 import { edit as itemIconEditApi } from '@/api/panel/itemIcon'
 
 import { VisitMode } from '@/enums/auth'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 import { bytesToSize } from '@/utils/cmn'
 import { useDomainLinks } from '@/hooks/useDomainLinks'
 
