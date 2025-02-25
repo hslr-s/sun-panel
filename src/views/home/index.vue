@@ -398,7 +398,7 @@ function handleAddItem(itemIconGroupId?: number) {
                 >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
-                    :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
+                    :class="itemGroup.sortStatus ? 'cursor-move' : (item.url !== '' || item.lanUrl !== '' ? 'cursor-pointer' : '')"
                     :card-info="item"
                     :icon-text-color="itemGroup.cardStyle.textColor"
                     :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
@@ -442,7 +442,7 @@ function handleAddItem(itemIconGroupId?: number) {
                 >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
-                    :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
+                    :class="itemGroup.sortStatus ? 'cursor-move' : (item.url !== '' || item.lanUrl !== '' ? 'cursor-pointer' : '')"
                     :card-info="item"
                     :icon-text-color="itemGroup.cardStyle.textColor"
                     :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"

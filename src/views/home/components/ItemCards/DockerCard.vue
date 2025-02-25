@@ -131,6 +131,10 @@ async function handleItemClick() {
 
   const jumpUrl = await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs)
 
+  if (jumpUrl === '') {
+    return
+  }
+
   if (containerState.value.runStatus === DockerContainerInfoState.exited && itemCardInfo.value.expandParam.openPageAndStart === true) {
     // 判断当前是否为公开模式，公开模式进行拦截
     if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
