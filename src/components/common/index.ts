@@ -19,7 +19,6 @@ import Loading from './Loading/index.vue'
 import AccountSwitcherManager from './AccountSwitcherManager/index.vue'
 import FreeLayer from './FreeLayer/index.vue'
 import IframeLayer from './IframeLayer/index.vue'
-import PwaReloadPrompt from './PwaReloadPrompt/index.vue'
 
 export {
   Verification,
@@ -43,5 +42,5 @@ export {
   AccountSwitcherManager,
   FreeLayer,
   IframeLayer,
-  PwaReloadPrompt,
+  // PwaReloadPrompt,
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NConfigProvider } from 'naive-ui'
-import { NaiveProvider, PwaReloadPrompt } from '@/components/common'
+import { NaiveProvider } from '@/components/common'
 import { useTheme } from '@/hooks/useTheme'
 import { useLanguage } from '@/hooks/useLanguage'
 
@@ -20,7 +20,7 @@ const { language } = useLanguage()
       <RouterView />
 
       <!-- pwa 更新通知 -->
-      <PwaReloadPrompt />
+      <!-- <PwaReloadPrompt /> -->
     </NaiveProvider>
   </NConfigProvider>
 </template>

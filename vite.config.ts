@@ -14,30 +14,22 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
       manifest: false,
       injectRegister: false,
       workbox: {
-        cleanupOutdatedCaches: true, // 清理旧缓存
+        cleanupOutdatedCaches: true,
         cacheId: env.VITE_APP_VERSION,
         clientsClaim: true,
-        // skipWaiting: true,
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg}'], // 缓存相关静态资源
-        // runtimeCaching: [
-        //   // 静态文件缓存优先策略
-        //   {
-        //     urlPattern: ({ request }) =>
-        //       request.destination === 'script'
-        //       || request.destination === 'style'
-        //       || request.destination === 'image'
-        //       || request.destination === 'font'
-        //       || request.destination === 'document',
-        //     handler: 'CacheFirst', // 优先从缓存中读取静态文件
-        //     options: {
-        //       cacheName: `static-resources-${env.VITE_APP_VERSION}`, // 静态资源缓存
-        //       expiration: {
-        //         maxEntries: 100, // 最大缓存条目数
-        //         maxAgeSeconds: 30 * 24 * 60 * 60, // 缓存有效期，30天
-        //       },
-        //     },
-        //   },
-        // ],
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg}'],
+        globIgnores: ['**/custom/**'], // 排除 /custom/ 目录
+        navigateFallback: '/index.html', // 回退页面
+        navigateFallbackDenylist: [/^\/custom\//], // 排除 /custom/ 路径
+        runtimeCaching: [
+          {
+            urlPattern: /^\/custom\//, // 匹配 /custom/ 路径
+            handler: 'NetworkFirst', // 优先从网络获取
+            options: {
+              cacheName: 'custom-cache',
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: false,
