@@ -70,7 +70,7 @@ const cardStyle: CardStyle = {
 
 const monitorDatas = ref<MonitorData[]>([])
 
-function handleClick(index: number, item: MonitorData) {
+function handleEdit(index: number, item: MonitorData) {
   if (!props.allowEdit)
     return
   editShowStatus.value = true
@@ -130,6 +130,10 @@ function handleContextMenu(e: MouseEvent, index: number | null, item: MonitorDat
 function getDropdownMenuOptions() {
   const dropdownMenuOptions = [
     {
+      label: t('common.edit'),
+      key: 'edit',
+    },
+    {
       label: t('common.delete'),
       key: 'delete',
     },
@@ -153,6 +157,11 @@ function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
 
   switch (key) {
+    case 'edit':
+      if (currentRightSelectIndex.value !== null) {
+        handleEdit(currentRightSelectIndex.value, monitorDatas.value[currentRightSelectIndex.value])
+      }
+      break
     case 'delete':
       dialog.warning({
         title: t('common.warning'),
@@ -214,7 +223,7 @@ function handleRightMenuSelect(key: string | number) {
           <div
             v-for="item, index in monitorDatas" :key="index"
             :title="item.description"
-            @click="handleClick(index, item)"
+            @click="handleEdit(index, item)"
             @contextmenu="(e) => handleContextMenu(e, index, item)"
           >
             <AppIconSystemMonitor
@@ -240,7 +249,7 @@ function handleRightMenuSelect(key: string | number) {
           <div
             v-for="item, index in monitorDatas" :key="index"
             :title="item.description"
-            @click="handleClick(index, item)"
+            @click="handleEdit(index, item)"
             @contextmenu="(e) => handleContextMenu(e, index, item)"
           >
             <AppIconSystemMonitor
