@@ -33,8 +33,19 @@ const isCheckFailed = ref(false)
 const domainLinks = useDomainLinks()
 const isAdmin = computed(() => uauthStore.userInfo?.role === 1)
 
+// 新增判断是否为beta版本的函数
+function isBetaVersion(version: string): boolean {
+  return version.includes('-beta')
+}
+
 function link(c: string): string {
   return domainLinks.linkWithLang(c)
+}
+
+function getUpdateLogLink(version: string): string {
+  let url = isBetaVersion(version) ? domainLinks.linkWithLangParam('update_log_beta_lang') : domainLinks.linkWithLangParam('update_log_lang')
+  url += `&version=${version}`
+  return url
 }
 
 function getWebsiteUrl(): string {
@@ -75,7 +86,15 @@ onMounted(() => {
       </div>
       <div class="text-xl">
         <NGradientText type="info">
-          <a :href="link('update_log')" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
+          <!-- 修改点击版本号跳转的逻辑 -->
+          <a
+            :href="getUpdateLogLink(versionName)"
+            class="font-semibold"
+            :title="$t('apps.about.viewUpdateLog')"
+            target="_blank"
+          >
+            v{{ versionName }}
+          </a>
         </NGradientText>
       </div>
 
@@ -84,7 +103,14 @@ onMounted(() => {
           {{ t('apps.about.haveNewVersion') }}
           <NBadge value="New" processing :offset="[5, -5]">
             <NTag type="info">
-              <a :href="link('update_log')" target="_blank" class="link"> v{{ newVersionInfo.version }}</a>
+              <!-- 修改检测新版本后跳转的逻辑 -->
+              <a
+                :href="getUpdateLogLink(newVersionInfo.version)"
+                target="_blank"
+                class="link"
+              >
+                v{{ newVersionInfo.version }}
+              </a>
             </NTag>
           </NBadge>
           <template v-if="newVersionInfo.type === 'release'">

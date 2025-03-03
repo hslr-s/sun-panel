@@ -18,9 +18,13 @@ export function useDomainLinks() {
     return `${linksDomain}/${name}_${getLangeuageSimple()}`
   }
 
+  function linkWithLangParam(name: string): string {
+    return `${linksDomain}/${name}?lang=${getLangeuageSimple()}`
+  }
+
   function faqLinkWithLang(faqName: string): string {
     return `${linksDomain}/faq_${faqName}_${getLangeuageSimple()}`
   }
 
-  return { linkWithLang, faqLinkWithLang }
+  return { linkWithLang, faqLinkWithLang, linkWithLangParam }
 }
