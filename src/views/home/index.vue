@@ -9,8 +9,10 @@ import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
 import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
+import { getSiteStting } from '@/api/openness'
+import { defaultSetting } from '@/store/modules/app/helper'
 
-import { useAccountManagerStore, useAuthStore, usePanelState } from '@/store'
+import { useAccountManagerStore, useAppStore, useAuthStore, usePanelState } from '@/store'
 import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
@@ -22,6 +24,7 @@ interface ItemGroup extends Panel.ItemGroupCardCacheData {
 const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
+const appStore = useAppStore()
 const authStore = useAuthStore()
 const accountManagerStore = useAccountManagerStore()
 const triggerUpdateItemDatas = useTriggerUpdateItemData()
@@ -40,9 +43,30 @@ const settingModalShow = ref(false)
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
+async function getGlobalConfig() {
+  try {
+    const { data } = await getSiteStting<GlobalSetting.SiteSetting>()
+    const dcfg = defaultSetting().siteSetting
+    if (data.title === '')
+      data.title = dcfg.title
+    if (data.loginBackgroundUrl === '')
+      data.loginBackgroundUrl = dcfg.loginBackgroundUrl
+
+    appStore.setSiteSetting(data)
+    console.log('全局配置', data)
+  }
+  catch (error) {
+    apiRespErrMsg(error)
+  }
+}
+
 async function getList() {
-  let isEnableSyncCache = false // 是否开启同步缓存数据
-  filterItems.value = panelState.itemGroupCardCacheData
+  let isEnableSyncCache = false // 是否开启同步缓存数据 - 仅限首次无缓存数据时开启 - 非持久缓存数据
+
+  // 是否全局禁用了缓存
+  if (appStore.siteSetting.isDisableItemCardCache === false) {
+    filterItems.value = panelState.itemGroupCardCacheData
+  }
 
   // 当缓存的数据为0的时候，显示加载的loading
   if (filterItems.value.length === 0) {
@@ -67,7 +91,11 @@ async function getList() {
         // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
         if (isEnableSyncCache) {
           filterItems.value = items.value
-          panelState.setItemGroupCacheData(items.value)
+
+          // 未禁用缓存将保存为缓存数据
+          if (appStore.siteSetting.isDisableItemCardCache === false) {
+            panelState.setItemGroupCacheData(items.value)
+          }
         }
       }
     }
@@ -75,7 +103,18 @@ async function getList() {
     getAllGroupList().then(() => {
       // console.log('全部完毕')
       filterItems.value = items.value
-      panelState.setItemGroupCacheData(items.value)
+
+      // 未禁用缓存将保存为缓存数据
+      if (appStore.siteSetting.isDisableItemCardCache === false) {
+        panelState.setItemGroupCacheData(items.value)
+        console.log('已开启缓存')
+      }
+      else {
+        if (panelState.itemGroupCardCacheData.length !== 0) {
+          panelState.setItemGroupCacheData([])
+        }
+        console.log('未开启缓存，置空')
+      }
     })
 
     // console.log(items)
@@ -197,6 +236,9 @@ function runFooterJSCode() {
 }
 
 onMounted(async () => {
+  // 获取全局配置
+  getGlobalConfig()
+
   // 更新用户信息
   await updateLocalUserInfo()
   getList()

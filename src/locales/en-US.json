@@ -152,6 +152,8 @@
       "customJSAndCss": "Custom JS and CSS files",
       "customJSAndCssAlert": "If you do not have PRO authorization, you can enter the NAS or server where Sun-Panel is installed, find the \"custom\" path ({path}), modify and save the file directly, and it will still be effective.",
       "favicon": "site icon",
+      "isEnableItemCardCache": "Enable item card data cache",
+      "isEnableItemCardCacheTip": "Whether to enable project card data caching, it can improve grouping and card loading speed after activation",
       "isEnableLoginCaptcha": "Enable login captcha",
       "loginBackgroundImage": "Login page background image",
       "personalise": "Site settings",

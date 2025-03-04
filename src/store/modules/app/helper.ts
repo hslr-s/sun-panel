@@ -24,6 +24,7 @@ export function defaultSetting(): AppState {
     favicoUrl: '',
     loginBackgroundUrl: loginDefaultBackgroundUrl,
     isEnableLoginCaptcha: false,
+    isDisableItemCardCache: false,
   }
 
   return { theme: 'auto', language, siteSetting }

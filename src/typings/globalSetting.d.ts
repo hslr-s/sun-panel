@@ -5,6 +5,7 @@ declare namespace GlobalSetting {
         title: string
         loginBackgroundUrl: string   
         isEnableLoginCaptcha:boolean
+        isDisableItemCardCache:boolean
     }
 
     interface GlobalSettingCustomJsAndCss {

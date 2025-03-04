@@ -8,7 +8,7 @@ import {
 } from 'naive-ui'
 import Custom from './Custom.vue'
 import { useGlobalSitesettingStore } from './store'
-import { ProAuthOverlay, ProTag } from '@/components/common'
+import { ProAuthOverlay, ProTag, STip } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
@@ -162,7 +162,10 @@ onMounted(() => {
         </div>
         <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
           <div class="flex items-center mt-[5px]">
-            <NInput v-model:value="siteSetting.title" type="text" show-count :maxlength="20" :placeholder="t('common.inputPlaceholder')" />
+            <NInput
+              v-model:value="siteSetting.title" type="text" show-count :maxlength="20"
+              :placeholder="t('common.inputPlaceholder')"
+            />
           </div>
         </ProAuthOverlay>
       </div>
@@ -176,9 +179,7 @@ onMounted(() => {
         <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
           <div>
             <NImage
-              width="100"
-              style="width: 80px; height: 80px;border: 1px solid #e9e9e9;"
-              :src="icoThumbnailUrl"
+              width="100" style="width: 80px; height: 80px;border: 1px solid #e9e9e9;" :src="icoThumbnailUrl"
               preview-disabled
             />
             <br>
@@ -190,7 +191,10 @@ onMounted(() => {
                 {{ t('apps.globalSetting.clearIcoImage') }}
               </NButton>
             </NButtonGroup>
-            <input id="fileIcoUpload" type="file" accept=".ico" style="display: none;" @change="handleFileIcoUploadChange">
+            <input
+              id="fileIcoUpload" type="file" accept=".ico" style="display: none;"
+              @change="handleFileIcoUploadChange"
+            >
           </div>
         </ProAuthOverlay>
       </div>
@@ -216,15 +220,9 @@ onMounted(() => {
           {{ $t('apps.globalSetting.loginBackgroundImage') }}
         </div>
         <NUpload
-          action="/api/file/uploadImg"
-          :show-file-list="false"
-          name="imgfile"
-          :headers="{
+          action="/api/file/uploadImg" :show-file-list="false" name="imgfile" :headers="{
             token: authStore.token as string,
-          }"
-          :data="{ type: FileType.Wallpaper }"
-          :directory-dnd="true"
-          @finish="handleUploadBackgroundFinish"
+          }" :data="{ type: FileType.Wallpaper }" :directory-dnd="true" @finish="handleUploadBackgroundFinish"
         >
           <NUploadDragger style="width: 100%;">
             <div
@@ -244,10 +242,26 @@ onMounted(() => {
         <NInput v-model:value="siteSetting.loginBackgroundUrl" type="text" size="small" clearable />
       </div>
 
+      <NDivider />
+
+      <div>
+        <div class="text-slate-500 mb-[5px] font-bold flex items-center">
+          {{ $t('apps.globalSetting.isEnableItemCardCache') }}
+          <STip class="ml-2">
+            <div class="max-w-[300px]">
+              {{ t('apps.globalSetting.isEnableItemCardCacheTip') }}
+            </div>
+          </STip>
+        </div>
+
+        <div class="flex items-center mt-[5px]">
+          <!-- 为了适配后端此处“isDisableItemCardCache”取反，因为前端的逻辑是“isEnableItemCardCache”的取值 -->
+          <NSwitch v-model:value="siteSetting.isDisableItemCardCache" :checked-value="false" :unchecked-value="true" />
+        </div>
+      </div>
+
       <div class="mt-5 flex justify-end">
-        <NPopconfirm
-          @positive-click="resetSiteSetting"
-        >
+        <NPopconfirm @positive-click="resetSiteSetting">
           <template #trigger>
             <NButton size="small" type="error">
               {{ $t('common.reset') }}
