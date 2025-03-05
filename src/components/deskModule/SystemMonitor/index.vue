@@ -189,7 +189,7 @@ function handleRightMenuSelect(key: string | number) {
   <div class="system-monitor w-full">
     <div
       class="mt-[50px]"
-      :class="monitorGroup.sortStatus ? 'shadow-2xl border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
+      :class="monitorGroup.sortStatus ? 'border shadow-[0_0_30px_10px_rgba(0,0,0,0.3)]  p-[10px] rounded-2xl' : ''"
       @mouseenter="handleSetHoverStatus(true)"
       @mouseleave="handleSetHoverStatus(false)"
     >

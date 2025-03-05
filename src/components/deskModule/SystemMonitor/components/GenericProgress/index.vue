@@ -28,25 +28,16 @@ defineProps<Prop>()
         </span>
       </div>
       <NProgress
-        type="line"
-        :color="progressColor"
-        :rail-color="progressRailColor"
-        :height="progressHeight"
-        :percentage="percentage"
-        :show-indicator="false"
-        :stroke-width="15"
-        style="max-width: 135px;"
+        type="line" :color="progressColor" :rail-color="progressRailColor" :height="progressHeight"
+        :percentage="percentage" :show-indicator="false" :stroke-width="15"
       />
     </div>
   </template>
   <template v-else>
-    <div class="w-full flex justify-center h-full w-full mt-3">
+    <div class="w-full flex justify-center h-full mt-3">
       <NProgress
-        :color="progressColor"
-        :rail-color="progressRailColor"
-        type="dashboard"
-        :percentage="percentage" :stroke-width="15"
-        style="width: 50px;"
+        :color="progressColor" :rail-color="progressRailColor" type="dashboard" :percentage="percentage"
+        :stroke-width="15" style="width: 50px;"
       >
         <div class="text-white" style="font-size: 8px;" :style="{ color: textColor }">
           {{ percentage }}%
