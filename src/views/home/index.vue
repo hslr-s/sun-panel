@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import { NBackTop, NButton, useDialog, useMessage } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { AppStarter, EditItem, ItemCards } from './components'
 import { AccountSwitcher, Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
 import { Loading, SvgIcon } from '@/components/common'
@@ -53,7 +53,7 @@ async function getGlobalConfig() {
       data.loginBackgroundUrl = dcfg.loginBackgroundUrl
 
     appStore.setSiteSetting(data)
-    console.log('全局配置', data)
+    // console.log('全局配置', data)
   }
   catch (error) {
     apiRespErrMsg(error)
@@ -62,15 +62,20 @@ async function getGlobalConfig() {
 
 async function getList() {
   let isEnableSyncCache = false // 是否开启同步缓存数据 - 仅限首次无缓存数据时开启 - 非持久缓存数据
+  itemCardsLoading.value = true // 加载中
 
   // 是否全局禁用了缓存
   if (appStore.siteSetting.isDisableItemCardCache === false) {
     filterItems.value = panelState.itemGroupCardCacheData
+    // 打印更新时间微秒级
+
+    nextTick(() => {
+      itemCardsLoading.value = false
+    })
   }
 
   // 当缓存的数据为0的时候，显示加载的loading
   if (filterItems.value.length === 0) {
-    itemCardsLoading.value = true
     isEnableSyncCache = true // 如果之前没有缓存数据将开启
   }
 
@@ -107,13 +112,13 @@ async function getList() {
       // 未禁用缓存将保存为缓存数据
       if (appStore.siteSetting.isDisableItemCardCache === false) {
         panelState.setItemGroupCacheData(items.value)
-        console.log('已开启缓存')
+        // console.log('已开启缓存')
       }
       else {
         if (panelState.itemGroupCardCacheData.length !== 0) {
           panelState.setItemGroupCacheData([])
         }
-        console.log('未开启缓存，置空')
+        // console.log('未开启缓存，置空')
       }
     })
 
