@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
+import { NGrid, NGridItem, NPopover, NProgress } from 'naive-ui'
 import GenericProgress from '../components/GenericProgress/index.vue'
-import { correctionNumber, correctionNumberByCardStyle } from './common'
+import { allCPUUsages, correctionNumber, correctionNumberByCardStyle } from './common'
 import { getCpuState } from '@/api/system/systemMonitor'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 
@@ -28,17 +29,6 @@ async function getData() {
   }
 }
 
-function allCPUUsages(cpuInfo: SystemMonitor.CPUInfo | null) {
-  if (!cpuInfo)
-    return 0
-  let countPercentage = 0
-  for (let i = 0; i < cpuInfo.usages.length; i++) {
-    const element = cpuInfo.usages[i]
-    countPercentage += element
-  }
-  return countPercentage / cpuInfo.usages.length
-}
-
 onMounted(() => {
   getData()
   timer = setInterval(() => {
@@ -52,15 +42,36 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <GenericProgress
-    :progress-color="progressColor"
-    :progress-rail-color="progressRailColor"
-    :progress-height="5"
-    :percentage="correctionNumberByCardStyle(allCPUUsages(cpuState), cardTypeStyle)"
-    :card-type-style="cardTypeStyle"
-    :info-card-right-text="`${correctionNumber(allCPUUsages(cpuState))}%`"
-    info-card-left-text="CPU"
-    :text-color="textColor"
-    style="width: 100%;"
-  />
+  <NPopover trigger="click">
+    <template #trigger>
+      <GenericProgress
+        :progress-color="progressColor" :progress-rail-color="progressRailColor" :progress-height="5"
+        :percentage="correctionNumberByCardStyle(allCPUUsages(cpuState), cardTypeStyle)"
+        :card-type-style="cardTypeStyle" :info-card-right-text="`${correctionNumber(allCPUUsages(cpuState))}%`"
+        info-card-left-text="CPU" :text-color="textColor" style="width: 100%;" class="cursor-pointer"
+      />
+    </template>
+
+    <div>
+      <div class="my-2 text-lg">
+        <span class="font-bold">
+          {{ $t('deskModule.systemMonitor.cpuCountCoreNum') }}:
+        </span>
+        {{ cpuState?.coreCount }}
+      </div>
+
+      <div class="overflow-auto max-h-[200px]">
+        <NGrid x-gap="12" y-gap="15" cols="4 400:5 600:6" responsive="screen">
+          <NGridItem v-for="item, index in cpuState?.usages" :key="index">
+            <div class="flex flex-col justify-center items-center">
+              <NProgress type="dashboard" gap-position="bottom" :percentage="item" style="width: 65px;">
+                <span class="text-xs"> {{ correctionNumber(item, 0) }}%</span>
+              </NProgress>
+              <span class="text-xs"># {{ index + 1 }}</span>
+            </div>
+          </NGridItem>
+        </NGrid>
+      </div>
+    </div>
+  </NPopover>
 </template>

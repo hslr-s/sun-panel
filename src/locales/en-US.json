@@ -343,14 +343,18 @@
       "urlKeywordhint": "If the searched keyword is not at the end, you can use \"%s\" to indicate"
     },
     "systemMonitor": {
+      "cpuCountCoreNum": "Total number of cores",
       "cpuState": "CPU status",
       "customTitle": "Custom title",
       "diskMountPoint": "Mount point",
       "diskState": "Disk status",
+      "free": "Free",
       "memoryState": "Memory status",
       "progressColor": "Main color",
       "progressRailColor": "Secondary color",
-      "systemState": "System status"
+      "systemState": "System status",
+      "total": "Total",
+      "used": "Used"
     }
   },
   "form": {

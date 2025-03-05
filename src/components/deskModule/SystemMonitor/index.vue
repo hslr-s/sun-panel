@@ -223,7 +223,7 @@ function handleRightMenuSelect(key: string | number) {
           <div
             v-for="item, index in monitorDatas" :key="index"
             :title="item.description"
-            @click="handleEdit(index, item)"
+
             @contextmenu="(e) => handleContextMenu(e, index, item)"
           >
             <AppIconSystemMonitor
@@ -249,7 +249,7 @@ function handleRightMenuSelect(key: string | number) {
           <div
             v-for="item, index in monitorDatas" :key="index"
             :title="item.description"
-            @click="handleEdit(index, item)"
+
             @contextmenu="(e) => handleContextMenu(e, index, item)"
           >
             <AppIconSystemMonitor

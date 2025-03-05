@@ -343,14 +343,18 @@
       "urlKeywordhint": "如果搜索的关键字不在末端可以使用“%s”来表示"
     },
     "systemMonitor": {
+      "cpuCountCoreNum": "总核心数",
       "cpuState": "CPU状态",
       "customTitle": "自定义标题",
       "diskMountPoint": "挂载点",
       "diskState": "磁盘状态",
+      "free": "空闲",
       "memoryState": "内存状态",
       "progressColor": "主色",
       "progressRailColor": "副色",
-      "systemState": "系统状态"
+      "systemState": "系统状态",
+      "total": "总计",
+      "used": "已用"
     }
   },
   "form": {
