@@ -28,6 +28,17 @@ async function getData() {
   }
 }
 
+function allCPUUsages(cpuInfo: SystemMonitor.CPUInfo | null) {
+  if (!cpuInfo)
+    return 0
+  let countPercentage = 0
+  for (let i = 0; i < cpuInfo.usages.length; i++) {
+    const element = cpuInfo.usages[i]
+    countPercentage += element
+  }
+  return countPercentage / cpuInfo.usages.length
+}
+
 onMounted(() => {
   getData()
   timer = setInterval(() => {
@@ -45,9 +56,9 @@ onUnmounted(() => {
     :progress-color="progressColor"
     :progress-rail-color="progressRailColor"
     :progress-height="5"
-    :percentage="correctionNumberByCardStyle(cpuState?.usages[0] || 0, cardTypeStyle)"
+    :percentage="correctionNumberByCardStyle(allCPUUsages(cpuState) || 0, cardTypeStyle)"
     :card-type-style="cardTypeStyle"
-    :info-card-right-text="`${correctionNumber(cpuState?.usages[0] || 0)}%`"
+    :info-card-right-text="`${correctionNumber(allCPUUsages(cpuState) || 0)}%`"
     info-card-left-text="CPU"
     :text-color="textColor"
     style="width: 100%;"
