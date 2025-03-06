@@ -122,6 +122,11 @@ onMounted(() => {
     form.value.username = defaultUsername.value
     inputpasswordRef.value?.focus()
   }
+
+  // 如果已经登录并且不是在添加账号登录页面，跳转到首页
+  if (route.query.type !== 'addLogin' && (authStore.token !== null && authStore.token !== '')) {
+    router.push({ path: '/' })
+  }
 })
 </script>
 

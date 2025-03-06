@@ -41,7 +41,7 @@ function handleGoToLogin() {
     return
   }
 
-  router.push('/login')
+  router.push('/login?type=addLogin')
 }
 
 // function handleSubmit() {
