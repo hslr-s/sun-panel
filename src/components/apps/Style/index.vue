@@ -390,7 +390,7 @@ function handleNetModeChangeAutoMaxPingMsChange(value: number) {
       </NUpload>
 
       <div class="flex items-center mt-[5px]">
-        <span class="mr-[10px]">{{ $t('apps.baseSettings.customImageAddress') }}</span>
+        <span class="mr-[10px]">{{ $t('apps.baseSettings.editImageURL') }}</span>
         <NSwitch v-model:value="showWallpaperInput" size="small" />
       </div>
       <div v-if="showWallpaperInput" class="mt-1">

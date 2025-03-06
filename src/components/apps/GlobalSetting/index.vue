@@ -237,7 +237,7 @@ onMounted(() => {
         </NUpload>
 
         <div class="flex items-center mt-[5px]">
-          <span class="mr-[10px]">{{ $t('apps.globalSetting.customImageAddress') }}</span>
+          <span class="mr-[10px]">{{ $t('apps.globalSetting.customImageURL') }}</span>
         </div>
         <NInput v-model:value="siteSetting.loginBackgroundUrl" type="text" size="small" clearable />
       </div>
