@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NProgress } from 'naive-ui'
+import { NEllipsis, NProgress } from 'naive-ui'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 
 interface Prop {
@@ -19,13 +19,13 @@ defineProps<Prop>()
 <template>
   <template v-if="cardTypeStyle === PanelPanelConfigStyleEnum.info">
     <div class="w-full">
-      <div class="mb-1 text-xs" :style="{ color: textColor }">
-        <span>
+      <div class="mb-1 text-xs flex justify-between" :style="{ color: textColor }">
+        <NEllipsis>
           {{ infoCardLeftText }}
-        </span>
-        <span class="float-right">
+        </NEllipsis>
+        <NEllipsis class="ml-2">
           {{ infoCardRightText }}
-        </span>
+        </NEllipsis>
       </div>
       <NProgress
         type="line" :color="progressColor" :rail-color="progressRailColor" :height="progressHeight"
