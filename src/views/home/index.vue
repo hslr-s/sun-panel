@@ -241,6 +241,7 @@ function runFooterJSCode() {
 }
 
 onMounted(async () => {
+  itemCardsLoading.value = true // 加载中
   // 获取全局配置
   getGlobalConfig()
 
