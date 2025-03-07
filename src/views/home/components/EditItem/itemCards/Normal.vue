@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import {
   NFlex, NFormItem, NGrid, NGridItem,
   NInput, NSelect,
@@ -51,35 +51,18 @@ const rulesExtends: FormRules = {
   ],
 }
 
-// async function getIconByUrl(url: string, loadingIndex: number) {
-//   getIconLoading.value[loadingIndex] = true
-//   try {
-//     const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-//     if (code === 0) {
-//       model.value.icon = {
-//         itemType: 2,
-//         src: data.iconUrl,
-//       }
-//     }
-//     else {
-//       ms.error(t('iconItem.geticonFail'))
-//     }
-//   }
-//   catch (error) {
-//     ms.error(t('iconItem.geticonFail'))
-//   }
-//   getIconLoading.value[loadingIndex] = false
-// }
-
 watch(model.value, () => {
-  // console.log('models 跟新', model.value)
   emit('update:itemInfo', model.value)
 })
 
-onMounted(() => {
-  const r = { ...props.rules, ...rulesExtends }
-  emit('update:rules', r)
-})
+watch(
+  () => props.rules,
+  () => {
+    const r = { ...props.rules, ...rulesExtends }
+    emit('update:rules', r)
+  },
+  { immediate: true }, // 组件挂载时立即执行
+)
 </script>
 
 <template>

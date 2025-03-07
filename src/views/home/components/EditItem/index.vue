@@ -71,7 +71,7 @@ const defaultRules: FormRules = {
     type: 'number',
   },
 }
-const rules = ref<FormRules>(defaultRules)
+const rules = ref<FormRules>({ ...defaultRules })
 
 // 卡片类型
 const optionsCardType = [
@@ -143,7 +143,7 @@ watch(() => props.visible, (newValue) => {
     if (!model.value.expandParam)
       model.value.expandParam = {}
   }
-
+  handleResetRules()
   getGroupListOptions()
 })
 
@@ -201,9 +201,9 @@ function handleDelete() {
   }
 }
 
-function handleUpdateCardType() {
+// 重置表单规则
+function handleResetRules() {
   rules.value = { ...defaultRules }
-  // model.value.expandParam = undefined
 }
 </script>
 
@@ -366,7 +366,7 @@ function handleUpdateCardType() {
                 </template>
                 <NSelect
                   v-model:value="model.cardType" :options="optionsCardType"
-                  @update:value="handleUpdateCardType"
+                  @update:value="handleResetRules"
                 />
               </NFormItem>
             </NGridItem>

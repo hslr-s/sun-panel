@@ -54,10 +54,16 @@ watch(model.value, () => {
   emit('update:itemInfo', model.value)
 })
 
-onMounted(() => {
-  const r = { ...props.rules, ...rulesExtends }
-  emit('update:rules', r)
+watch(
+  () => props.rules,
+  () => {
+    const r = { ...props.rules, ...rulesExtends }
+    emit('update:rules', r)
+  },
+  { immediate: true }, // 组件挂载时立即执行
+)
 
+onMounted(() => {
   if (authStore.userInfo?.role === AdminAuthRole.admin)
     apps.value = [...systemApps, ...adminSystemApps]
 

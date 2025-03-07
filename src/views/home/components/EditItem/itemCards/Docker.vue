@@ -67,15 +67,6 @@ const options = [
   },
 ]
 const rulesExtends: FormRules = {
-  // 不再设定为必填项
-  // url: [
-  //   {
-  //     required: true,
-  //     trigger: 'blur',
-  //     type: 'string',
-  //     message: t('form.required'),
-  //   },
-  // ],
   expandParam: {
     containerId: {
       required: true,
@@ -101,10 +92,16 @@ watch(model.value, () => {
   emit('update:itemInfo', model.value)
 })
 
-onMounted(() => {
-  const r = { ...props.rules, ...rulesExtends }
-  emit('update:rules', r)
+watch(
+  () => props.rules,
+  () => {
+    const r = { ...props.rules, ...rulesExtends }
+    emit('update:rules', r)
+  },
+  { immediate: true }, // 组件挂载时立即执行
+)
 
+onMounted(() => {
   getContainerList()
   // 设置默认值
   if (!props.itemInfo.expandParam) {
@@ -123,26 +120,6 @@ onMounted(() => {
     model.value.expandParam = ep
   }
 })
-
-// async function getIconByUrl(url: string, loadingIndex: number) {
-//   getIconLoading.value[loadingIndex] = true
-//   try {
-//     const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-//     if (code === 0) {
-//       model.value.icon = {
-//         itemType: 2,
-//         src: data.iconUrl,
-//       }
-//     }
-//     else {
-//       ms.error(t('iconItem.geticonFail'))
-//     }
-//   }
-//   catch (error) {
-//     ms.error(t('iconItem.geticonFail'))
-//   }
-//   getIconLoading.value[loadingIndex] = false
-// }
 
 function handleUpdateshowBadgeStatusValue(value: (string | number)[]) {
   model.value.expandParam.showBadgeStatus = value
