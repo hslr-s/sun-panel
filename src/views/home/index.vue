@@ -81,51 +81,28 @@ async function getList() {
   }
 
   // 获取组数据
-  getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ code, data, msg }) => {
-    if (code === 0) {
-      items.value = data.list
-    }
-    // const getAllGroupList = async () => {
-    //   for (let i = 0; i < data.list.length; i++) {
-    //     const element = data.list[i]
-    //     // console.log('正在组', element.id)
-    //     if (element.id) {
-    //       await updateItemIconGroupByNet(i, element.id)
-    //     }
+  getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ data }) => {
+    items.value = data.list
 
-    //     // 如果之前没有缓存数据将开启同步缓存数据
-    //     // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
-    //     if (isEnableSyncCache) {
-    //       filterItems.value = items.value
-
-    //       // 未禁用缓存将保存为缓存数据
-    //       if (appStore.siteSetting.isDisableItemCardCache === false) {
-    //         panelState.setItemGroupCacheData(items.value)
-    //       }
-    //     }
-    //   }
-    // }
-
-    // 修改 getAllGroupList 函数为并行请求
     const getAllGroupList = async () => {
-      await Promise.all(
-        data.list.map(async (group, index) => {
-          if (group.id) {
-            await updateItemIconGroupByNet(index, group.id)
+      for (let i = 0; i < data.list.length; i++) {
+        const element = data.list[i]
+        // console.log('正在组', element.id)
+        if (element.id) {
+          await updateItemIconGroupByNet(i, element.id)
+        }
 
-            // 如果之前没有缓存数据将开启同步缓存数据
-            // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
-            if (isEnableSyncCache) {
-              filterItems.value = items.value
+        // 如果之前没有缓存数据将开启同步缓存数据
+        // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
+        if (isEnableSyncCache) {
+          filterItems.value = items.value
 
-              // 未禁用缓存将保存为缓存数据
-              if (appStore.siteSetting.isDisableItemCardCache === false) {
-                panelState.setItemGroupCacheData(items.value)
-              }
-            }
+          // 未禁用缓存将保存为缓存数据
+          if (appStore.siteSetting.isDisableItemCardCache === false) {
+            panelState.setItemGroupCacheData(items.value)
           }
-        }),
-      )
+        }
+      }
     }
 
     getAllGroupList().then(() => {
@@ -271,7 +248,7 @@ function runFooterJSCode() {
 onMounted(async () => {
   itemCardsLoading.value = true // 加载中
   // 获取全局配置
-  getGlobalConfig()
+  await getGlobalConfig()
 
   // 更新用户信息
   await updateLocalUserInfo()
@@ -297,7 +274,7 @@ onMounted(async () => {
 function itemFrontEndSearch(keyword?: string) {
   keyword = keyword?.trim()
   if (keyword !== '' && panelState.panelConfig.searchBoxSearchIcon) {
-    const filteredData = ref<ItemGroup[]>([])
+    const filteredData: ItemGroup[] = []
     for (let i = 0; i < items.value.length; i++) {
       const element = items.value[i].items?.filter((item: Panel.ItemInfo) => {
         return (
@@ -307,9 +284,9 @@ function itemFrontEndSearch(keyword?: string) {
         )
       })
       if (element && element.length > 0)
-        filteredData.value.push({ items: element, hoverStatus: false, cardStyle: items.value[i].cardStyle, title: items.value[i].title })
+        filteredData.push({ items: element, hoverStatus: false, cardStyle: items.value[i].cardStyle, title: items.value[i].title })
     }
-    filterItems.value = filteredData.value
+    filterItems.value = filteredData
     // console.log('搜索模式开启')
   }
   else {
@@ -453,7 +430,7 @@ function toggleEditPanel(item: Panel.ItemInfo | null, groupId?: number) {
             </div>
 
             <!-- 详情图标 -->
-            <templete v-if="itemGroup.items && (!itemGroup.cardStyle || itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.info)">
+            <template v-if="itemGroup.items && (!itemGroup.cardStyle || itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.info)">
               <VueDraggable
                 v-model="itemGroup.items" item-key="sort" :animation="300"
                 class="icon-info-box"
@@ -493,10 +470,10 @@ function toggleEditPanel(item: Panel.ItemInfo | null, groupId?: number) {
                   />
                 </div>
               </VueDraggable>
-            </templete>
+            </template>
 
             <!-- APP图标宫型盒子 -->
-            <templete v-if="itemGroup.items && itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.icon">
+            <template v-if="itemGroup.items && itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.icon">
               <VueDraggable
                 v-model="itemGroup.items" item-key="sort" :animation="300"
                 class="icon-small-box"
@@ -537,19 +514,7 @@ function toggleEditPanel(item: Panel.ItemInfo | null, groupId?: number) {
                   />
                 </div>
               </vuedraggable>
-            </templete>
-
-            <!-- 编辑栏 -->
-            <!-- <div v-if="itemGroup.sortStatus" class="flex my-4">
-              <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
-                <template #icon>
-                  <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
-                </template>
-                <div>
-                  {{ $t('common.saveSort') }}
-                </div>
-              </NButton>
-            </div> -->
+            </template>
           </div>
         </div>
         <div class="mt-5 footer custom-footer" v-html="panelState.panelConfig.footerHtml" />
@@ -701,7 +666,7 @@ html {
   width: 42px;
   height: 42px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius:  6px;
   transition: background-color  0.3s;
 }
 
