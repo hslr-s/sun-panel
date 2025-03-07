@@ -43,6 +43,8 @@ const settingModalShow = ref(false)
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
+let hasRunFooterJS = false
+
 async function getGlobalConfig() {
   try {
     const { data } = await getSiteStting<GlobalSetting.SiteSetting>()
@@ -66,9 +68,8 @@ async function getList() {
 
   // 是否全局禁用了缓存
   if (appStore.siteSetting.isDisableItemCardCache === false) {
+    // 优先使用缓存数据
     filterItems.value = panelState.itemGroupCardCacheData
-    // 打印更新时间微秒级
-
     nextTick(() => {
       itemCardsLoading.value = false
     })
@@ -84,25 +85,47 @@ async function getList() {
     if (code === 0) {
       items.value = data.list
     }
+    // const getAllGroupList = async () => {
+    //   for (let i = 0; i < data.list.length; i++) {
+    //     const element = data.list[i]
+    //     // console.log('正在组', element.id)
+    //     if (element.id) {
+    //       await updateItemIconGroupByNet(i, element.id)
+    //     }
+
+    //     // 如果之前没有缓存数据将开启同步缓存数据
+    //     // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
+    //     if (isEnableSyncCache) {
+    //       filterItems.value = items.value
+
+    //       // 未禁用缓存将保存为缓存数据
+    //       if (appStore.siteSetting.isDisableItemCardCache === false) {
+    //         panelState.setItemGroupCacheData(items.value)
+    //       }
+    //     }
+    //   }
+    // }
+
+    // 修改 getAllGroupList 函数为并行请求
     const getAllGroupList = async () => {
-      for (let i = 0; i < data.list.length; i++) {
-        const element = data.list[i]
-        // console.log('正在组', element.id)
-        if (element.id) {
-          await updateItemIconGroupByNet(i, element.id)
-        }
+      await Promise.all(
+        data.list.map(async (group, index) => {
+          if (group.id) {
+            await updateItemIconGroupByNet(index, group.id)
 
-        // 如果之前没有缓存数据将开启同步缓存数据
-        // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
-        if (isEnableSyncCache) {
-          filterItems.value = items.value
+            // 如果之前没有缓存数据将开启同步缓存数据
+            // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
+            if (isEnableSyncCache) {
+              filterItems.value = items.value
 
-          // 未禁用缓存将保存为缓存数据
-          if (appStore.siteSetting.isDisableItemCardCache === false) {
-            panelState.setItemGroupCacheData(items.value)
+              // 未禁用缓存将保存为缓存数据
+              if (appStore.siteSetting.isDisableItemCardCache === false) {
+                panelState.setItemGroupCacheData(items.value)
+              }
+            }
           }
-        }
-      }
+        }),
+      )
     }
 
     getAllGroupList().then(() => {
@@ -208,6 +231,9 @@ function handleSaveSort(itemGroup: ItemGroup) {
 }
 
 function runFooterJSCode() {
+  if (hasRunFooterJS)
+    return
+
   // 获取类名为 'footer' 的元素
   const footerElements = document.querySelectorAll('.custom-footer')
   footerElements.forEach((footer) => {
@@ -238,6 +264,8 @@ function runFooterJSCode() {
       }
     })
   })
+
+  hasRunFooterJS = true
 }
 
 onMounted(async () => {
@@ -307,17 +335,10 @@ function handleSetSortStatus(groupIndex: number, sortStatus: boolean) {
   }
 }
 
-function handleEditItem(item: Panel.ItemInfo) {
-  editItemInfoData.value = item
+function toggleEditPanel(item: Panel.ItemInfo | null, groupId?: number) {
+  editItemInfoData.value = item || null
+  currentAddItenIconGroupId.value = groupId
   editItemInfoShow.value = true
-  currentAddItenIconGroupId.value = undefined
-}
-
-function handleAddItem(itemIconGroupId?: number) {
-  editItemInfoData.value = null
-  editItemInfoShow.value = true
-  if (itemIconGroupId)
-    currentAddItenIconGroupId.value = itemIconGroupId
 }
 </script>
 
@@ -410,7 +431,7 @@ function handleAddItem(itemIconGroupId?: number) {
                 class="group-buttons ml-2 delay-100 transition-opacity flex"
                 :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
               >
-                <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="handleAddItem(itemGroup.id)">
+                <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="toggleEditPanel(null, itemGroup.id)">
                   <SvgIcon class="text-white font-xl" icon="typcn:plus" />
                 </span>
                 <span class="mr-2 cursor-pointer " :title="t('common.sort')" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
@@ -454,7 +475,7 @@ function handleAddItem(itemIconGroupId?: number) {
                     :card-style="PanelPanelConfigStyleEnum.info"
                     :card-type="PanelCardType.Normal"
                     @delete="() => deleteItem(item)"
-                    @edit="() => handleEditItem(item)"
+                    @edit="() => toggleEditPanel(item)"
                   />
                 </div>
 
@@ -468,7 +489,7 @@ function handleAddItem(itemIconGroupId?: number) {
                     :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
                     :card-style="PanelPanelConfigStyleEnum.info"
                     :card-type="PanelCardType.Normal"
-                    @click="handleAddItem(itemGroup.id)"
+                    @click="toggleEditPanel(null, itemGroup.id)"
                   />
                 </div>
               </VueDraggable>
@@ -498,7 +519,7 @@ function handleAddItem(itemIconGroupId?: number) {
                     :card-style="PanelPanelConfigStyleEnum.small"
                     :card-type="PanelCardType.Normal"
                     @delete="() => deleteItem(item)"
-                    @edit="() => handleEditItem(item)"
+                    @edit="() => toggleEditPanel(item)"
                   />
                 </div>
 
@@ -512,7 +533,7 @@ function handleAddItem(itemIconGroupId?: number) {
                     :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
                     :card-style="PanelPanelConfigStyleEnum.small"
                     :card-type="PanelCardType.Normal"
-                    @click="handleAddItem(itemGroup.id)"
+                    @click="toggleEditPanel(null, itemGroup.id)"
                   />
                 </div>
               </vuedraggable>
