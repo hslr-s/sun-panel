@@ -65,13 +65,39 @@ const ProAuthTypeSystemSettingProAuthDataShortTermKey = "pro_auth_data_short_ter
 // 将废弃 (1.4.0-beta24-04-12添加的此项)
 const ProAuthTypeSystemSettingAccountPasswordKey = "ProAuthAccountPassword"
 
+var AuthUrl = map[string]string{
+	"default": "https://auth.sun-panel.top",
+	"spare":   "https://auth.sp.enianteam.com", // 备用验证地址
+}
+
 func NewProAuth() *ProAuthType {
-	// 此配置项为隐藏的默认为正式服务器
-	proAuth.Config.Url = global.Config.GetValueStringOrDefault("pro_auth", "host")
+	// 此配置项为隐藏的默认为正式服务器，该字段目前仅支持配置 default 和 spare 和 加密的url地址，不再支持自定义明文地址 更新日期：2025-03-07
+	cfgAuthHost := global.Config.GetValueStringOrDefault("pro_auth", "host")
+
 	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN" // 绝密不可泄露
 	proAuth.Config.TimeDifference = 604800                     // 允许的时间差为7天
 
-	global.Logger.Debugln("auth_host", proAuth.Config.Url)
+	useHostFlag := cfgAuthHost
+	if cfgAuthHost == "" || cfgAuthHost == "default" {
+		proAuth.Config.Url = AuthUrl["default"]
+		useHostFlag = "default"
+	} else if cfgAuthHost == "spare" {
+		proAuth.Config.Url = AuthUrl["spare"]
+	} else {
+		// 默认认为是一个加密的网址
+		url, err := AES.Decrypt(proAuth.Config.AESKey, cfgAuthHost)
+		if err == nil {
+			proAuth.Config.Url = url
+			// global.Logger.Debugln("auth_host host_address:", url)
+		} else {
+			global.Logger.Errorln("host_address: Unable to parse :", err)
+			proAuth.Config.Url = AuthUrl["default"]
+			useHostFlag = "default"
+		}
+	}
+
+	global.Logger.Debugln("auth_host:", proAuth.Config.Url)
+	global.Logger.Infoln("Use PRO Auth Host:", useHostFlag)
 
 	p := ProAuthType{
 		PingInterval:     6 * time.Hour, // ping执行的时间间隔
