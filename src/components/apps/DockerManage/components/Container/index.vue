@@ -110,35 +110,6 @@ const createColumns = ({
       },
     },
     {
-      title: t('apps.dockerManage.ports'),
-      key: 'port',
-      width: 200,
-      render(row) {
-        const group = (g: Docker.Container.Port) => {
-          return h(NTag,
-            {
-              size: 'tiny',
-              style: { margin: '0 2px' },
-              type: 'info',
-              title: `(${g.type}) ${g.ip}:${g.publicPort} => ${g.privatePort}`,
-            },
-            `${g.type} ${g.ip}:${g.publicPort}`)
-        }
-
-        const c = []
-        for (const key in row.ports) {
-          if (Object.prototype.hasOwnProperty.call(row.ports, key)) {
-            const element = row.ports[key]
-            if (element.publicPort !== 0 && element.privatePort !== 0) {
-              c.push(group(element))
-            }
-          }
-        }
-
-        return h(NEllipsis, { lineClamp: 2 }, c)
-      },
-    },
-    {
       title: t('apps.dockerManage.resourceOverview'),
       key: 'resource',
       width: 200,
@@ -176,6 +147,35 @@ const createColumns = ({
             ),
           ],
         )
+      },
+    },
+    {
+      title: t('apps.dockerManage.ports'),
+      key: 'port',
+      width: 200,
+      render(row) {
+        const group = (g: Docker.Container.Port) => {
+          return h(NTag,
+            {
+              size: 'tiny',
+              style: { margin: '0 2px' },
+              type: 'info',
+              title: `(${g.type}) ${g.ip}:${g.publicPort} => ${g.privatePort}`,
+            },
+            `${g.type} ${g.ip}:${g.publicPort}`)
+        }
+
+        const c = []
+        for (const key in row.ports) {
+          if (Object.prototype.hasOwnProperty.call(row.ports, key)) {
+            const element = row.ports[key]
+            if (element.publicPort !== 0 && element.privatePort !== 0) {
+              c.push(group(element))
+            }
+          }
+        }
+
+        return h(NEllipsis, { lineClamp: 2 }, c)
       },
     },
     {
