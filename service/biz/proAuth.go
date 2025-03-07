@@ -75,6 +75,7 @@ func NewProAuth() *ProAuthType {
 	cfgAuthHost := global.Config.GetValueStringOrDefault("pro_auth", "host")
 
 	proAuth.Config.AESKey = "wAOhhAqbBxgjNOlcEAGvwawvUZmWDLkN" // 绝密不可泄露
+	hostAesKey := "60l1o651mL3WVcbWW0NJLTLav0kpu1vT"           // 绝密不可泄露，用于解密host地址
 	proAuth.Config.TimeDifference = 604800                     // 允许的时间差为7天
 
 	useHostFlag := cfgAuthHost
@@ -85,7 +86,7 @@ func NewProAuth() *ProAuthType {
 		proAuth.Config.Url = AuthUrl["spare"]
 	} else {
 		// 默认认为是一个加密的网址
-		url, err := AES.Decrypt(proAuth.Config.AESKey, cfgAuthHost)
+		url, err := AES.Decrypt(hostAesKey, cfgAuthHost)
 		if err == nil {
 			proAuth.Config.Url = url
 			// global.Logger.Debugln("auth_host host_address:", url)
