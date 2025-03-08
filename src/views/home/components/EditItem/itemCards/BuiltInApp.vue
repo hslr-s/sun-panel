@@ -3,12 +3,12 @@ import { NFlex, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
 import IconEditor from '../IconEditor.vue'
+import { getAppList } from '../../common'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
-import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
+import { systemApps } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
 import { AppLoader, RoundCardModal, STip } from '@/components/common/'
 import { useAuthStore } from '@/store'
-import { AdminAuthRole } from '@/enums/admin'
 
 const props = defineProps<{
   itemInfo: Panel.Info
@@ -67,8 +67,7 @@ watch(
 )
 
 onMounted(() => {
-  if (authStore.userInfo?.role === AdminAuthRole.admin)
-    apps.value = [...systemApps, ...adminSystemApps]
+  apps.value = getAppList(systemApps, authStore.userInfo?.role || 0)
 
   // 设置默认值
   if (!props.itemInfo.expandParam) {

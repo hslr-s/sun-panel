@@ -11,7 +11,7 @@ func InitContainer(router *gin.RouterGroup) {
 	apiDocker := api_v1.ApiGroupApp.ApiDocker
 
 	// 登录模式（可以获取docker列表，可以控制容器）
-	r := router.Group("", middleware.LoginInterceptor)
+	r := router.Group("", middleware.LoginInterceptor, middleware.AdminInterceptor)
 	{
 		r.POST("/docker/container/getList", apiDocker.Container.GetList)
 		r.POST("/docker/container/execSwitchActionByContainerID", apiDocker.Container.ExecSwitchActionByContainerID)

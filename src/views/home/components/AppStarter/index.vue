@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
+import { getAppList } from '../common'
 import { EditItem } from '@/views/home/components'
 import { useAuthStore } from '@/store'
 import { AppLoader, SModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
-import type { SystemApp } from '@/utils/cmn/builtInApps'
-import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
+import { type SystemApp, systemApps } from '@/utils/cmn/builtInApps'
 import { PanelCardType, PanelItemIconTypeEnum, PanelItemOpenMethodEnum } from '@/enums'
 import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
 
@@ -39,7 +39,7 @@ const editItemInfo = ref<Panel.Info | null>({
   url: '',
 })
 
-const apps = ref(systemApps)
+const apps = ref<SystemApp[]>(systemApps)
 
 const authStore = useAuthStore()
 
@@ -99,17 +99,13 @@ function handleEditSuccess() {
 // }
 
 // 触发更新菜单
-watch(() => authStore.userInfo?.role, () => {
-  if (authStore.userInfo?.role === 1)
-    apps.value = apps.value.concat(adminSystemApps)
-})
+watch(() => props.visible, (newValue) => {
+  if (newValue) {
+    apps.value = getAppList(apps.value, authStore.userInfo?.role || 0)
+  }
+}, { immediate: true })
 
 onMounted(() => {
-  const adminApps = adminSystemApps
-  // 初始化
-  if (authStore.userInfo?.role === 1)
-    apps.value = apps.value.concat(adminApps)
-
   window.addEventListener('resize', handleResize)
   handleResize()
 })

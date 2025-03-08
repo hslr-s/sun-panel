@@ -20,6 +20,8 @@ import { PanelCardType, PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemCardBackgroundColor } from '@/utils/defaultData'
 import { STip } from '@/components/common'
 import { useDomainLinks } from '@/hooks/useDomainLinks'
+import { useAuthStore } from '@/store'
+import { AdminAuthRole } from '@/enums/admin'
 
 interface Props {
   visible: boolean
@@ -57,6 +59,7 @@ interface Emit {
 }
 
 const domainLinks = useDomainLinks()
+const authStore = useAuthStore()
 
 const previewTransparentCanvas = ref(false)
 const model = ref<Panel.Info>(props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault })
@@ -78,25 +81,32 @@ const defaultRules: FormRules = {
 const rules = ref<FormRules>({ ...defaultRules })
 
 // 卡片类型
-const optionsCardType = [
-  {
-    default: true,
-    label: t('iconItem.ordinaryIcon'),
-    value: PanelCardType.Normal,
-  },
-  {
-    label: t('iconItem.dockerStatusCard'),
-    value: PanelCardType.Docker,
-  },
-  {
-    label: t('iconItem.builtInApp'),
-    value: PanelCardType.BuiltInApp,
-  },
-  // {
-  //   label: t('iconItem.iframeCard'),
-  //   value: 4,
-  // },
-]
+function getOptionsCardType() {
+  const optionsCardType = [
+    {
+      default: true,
+      label: t('iconItem.ordinaryIcon'),
+      value: PanelCardType.Normal,
+    },
+    {
+      label: t('iconItem.builtInApp'),
+      value: PanelCardType.BuiltInApp,
+    },
+    // {
+    //   label: t('iconItem.iframeCard'),
+    //   value: 4,
+    // },
+  ]
+
+  if (authStore.userInfo?.role === AdminAuthRole.admin) {
+    optionsCardType.push({
+      label: t('iconItem.dockerStatusCard'),
+      value: PanelCardType.Docker,
+    })
+  }
+
+  return optionsCardType
+}
 
 // 更新值父组件传来的值
 const show = computed({
@@ -368,7 +378,7 @@ function handleResetRules() {
                     {{ $t('iconItem.cardType') }}
                   </span>
                 </template>
-                <NSelect v-model:value="model.cardType" :options="optionsCardType" @update:value="handleResetRules" />
+                <NSelect v-model:value="model.cardType" :options="getOptionsCardType()" @update:value="handleResetRules" />
               </NFormItem>
             </NGridItem>
           </NGrid>
