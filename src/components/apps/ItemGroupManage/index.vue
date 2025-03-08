@@ -4,7 +4,7 @@ import type { FormInst, FormRules } from 'naive-ui'
 import {
   NButton, NCard, NColorPicker,
   NDivider, NFlex, NForm, NFormItem, NInput,
-  NSelect, NSwitch, useDialog,
+  NSelect, NSpin, NSwitch, useDialog,
   useMessage,
 } from 'naive-ui'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -31,6 +31,7 @@ const ms = useMessage()
 const dialog = useDialog()
 const sortStatus = ref(false)
 const triggerUpdateItemData = useTriggerUpdateItemData()
+const loading = ref(false)
 
 const defaultItemGroupInfo: Panel.ItemGroupInfo = {
   title: '',
@@ -145,10 +146,12 @@ function handleSaveGroup() {
   })
 }
 
-function refreshList() {
-  getList<Common.ListResponse<Panel.ItemGroupInfo[]>>().then(({ code, data }) => {
+async function refreshList() {
+  loading.value = true
+  await getList<Common.ListResponse<Panel.ItemGroupInfo[]>>().then(({ data }) => {
     groups.value = data.list
   })
+  loading.value = false
 }
 
 onMounted(() => {
@@ -181,6 +184,7 @@ watch(() => editModalArg.value.show, (v) => {
     </NCard>
 
     <NCard style="border-radius: 10px;" size="small">
+      <NSpin v-if="loading" />
       <div class="w-full mt-[20px] rounded-xl my-20 pt-[5px]" :class="sortStatus ? 'border border-dashed' : ''">
         <VueDraggable
           v-model="groups"
