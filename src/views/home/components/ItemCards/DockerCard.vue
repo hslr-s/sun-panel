@@ -307,7 +307,6 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
     operationLoading.value = false
     if (res.code === -1) {
       setContainerStatusError(res.msg)
-      return
     }
 
     apiRespErrMsg(res)
