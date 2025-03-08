@@ -29,15 +29,15 @@ const (
 )
 
 var ErrorCodeMap = map[int]error{
-	ErrCodeNotLoggedIn:                   errors.New("not logged in yet"),                   // 还未登录
-	ErrCodeTokenExpired:                  errors.New("token expired"),                       // token过期
-	ErrCodeCaptchaError:                  errors.New("captcha Error"),                       // 验证码错误
-	ErrCodeIncorrectUsernameOrPassword:   errors.New("incorrect username or password"),      // 用户名或密码错误
-	ErrCodeAccountDisabledOrNotActivated: errors.New("account disabled or not activated"),   // 账号已停用或未激活
-	ErrCodeNoCurrentPermission:           errors.New("no current permission for operation"), // 当前无权限操作
-	ErrCodeAccountDoesNotExist:           errors.New("account does not exist"),              // 账号不存在
-	ErrCodeOldPasswordError:              errors.New("old password error"),                  // 旧密码不正确
-	ErrCodeNoPROAuthorization:            errors.New("no PRO authorization"),                // 没有PRO授权
+	ErrCodeNotLoggedIn:                   errors.New("not logged in yet"),                 // 还未登录
+	ErrCodeTokenExpired:                  errors.New("token expired"),                     // token过期
+	ErrCodeCaptchaError:                  errors.New("captcha Error"),                     // 验证码错误
+	ErrCodeIncorrectUsernameOrPassword:   errors.New("incorrect username or password"),    // 用户名或密码错误
+	ErrCodeAccountDisabledOrNotActivated: errors.New("account disabled or not activated"), // 账号已停用或未激活
+	ErrCodeNoCurrentPermission:           errors.New("no permission"),                     // 无权限
+	ErrCodeAccountDoesNotExist:           errors.New("account does not exist"),            // 账号不存在
+	ErrCodeOldPasswordError:              errors.New("old password error"),                // 旧密码不正确
+	ErrCodeNoPROAuthorization:            errors.New("no PRO authorization"),              // 没有PRO授权
 
 	// 数据类
 	ErrCodeDatabaseError:        errors.New("database error"),           // 数据库错误
