@@ -14,8 +14,8 @@ import { t } from '@/locales'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
-import { useAppStore } from '@/store'
 import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface EditModalArg {
   show: boolean
@@ -23,9 +23,9 @@ interface EditModalArg {
   model: Panel.ItemGroupInfo
   rules: FormRules
 }
-const onlyNameDocLink = 'http://links.sun-panel.top/only_name_beautify_doc_'
 
-const appStore = useAppStore()
+const domainLinks = useDomainLinks()
+
 const formRef = ref<FormInst | null>(null)
 const ms = useMessage()
 const dialog = useDialog()
@@ -155,13 +155,6 @@ onMounted(() => {
   refreshList()
 })
 
-function getLangeuageSimple() {
-  if (appStore.language === 'zh-CN')
-    return 'zh_cn'
-
-  return 'en'
-}
-
 watch(() => editModalArg.value.show, (v) => {
   // console.log(v)
   if (!v)
@@ -281,13 +274,13 @@ watch(() => editModalArg.value.show, (v) => {
         <NFormItem path="onlyName">
           <template #label>
             <NFlex align="center">
-              {{ $t('apps.itemGroupManage.onlyName') }}
+              {{ $t('common.onlyName') }}
               <STip>
                 {{ t('apps.itemGroupManage.onlyNameDescribe') }}
                 <NButton
                   text
                   tag="a"
-                  :href="onlyNameDocLink + getLangeuageSimple()"
+                  :href="domainLinks.linkWithLang('only_name_beautify_doc')"
                   target="_blank"
                   type="primary"
                 >

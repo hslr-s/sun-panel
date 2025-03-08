@@ -166,7 +166,6 @@
       "cardStyle": "Card style",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
       "groupName": "Group name",
-      "onlyName": "Only Name",
       "onlyNameDescribe": "The only name in English can be used with customized css, js, and footer to achieve richer styles.",
       "publicVisitHide": "Hide in public mode",
       "textAutoColor": "If the color is set to pure white (#FFFFFF), the text color will automatically adjust the black or white with the lightness of the background color of the card"

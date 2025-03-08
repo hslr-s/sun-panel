@@ -166,7 +166,6 @@
       "cardStyle": "卡片风格",
       "deleteWarnText": "你确定删除此分组[{name}]，删除后此分组应用图标将丢失？",
       "groupName": "分组名称",
-      "onlyName": "唯一标识",
       "onlyNameDescribe": "英文唯一标识，可以配合自定义css、js、页脚来实现更丰富的样式",
       "publicVisitHide": "公开模式下隐藏",
       "textAutoColor": "如果颜色设置为纯白色（#ffffff），文字颜色会随卡片背景颜色的明暗度自动调节黑色或者白色"
