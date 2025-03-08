@@ -377,7 +377,7 @@ function handleResetRules() {
             <template #label>
               <span class="font-bold">
                 <NFlex align="center">
-                  {{ $t('apps.itemGroupManage.onlyName') }}
+                  {{ $t('common.onlyName') }}
                   <STip>
                     {{ $t('iconItem.onlyNameTip') }}
                     <NButton
@@ -398,7 +398,7 @@ function handleResetRules() {
         <NCheckbox v-model:checked="expandAdvancedFeatures" class="mb-2" size="small">
           {{ $t('iconItem.moreOptions') }}
           <span class="text-xs text-gray-400">
-            ({{ $t('iconItem.cardBackground') }} , {{ $t('iconItem.iconGroup') }} , {{ $t('iconItem.cardType') }} , {{ $t('apps.itemGroupManage.onlyName') }})
+            ({{ $t('iconItem.cardBackground') }} , {{ $t('iconItem.iconGroup') }} , {{ $t('iconItem.cardType') }} , {{ $t('common.onlyName') }})
           </span>
         </NCheckbox>
       </NForm>
