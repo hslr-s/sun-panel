@@ -131,7 +131,7 @@ function handleSwitch(item: AccountInfo) {
   if (!item.loginStatus) {
     // router.push({ path: '/login', query: { username: item.username } })
     // 防止一些自定义js的缓存，所以采用原生跳转，而不是router.push
-    location.href = `/login?username=${item.username}`
+    location.href = `/login?username=${item.username}&type=addLogin`
     return
   }
 
