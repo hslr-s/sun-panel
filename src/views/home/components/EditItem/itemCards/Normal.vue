@@ -58,10 +58,13 @@ watch(model.value, () => {
 watch(
   () => props.rules,
   () => {
-    const r = { ...props.rules, ...rulesExtends }
-    emit('update:rules', r)
+    const newRules = { ...props.rules, ...rulesExtends }
+    // 防止重复 emit
+    if (JSON.stringify(newRules) !== JSON.stringify(props.rules)) {
+      emit('update:rules', newRules)
+    }
   },
-  { immediate: true }, // 组件挂载时立即执行
+  { immediate: true },
 )
 </script>
 

@@ -88,17 +88,20 @@ const extendParam: Panel.ItemCardExpandParam.Docker = {
 
 const model = ref(props.itemInfo)
 
-watch(model.value, () => {
-  emit('update:itemInfo', model.value)
+watch(model.value, (newVal) => {
+  emit('update:itemInfo', newVal)
 })
 
 watch(
   () => props.rules,
   () => {
-    const r = { ...props.rules, ...rulesExtends }
-    emit('update:rules', r)
+    const newRules = { ...props.rules, ...rulesExtends }
+    // 防止重复 emit
+    if (JSON.stringify(newRules) !== JSON.stringify(props.rules)) {
+      emit('update:rules', newRules)
+    }
   },
-  { immediate: true }, // 组件挂载时立即执行
+  { immediate: true },
 )
 
 onMounted(() => {
