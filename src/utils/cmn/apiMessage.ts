@@ -37,16 +37,12 @@ export function apiRespErrMsg(res: any) {
 
     router.push({ path: '/login' })
     authStore.removeToken()
-    return res.data
+    return
   }
   else if (res.code === 1000) {
     router.push({ path: '/login' })
     authStore.removeToken()
-    return res.data
-  }
-  else if (res.code === 1005) {
-    message.warning(res.data.msg)
-    return res.data
+    return
   }
 
   if (res.code) {
