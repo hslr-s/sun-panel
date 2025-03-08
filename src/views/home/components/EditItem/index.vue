@@ -18,6 +18,8 @@ import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 import { PanelCardType, PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemCardBackgroundColor } from '@/utils/defaultData'
+import { STip } from '@/components/common'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface Props {
   visible: boolean
@@ -53,6 +55,8 @@ interface Emit {
   (e: 'update:visible', visible: boolean): void
   (e: 'done', item: Panel.Info): void// 创建完成
 }
+
+const domainLinks = useDomainLinks()
 
 const previewTransparentCanvas = ref(false)
 const model = ref<Panel.Info>(props.itemInfo ? { ...props.itemInfo } : { ...restoreDefault })
@@ -364,10 +368,7 @@ function handleResetRules() {
                     {{ $t('iconItem.cardType') }}
                   </span>
                 </template>
-                <NSelect
-                  v-model:value="model.cardType" :options="optionsCardType"
-                  @update:value="handleResetRules"
-                />
+                <NSelect v-model:value="model.cardType" :options="optionsCardType" @update:value="handleResetRules" />
               </NFormItem>
             </NGridItem>
           </NGrid>
@@ -375,7 +376,18 @@ function handleResetRules() {
           <NFormItem path="onlyName">
             <template #label>
               <span class="font-bold">
-                {{ $t('iconItem.onlyName') }}
+                <NFlex align="center">
+                  {{ $t('apps.itemGroupManage.onlyName') }}
+                  <STip>
+                    {{ $t('iconItem.onlyNameTip') }}
+                    <NButton
+                      text tag="a" :href="domainLinks.linkWithLang('only_name_beautify_doc')" target="_blank"
+                      type="primary"
+                    >
+                      {{ t("common.lookDoc") }}
+                    </NButton>
+                  </STip>
+                </NFlex>
               </span>
             </template>
             <NInput v-model:value="model.onlyName" type="text" show-count :maxlength="20" />
@@ -385,6 +397,9 @@ function handleResetRules() {
         <!-- 更多不常用的功能进行隐藏 -->
         <NCheckbox v-model:checked="expandAdvancedFeatures" class="mb-2" size="small">
           {{ $t('iconItem.moreOptions') }}
+          <span class="text-xs text-gray-400">
+            ({{ $t('iconItem.cardBackground') }} , {{ $t('iconItem.iconGroup') }} , {{ $t('iconItem.cardType') }} , {{ $t('apps.itemGroupManage.onlyName') }})
+          </span>
         </NCheckbox>
       </NForm>
     </div>
