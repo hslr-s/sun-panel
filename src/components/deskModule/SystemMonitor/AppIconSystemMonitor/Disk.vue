@@ -65,14 +65,6 @@ onUnmounted(() => {
     </template>
 
     <div>
-      <div class="my-2 text-lg">
-        <span class="font-bold">
-          {{ $t('deskModule.systemMonitor.diskMountPoint') }}:
-        </span>
-
-        {{ diskState?.mountpoint }}
-      </div>
-
       <div class="overflow-auto max-h-[200px]">
         <div>
           <span> {{ $t('deskModule.systemMonitor.free') }}</span>

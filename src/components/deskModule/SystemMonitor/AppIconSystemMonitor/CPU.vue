@@ -52,15 +52,8 @@ onUnmounted(() => {
       />
     </template>
 
-    <div>
-      <div class="my-2 text-lg">
-        <span class="font-bold">
-          {{ $t('deskModule.systemMonitor.cpuCountCoreNum') }}:
-        </span>
-        {{ cpuState?.coreCount }}
-      </div>
-
-      <div class="overflow-auto max-h-[200px]">
+    <div class="mt-2">
+      <div class="overflow-auto max-h-[200px] px-2">
         <NGrid x-gap="12" y-gap="15" cols="4 400:5 600:6" responsive="screen">
           <NGridItem v-for="item, index in cpuState?.usages" :key="index">
             <div class="flex flex-col justify-center items-center">
