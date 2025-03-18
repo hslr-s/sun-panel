@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { h, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import { NAlert, NDataTable, NEllipsis, NSpace, NTag } from 'naive-ui'
+import { NAlert, NDataTable, NEllipsis, NTag } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 import type { ComponentPublicInstance } from 'vue'
 import { useDockerStore } from '../../store/docker'
@@ -208,11 +208,15 @@ const createColumns = ({
     {
       key: 'add',
       fixed: 'right',
-      width: 100,
+      width: 50,
       align: 'center',
       render(row) {
         return h('div', {
           title: t('common.addCardToGroup'),
+          style: {
+            display: 'flex',
+            justifyContent: 'center',
+          },
           onClick: () => addToGroupCard(row),
         },
         h(
@@ -285,7 +289,6 @@ function handleResize() {
 
 // 添加卡片分组
 function addToGroupCard(row: Docker.Container.Info) {
-  console.log('点击了添加卡片分组')
   editItemInfo.value = {
     title: row.name,
     icon: {
@@ -314,32 +317,37 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <NSpace ref="nSpace" vertical :size="12" style="height: 100%;overflow-y: auto;">
+  <div class="h-full overflow-auto">
     <!-- 没有PRO授权仅能查看状态，不可以操作。 -->
+    <div class="flex flex-col h-full gap-2">
+      <div>
+        <NAlert type="info" closable @after-leave="handleResize">
+          {{ t('apps.dockerManage.alertText') }}
+        </NAlert>
 
-    <div ref="alertBoxRef">
-      <NAlert type="info" closable @after-leave="handleResize">
-        {{ t('apps.dockerManage.alertText') }}
-      </NAlert>
+        <NAlert
+          v-if="dockerState.refreshContainerListErrorMsg" class="mt-2" type="error" closable
+          @after-leave="handleResize"
+        >
+          {{ dockerState.refreshContainerListErrorMsg }}
+          <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
+            [{{ t('common.viewSolution') }}]
+          </a>
+        </NAlert>
+      </div>
 
-      <NAlert
-        v-if="dockerState.refreshContainerListErrorMsg" class="mt-2" type="error" closable
-        @after-leave="handleResize"
-      >
-        {{ dockerState.refreshContainerListErrorMsg }}
-        <a target="_blank" class="text-lime-600" :href="domainLinks.faqLinkWithLang('docker_run_error')">
-          [{{ t('common.viewSolution') }}]
-        </a>
-      </NAlert>
+      <div class="h-full flex">
+        <NDataTable
+          flex-height
+          :bordered="false"
+          size="small" :data="dockerState.containerList"
+          :columns="columns" :loading="loadingList"
+        />
+      </div>
     </div>
 
-    <NDataTable
-      :max-height="dataTableHeight" :bordered="false" size="small" :data="dockerState.containerList"
-      :columns="columns" :loading="loadingList"
-    />
-
     <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfo" is-out-add @done="handleEditSuccess" />
-  </NSpace>
+  </div>
 </template>
 
 <style scoped>
