@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { NDropdown, useMessage } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
@@ -99,6 +99,10 @@ function onClickoutside() {
   // message.info('clickoutside')
   dropdownShow.value = false
 }
+
+watch(() => props.itemInfo, (newValue) => {
+  item.value = newValue
+}, { immediate: true })
 </script>
 
 <template>
