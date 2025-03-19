@@ -342,6 +342,7 @@ onUnmounted(() => {
           :bordered="false"
           size="small" :data="dockerState.containerList"
           :columns="columns" :loading="loadingList"
+          :scroll-x="800"
         />
       </div>
     </div>
