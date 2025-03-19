@@ -1,5 +1,7 @@
+import type { MessageReactive } from 'naive-ui'
 import { usePanelState } from '@/store'
 import { PanelStateNetworkModeEnum } from '@/enums'
+import { message } from '@/utils/cmn/apiMessage'
 
 const panelState = usePanelState()
 
@@ -61,12 +63,24 @@ export function pingUrl(url: string, attempts: number, timeout: number): Promise
 
 // 选择最优地址
 async function selectBestUrl(lanUrl: string, url: string, timeout?: number) {
+  // 开启消息类型的 loading
+  let messageReactive: MessageReactive | null = null
+  messageReactive = message.loading('loading...', {
+    duration: 0,
+  })
+
   await pingUrl(lanUrl, 2, timeout || 200).then(() => {
     url = lanUrl
   }).catch((err) => {
     // 无法ping通局域网,使用默认的url
     console.error(lanUrl, err)
   })
+
+  // 关闭loading
+  if (messageReactive) {
+    messageReactive.destroy()
+    messageReactive = null
+  }
   return url
 }
 
