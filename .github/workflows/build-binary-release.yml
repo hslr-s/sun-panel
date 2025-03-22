@@ -1,0 +1,57 @@
+name: Auto Build and Cross-Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build in Docker
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/build \
+            -w /build \
+            --name go-node-builder \
+            hslr/go-node-builder:go-1.21_node-18.20.5 \
+            /bin/bash -c "chmod +x ./build.sh && ./build.sh -r"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4 # 升级到v4版本
+        with:
+          name: release-packages
+          path: release/*
+
+  publish-to-external-repo:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-packages
+          path: release
+
+      # 可选：确保目标仓库存在对应tag
+      - name: Sync Tag to Target Repo
+        run: |
+          git clone https://${{ secrets.CROSS_REPO_TOKEN }}@github.com/hslr-s/sun-panel.git
+          cd test
+          git tag -f ${{ github.ref_name }}
+          git push origin refs/tags/${{ github.ref_name }}
+
+      - name: Create External Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          target_commitish: master  # 改为目标仓库存在的分支名
+          draft: true  # 保持草稿状态
+          repository: hslr-s/sun-panel
+          files: release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
