@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { NBadge, NButton, NCheckbox, NDivider, NFlex, NGradientText, NTag } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { checkNewVersion as checkNewVersionApi, get } from '@/api/system/about'
-import { useAppStore } from '@/store'
+import { useAppStore, useAuthStore } from '@/store'
 import srcSvglogo from '@/assets/logo.svg'
 import srcGitee from '@/assets/about_image/gitee.png'
 import srcGithub from '@/assets/about_image/github.png'
@@ -11,9 +11,10 @@ import srcBilibili from '@/assets/about_image/bilibili.png'
 import srcYoutube from '@/assets/about_image/youtube.png'
 import srcQQGroupQR from '@/assets/about_image/qq_group_qr2.png'
 import { RoundCardModal, STip } from '@/components/common'
-import { message } from '@/utils/request/apiMessage'
+import { message } from '@/utils/cmn/apiMessage'
 import { t } from '@/locales'
 import { buildTimeString } from '@/utils/cmn'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface Version {
   versionName: string
@@ -21,24 +22,30 @@ interface Version {
 }
 
 const appStore = useAppStore()
+const uauthStore = useAuthStore()
 const versionName = ref('')
 const qqGroupQRShow = ref(false)
 const frontVersion = import.meta.env.VITE_APP_VERSION || 'unknown'
-const linksDomain = 'http://links.sun-panel.top'
 const isCheckBeta = ref(false)
 const newVersionInfo = ref<About.NewVersionInfo | null>(null)
 const checkLoading = ref(false)
 const isCheckFailed = ref(false)
+const domainLinks = useDomainLinks()
+const isAdmin = computed(() => uauthStore.userInfo?.role === 1)
 
-function getLangeuageSimple() {
-  if (appStore.language === 'zh-CN')
-    return 'zh_cn'
-
-  return 'en'
+// 新增判断是否为beta版本的函数
+function isBetaVersion(version: string): boolean {
+  return version.includes('-beta')
 }
 
 function link(c: string): string {
-  return `${linksDomain}/${c}_${getLangeuageSimple()}`
+  return domainLinks.linkWithLang(c)
+}
+
+function getUpdateLogLink(version: string): string {
+  let url = isBetaVersion(version) ? domainLinks.linkWithLangParam('update_log_beta_lang') : domainLinks.linkWithLangParam('update_log_lang')
+  url += `&version=${version}`
+  return url
 }
 
 function getWebsiteUrl(): string {
@@ -65,8 +72,8 @@ onMounted(() => {
     if (res.code === 0)
       versionName.value = res.data.versionName
   })
-
-  checkNewVersion()
+  if (isAdmin.value)
+    checkNewVersion()
 })
 </script>
 
@@ -79,16 +86,31 @@ onMounted(() => {
       </div>
       <div class="text-xl">
         <NGradientText type="info">
-          <a :href="link('update_log')" class="font-semibold" :title="$t('apps.about.viewUpdateLog')" target="_blank">v{{ versionName }}</a>
+          <!-- 修改点击版本号跳转的逻辑 -->
+          <a
+            :href="getUpdateLogLink(versionName)"
+            class="font-semibold"
+            :title="$t('apps.about.viewUpdateLog')"
+            target="_blank"
+          >
+            v{{ versionName }}
+          </a>
         </NGradientText>
       </div>
 
-      <div v-if="!checkLoading" class="mt-2">
+      <div v-if="!checkLoading && isAdmin" class="mt-2">
         <NFlex v-if="newVersionInfo !== null" justify="center" align="center" style="margin:10px 0 ;" :title="t('apps.about.viewUpdateLog')">
           {{ t('apps.about.haveNewVersion') }}
           <NBadge value="New" processing :offset="[5, -5]">
             <NTag type="info">
-              <a :href="link('update_log')" target="_blank" class="link"> v{{ newVersionInfo.version }}</a>
+              <!-- 修改检测新版本后跳转的逻辑 -->
+              <a
+                :href="getUpdateLogLink(newVersionInfo.version)"
+                target="_blank"
+                class="link"
+              >
+                v{{ newVersionInfo.version }}
+              </a>
             </NTag>
           </NBadge>
           <template v-if="newVersionInfo.type === 'release'">
@@ -109,7 +131,7 @@ onMounted(() => {
         </NFlex>
       </div>
 
-      <NFlex align="center" justify="center">
+      <NFlex v-if="isAdmin" align="center" justify="center">
         <NCheckbox v-model:checked="isCheckBeta">
           Beta
         </NCheckbox>

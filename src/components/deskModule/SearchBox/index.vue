@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineEmits, onMounted, ref } from 'vue'
+import { defineEmits, onBeforeUnmount, onMounted, ref } from 'vue'
 import { NAvatar, NCheckbox, NModal } from 'naive-ui'
 import SearchBoxSetting from './SearchBoxSetting.vue'
 import type { SearchSaveDataType } from './base'
@@ -9,7 +9,7 @@ import { useModuleConfig } from '@/store/modules'
 import { useAuthStore } from '@/store'
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
-import { message } from '@/utils/request/apiMessage'
+import { message } from '@/utils/cmn/apiMessage'
 
 withDefaults(defineProps<{
   background?: string
@@ -30,6 +30,7 @@ const moduleConfig = useModuleConfig()
 const authStore = useAuthStore()
 const searchTerm = ref('')
 const isFocused = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null) // 输入框的 ref
 const searchSelectListShow = ref(false)
 const searchBoxSettingShow = ref(false)
 
@@ -83,10 +84,15 @@ function handleSearchClick() {
   // 如果网址中存在 %s，则直接替换为关键字
   const fullUrl = replaceOrAppendKeywordToUrl(url, keyword.value)
   handleClearSearchTerm()
-  if (state.value.newWindowOpen)
+  if (state.value.newWindowOpen) {
     window.open(fullUrl)
-  else
-    window.location.href = fullUrl
+  }
+  else {
+    if (window.self !== window.top)
+      window.parent.location.href = fullUrl
+    else
+      window.location.href = fullUrl
+  }
 }
 
 function replaceOrAppendKeywordToUrl(url: string, keyword: string) {
@@ -133,8 +139,30 @@ function handleUpdateOpenMethod() {
   moduleConfig.saveToCloud(moduleConfigName, state.value)
 }
 
+function handleKeyPress(event: KeyboardEvent) {
+  // 检查当前是否是输入框
+  const target = event.target as HTMLElement
+  const isInputElement = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+
+  if (event.key === '/' && !isInputElement) {
+    const input = searchInputRef.value
+
+    if (input && !input.matches(':focus')) {
+      // 如果输入框没有焦点，则设置焦点并阻止默认行为
+      event.preventDefault()
+      input.focus()
+    }
+  }
+}
+
 onMounted(() => {
+  window.addEventListener('keydown', handleKeyPress)
+
   getData()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyPress)
 })
 </script>
 
@@ -149,7 +177,7 @@ onMounted(() => {
         <NAvatar :src="state.currentSearchEngine.iconSrc" style="background-color: transparent;" :size="20" />
       </div>
 
-      <input v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
+      <input ref="searchInputRef" v-model="searchTerm" :placeholder="$t('deskModule.searchBox.inputPlaceholder')" @focus="onFocus" @blur="onBlur" @input="handleItemSearch">
 
       <div v-if="searchTerm !== ''" class="search-box-btn-clear w-[25px] mr-[10px] flex justify-center cursor-pointer" @click="handleClearSearchTerm">
         <SvgIcon style="width: 20px;height: 20px;" icon="line-md:close-small" />
@@ -175,6 +203,7 @@ onMounted(() => {
 
           <!-- 搜索引擎管理 -->
           <div
+            v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
             class="w-[40px] h-[40px] mr-[10px]  cursor-pointer bg-[#ffffff] flex items-center justify-center rounded-xl my-1"
             @click="handleOpenModalSetting"
           >

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { NColorPicker, NForm, NFormItem, NInput, NSelect } from 'naive-ui'
+import { NColorPicker, NForm, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
 import type { DiskExtendParam } from '../../typings'
 import GenericMonitorCard from '../../components/GenericMonitorCard/index.vue'
 import GenericProgress from '../../components/GenericProgress/index.vue'
@@ -95,21 +95,14 @@ defineExpose({
     <div class="flex mb-5 justify-center transparent-grid p-2 rounded-xl border">
       <div class="w-[200px]">
         <GenericMonitorCard
-          icon-text-icon-hide-title
-          :card-type-style="PanelPanelConfigStyleEnum.info"
-          icon="solar-cpu-bold"
-          :background-color="extendParam.backgroundColor"
-          :text-color="extendParam.color"
+          icon-text-icon-hide-title :card-type-style="PanelPanelConfigStyleEnum.info"
+          icon="solar-cpu-bold" :background-color="extendParam.backgroundColor" :text-color="extendParam.color"
         >
           <template #info>
             <GenericProgress
               :progress-color="extendParam.progressColor"
-              :progress-rail-color="extendParam.progressRailColor"
-              :percentage="50"
-              :progress-height="5"
-              info-card-left-text="DEMO"
-              info-card-right-text="TEXT"
-              :text-color="extendParam.color"
+              :progress-rail-color="extendParam.progressRailColor" :percentage="50" :progress-height="5"
+              info-card-left-text="DEMO" info-card-right-text="TEXT" :text-color="extendParam.color"
               :card-type-style="PanelPanelConfigStyleEnum.info"
             />
           </template>
@@ -118,18 +111,13 @@ defineExpose({
 
       <div class="w-[80px] ml-2">
         <GenericMonitorCard
-          icon-text-icon-hide-title
-          :card-type-style="PanelPanelConfigStyleEnum.icon"
-          icon="solar-cpu-bold"
-          :background-color="extendParam.backgroundColor"
-          :icon-text-color="extendParam.color"
+          icon-text-icon-hide-title :card-type-style="PanelPanelConfigStyleEnum.icon"
+          icon="solar-cpu-bold" :background-color="extendParam.backgroundColor" :icon-text-color="extendParam.color"
         >
           <template #small>
             <GenericProgress
               :progress-color="extendParam.progressColor"
-              :progress-rail-color="extendParam.progressRailColor"
-              :percentage="50"
-              :text-color="extendParam.color"
+              :progress-rail-color="extendParam.progressRailColor" :percentage="50" :text-color="extendParam.color"
               :card-type-style="PanelPanelConfigStyleEnum.icon"
             />
           </template>
@@ -139,23 +127,50 @@ defineExpose({
 
     <NForm ref="formRef" v-model="extendParam" :model="extendParam" :rules="rules">
       <NFormItem :label="$t('deskModule.systemMonitor.diskMountPoint')" path="path">
-        <NSelect v-model:value="extendParam.path" size="small" :options="mountPointList" @update:value="handlePathUpdate" />
+        <NSelect
+          v-model:value="extendParam.path" size="small" :options="mountPointList"
+          @update:value="handlePathUpdate"
+        />
       </NFormItem>
+
       <NFormItem :label="$t('deskModule.systemMonitor.customTitle')">
         <NInput v-model:value="extendParam.title" size="small" type="text" />
       </NFormItem>
-      <NFormItem :label="$t('deskModule.systemMonitor.progressColor')">
-        <NColorPicker v-model:value="extendParam.progressColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
-      </NFormItem>
-      <NFormItem :label="$t('deskModule.systemMonitor.progressRailColor')">
-        <NColorPicker v-model:value="extendParam.progressRailColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
-      </NFormItem>
-      <NFormItem :label="$t('common.textColor')">
-        <NColorPicker v-model:value="extendParam.color" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
-      </NFormItem>
-      <NFormItem :label="$t('common.backgroundColor')">
-        <NColorPicker v-model:value="extendParam.backgroundColor" :swatches="defautSwatchesBackground" :modes="['hex']" size="small" />
-      </NFormItem>
+
+      <NGrid cols="1 400:2" :x-gap="5">
+        <NGridItem>
+          <NFormItem :label="$t('deskModule.systemMonitor.progressColor')">
+            <NColorPicker
+              v-model:value="extendParam.progressColor" :swatches="defautSwatchesBackground"
+              :modes="['hex']" size="small"
+            />
+          </NFormItem>
+        </NGridItem>
+        <NGridItem>
+          <NFormItem :label="$t('deskModule.systemMonitor.progressRailColor')">
+            <NColorPicker
+              v-model:value="extendParam.progressRailColor" :swatches="defautSwatchesBackground"
+              :modes="['hex']" size="small"
+            />
+          </NFormItem>
+        </NGridItem>
+        <NGridItem>
+          <NFormItem :label="$t('common.textColor')">
+            <NColorPicker
+              v-model:value="extendParam.color" :swatches="defautSwatchesBackground" :modes="['hex']"
+              size="small"
+            />
+          </NFormItem>
+        </NGridItem>
+        <NGridItem>
+          <NFormItem :label="$t('common.backgroundColor')">
+            <NColorPicker
+              v-model:value="extendParam.backgroundColor" :swatches="defautSwatchesBackground"
+              :modes="['hex']" size="small"
+            />
+          </NFormItem>
+        </NGridItem>
+      </NGrid>
     </NForm>
   </div>
 </template>

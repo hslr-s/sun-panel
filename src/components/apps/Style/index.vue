@@ -4,7 +4,8 @@ import type { UploadFileInfo } from 'naive-ui'
 import {
   NButton, NCard, NColorPicker, NFlex, NGrid,
   NGridItem, NInput, NInputGroup,
-  NPopconfirm, NSelect, NSlider, NSwitch, NUpload,
+  NInputNumber, NPopconfirm,
+  NSelect, NSlider, NSwitch, NTag, NUpload,
   NUploadDragger,
   useDialog, useMessage,
 } from 'naive-ui'
@@ -14,7 +15,7 @@ import { set as setUserConfig } from '@/api/panel/userConfig'
 // import { PanelPanelConfigStyleEnum } from '@/enums/panel'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
-import { PanelPanelConfigStyleEnum } from '@/enums'
+import { FileType, PanelPanelConfigStyleEnum } from '@/enums'
 import { STip } from '@/components/common'
 
 const authStore = useAuthStore()
@@ -104,6 +105,17 @@ function resetPanelConfig() {
     },
   })
 }
+
+// 开启自动识别网络将隐藏手动切换按钮
+function handleNetModeChangeAutoChange(value: boolean) {
+  panelState.panelConfig.netModeChangeButtonShow = !value
+}
+
+function handleNetModeChangeAutoMaxPingMsChange(value: number) {
+  if (value < 100) {
+    panelState.panelConfig.netModeChangeAutoMaxPingMs = 100
+  }
+}
 </script>
 
 <template>
@@ -115,12 +127,17 @@ function resetPanelConfig() {
         </div>
       </template>
 
-      <div>
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.logoShow" size="small" />
+      </div>
+
+      <div class="items-center mt-[5px]">
         <div>
           {{ $t('apps.baseSettings.textContent') }}
         </div>
         <div class="flex items-center mt-[5px]">
-          <NInput v-model:value="panelState.panelConfig.logoText" type="text" show-count :maxlength="20" placeholder="请输入文字" />
+          <NInput v-model:value="panelState.panelConfig.logoText" :disabled="!panelState.panelConfig.logoShow" type="text" show-count :maxlength="20" placeholder="请输入文字" />
         </div>
       </div>
     </NCard>
@@ -133,8 +150,13 @@ function resetPanelConfig() {
       </template>
 
       <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.clockShow" size="small" />
+      </div>
+
+      <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.clockSecondShow') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.clockShowSecond" />
+        <NSwitch v-model:value="panelState.panelConfig.clockShowSecond" size="small" :disabled="!panelState.panelConfig.clockShow" />
       </div>
     </NCard>
 
@@ -159,12 +181,12 @@ function resetPanelConfig() {
       </template>
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.searchBoxShow" />
+        <NSwitch v-model:value="panelState.panelConfig.searchBoxShow" size="small" />
       </div>
       <template v-if="panelState.panelConfig.searchBoxShow">
         <div class="flex items-center mt-[5px]">
           <span class="mr-[10px]">{{ $t('apps.baseSettings.searchBarSearchItem') }}</span>
-          <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" />
+          <NSwitch v-model:value="panelState.panelConfig.searchBoxSearchIcon" size="small" />
         </div>
 
         <NFlex class="mt-[5px]" align="center">
@@ -262,15 +284,15 @@ function resetPanelConfig() {
 
       <div class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('common.show') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShow" />
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShow" size="small" />
       </div>
       <div v-if="panelState.panelConfig.systemMonitorShow" class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.showTitle') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShowTitle" />
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorShowTitle" size="small" />
       </div>
       <div v-if="panelState.panelConfig.systemMonitorShow" class="flex items-center mt-[5px]">
         <span class="mr-[10px]">{{ $t('apps.baseSettings.publicVisitModeShow') }}</span>
-        <NSwitch v-model:value="panelState.panelConfig.systemMonitorPublicVisitModeShow" />
+        <NSwitch v-model:value="panelState.panelConfig.systemMonitorPublicVisitModeShow" size="small" />
       </div>
 
       <div class="flex items-center mt-[5px]">
@@ -283,6 +305,50 @@ function resetPanelConfig() {
       </div>
     </NCard>
 
+    <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.baseSettings.netModeChangeButtonShow') }}
+        </div>
+      </template>
+
+      <!-- <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.auto') }}</span>
+        <STip :content="t('apps.baseSettings.autoNetModeLinkOnOpen')" class="mr-2" />
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeAuto" />
+      </div> -->
+
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('apps.baseSettings.netModeChangeAuto') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeAuto" @update:value="handleNetModeChangeAutoChange" />
+
+        <span class="ml-2">
+          <STip>
+            <div class=" max-w-[500px]">
+              <NTag type="warning" size="small">BETA</NTag>
+              {{ t('apps.baseSettings.netModeChangeAutoTip') }}
+            </div>
+          </STip>
+        </span>
+      </div>
+
+      <div v-if="panelState.panelConfig.netModeChangeAuto" class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ `${$t('apps.baseSettings.netModeChangeAutoMaxPingMs')} (ms)` }}</span>
+        <NInputNumber
+          v-model:value="panelState.panelConfig.netModeChangeAutoMaxPingMs"
+          :step="100" size="small"
+          :max="2000" :min="100"
+          :style="{ width: '100px' }" placeholder="200"
+          @update:value="handleNetModeChangeAutoMaxPingMsChange"
+        />
+      </div>
+
+      <div class="flex items-center mt-[5px]">
+        <span class="mr-[10px]">{{ $t('common.show') }}</span>
+        <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" :disabled="panelState.panelConfig.netModeChangeAuto" size="small" />
+      </div>
+    </NCard>
+
     <!-- 1.5.0取消此设置 -->
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <div class="text-slate-500 mb-[5px] font-bold">
@@ -292,53 +358,6 @@ function resetPanelConfig() {
           <STip :content="t('apps.baseSettings.iconMigrateDescribe')" class="text-cyan-600 text-xl" />
         </NFlex>
       </div>
-    <!-- <div class="mt-[5px]">
-        <div>
-          {{ $t('common.style') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NSelect v-model:value="panelState.panelConfig.iconStyle" :options="iconTypeOptions" />
-        </div>
-      </div>
-
-      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.info" class="mt-[5px]">
-        <div>
-          {{ $t('apps.baseSettings.hideDescription') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NSwitch v-model:value="panelState.panelConfig.iconTextInfoHideDescription" />
-        </div>
-      </div>
-
-      <div v-if="panelState.panelConfig.iconStyle === PanelPanelConfigStyleEnum.icon" class="mt-[5px]">
-        <div>
-          {{ $t('apps.baseSettings.hideTitle') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NSwitch v-model:value="panelState.panelConfig.iconTextIconHideTitle" />
-        </div>
-      </div>
-
-      <div class="mt-[5px]">
-        <div>
-          {{ $t('common.textColor') }}
-        </div>
-        <div class="flex items-center mt-[5px]">
-          <NColorPicker
-            v-model:value="panelState.panelConfig.iconTextColor"
-            :show-alpha="false"
-            size="small"
-            :modes="['hex']"
-            :swatches="[
-              '#000000',
-              '#ffffff',
-              '#18A058',
-              '#2080F0',
-              '#F0A020',
-            ]"
-          />
-        </div>
-      </div> -->
     </NCard>
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
       <template #header>
@@ -354,6 +373,7 @@ function resetPanelConfig() {
         :headers="{
           token: authStore.token as string,
         }"
+        :data="{ type: FileType.Wallpaper }"
         :directory-dnd="true"
         @finish="handleUploadBackgroundFinish"
       >
@@ -370,8 +390,8 @@ function resetPanelConfig() {
       </NUpload>
 
       <div class="flex items-center mt-[5px]">
-        <span class="mr-[10px]">{{ $t('apps.baseSettings.customImageAddress') }}</span>
-        <NSwitch v-model:value="showWallpaperInput" />
+        <span class="mr-[10px]">{{ $t('apps.baseSettings.editImageURL') }}</span>
+        <NSwitch v-model:value="showWallpaperInput" size="small" />
       </div>
       <div v-if="showWallpaperInput" class="mt-1">
         <NInput v-model:value="panelState.panelConfig.backgroundImageSrc" type="text" size="small" clearable />
@@ -397,18 +417,11 @@ function resetPanelConfig() {
 
       <NGrid cols="2">
         <NGridItem span="12 400:12">
-          <div class="flex items-center mt-[5px]">
-            <span class="mr-[10px]">{{ $t('apps.baseSettings.netModeChangeButtonShow') }}</span>
-            <NSwitch v-model:value="panelState.panelConfig.netModeChangeButtonShow" />
-          </div>
-        </NGridItem>
-
-        <NGridItem span="12 400:12">
           <div class="flex items-center mt-[10px]">
             <span class="mr-[10px]">{{ $t('apps.baseSettings.maxWidth') }}</span>
             <div class="flex">
               <NInputGroup>
-                <NInput v-model:value="panelState.panelConfig.maxWidth" size="small" type="number" :maxlength="10" :style="{ width: '100px' }" placeholder="1200" />
+                <NInputNumber v-model:value="panelState.panelConfig.maxWidth" size="small" :maxlength="10" :style="{ width: '100px' }" placeholder="1200" />
                 <NSelect v-model:value="panelState.panelConfig.maxWidthUnit" :style="{ width: '80px' }" :options="maxWidthUnitOption" size="small" />
               </NInputGroup>
             </div>

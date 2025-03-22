@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import type { FormInst, FormRules } from 'naive-ui'
-import { NButton, NCard, NDivider, NForm, NFormItem, NInput, NSelect, useDialog, useMessage } from 'naive-ui'
+import { NButton, NCard, NDivider, NFlex, NForm, NFormItem, NInput, NSelect, useMessage } from 'naive-ui'
 import { ref } from 'vue'
-import { useAppStore, useAuthStore, usePanelState, useUserStore } from '@/store'
+import { useAppStore, useAuthStore } from '@/store'
 import { languageOptions } from '@/utils/defaultData'
 import type { Language, Theme } from '@/store/modules/app/helper'
-import { logout } from '@/api'
-import { RoundCardModal, SvgIcon } from '@/components/common/'
+import { AccountSwitcherManager, RoundCardModal, STip } from '@/components/common/'
 import { updateInfo, updatePassword } from '@/api/system/user'
 import { updateLocalUserInfo } from '@/utils/cmn'
 import { t } from '@/locales'
 
-const userStore = useUserStore()
+// const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
-const panelState = usePanelState()
+// const panelState = usePanelState()
+// const accountManagerStore = useAccountManagerStore()
+
 const ms = useMessage()
-const dialog = useDialog()
+// const dialog = useDialog()
 
 const languageValue = ref(appStore.language)
 const themeValue = ref(appStore.theme)
@@ -62,16 +63,28 @@ const updatePasswordModalFormRules: FormRules = {
   },
 }
 
-async function logoutApi() {
-  await logout()
-  userStore.resetUserInfo()
-  authStore.removeToken()
-  panelState.removeState()
-  appStore.removeToken()
-  ms.success(t('settingUserInfo.logoutSuccess'))
-  // router.push({ path: '/login' })
-  location.reload()// 强制刷新一下页面
-}
+// async function logoutApi() {
+//   // await logout()
+//   if (panelState.panelConfig.accountSwitcherShow) {
+//     for (let i = 0; i < accountManagerStore.accounts.length; i++) {
+//       const element = accountManagerStore.accounts[i]
+//       await logout(element.cToken).then(() => {
+//         accountManagerStore.deleteAccount(element)
+//       }).catch((res) => {
+//         apiRespErrMsg(res)
+//       })
+//     }
+//     accountManagerStore.clearAccount()
+//   }
+
+//   userStore.resetUserInfo()
+//   authStore.removeToken()
+//   panelState.removeState()
+//   // appStore.removeToken()
+//   ms.success(t('settingUserInfo.logoutSuccess'))
+//   // router.push({ path: '/login' })
+//   location.href = '/'// 强制刷新一下页面
+// }
 
 function handleSaveInfo() {
   updateInfo(nickName.value).then(({ code, msg }) => {
@@ -107,17 +120,17 @@ function handleUpdatePassword(e: MouseEvent) {
   })
 }
 
-function handleLogout() {
-  dialog.warning({
-    title: t('common.warning'),
-    content: t('settingUserInfo.confirmLogoutText'),
-    positiveText: t('common.confirm'),
-    negativeText: t('common.cancel'),
-    onPositiveClick: () => {
-      logoutApi()
-    },
-  })
-}
+// function handleLogout() {
+//   dialog.warning({
+//     title: t('common.warning'),
+//     content: t('settingUserInfo.confirmLogoutText'),
+//     positiveText: t('common.confirm'),
+//     negativeText: t('common.cancel'),
+//     onPositiveClick: () => {
+//       logoutApi()
+//     },
+//   })
+// }
 
 function handleChangeLanuage(value: Language) {
   languageValue.value = value
@@ -133,8 +146,14 @@ function handleChangeTheme(value: Theme) {
 </script>
 
 <template>
-  <div class="bg-slate-200 dark:bg-zinc-900 p-2 h-full">
+  <div class="bg-slate-200 dark:bg-zinc-900 p-2 h-full mb-10 overflow-auto">
+    <!-- 账号信息 -->
     <NCard style="border-radius:10px" size="small">
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          {{ $t('apps.userInfo.currentAccount') }}
+        </div>
+      </template>
       <div>
         <div class="text-slate-500 font-bold">
           {{ $t('common.username') }}
@@ -150,7 +169,7 @@ function handleChangeTheme(value: Theme) {
         <div v-if="!isEditNickNameStatus">
           {{ authStore.userInfo?.name }}
 
-          <NButton size="small" text type="info" @click="isEditNickNameStatus = !isEditNickNameStatus">
+          <NButton size="small" text type="success" @click="isEditNickNameStatus = !isEditNickNameStatus">
             {{ $t('common.edit') }}
           </NButton>
         </div>
@@ -159,18 +178,36 @@ function handleChangeTheme(value: Theme) {
           <div class="max-w-[150px]">
             <NInput v-model:value="nickName" type="text" :placeholder="$t('common.inputPlaceholder')" />
           </div>
-          <NButton size="small" quaternary type="info" @click="handleSaveInfo">
+          <NButton size="small" quaternary type="success" @click="handleSaveInfo">
             {{ $t('common.save') }}
           </NButton>
         </div>
       </div>
 
-      <div class="mt-[10px]">
+      <NDivider style="margin: 10px 0;" dashed />
+      <div>
+        <NButton size="small" text type="success" @click="updatePasswordModalState.show = !updatePasswordModalState.show">
+          {{ $t('settingUserInfo.updatePassword') }}
+        </NButton>
+      </div>
+    </NCard>
+
+    <!-- 基本设置 -->
+    <NCard style="border-radius:10px" class="my-[10px]" size="small">
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          <NFlex align="center">
+            {{ $t('common.setting') }}
+            <STip :content="t('apps.userInfo.settingSaveLocal')" />
+          </NFlex>
+        </div>
+      </template>
+      <div>
         <div class="text-slate-500 font-bold">
           {{ $t('common.language') }}
         </div>
         <div class="max-w-[200px]">
-          <NSelect v-model:value="languageValue" :options="languageOptions" @update-value="handleChangeLanuage" />
+          <NSelect v-model:value="languageValue" size="small" :options="languageOptions" @update-value="handleChangeLanuage" />
         </div>
       </div>
 
@@ -179,26 +216,35 @@ function handleChangeTheme(value: Theme) {
           {{ $t('apps.userInfo.theme') }}
         </div>
         <div class="max-w-[200px]">
-          <NSelect v-model:value="themeValue" :options="themeOptions" @update-value="handleChangeTheme" />
+          <NSelect v-model:value="themeValue" size="small" :options="themeOptions" @update-value="handleChangeTheme" />
         </div>
-      </div>
-
-      <NDivider style="margin: 10px 0;" dashed />
-      <div>
-        <NButton size="small" text type="info" @click="updatePasswordModalState.show = !updatePasswordModalState.show">
-          {{ $t('settingUserInfo.updatePassword') }}
-        </NButton>
       </div>
     </NCard>
 
+    <!-- 账号切换 -->
     <NCard style="border-radius:10px" class="mt-[10px]" size="small">
+      <template #header>
+        <div class="text-slate-500 font-bold">
+          <NFlex align="center">
+            {{ t('deskModule.accountSwitcher.loggedInAccount') }}
+            <STip :content="t('apps.userInfo.settingSaveLocal')" />
+          </NFlex>
+        </div>
+      </template>
+
+      <div>
+        <AccountSwitcherManager />
+      </div>
+    </NCard>
+    <!--
+    <NCard style="border-radius:10px;margin-bottom: 10px;" class="my-[10px]" size="small">
       <NButton size="small" text type="error" @click="handleLogout">
         <template #icon>
           <SvgIcon icon="tabler:logout" />
         </template>
         {{ $t('settingUserInfo.logout') }}
       </NButton>
-    </NCard>
+    </NCard> -->
 
     <RoundCardModal v-model:show="updatePasswordModalState.show" size="small" preset="card" style="width: 400px" :title="$t('settingUserInfo.updatePassword')">
       <NForm ref="formRef" :model="updatePasswordModalState.form" :rules="updatePasswordModalFormRules">

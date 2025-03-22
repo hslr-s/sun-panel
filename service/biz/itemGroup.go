@@ -41,3 +41,8 @@ func (p *ItemGroupType) FindByOnlyName(userId uint, onlyName string) (res models
 	gormErr = global.Db.First(&res, "only_name=? AND user_id=?", onlyName, userId).Error
 	return
 }
+
+func (p *ItemGroupType) FindById(userId uint, id uint) (res models.ItemIconGroup, gormErr error) {
+	gormErr = global.Db.First(&res, "id=? AND user_id=?", id, userId).Error
+	return
+}

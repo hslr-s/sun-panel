@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/mem"
-	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v4/cpu"
 	"gitlab.com/tingshuo/go-diskstate/diskstate"
 )
 

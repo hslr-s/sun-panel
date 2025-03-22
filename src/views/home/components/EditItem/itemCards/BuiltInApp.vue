@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { NCard, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
+import { NFlex, NFormItem, NGrid, NGridItem, NInput, NSelect } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import { onMounted, ref, watch } from 'vue'
 import IconEditor from '../IconEditor.vue'
+import { getAppList } from '../../common'
 import type { SystemApp } from '@/utils/cmn/builtInApps'
-import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
+import { systemApps } from '@/utils/cmn/builtInApps'
 import { t } from '@/locales'
-import { AppLoader, RoundCardModal } from '@/components/common/'
+import { AppLoader, RoundCardModal, STip } from '@/components/common/'
 import { useAuthStore } from '@/store'
-import { AdminAuthRole } from '@/enums/admin'
 
 const props = defineProps<{
   itemInfo: Panel.Info
@@ -54,12 +54,20 @@ watch(model.value, () => {
   emit('update:itemInfo', model.value)
 })
 
-onMounted(() => {
-  const r = { ...props.rules, ...rulesExtends }
-  emit('update:rules', r)
+watch(
+  () => props.rules,
+  () => {
+    const newRules = { ...props.rules, ...rulesExtends }
+    // 防止重复 emit
+    if (JSON.stringify(newRules) !== JSON.stringify(props.rules)) {
+      emit('update:rules', newRules)
+    }
+  },
+  { immediate: true },
+)
 
-  if (authStore.userInfo?.role === AdminAuthRole.admin)
-    apps.value = [...systemApps, ...adminSystemApps]
+onMounted(() => {
+  apps.value = getAppList(systemApps, authStore.userInfo?.role || 0)
 
   // 设置默认值
   if (!props.itemInfo.expandParam) {
@@ -85,32 +93,62 @@ function handleSystemChange(value: string, appInfo: SystemApp) {
 
 <template>
   <div>
+    <NFormItem path="icon">
+      <template #label>
+        <NFlex align="center">
+          <span class="font-bold">
+            {{ $t('iconItem.icon.iconStyle') }}
+          </span>
+
+          <STip class="cursor-pointer">
+            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+          </STip>
+        </NFlex>
+      </template>
+      <!-- <NCard size="small"> -->
+      <IconEditor v-model:item-icon="model.icon" />
+      <!-- </NCard> -->
+    </NFormItem>
+
     <NGrid cols="2" :x-gap="10" item-responsive>
       <NGridItem span="2 500:1">
-        <NFormItem path="expandParam.systemAppName" :label="$t('iconItem.builtInAppOpen')">
+        <NFormItem path="expandParam.systemAppName">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('iconItem.builtInAppOpen') }}
+            </span>
+          </template>
+
           <NSelect
             v-model:value="model.expandParam.systemAppName"
             label-field="name"
             value-field="componentName"
             :options="apps"
+            filterable
             @update:value="handleSystemChange"
           />
         </NFormItem>
       </NGridItem>
       <NGridItem span="2 500:1">
-        <NFormItem path="title" :label="$t('common.title')">
+        <NFormItem path="title">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('common.title') }}
+            </span>
+          </template>
+
           <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
         </NFormItem>
       </NGridItem>
     </NGrid>
 
-    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
-      <NCard size="small">
-        <IconEditor v-model:item-icon="model.icon" />
-      </NCard>
-    </NFormItem>
-
-    <NFormItem path="description" :label="$t('common.description')">
+    <NFormItem path="description">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('common.description') }}
+        </span>
+      </template>
       <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
     </NFormItem>
 

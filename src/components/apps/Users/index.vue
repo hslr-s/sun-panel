@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { VNodeChild } from 'vue'
 import { h, onMounted, reactive, ref } from 'vue'
 import { NAlert, NButton, NCard, NDataTable, NDropdown, NTag, useDialog, useMessage } from 'naive-ui'
 import type { DataTableColumns, PaginationProps } from 'naive-ui'
@@ -30,13 +31,32 @@ const createColumns = ({
       title: t('common.username'),
       key: 'username',
       render(row: User.Info) {
-        let publicVisitHtml = ''
-        if (publicVisitUserId.value && publicVisitUserId.value === row.id)
-          publicVisitHtml = `[${t('adminSettingUsers.pblicText')}]-`
+        const els: VNodeChild = [
+          row.username,
+        ]
 
-        if (row.username === authStore.userInfo?.username)
-          return `${publicVisitHtml}${row.username} (${t('adminSettingUsers.currentUseUsername')})`
-        return publicVisitHtml + row.username
+        // 是否为当前账号
+        if (row.username === authStore.userInfo?.username) {
+          els.push(h(NTag, {
+            type: 'success',
+            size: 'small',
+            style: { marginLeft: '5px' },
+            bordered: false,
+          }, t('adminSettingUsers.currentUseUsername')))
+        }
+
+        // 是否为公共访问账号
+        if (publicVisitUserId.value && publicVisitUserId.value === row.id) {
+          els.push(h(NTag,
+            {
+              type: 'error',
+              size: 'small',
+              style: { marginLeft: '5px' },
+            }
+            , t('adminSettingUsers.pblicText')))
+        }
+
+        return els
       },
     },
     {
@@ -219,7 +239,7 @@ async function deletes(ids: number[]) {
   }
   catch (error) {
     const err = error as Common.Response
-    message.error(`${t('common.deleteSuccess')}:${err.msg}`)
+    message.error(`${t('common.deleteFail')}:${err.msg}`)
   }
 }
 

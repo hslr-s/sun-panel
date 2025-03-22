@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { NButton, NInput, NRadio, NUpload } from 'naive-ui'
+import { NButton, NInput, NRadioButton, NRadioGroup, NUpload } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import { computed, defineProps } from 'vue'
 // import { ItemIcon } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { apiRespErrMsg } from '@/utils/cmn'
 import { t } from '@/locales'
-import { STip } from '@/components/common'
+import { FileType } from '@/enums'
 
 const props = defineProps<{
   itemIcon: Panel.ItemIcon | null
@@ -57,6 +57,13 @@ function handleChange() {
   emit('update:itemIcon', itemIconInfo.value || null)
 }
 
+// watch(() => itemIconInfo.value.itemType, (newVal: number) => {
+//   console.log('itemIconInfo.itemType change', newVal)
+//   handleChange()
+// }, {
+//   deep: true,
+// })
+
 const handleUploadFinish = ({
   file,
   event,
@@ -82,49 +89,38 @@ const handleUploadFinish = ({
 <template>
   <div class="w-full">
     <div class="mb-[10px] flex items-center">
-      <NRadio
-        :checked="itemIconInfo.itemType === 1 "
-        :value="1"
-        name="iconType"
-        @change="handleIconTypeRadioChange(1)"
+      <NRadioGroup
+        v-model:value="itemIconInfo.itemType" name="iconType"
+        @update-value="handleIconTypeRadioChange"
       >
-        {{ $t('common.text') }}
-      </NRadio>
+        <NRadioButton :value="1">
+          {{ $t('common.text') }}
+        </NRadioButton>
 
-      <NRadio
-        :checked="itemIconInfo.itemType === 2"
-        :value="2"
-        name="iconType"
-        @change="handleIconTypeRadioChange(2)"
-      >
-        {{ $t('common.image') }}
-      </NRadio>
+        <NRadioButton :value="2">
+          {{ $t('common.image') }}
+        </NRadioButton>
 
-      <NRadio
-        :checked="itemIconInfo.itemType === 3"
-        :value="3"
-        name="iconType"
-        @change="handleIconTypeRadioChange(3)"
-      >
-        {{ t('iconItem.onlineIcon') }}
-      </NRadio>
-
-      <STip class="mx-5">
-        <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
-        <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
-      </STip>
+        <NRadioButton :value="3">
+          {{ t('iconItem.onlineIcon') }}
+        </NRadioButton>
+      </NRadioGroup>
     </div>
 
     <div class="w-full flex">
       <!-- 文字 -->
-      <div v-if="itemIconInfo.itemType === 1" class="flex items-center">
-        <span class="w-auto mr-2 whitespace-nowrap">{{ t('iconItem.icon.textContent') }}</span>
+      <div v-if="itemIconInfo.itemType === 1" class="items-center">
+        <div class="w-auto mr-2 whitespace-nowrap">
+          {{ t('iconItem.icon.textContent') }}
+        </div>
         <NInput v-model:value="itemIconInfo.text" :maxlength="10" type="text" show-count clearable @input="handleChange" />
       </div>
 
       <!-- 在线图标 -->
-      <div v-if="itemIconInfo.itemType === 3" class="flex items-center">
-        <span class="w-auto mr-2">{{ t('iconItem.icon.iconName') }}</span>
+      <div v-if="itemIconInfo.itemType === 3" class="items-center">
+        <div class="w-auto mr-2">
+          {{ t('iconItem.icon.iconName') }}
+        </div>
         <div class="flex">
           <NInput v-model:value="itemIconInfo.text" type="text" class="mr-1" :placeholder="$t('iconItem.inputIconName')" clearable @input="handleChange" />
           <NButton quaternary type="info">
@@ -134,8 +130,10 @@ const handleUploadFinish = ({
       </div>
 
       <!-- 图片 -->
-      <div v-if="itemIconInfo.itemType === 2" class="flex items-center w-full">
-        <span class="w-auto mr-2 whitespace-nowrap">{{ t('iconItem.icon.imageUrl') }}</span>
+      <div v-if="itemIconInfo.itemType === 2" class="items-center w-full">
+        <div class="w-auto mr-2 whitespace-nowrap">
+          {{ t('iconItem.icon.imageUrl') }}
+        </div>
         <div class="flex w-full">
           <NInput
             v-model:value="itemIconInfo.src"
@@ -153,6 +151,7 @@ const handleUploadFinish = ({
             :headers="{
               token: authStore.token as string,
             }"
+            :data="{ type: FileType.CardIcon }"
             @finish="handleUploadFinish"
           >
             <NButton size="small">

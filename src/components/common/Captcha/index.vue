@@ -24,6 +24,7 @@ function rand(min: number, max: number) {
 defineExpose({
   // 刷新验证码
   refresh() {
+    console.log('刷新验证码')
     handleClick()
   },
 })

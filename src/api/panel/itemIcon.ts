@@ -48,3 +48,17 @@ export function getSiteFavicon<T>(url: string) {
     data: { url },
   })
 }
+
+export function getSiteFaviconList<T>(url: string) {
+  return post<T>({
+    url: '/panel/itemIcon/getSiteFaviconList',
+    data: { url },
+  })
+}
+
+export function downloadFavicon<T>(url: string) {
+  return post<T>({
+    url: '/panel/itemIcon/downloadFavicon',
+    data: { url },
+  })
+}

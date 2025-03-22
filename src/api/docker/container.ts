@@ -26,3 +26,9 @@ export function getContainersStats<T>(containerIds: string[]) {
     data: containerIds,
   })
 }
+export function getContainerIDByName(name: string) {
+  return post<Docker.Container.Info>({
+    url: '/docker/container/getContainerIDByName',
+    data: { name },
+  })
+}

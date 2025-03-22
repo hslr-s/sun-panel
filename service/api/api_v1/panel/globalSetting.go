@@ -2,10 +2,9 @@ package panel
 
 import (
 	"os"
-	"path"
-	"strings"
 	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
+	"sun-panel/api/api_v1/common/base"
 	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
@@ -48,40 +47,24 @@ func (a *GlobalSettingApi) GetSiteStting(c *gin.Context) {
 
 // 获取全局站点设置
 func (a *GlobalSettingApi) UploadFaviconImage(c *gin.Context) {
-	customPath := a.getCustomPath()
-	// fmt.Println("自定义", customPath)
-	f, err := c.FormFile("imgfile")
+	fileInfo, err := base.UploadFileAndSave(c, []string{
+		".ico",
+	}, 0)
+
 	if err != nil {
-		apiReturn.ErrorByCode(c, 1300)
-		return
-	} else {
-		fileExt := strings.ToLower(path.Ext(f.Filename))
-		agreeExts := []string{
-			// ".png",
-			// ".jpg",
-			// ".gif",
-			// ".jpeg",
-			// ".webp",
-			// ".svg",
-			".ico",
-		}
-
-		if !cmn.InArray(agreeExts, fileExt) {
+		switch err {
+		case base.ErrUploadExtensionNameNotAllowed:
 			apiReturn.ErrorByCode(c, 1301)
-			return
+		default:
+			global.Logger.Error(err.Error())
+			apiReturn.ErrorByCode(c, 1300)
 		}
-
-		isExist, _ := cmn.PathExists(customPath)
-		if !isExist {
-			os.MkdirAll(customPath, os.ModePerm)
-		}
-		filepath := customPath + "/favicon.ico"
-		c.SaveUploadedFile(f, filepath)
-
-		apiReturn.SuccessData(c, gin.H{
-			"imageUrl": filepath,
-		})
+		return
 	}
+
+	apiReturn.SuccessData(c, gin.H{
+		"imageUrl": global.UPLOAD_ROUTE + fileInfo.Src,
+	})
 }
 
 func (a *GlobalSettingApi) GetCustomStylePath(c *gin.Context) {

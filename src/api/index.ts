@@ -9,9 +9,12 @@ export function login<T>(data: Login.LoginReqest) {
   })
 }
 
-export function logout<T>() {
+export function logout<T>(token?: string) {
+  const headers = { token }
+
   return post<T>({
     url: '/logout',
+    headers,
   })
 }
 

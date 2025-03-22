@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import { NBackTop, NButton, useDialog, useMessage } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { AppStarter, EditItem, ItemCards } from './components'
-import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
-import { SvgIcon } from '@/components/common'
+import { AccountSwitcher, Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
+import { Loading, SvgIcon } from '@/components/common'
 import { deletes, getListByGroupId, saveSort } from '@/api/panel/itemIcon'
 import { getList as getGroupList } from '@/api/panel/itemIconGroup'
 import { apiRespErrMsg, setTitle, updateLocalUserInfo } from '@/utils/cmn'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
+import { getSiteStting } from '@/api/openness'
+import { defaultSetting } from '@/store/modules/app/helper'
 
-import { useAuthStore, usePanelState } from '@/store'
+import { useAccountManagerStore, useAppStore, useAuthStore, usePanelState } from '@/store'
 import { PanelCardType, PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { t } from '@/locales'
@@ -21,12 +24,17 @@ interface ItemGroup extends Panel.ItemGroupCardCacheData {
 const ms = useMessage()
 const dialog = useDialog()
 const panelState = usePanelState()
+const appStore = useAppStore()
 const authStore = useAuthStore()
+const accountManagerStore = useAccountManagerStore()
+const triggerUpdateItemDatas = useTriggerUpdateItemData()
 
 const scrollContainerRef = ref<HTMLElement | undefined>(undefined)
 
 const editItemInfoShow = ref<boolean>(false)
 const editItemInfoData = ref<Panel.ItemInfo | null>(null)
+
+const itemCardsLoading = ref(false)
 
 // const dropdownShow = ref(false)
 const currentAddItenIconGroupId = ref<number | undefined>()
@@ -35,13 +43,47 @@ const settingModalShow = ref(false)
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
-function getList() {
-  filterItems.value = panelState.itemGroupCardCacheData
+let hasRunFooterJS = false
+
+async function getGlobalConfig() {
+  try {
+    const { data } = await getSiteStting<GlobalSetting.SiteSetting>()
+    const dcfg = defaultSetting().siteSetting
+    if (data.title === '')
+      data.title = dcfg.title
+    if (data.loginBackgroundUrl === '')
+      data.loginBackgroundUrl = dcfg.loginBackgroundUrl
+
+    appStore.setSiteSetting(data)
+    // console.log('全局配置', data)
+  }
+  catch (error) {
+    apiRespErrMsg(error)
+  }
+}
+
+async function getList() {
+  let isEnableSyncCache = false // 是否开启同步缓存数据 - 仅限首次无缓存数据时开启 - 非持久缓存数据
+  itemCardsLoading.value = true // 加载中
+
+  // 是否全局禁用了缓存
+  if (appStore.siteSetting.isDisableItemCardCache === false) {
+    // 优先使用缓存数据
+    filterItems.value = panelState.itemGroupCardCacheData
+    nextTick(() => {
+      itemCardsLoading.value = false
+    })
+  }
+
+  // 当缓存的数据为0的时候，显示加载的loading
+  if (filterItems.value.length === 0) {
+    isEnableSyncCache = true // 如果之前没有缓存数据将开启
+  }
+
   // 获取组数据
-  getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ code, data, msg }) => {
-    if (code === 0) {
-      items.value = data.list
-    }
+  getGroupList<Common.ListResponse<ItemGroup[]>>().then(({ data }) => {
+    items.value = data.list
+
     const getAllGroupList = async () => {
       for (let i = 0; i < data.list.length; i++) {
         const element = data.list[i]
@@ -49,18 +91,42 @@ function getList() {
         if (element.id) {
           await updateItemIconGroupByNet(i, element.id)
         }
+
+        // 如果之前没有缓存数据将开启同步缓存数据
+        // 避免首次无缓存数据等待所有数据加载完毕显示延迟过高
+        if (isEnableSyncCache) {
+          filterItems.value = items.value
+
+          // 未禁用缓存将保存为缓存数据
+          if (appStore.siteSetting.isDisableItemCardCache === false) {
+            panelState.setItemGroupCacheData(items.value)
+          }
+        }
       }
     }
 
     getAllGroupList().then(() => {
       // console.log('全部完毕')
       filterItems.value = items.value
-      panelState.setItemGroupCacheData(items.value)
+
+      // 未禁用缓存将保存为缓存数据
+      if (appStore.siteSetting.isDisableItemCardCache === false) {
+        panelState.setItemGroupCacheData(items.value)
+        // console.log('已开启缓存')
+      }
+      else {
+        if (panelState.itemGroupCardCacheData.length !== 0) {
+          panelState.setItemGroupCacheData([])
+        }
+        // console.log('未开启缓存，置空')
+      }
     })
 
     // console.log(items)
   }).catch((error) => {
     apiRespErrMsg(error)
+  }).finally(() => {
+    itemCardsLoading.value = false
   })
 }
 
@@ -142,6 +208,9 @@ function handleSaveSort(itemGroup: ItemGroup) {
 }
 
 function runFooterJSCode() {
+  if (hasRunFooterJS)
+    return
+
   // 获取类名为 'footer' 的元素
   const footerElements = document.querySelectorAll('.custom-footer')
   footerElements.forEach((footer) => {
@@ -172,9 +241,15 @@ function runFooterJSCode() {
       }
     })
   })
+
+  hasRunFooterJS = true
 }
 
 onMounted(async () => {
+  itemCardsLoading.value = true // 加载中
+  // 获取全局配置
+  await getGlobalConfig()
+
   // 更新用户信息
   await updateLocalUserInfo()
   getList()
@@ -190,6 +265,8 @@ onMounted(async () => {
   if (panelState.panelConfig.logoText)
     setTitle(panelState.panelConfig.logoText)
 
+  // 监听触发更新列表
+  triggerUpdateItemDatas.onTriggered(getList)
   runFooterJSCode()
 })
 
@@ -197,7 +274,7 @@ onMounted(async () => {
 function itemFrontEndSearch(keyword?: string) {
   keyword = keyword?.trim()
   if (keyword !== '' && panelState.panelConfig.searchBoxSearchIcon) {
-    const filteredData = ref<ItemGroup[]>([])
+    const filteredData: ItemGroup[] = []
     for (let i = 0; i < items.value.length; i++) {
       const element = items.value[i].items?.filter((item: Panel.ItemInfo) => {
         return (
@@ -207,9 +284,9 @@ function itemFrontEndSearch(keyword?: string) {
         )
       })
       if (element && element.length > 0)
-        filteredData.value.push({ items: element, hoverStatus: false, cardStyle: items.value[i].cardStyle, title: items.value[i].title })
+        filteredData.push({ items: element, hoverStatus: false, cardStyle: items.value[i].cardStyle, title: items.value[i].title })
     }
-    filterItems.value = filteredData.value
+    filterItems.value = filteredData
     // console.log('搜索模式开启')
   }
   else {
@@ -235,17 +312,10 @@ function handleSetSortStatus(groupIndex: number, sortStatus: boolean) {
   }
 }
 
-function handleEditItem(item: Panel.ItemInfo) {
-  editItemInfoData.value = item
+function toggleEditPanel(item: Panel.ItemInfo | null, groupId?: number) {
+  editItemInfoData.value = item || null
+  currentAddItenIconGroupId.value = groupId
   editItemInfoShow.value = true
-  currentAddItenIconGroupId.value = undefined
-}
-
-function handleAddItem(itemIconGroupId?: number) {
-  editItemInfoData.value = null
-  editItemInfoShow.value = true
-  if (itemIconGroupId)
-    currentAddItenIconGroupId.value = itemIconGroupId
 }
 </script>
 
@@ -270,18 +340,21 @@ function handleAddItem(itemIconGroupId?: number) {
         }"
       >
         <!-- 头 -->
-        <div class="mx-[auto] w-[80%]">
-          <!-- 时钟组件 -->
-          <div class="flex mx-[auto] items-center justify-center text-white">
-            <div class="logo">
+        <div
+          v-if="panelState.panelConfig.clockShow || panelState.panelConfig.logoShow || panelState.panelConfig.searchBoxShow"
+          class="mx-[auto] w-[80%]"
+        >
+          <!-- LOGO及时钟组件 -->
+          <div v-if="panelState.panelConfig.clockShow || panelState.panelConfig.logoShow" class="flex mx-[auto] items-center justify-center text-white">
+            <div v-if="panelState.panelConfig.logoShow" class="logo">
               <span class="text-2xl md:text-6xl font-bold text-shadow">
                 {{ panelState.panelConfig.logoText }}
               </span>
             </div>
-            <div class="divider text-base lg:text-2xl mx-[10px]">
+            <div v-if="panelState.panelConfig.clockShow && panelState.panelConfig.logoShow" class="divider text-base lg:text-2xl mx-[10px]">
               |
             </div>
-            <div class="text-shadow">
+            <div v-if="panelState.panelConfig.clockShow" class="text-shadow">
               <Clock :hide-second="!panelState.panelConfig.clockShowSecond" />
             </div>
           </div>
@@ -292,7 +365,7 @@ function handleAddItem(itemIconGroupId?: number) {
               :background="panelState.panelConfig.searchBoxBackground"
               :text-color="panelState.panelConfig.searchBoxTextColor"
               :border-color="panelState.panelConfig.searchBoxBorderColor"
-              @itemSearch="itemFrontEndSearch"
+              @item-search="itemFrontEndSearch"
             />
           </div>
         </div>
@@ -310,6 +383,10 @@ function handleAddItem(itemIconGroupId?: number) {
               :allow-edit="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
               :show-title="panelState.panelConfig.systemMonitorShowTitle"
             />
+          </div>
+
+          <div v-show="itemCardsLoading" class="mt-20">
+            <Loading />
           </div>
 
           <!-- 组纵向排列 -->
@@ -331,7 +408,7 @@ function handleAddItem(itemIconGroupId?: number) {
                 class="group-buttons ml-2 delay-100 transition-opacity flex"
                 :class="itemGroup.hoverStatus ? 'opacity-100' : 'opacity-0'"
               >
-                <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="handleAddItem(itemGroup.id)">
+                <span class="mr-2 cursor-pointer" :title="t('common.add')" @click="toggleEditPanel(null, itemGroup.id)">
                   <SvgIcon class="text-white font-xl" icon="typcn:plus" />
                 </span>
                 <span class="mr-2 cursor-pointer " :title="t('common.sort')" @click="handleSetSortStatus(itemGroupIndex, !itemGroup.sortStatus)">
@@ -342,27 +419,32 @@ function handleAddItem(itemIconGroupId?: number) {
 
             <!-- 编辑栏 -->
             <div v-if="itemGroup.sortStatus" class="flex my-4">
-              <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
+              <NButton color="#2a2a2a6b" size="small" @click="handleSaveSort(itemGroup)">
                 <template #icon>
                   <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
                 </template>
-                <div>
+                <div class="text-white">
                   {{ $t('common.saveSort') }}
                 </div>
               </NButton>
             </div>
 
             <!-- 详情图标 -->
-            <templete v-if="itemGroup.items && (!itemGroup.cardStyle || itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.info)">
+            <template v-if="itemGroup.items && (!itemGroup.cardStyle || itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.info)">
               <VueDraggable
                 v-model="itemGroup.items" item-key="sort" :animation="300"
                 class="icon-info-box"
                 :disabled="!itemGroup.sortStatus"
               >
-                <div v-for="item, index in itemGroup.items" :key="index">
+                <div
+                  v-for="item, index in itemGroup.items"
+                  :id="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
+                  :key="index"
+                  :class="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
+                >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
-                    :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
+                    :class="itemGroup.sortStatus ? 'cursor-move' : (item.url !== '' || item.lanUrl !== '' ? 'cursor-pointer' : '')"
                     :card-info="item"
                     :icon-text-color="itemGroup.cardStyle.textColor"
                     :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
@@ -370,7 +452,7 @@ function handleAddItem(itemIconGroupId?: number) {
                     :card-style="PanelPanelConfigStyleEnum.info"
                     :card-type="PanelCardType.Normal"
                     @delete="() => deleteItem(item)"
-                    @edit="() => handleEditItem(item)"
+                    @edit="() => toggleEditPanel(item)"
                   />
                 </div>
 
@@ -384,24 +466,29 @@ function handleAddItem(itemIconGroupId?: number) {
                     :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
                     :card-style="PanelPanelConfigStyleEnum.info"
                     :card-type="PanelCardType.Normal"
-                    @click="handleAddItem(itemGroup.id)"
+                    @click="toggleEditPanel(null, itemGroup.id)"
                   />
                 </div>
               </VueDraggable>
-            </templete>
+            </template>
 
             <!-- APP图标宫型盒子 -->
-            <templete v-if="itemGroup.items && itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.icon">
+            <template v-if="itemGroup.items && itemGroup.cardStyle.style === PanelPanelConfigStyleEnum.icon">
               <VueDraggable
                 v-model="itemGroup.items" item-key="sort" :animation="300"
                 class="icon-small-box"
                 filter=".not-drag"
                 :disabled="!itemGroup.sortStatus"
               >
-                <div v-for="item, index in itemGroup.items" :key="index">
+                <div
+                  v-for="item, index in itemGroup.items"
+                  :id="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
+                  :key="index"
+                  :class="item.onlyName ? `item-card-name-${item.onlyName}` : ''"
+                >
                   <ItemCards
                     :sort-status="itemGroup.sortStatus || false"
-                    :class="itemGroup.sortStatus ? 'cursor-move' : 'cursor-pointer'"
+                    :class="itemGroup.sortStatus ? 'cursor-move' : (item.url !== '' || item.lanUrl !== '' ? 'cursor-pointer' : '')"
                     :card-info="item"
                     :icon-text-color="itemGroup.cardStyle.textColor"
                     :icon-text-info-hide-description="itemGroup.cardStyle.textInfoHideDescription || false"
@@ -409,7 +496,7 @@ function handleAddItem(itemIconGroupId?: number) {
                     :card-style="PanelPanelConfigStyleEnum.small"
                     :card-type="PanelCardType.Normal"
                     @delete="() => deleteItem(item)"
-                    @edit="() => handleEditItem(item)"
+                    @edit="() => toggleEditPanel(item)"
                   />
                 </div>
 
@@ -423,23 +510,11 @@ function handleAddItem(itemIconGroupId?: number) {
                     :icon-text-icon-hide-title="itemGroup.cardStyle.textIconHideTitle || false"
                     :card-style="PanelPanelConfigStyleEnum.small"
                     :card-type="PanelCardType.Normal"
-                    @click="handleAddItem(itemGroup.id)"
+                    @click="toggleEditPanel(null, itemGroup.id)"
                   />
                 </div>
               </vuedraggable>
-            </templete>
-
-            <!-- 编辑栏 -->
-            <div v-if="itemGroup.sortStatus" class="flex my-4">
-              <NButton color="#2a2a2a6b" @click="handleSaveSort(itemGroup)">
-                <template #icon>
-                  <SvgIcon class="text-white font-xl" icon="material-symbols:save" />
-                </template>
-                <div>
-                  {{ $t('common.saveSort') }}
-                </div>
-              </NButton>
-            </div>
+            </template>
           </div>
         </div>
         <div class="mt-5 footer custom-footer" v-html="panelState.panelConfig.footerHtml" />
@@ -468,6 +543,20 @@ function handleAddItem(itemIconGroupId?: number) {
         <SvgIcon class="text-white font-xl float-btn-icon" icon="mdi:wan" />
       </div>
 
+      <!-- 账号管理器切换 -->
+      <template
+        v-if="accountManagerStore.accounts.length > 1 && authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
+      >
+        <AccountSwitcher>
+          <div
+            class="float-btn flex items-center justify-center"
+          >
+            <SvgIcon class="text-white font-xl float-btn-icon" icon="ph--user-switch-bold" />
+          </div>
+        </AccountSwitcher>
+      </template>
+
+      <!-- 应用启动器 -->
       <div
         v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
         class="float-btn flex items-center justify-center"
@@ -529,7 +618,7 @@ html {
 }
 
 .cover {
-  position: absolute;
+  position:fixed;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -577,7 +666,7 @@ html {
   width: 42px;
   height: 42px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius:  6px;
   transition: background-color  0.3s;
 }
 

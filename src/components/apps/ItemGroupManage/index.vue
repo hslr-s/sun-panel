@@ -4,7 +4,7 @@ import type { FormInst, FormRules } from 'naive-ui'
 import {
   NButton, NCard, NColorPicker,
   NDivider, NFlex, NForm, NFormItem, NInput,
-  NSelect, NSwitch, useDialog,
+  NSelect, NSpin, NSwitch, useDialog,
   useMessage,
 } from 'naive-ui'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -13,8 +13,9 @@ import { RoundCardModal, STip, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
 import { PanelPanelConfigStyleEnum } from '@/enums'
 import { defaultItemGroupInfoCardStyle } from '@/utils/defaultData'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
-import { useAppStore } from '@/store'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface EditModalArg {
   show: boolean
@@ -22,13 +23,15 @@ interface EditModalArg {
   model: Panel.ItemGroupInfo
   rules: FormRules
 }
-const onlyNameDocLink = 'http://links.sun-panel.top/only_name_beautify_doc_'
 
-const appStore = useAppStore()
+const domainLinks = useDomainLinks()
+
 const formRef = ref<FormInst | null>(null)
 const ms = useMessage()
 const dialog = useDialog()
 const sortStatus = ref(false)
+const triggerUpdateItemData = useTriggerUpdateItemData()
+const loading = ref(false)
 
 const defaultItemGroupInfo: Panel.ItemGroupInfo = {
   title: '',
@@ -92,6 +95,7 @@ function handleSaveSort() {
   saveSort(saveItems).then(({ code, msg }) => {
     ms.success(t('common.saveSuccess'))
     sortStatus.value = false
+    triggerUpdateItemData.triggerUpdate()
   }).catch(() => {
     ms.error(t('common.saveFail'))
   })
@@ -128,6 +132,7 @@ function handleSaveGroup() {
           ms.error(t('common.saveFail'))
 
         refreshList()
+        triggerUpdateItemData.triggerUpdate()
         editModalArg.value.show = false
         editModalArg.value.model = { ...defaultItemGroupInfo }
       }).catch((res) => {
@@ -141,22 +146,17 @@ function handleSaveGroup() {
   })
 }
 
-function refreshList() {
-  getList<Common.ListResponse<Panel.ItemGroupInfo[]>>().then(({ code, data }) => {
+async function refreshList() {
+  loading.value = true
+  await getList<Common.ListResponse<Panel.ItemGroupInfo[]>>().then(({ data }) => {
     groups.value = data.list
   })
+  loading.value = false
 }
 
 onMounted(() => {
   refreshList()
 })
-
-function getLangeuageSimple() {
-  if (appStore.language === 'zh-CN')
-    return 'zh_cn'
-
-  return 'en'
-}
 
 watch(() => editModalArg.value.show, (v) => {
   // console.log(v)
@@ -184,6 +184,7 @@ watch(() => editModalArg.value.show, (v) => {
     </NCard>
 
     <NCard style="border-radius: 10px;" size="small">
+      <NSpin v-if="loading" />
       <div class="w-full mt-[20px] rounded-xl my-20 pt-[5px]" :class="sortStatus ? 'border border-dashed' : ''">
         <VueDraggable
           v-model="groups"
@@ -194,7 +195,7 @@ watch(() => editModalArg.value.show, (v) => {
           <div v-for="(item, index) in groups" :key="index" class="w-full">
             <NCard size="small" style="border-radius:10px;margin-bottom: 10px;" class="card">
               <div class="flex" :class="sortStatus ? 'cursor-move' : ''">
-                <div class="flex items-center">
+                <div class="flex items-center cursor-pointer" @click="handleEditGroup(item)">
                   <span class="mr-[10px]">
                     <SvgIcon class="text-[20px]" icon="material-symbols:ad-group-outline-rounded" />
                   <!-- <SvgIcon class="text-[20px]" :icon="item.icon" /> -->
@@ -277,13 +278,13 @@ watch(() => editModalArg.value.show, (v) => {
         <NFormItem path="onlyName">
           <template #label>
             <NFlex align="center">
-              {{ $t('apps.itemGroupManage.onlyName') }}
+              {{ $t('common.onlyName') }}
               <STip>
                 {{ t('apps.itemGroupManage.onlyNameDescribe') }}
                 <NButton
                   text
                   tag="a"
-                  :href="onlyNameDocLink + getLangeuageSimple()"
+                  :href="domainLinks.linkWithLang('only_name_beautify_doc')"
                   target="_blank"
                   type="primary"
                 >

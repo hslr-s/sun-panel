@@ -19,7 +19,7 @@ export interface SystemApp {
   name: string
   componentName: string
   icon: string
-  auth?: number
+  roles?: number[]
   iconSrc?: string
 }
 
@@ -46,7 +46,7 @@ export const systemApps: SystemApp[] = [
     name: 'Docker',
     componentName: 'DockerManage',
     icon: 'tabler-brand-docker',
-    auth: 1,
+    roles: [1],
   },
   {
     name: t('apps.uploadsFileManager.appName'),
@@ -68,27 +68,17 @@ export const systemApps: SystemApp[] = [
   },
 
   {
-    name: t('apps.about.appName'),
-    componentName: 'About',
-    icon: 'lucide:info',
-    iconSrc: AboutSvg,
-  },
-]
-
-// 管理账号的应用
-export const adminSystemApps: SystemApp[] = [
-  {
     name: t('adminSettingUsers.appName'),
     componentName: 'Users',
     icon: 'lucide:users',
-    auth: 1,
+    roles: [1],
     iconSrc: OpenAPISvg,
   },
   {
     name: t('apps.globalSetting.appName'),
     componentName: 'GlobalSetting',
     icon: 'ic:outline-build-circle',
-    auth: 1,
+    roles: [1],
     iconSrc: OpenAPISvg,
 
   },
@@ -96,7 +86,14 @@ export const adminSystemApps: SystemApp[] = [
     name: t('proAuth.appName'),
     componentName: 'ProAuth',
     icon: 'tabler:award',
-    auth: 1,
+    roles: [1],
     iconSrc: ProAuthSvg,
+  },
+
+  {
+    name: t('apps.about.appName'),
+    componentName: 'About',
+    icon: 'lucide:info',
+    iconSrc: AboutSvg,
   },
 ]

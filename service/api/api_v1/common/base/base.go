@@ -2,13 +2,21 @@ package base
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"os"
+	"path"
 	"reflect"
+	"strconv"
 	"strings"
 	"sun-panel/api/api_v1/common/apiReturn"
+	"sun-panel/api/openAPI_v1/common/base"
+	"sun-panel/biz"
+	"sun-panel/global"
 	"sun-panel/lib/captcha"
 	"sun-panel/lib/cmn"
 	"sun-panel/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/locales/zh"
@@ -29,6 +37,11 @@ const (
 
 const (
 	GIN_GET_VISIT_MODE = "VISIT_MODE"
+)
+
+var (
+	ErrUploadExtensionNameNotAllowed = errors.New("extension not allowed") // "上传文件类型不允许"
+	ErrUploadExceedMaxSize           = errors.New("exceeds maximum size")  // "上传文件超出最大尺寸"
 )
 
 // 验证输入是否有效并返回错误
@@ -59,6 +72,83 @@ func validateInputStruct(params interface{}) (errMsg string, err error) {
 		// fmt.Println(errs)
 	}
 	return
+}
+
+// // 保存图片并将记录保存到数据库中
+// func UploadImageAndSaveImage(c *gin.Context, f *multipart.FileHeader, source_path string, fileExt string, userID uint, fileType int) (url string) {
+
+// 	fileName := cmn.Md5(fmt.Sprintf("%s%s", f.Filename, time.Now().String()))
+// 	fildDir := fmt.Sprintf("%s/%d/%d/%d/", source_path, time.Now().Year(), time.Now().Month(), time.Now().Day())
+// 	isExist, _ := cmn.PathExists(fildDir)
+// 	if !isExist {
+// 		os.MkdirAll(fildDir, os.ModePerm)
+// 	}
+// 	filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
+// 	c.SaveUploadedFile(f, filepath)
+
+// 	pureFilePath := filepath[len(source_path):]
+// 	// 向数据库添加记录
+// 	mFile := models.File{}
+// 	mFile.AddFile(userID, f.Filename, fileExt, pureFilePath, fileType)
+// 	return global.UPLOAD_ROUTE + pureFilePath
+// 	// apiReturn.SuccessData(c, gin.H{
+// 	// 	"imageUrl": global.UPLOAD_ROUTE + pureFilePath,
+// 	// })
+// }
+
+// 保存图片并将记录保存到数据库中
+func UploadFileAndSave(c *gin.Context, agreeExtNames []string, maxSize int64) (fileInfo models.File, err error) {
+	userInfo, _ := base.GetCurrentUserInfo(c)
+	configUpload := global.Config.GetValueString("base", "source_path")
+
+	// 文件类型
+	fileTypeStr := c.PostForm("type")
+	fileType, _ := strconv.Atoi(fileTypeStr)
+
+	f, err := c.FormFile("imgfile")
+	if err != nil {
+		return
+	} else {
+		fileExt := strings.ToLower(path.Ext(f.Filename))
+
+		if !cmn.InArray(agreeExtNames, fileExt) {
+			err = ErrUploadExtensionNameNotAllowed
+			return
+		}
+
+		if maxSize != 0 && f.Size > maxSize {
+			err = ErrUploadExceedMaxSize
+			return
+		}
+
+		fileName := cmn.Md5(fmt.Sprintf("%s%s", f.Filename, time.Now().String()))
+		fildDir := fmt.Sprintf("%s/%d/%d/%d/", configUpload, time.Now().Year(), time.Now().Month(), time.Now().Day())
+		isExist, _ := cmn.PathExists(fildDir)
+		if !isExist {
+			os.MkdirAll(fildDir, os.ModePerm)
+		}
+		filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
+		c.SaveUploadedFile(f, filepath)
+
+		pureFilePath := filepath[len(configUpload):]
+		// 向数据库添加记录
+		fileInfo = models.File{
+			UserId:   userInfo.ID,
+			FileName: f.Filename,
+			Src:      pureFilePath,
+			Type:     fileType,
+			Ext:      fileExt,
+		}
+
+		err = global.Db.Create(&fileInfo).Error
+	}
+
+	return
+}
+
+// 下载图片并将记录保存到数据库中
+func DownloadFileAndSave(fileUrl string, userId uint) (fileInfo models.File, err error) {
+	return biz.File.DownloadFileAndSaveDb(global.Db, fileUrl, userId)
 }
 
 // 验证输入是否有效并返回错误
@@ -110,7 +200,7 @@ func VerificationCheck(verificationId, vCode string) (errCode int, verificationI
 	}
 
 	// 验证码错误
-	if !captcha.CaptchaVerifyHandle(verificationId, vCode) {
+	if !captcha.CaptchaVerifyHandle(verificationId, vCode, true) {
 		errCode = apiReturn.ERROR_CODE_VERIFICATION_FAIL
 		return
 	}

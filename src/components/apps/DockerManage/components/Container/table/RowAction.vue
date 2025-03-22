@@ -4,7 +4,8 @@ import { computed, ref } from 'vue'
 import { useDockerStore } from '../../../store/docker'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { execSwitchAction } from '@/api/docker/container'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
+import { t } from '@/locales'
 
 const props = defineProps<{
   value: Docker.Container.Info
@@ -53,6 +54,15 @@ const switchValue = computed({
       dockerState.refreshContainerList()
     }).catch((res) => {
       switchLoading.value = false
+      if (res.code === -1) {
+        ms.error(`${t('common.failed')}:${res.msg}`, {
+          duration: 5000,
+          closable: true,
+          keepAliveOnHover: true,
+        })
+        return
+      }
+
       apiRespErrMsg(res)
     })
   },

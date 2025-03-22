@@ -65,8 +65,10 @@ declare namespace Panel {
         iconTextColor?: string   // 1.5.0+ 弃用、迁移至单独分组设置
         iconTextInfoHideDescription?: boolean    // 1.5.0+ 弃用、迁移至单独分组设置
         iconTextIconHideTitle?: boolean  // 1.5.0+ 弃用、迁移至单独分组设置
+        logoShow?: boolean
         logoText?: string
         logoImageSrc?: string
+        clockShow?: boolean
         clockShowSecond?: boolean
         clockColor?: string
         searchBoxShow?: boolean
@@ -85,6 +87,8 @@ declare namespace Panel {
         systemMonitorShowTitle?: boolean
         systemMonitorPublicVisitModeShow?: boolean
         netModeChangeButtonShow?: boolean
+        netModeChangeAuto?: boolean
+        netModeChangeAutoMaxPingMs?: number
     }
 
     interface userConfig {

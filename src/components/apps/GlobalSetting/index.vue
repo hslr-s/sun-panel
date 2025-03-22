@@ -3,17 +3,18 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import type { UploadFileInfo } from 'naive-ui'
 import {
-  NAlert, NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
-  NInput, NPopconfirm, NUpload, NUploadDragger, useMessage,
+  NButton, NButtonGroup, NCard, NDivider, NH3, NImage,
+  NInput, NPopconfirm, NSwitch, NUpload, NUploadDragger, useMessage,
 } from 'naive-ui'
 import Custom from './Custom.vue'
 import { useGlobalSitesettingStore } from './store'
-import { ProAuthOverlay, ProTag } from '@/components/common'
+import { ProAuthOverlay, ProTag, STip } from '@/components/common'
 import { useAuthStore } from '@/store'
 import { getSiteStting as getSiteSttingApi, saveSiteStting as saveSiteSettingApi } from '@/api/panel/globalSetting'
 import { t } from '@/locales'
 import { apiRespErrMsg } from '@/utils/cmn'
 import { defaultSetting } from '@/store/modules/app/helper'
+import { FileType } from '@/enums'
 
 const authStore = useAuthStore()
 const globalSitesettingStore = useGlobalSitesettingStore()
@@ -39,8 +40,14 @@ function handleUploadBackgroundFinish({
 
 async function handleSaveSiteSetting() {
   let icoImage = icoThumbnailUrl.value
-  if (icoIsNeedUpload.value)
-    icoImage = await handleUploadIco()
+  if (icoIsNeedUpload.value) {
+    try {
+      icoImage = await handleUploadIco()
+    }
+    catch (error) {
+      return
+    }
+  }
 
   siteSetting.value.favicoUrl = icoImage
   icoIsNeedUpload.value = false
@@ -62,7 +69,7 @@ async function saveSiteSetting() {
 
 function handleFileIcoUploadChange(event: Event) {
   const target = event.target as HTMLInputElement
-  console.log(target)
+  // console.log(target)
 
   if (target.files && target.files[0]) {
     // console.log(target.files)
@@ -79,6 +86,7 @@ async function handleUploadIco(): Promise<string> {
   if (icoImageFile.value) {
     const formData = new FormData()
     formData.append('imgfile', icoImageFile.value)
+    formData.append('type', String(FileType.CardIcon))
     await axios.post('/api/panel/globalSetting/uploadFaviconImage', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -87,14 +95,19 @@ async function handleUploadIco(): Promise<string> {
     })
       .then((response) => {
         // console.log('上传', response)
+        if (response.data.code !== 0) {
+          if (response.data.code === 1301) {
+            ms.error(`${t('apps.globalSetting.favicon')}: ${t('apiErrorCode.1301')}`)
+          }
+
+          throw new Error(`upload error API:${response.data.msg}`)
+        }
         imgurl = response.data.data.imageUrl
-        // Handle response
       })
       .catch((error) => {
-        console.log('上传错误', error)
-        // Handle error
+        console.error('upload error', error)
+        throw error
       })
-    return imgurl
   }
 
   return imgurl
@@ -149,7 +162,10 @@ onMounted(() => {
         </div>
         <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
           <div class="flex items-center mt-[5px]">
-            <NInput v-model:value="siteSetting.title" type="text" show-count :maxlength="20" :placeholder="t('common.inputPlaceholder')" />
+            <NInput
+              v-model:value="siteSetting.title" type="text" show-count :maxlength="20"
+              :placeholder="t('common.inputPlaceholder')"
+            />
           </div>
         </ProAuthOverlay>
       </div>
@@ -160,16 +176,10 @@ onMounted(() => {
           <ProTag />
         </div>
 
-        <NAlert type="info" style="border-radius: 5px;" :bordered="false">
-          <p class="text-sm">
-            {{ t("apps.globalSetting.iconChangeClearCache") }}
-          </p>
-        </NAlert>
         <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
           <div>
             <NImage
-              width="100"
-              :src="icoThumbnailUrl"
+              width="100" style="width: 80px; height: 80px;border: 1px solid #e9e9e9;" :src="icoThumbnailUrl"
               preview-disabled
             />
             <br>
@@ -177,29 +187,42 @@ onMounted(() => {
               <NButton for="fileIcoUpload" @click="handleSelectIcoFile">
                 {{ t('apps.globalSetting.selectIcoImage') }}
               </NButton>
-              <NButton for="fileIcoUpload" @click="handleDeleteIcoFile">
+              <NButton for="fileIcoUpload" :disabled="icoThumbnailUrl === ''" @click="handleDeleteIcoFile">
                 {{ t('apps.globalSetting.clearIcoImage') }}
               </NButton>
             </NButtonGroup>
-            <input id="fileIcoUpload" type="file" accept=".ico" style="display: none;" @change="handleFileIcoUploadChange">
+            <input
+              id="fileIcoUpload" type="file" accept=".ico" style="display: none;"
+              @change="handleFileIcoUploadChange"
+            >
           </div>
         </ProAuthOverlay>
       </div>
 
       <NDivider />
+
+      <div>
+        <div class="text-slate-500 mb-[5px] font-bold">
+          {{ $t('apps.globalSetting.isEnableLoginCaptcha') }}
+          <ProTag />
+        </div>
+        <ProAuthOverlay :show="globalSitesettingStore.proIsExpired">
+          <div class="flex items-center mt-[5px]">
+            <NSwitch v-model:value="siteSetting.isEnableLoginCaptcha" />
+          </div>
+        </ProAuthOverlay>
+      </div>
+
+      <NDivider />
+
       <div>
         <div class="text-slate-500 mb-[5px] font-bold">
           {{ $t('apps.globalSetting.loginBackgroundImage') }}
         </div>
         <NUpload
-          action="/api/file/uploadImg"
-          :show-file-list="false"
-          name="imgfile"
-          :headers="{
+          action="/api/file/uploadImg" :show-file-list="false" name="imgfile" :headers="{
             token: authStore.token as string,
-          }"
-          :directory-dnd="true"
-          @finish="handleUploadBackgroundFinish"
+          }" :data="{ type: FileType.Wallpaper }" :directory-dnd="true" @finish="handleUploadBackgroundFinish"
         >
           <NUploadDragger style="width: 100%;">
             <div
@@ -214,15 +237,31 @@ onMounted(() => {
         </NUpload>
 
         <div class="flex items-center mt-[5px]">
-          <span class="mr-[10px]">{{ $t('apps.globalSetting.customImageAddress') }}</span>
+          <span class="mr-[10px]">{{ $t('apps.globalSetting.customImageURL') }}</span>
         </div>
         <NInput v-model:value="siteSetting.loginBackgroundUrl" type="text" size="small" clearable />
       </div>
 
+      <NDivider />
+
+      <div>
+        <div class="text-slate-500 mb-[5px] font-bold flex items-center">
+          {{ $t('apps.globalSetting.isEnableItemCardCache') }}
+          <STip class="ml-2">
+            <div class="max-w-[300px]">
+              {{ t('apps.globalSetting.isEnableItemCardCacheTip') }}
+            </div>
+          </STip>
+        </div>
+
+        <div class="flex items-center mt-[5px]">
+          <!-- 为了适配后端此处“isDisableItemCardCache”取反，因为前端的逻辑是“isEnableItemCardCache”的取值 -->
+          <NSwitch v-model:value="siteSetting.isDisableItemCardCache" :checked-value="false" :unchecked-value="true" />
+        </div>
+      </div>
+
       <div class="mt-5 flex justify-end">
-        <NPopconfirm
-          @positive-click="resetSiteSetting"
-        >
+        <NPopconfirm @positive-click="resetSiteSetting">
           <template #trigger>
             <NButton size="small" type="error">
               {{ $t('common.reset') }}

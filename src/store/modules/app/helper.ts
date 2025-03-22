@@ -8,7 +8,6 @@ export type Theme = 'light' | 'dark' | 'auto'
 export type Language = 'zh-CN' | 'en-US'
 
 export interface AppState {
-  siderCollapsed: boolean
   theme: Theme
   language: Language
   siteSetting: GlobalSetting.SiteSetting
@@ -24,9 +23,11 @@ export function defaultSetting(): AppState {
     title: 'Sun-Panel',
     favicoUrl: '',
     loginBackgroundUrl: loginDefaultBackgroundUrl,
+    isEnableLoginCaptcha: false,
+    isDisableItemCardCache: false,
   }
 
-  return { siderCollapsed: false, theme: 'auto', language, siteSetting }
+  return { theme: 'auto', language, siteSetting }
 }
 
 export function getLocalSetting(): AppState {

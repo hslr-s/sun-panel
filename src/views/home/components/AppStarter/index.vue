@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { NLayout, NLayoutContent, NLayoutSider, NSpace } from 'naive-ui'
+import { getAppList } from '../common'
+import { EditItem } from '@/views/home/components'
 import { useAuthStore } from '@/store'
 import { AppLoader, SModal, SvgIcon } from '@/components/common'
 import { t } from '@/locales'
-import type { SystemApp } from '@/utils/cmn/builtInApps'
-import { adminSystemApps, systemApps } from '@/utils/cmn/builtInApps'
+import { type SystemApp, systemApps } from '@/utils/cmn/builtInApps'
+import { PanelCardType, PanelItemIconTypeEnum, PanelItemOpenMethodEnum } from '@/enums'
+import { useTriggerUpdateItemData } from '@/hooks/useTriggerUpdateItemData'
 
 const props = defineProps<{
   visible: boolean
@@ -24,7 +27,19 @@ const title = ref('')
 const height = ref('600px')
 const maxWidth = ref('1000px')
 
-const apps = ref(systemApps)
+const editItemInfoShow = ref(false)
+const editItemInfo = ref<Panel.Info | null>({
+  icon: {
+    itemType: PanelItemIconTypeEnum.url,
+    src: '',
+  },
+  title: '',
+  cardType: PanelCardType.BuiltInApp,
+  openMethod: PanelItemOpenMethodEnum.currentTab,
+  url: '',
+})
+
+const apps = ref<SystemApp[]>(systemApps)
 
 const authStore = useAuthStore()
 
@@ -56,18 +71,41 @@ function handleResize() {
     isSmallScreen.value = false
   }
 }
+function handleClickAppAdd(app: SystemApp) {
+  editItemInfo.value = {
+    icon: {
+      itemType: PanelItemIconTypeEnum.online,
+      text: app.icon,
+    },
+    title: app.name,
+    cardType: PanelCardType.BuiltInApp,
+    openMethod: PanelItemOpenMethodEnum.currentTab,
+    url: '',
+    description: t('iconItem.builtinApp'),
+    expandParam: {
+      systemAppName: app.componentName,
+    },
+  }
+  editItemInfoShow.value = true
+}
+function handleEditSuccess() {
+  useTriggerUpdateItemData().triggerUpdate()
+  editItemInfoShow.value = false
+}
 
 // function handleMaxMinButton() {
 //   height.value = 'calc(100vh - 70px)'
 //   maxWidth.value = '100vw'
 // }
 
-onMounted(() => {
-  const adminApps = adminSystemApps
-  // 初始化
-  if (authStore.userInfo?.role === 1)
-    apps.value = apps.value.concat(adminApps)
+// 触发更新菜单
+watch(() => props.visible, (newValue) => {
+  if (newValue) {
+    apps.value = getAppList(apps.value, authStore.userInfo?.role || 0)
+  }
+}, { immediate: true })
 
+onMounted(() => {
   window.addEventListener('resize', handleResize)
   handleResize()
 })
@@ -128,29 +166,35 @@ onUnmounted(() => {
                   <div
                     v-for=" (item, index) in apps"
                     :key="index"
-                    :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
                     @click="handleClickApp(item)"
                   >
                     <div
                       class="bg-white dark:bg-zinc-800 p-[10px] rounded-lg mb-[5px] font-bold cursor-pointer flex items-center hover:bg-slate-50 focus:bg-slate-50"
                     >
-                      <div class="flex items-center justify-center">
+                      <div
+                        class="flex items-center justify-center"
+                        :style="{ color: componentName === item.componentName ? 'var(--n-color-target)' : '' }"
+                      >
                         <div class="text-lg">
                           <SvgIcon :icon="item.icon" />
                         </div>
                         <span class="ml-2">{{ item.name }}</span>
                       </div>
-                    <!-- 更多按钮 -->
-                    <!-- <div class="ml-auto">
-                      <SvgIcon icon="mingcute-more-1-fill" />
-                    </div> -->
+                      <!-- 更多按钮 -->
+                      <div
+                        v-if="componentName === item.componentName"
+                        class="ml-auto flex hover:text-[var(--n-color-target)]"
+                        @click="handleClickAppAdd(item)"
+                      >
+                        <SvgIcon icon="fluent--square-add-16-regular" style="width: 16px;height: 16px;" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </NLayoutSider>
             <NLayoutContent :content-style="{ height }">
-              <div class="rounded-2xl h-full overflow-auto transition-all duration-500 min-w-[300px] h-full border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 " :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
+              <div class="rounded-2xl overflow-auto transition-all duration-500 min-w-[300px] h-full border dark:border-zinc-700 bg-slate-200 dark:bg-zinc-900 " :class="(isSmallScreen && !collapsed) ? 'opacity-0' : 'opacity-100'">
                 <AppLoader :component-name="componentName" class="h-full" />
               </div>
             </NLayoutContent>
@@ -158,6 +202,8 @@ onUnmounted(() => {
         </NSpace>
       </div>
     </SModal>
+
+    <EditItem v-model:visible="editItemInfoShow" :item-info="editItemInfo" is-out-add @done="handleEditSuccess" />
   </div>
 </template>
 

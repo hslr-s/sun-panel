@@ -14,10 +14,9 @@ import { defaultSearchEngineList, defaultSearchSaveData } from './base'
 import { t } from '@/locales'
 import { useAuthStore, useProAuthorizeStore } from '@/store'
 import { useModuleConfig } from '@/store/modules'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg, message } from '@/utils/cmn/apiMessage'
 import { randomCode } from '@/utils/cmn'
 import { ProTag } from '@/components/common'
-import { message } from '@/utils/cmn/apiMessage'
 
 interface State extends SearchSaveDataType {
 }
@@ -209,7 +208,7 @@ onMounted(() => {
 
           <div class="ml-auto">
             <div class="flex justify-end">
-              <NButton size="tiny" style="margin-right: 2px;" type="info" quaternary @click="handleEdit(item, index)">
+              <NButton size="tiny" style="margin-right: 2px;" type="success" quaternary @click="handleEdit(item, index)">
                 {{ t('common.edit') }}
               </NButton>
               <NButton size="tiny" type="error" quaternary @click="deleteByIndex(index)">

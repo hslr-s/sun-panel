@@ -3,7 +3,7 @@ import type { App } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import { setupPageGuard } from './permission'
-import { dockerRouter } from './docker'
+// import { dockerRouter } from './docker'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -42,12 +42,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/exception/test/index.vue'),
   },
 
-  dockerRouter,
+  // dockerRouter,
+
+  // {
+  //   path: '/test/demo',
+  //   name: 'test-demo',
+  //   component: () => import('@/views/exception/test/demo.vue'),
+  // },
 
   {
-    path: '/test/demo',
-    name: 'test-demo',
-    component: () => import('@/views/exception/test/demo.vue'),
+    path: '/clear',
+    name: 'clearCache',
+    component: () => import('@/views/clear/index.vue'),
   },
 
   // adminRouter,

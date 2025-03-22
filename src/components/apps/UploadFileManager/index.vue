@@ -34,9 +34,12 @@ async function getFileList() {
 
 async function copyImageUrl(text: string) {
   const res = await copyToClipboard(text)
-  if (res)
+  if (res) {
     ms.success(t('apps.uploadsFileManager.copySuccess'))
-
+    if (window.location.protocol !== 'https:') {
+      ms.warning(t('common.noHttpsWarning'))
+    }
+  }
   else
     ms.error(t('apps.uploadsFileManager.copyFailed'))
 }

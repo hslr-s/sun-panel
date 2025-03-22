@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import moment from 'moment'
-import { onMounted, ref } from 'vue'
+import { h, onMounted, ref } from 'vue'
 import {
   NAlert, NButton, NCard, NDivider, NEllipsis, NForm,
   NFormItem, NInput, NSwitch, useDialog, useMessage,
@@ -15,6 +15,8 @@ import { apiRespErrMsg, buildTimeString } from '@/utils/cmn'
 import { ProCard, RoundCardModal, SvgIconOnline } from '@/components/common'
 import { t } from '@/locales'
 import { useAppStore, useProAuthorizeStore } from '@/store'
+
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface ProCardParam {
   nickName?: string
@@ -95,19 +97,53 @@ async function login(username: string, password: string) {
   loginLoading.value = false
 }
 
-async function refreshStatus(username: string, password: string) {
+async function logout() {
+  await logoutApi().then(() => {
+    getStatus()
+    loginModalShow.value = false
+    proAuthorizeStore.refreshProAuthStatus()
+  })
+}
+
+async function refreshStatus() {
   refreshLoading.value = true
 
   await refreshStatusApi().then(() => {
     getStatus()
   }).catch((error) => {
+    if (error.code === 1009) {
+      ms.error(() => {
+        return [
+          h('span', `${t('apps.proAuth.tokenExpired')}`),
+          h(NButton, {
+            onClick: () => {
+              const { faqLinkWithLang } = useDomainLinks()
+              // faq_proAccountInvalid_zh_cn
+              window.open(faqLinkWithLang('proAccountInvalid'))
+            },
+            type: 'error',
+            style: { marginLeft: '10px' },
+            size: 'tiny',
+          }, t('common.viewReason')),
+        ]
+      }, {
+        duration: 60000,
+        closable: true,
+      })
+      logout()
+      return
+    }
+    else if (error.code === 1414) {
+      ms.error(t('apps.proAuth.serverError'))
+      return
+    }
     apiRespErrMsg(error)
   })
   proAuthorizeStore.refreshProAuthStatus()
   refreshLoading.value = false
 }
 
-function logout() {
+function handleLogout() {
   dialog.warning({
     title: t('common.warning'),
     content: t('apps.proAuth.logoutConfirm'),
@@ -116,10 +152,7 @@ function logout() {
     onPositiveClick: () => {
       const a = async () => {
         try {
-          await logoutApi()
-          getStatus()
-          loginModalShow.value = false
-          proAuthorizeStore.refreshProAuthStatus()
+          logout()
         }
         catch (error) {
           apiRespErrMsg(error)
@@ -206,7 +239,7 @@ onMounted(() => {
                   <span>
                     {{ proCardParam?.username }}
                   </span>
-                  <span class="cursor-pointer ml-2" :title="t('apps.proAuth.logout')" @click="logout">
+                  <span class="cursor-pointer ml-2" :title="t('apps.proAuth.logout')" @click="handleLogout">
                     <SvgIconOnline icon="tabler:logout" class="w-[20px] h-[20px]" :title="t('apps.proAuth.logout')" />
                   </span>
                 </div>
@@ -282,22 +315,6 @@ onMounted(() => {
       </NAlert>
 
       <br>
-
-      <!-- <NAlert type="info" title="常见问题" :bordered="false">
-      <p>
-        Q：为什么会频繁让我手动登录
-      </p>
-      <p>
-        A：可能原因：授权账号在其他客户端登录、修改了账号密码、程序升级重装或者其他破解原因造成
-      </p>
-      <br>
-      <p>
-        Q：可以离线授权吗
-      </p>
-      <p>
-        A：由于Docker容器可移植特性，暂没有好的方案离线授权，如果日后找到解决方案，会增加离线授权，目前必须在线授权
-      </p>
-    </NAlert> -->
 
       <RoundCardModal v-model:show="loginModalShow" style="width:400px" :title="t('apps.proAuth.loginSunPanel')">
         <div class="flex items-center">

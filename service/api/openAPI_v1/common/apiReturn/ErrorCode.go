@@ -9,10 +9,12 @@ const (
 	// 公共
 	ErrCodeTokenExpires     = 1000
 	ErrCodeParamformatError = 1001
+	ErrCodeFailed           = -1
 
 	// 部分接口会出现的
 	ErrCodeOnlyNameExisted = 1202
 	ErrCodeNoRecord        = 1203
+	// ErrCodeSaveIconFileFailed = 1204
 )
 
 var ErrorCodeMap = map[int]error{
@@ -23,6 +25,7 @@ var ErrorCodeMap = map[int]error{
 
 	ErrCodeOnlyNameExisted: errors.New("only name existed"),
 	ErrCodeNoRecord:        errors.New("no record"),
+	// ErrCodeSaveIconFileFailed: errors.New("failed to save icon file"),
 }
 
 func GetError(code int) error {

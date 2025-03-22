@@ -69,10 +69,16 @@ func (p *ProAuthApi) GetStatus(c *gin.Context) {
 
 // 刷新状态
 func (p *ProAuthApi) RefreshStatus(c *gin.Context) {
-	err := biz.ProAuth.AutoLogin()
+	err := biz.ProAuth.RefreshInfo()
 	if err != nil {
-		apiReturn.Error(c, err.Error())
-		return
+		if errors.Is(err, proAuth.GetError(proAuth.ErrTokenExpires)) {
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeTokenExpired)
+			return
+		} else {
+			global.Logger.Error("biz.ProAuth.Login:", err.Error())
+			apiReturn.Error(c, err.Error())
+			return
+		}
 	}
 	apiReturn.Success(c)
 }

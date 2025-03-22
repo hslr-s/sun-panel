@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"sun-panel/api/api_v1/common/apiData/commonApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
@@ -20,9 +21,14 @@ import (
 
 type FileApi struct{}
 
-func (a *FileApi) UploadImg(c *gin.Context) {
+func (a *FileApi) UploadImgOld(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	configUpload := global.Config.GetValueString("base", "source_path")
+
+	// 文件类型
+	fileTypeStr := c.PostForm("type")
+	fileType, _ := strconv.Atoi(fileTypeStr)
+
 	f, err := c.FormFile("imgfile")
 	if err != nil {
 		apiReturn.ErrorByCode(c, 1300)
@@ -57,17 +63,50 @@ func (a *FileApi) UploadImg(c *gin.Context) {
 		pureFilePath := filepath[len(configUpload):]
 		// 向数据库添加记录
 		mFile := models.File{}
-		mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath)
+		mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath, fileType)
 		apiReturn.SuccessData(c, gin.H{
 			"imageUrl": global.UPLOAD_ROUTE + pureFilePath,
 		})
 	}
 }
 
+func (a *FileApi) UploadImg(c *gin.Context) {
+	fileInfo, err := base.UploadFileAndSave(c, []string{
+		".png",
+		".jpg",
+		".gif",
+		".jpeg",
+		".webp",
+		".svg",
+		".ico",
+		".avif",
+		".heic",
+	}, 0)
+
+	if err != nil {
+		switch err {
+		case base.ErrUploadExtensionNameNotAllowed:
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeUnsupportedFileFormat)
+		default:
+			global.Logger.Error(err.Error())
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeUploadFailed)
+		}
+		return
+	}
+
+	apiReturn.SuccessData(c, gin.H{
+		"imageUrl": global.UPLOAD_ROUTE + fileInfo.Src,
+	})
+}
+
 // 一直未使用有待测试
 func (a *FileApi) UploadFiles(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	configUpload := global.Config.GetValueString("base", "source_path")
+
+	// 文件类型
+	fileTypeStr := c.PostForm("type")
+	fileType, _ := strconv.Atoi(fileTypeStr)
 
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -93,7 +132,7 @@ func (a *FileApi) UploadFiles(c *gin.Context) {
 			pureFilePath := filepath[len(configUpload):]
 			// 向数据库添加记录
 			mFile := models.File{}
-			mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath)
+			mFile.AddFile(userInfo.ID, f.Filename, fileExt, pureFilePath, fileType)
 			succMap[f.Filename] = global.UPLOAD_ROUTE + pureFilePath
 		}
 	}

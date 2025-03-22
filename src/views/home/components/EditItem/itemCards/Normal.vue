@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import {
-  NButton, NCard, NDivider, NFormItem, NGrid, NGridItem, NInput,
-  NInputGroup, NSelect, useMessage,
+  NFlex, NFormItem, NGrid, NGridItem,
+  NInput, NSelect,
 } from 'naive-ui'
 import type { FormRules } from 'naive-ui'
 import IconEditor from '../IconEditor.vue'
-import { verifyUrlHttp } from './common'
+import UrlAddressInput from './components/UrlAddressInput.vue'
 import { t } from '@/locales'
-import { getSiteFavicon } from '@/api/panel/itemIcon'
+import { STip } from '@/components/common'
 
 const props = defineProps<{
   itemInfo: Panel.Info
@@ -19,8 +19,8 @@ const emit = defineEmits<{
   (e: 'update:itemInfo', info?: Panel.Info): void
   (e: 'update:rules', info?: FormRules): void
 }>()
-const getIconLoading = ref([false, false])
-const ms = useMessage()
+// const getIconLoading = ref([false, false])
+// const ms = useMessage()
 const model = ref(props.itemInfo)
 
 // 打开方式
@@ -51,61 +51,92 @@ const rulesExtends: FormRules = {
   ],
 }
 
-async function getIconByUrl(url: string, loadingIndex: number) {
-  getIconLoading.value[loadingIndex] = true
-  try {
-    const { code, data } = await getSiteFavicon<{ iconUrl: string }>(url)
-    if (code === 0) {
-      model.value.icon = {
-        itemType: 2,
-        src: data.iconUrl,
-      }
-    }
-    else {
-      ms.error(t('iconItem.geticonFail'))
-    }
-  }
-  catch (error) {
-    ms.error(t('iconItem.geticonFail'))
-  }
-  getIconLoading.value[loadingIndex] = false
-}
-
 watch(model.value, () => {
-  // console.log('models 跟新', model.value)
   emit('update:itemInfo', model.value)
 })
 
-onMounted(() => {
-  const r = { ...props.rules, ...rulesExtends }
-  emit('update:rules', r)
-})
+watch(
+  () => props.rules,
+  () => {
+    const newRules = { ...props.rules, ...rulesExtends }
+    // 防止重复 emit
+    if (JSON.stringify(newRules) !== JSON.stringify(props.rules)) {
+      emit('update:rules', newRules)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
   <div>
+    <NFormItem path="icon">
+      <template #label>
+        <NFlex align="center">
+          <span class="font-bold">
+            {{ $t('iconItem.icon.iconStyle') }}
+          </span>
+          <STip class="cursor-pointer">
+            <p>{{ t('iconItem.icon.iconSizeTip') }}</p>
+            <p>{{ t('iconItem.icon.iconOnlineTip') }}</p>
+          </STip>
+        </NFlex>
+      </template>
+      <!-- <NCard size="small"> -->
+      <IconEditor v-model:item-icon="model.icon" />
+      <!-- </NCard> -->
+    </NFormItem>
+
+    <!-- <NDivider class="!my-2" /> -->
+
     <NGrid cols="2" :x-gap="10" item-responsive>
       <NGridItem span="2 500:1">
-        <NFormItem path="title" :label="$t('common.title')">
+        <NFormItem path="title">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('common.title') }}
+            </span>
+          </template>
           <NInput v-model:value="model.title" type="text" show-count :maxlength="20" clearable />
         </NFormItem>
       </NGridItem>
       <NGridItem span="2 500:1">
-        <NFormItem path="description" :label="$t('common.description')">
+        <NFormItem path="description">
+          <template #label>
+            <span class="font-bold">
+              {{ $t('common.description') }}
+            </span>
+          </template>
           <NInput v-model:value="model.description" type="text" show-count :maxlength="100" clearable />
         </NFormItem>
       </NGridItem>
     </NGrid>
 
-    <NFormItem path="icon" :label="$t('iconItem.icon.iconStyle')">
-      <NCard size="small">
-        <IconEditor v-model:item-icon="model.icon" />
-      </NCard>
+    <!-- <NDivider class="!my-2" /> -->
+
+    <NFormItem path="url">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('iconItem.defaultUrl') }}
+        </span>
+      </template>
+      <div class="w-full">
+        <UrlAddressInput v-model:url="model.url" v-model:icon-info="model.icon" placeholder="http(s)://" />
+      </div>
     </NFormItem>
 
-    <NDivider class="!my-2" />
+    <NFormItem path="lanUrl">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('iconItem.lanUrl') }}
+        </span>
+      </template>
+      <div class="w-full">
+        <UrlAddressInput v-model:url="model.lanUrl" v-model:icon-info="model.icon" :placeholder="$t('iconItem.lanUrlInputPlaceholder')" />
+      </div>
+    </NFormItem>
 
-    <NFormItem path="url" :label="$t('iconItem.url')">
+    <!-- <NFormItem path="url" :label="$t('iconItem.defaultUrl')">
       <div class="w-full">
         <NInputGroup>
           <NInput v-model:value="model.url" type="text" :maxlength="1000" placeholder="http(s)://" />
@@ -131,9 +162,14 @@ onMounted(() => {
           {{ t("iconItem.urlNoHttpStartWarn") }}
         </span>
       </div>
-    </NFormItem>
+    </NFormItem> -->
 
-    <NFormItem path="openMethod" :label="$t('iconItem.openMethod')">
+    <NFormItem path="openMethod">
+      <template #label>
+        <span class="font-bold">
+          {{ $t('iconItem.openMethod') }}
+        </span>
+      </template>
       <NSelect v-model:value="model.openMethod" :options="options" />
     </NFormItem>
   </div>

@@ -14,7 +14,7 @@ func NewDriver(width, height int) *base64Captcha.DriverString {
 	driver.Height = height
 	driver.Width = width
 	driver.NoiseCount = 0
-	driver.ShowLineOptions = base64Captcha.OptionShowSlimeLine | base64Captcha.OptionShowHollowLine
+	driver.ShowLineOptions = base64Captcha.OptionShowSlimeLine
 	driver.Length = 4
 	driver.Source = "1234567890qwertyuipkjhgfdsazxcvbnm"
 	driver.Fonts = []string{"wqy-microhei.ttc"}
@@ -33,8 +33,9 @@ func GenerateCaptchaHandler(id string, width, height int) string {
 }
 
 // 验证
-func CaptchaVerifyHandle(id, vcode string) bool {
-	return Store.Verify(id, vcode, true)
+func CaptchaVerifyHandle(id, vcode string, clear bool) bool {
+	// fmt.Println("用户输入的验证码ID和答案", id, "-", vcode)
+	return Store.Verify(id, vcode, clear)
 }
 
 // 根据key获取验证码ID

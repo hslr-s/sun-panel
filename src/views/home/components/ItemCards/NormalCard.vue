@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
-import { NDropdown, NModal, NSkeleton, NSpin } from 'naive-ui'
+import { NDropdown } from 'naive-ui'
 import type { DropdownOption } from 'naive-ui'
 import StandardIcon from './common/StandardIcon.vue'
+import { getItemUrl } from './common'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { useAuthStore, usePanelState } from '@/store'
+import { IframeLayer } from '@/components/common'
 
 import { VisitMode } from '@/enums/auth'
 interface Prop {
@@ -30,7 +32,6 @@ const authStore = useAuthStore()
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
 const windowTitle = ref<string>('')
-const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
 
 const dropdownMenuX = ref(0)
@@ -51,7 +52,10 @@ const dropdownShow = ref(false)
 function openPage(openMethod: number, url: string, title?: string) {
   switch (openMethod) {
     case 1:
-      window.location.href = url
+      if (window.self !== window.top)
+        window.parent.location.href = url
+      else
+        window.location.href = url
       break
     case 2:
       window.open(url)
@@ -68,18 +72,18 @@ function openPage(openMethod: number, url: string, title?: string) {
   }
 }
 
-function handWindowIframeIdLoad(payload: Event) {
-  windowIframeIsLoad.value = false
-}
+// function handWindowIframeIdLoad(payload: Event) {
+//   windowIframeIsLoad.value = false
+// }
 
 // 点击项目
-function handleItemClick() {
+async function handleItemClick() {
   if (props.sortStatus) {
     emit('edit')
     return
   }
 
-  const jumpUrl = getItemUrl()
+  const jumpUrl = await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs)
 
   openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
 }
@@ -100,24 +104,25 @@ function handleContextMenu(event: MouseEvent) {
   })
 }
 
-function handleMousedowClick(event: MouseEvent) {
+async function handleMousedowClick(event: MouseEvent) {
+  // 鼠标中间键点击
   if (event.button === 1 && !props.sortStatus) {
     event.preventDefault()
-    window.open(getItemUrl())
+    window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
   }
 }
 
-// 获取项目地址，自动识别内外网
-function getItemUrl() {
-  let jumpUrl = ''
-  if (props.itemInfo)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
+// // 获取项目地址，识别当前内外网环境返回地址，废弃-采用 import { getItemUrl } from './common' 2024年12月1日记录
+// function getItemUrl() {
+//   let jumpUrl = ''
+//   if (props.itemInfo)
+//     jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
 
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
+//   if (props.itemInfo?.lanUrl === '')
+//     jumpUrl = props.itemInfo.url
 
-  return jumpUrl
-}
+//   return jumpUrl
+// }
 
 function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
@@ -220,7 +225,16 @@ function onClickoutside() {
     />
 
     <!-- 弹窗 -->
-    <NModal
+    <IframeLayer
+      v-model:show="windowShow"
+      :title="windowTitle"
+      :src="windowSrc"
+      move
+      resize
+    />
+
+    <!-- 旧弹窗 -->
+    <!-- <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
       style="max-width: 1200px;height: 650px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
@@ -245,6 +259,6 @@ function onClickoutside() {
           class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
         />
       </div>
-    </NModal>
+    </NModal> -->
   </div>
 </template>

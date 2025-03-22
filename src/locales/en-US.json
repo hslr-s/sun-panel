@@ -1,4 +1,7 @@
 {
+  "accountSwitcher": {
+    "logoutAllAccount": "Log out of all accounts"
+  },
   "adminSettingUsers": {
     "EditpasswordPlaceholder": "Enter new password, leave blank to keep the current password",
     "addUserNoProText": "Non-PRO authorization can only create up to two accounts.",
@@ -23,6 +26,7 @@
   },
   "apiErrorCode": {
     "1000": "Not logged in",
+    "1002": "captcha error",
     "1003": "wrong user name or password",
     "1004": "Account has been deactivated or inactivated",
     "1005": "Currently no permission to operate",
@@ -62,7 +66,9 @@
       "website": "Website:"
     },
     "baseSettings": {
+      "accountSwitcher": "Account switcher",
       "appName": "Personalization",
+      "autoNetModeLinkOnOpen": "Automatically select the optimal address and open it when opening a project card",
       "bottomMargin": "Bottom margin",
       "clock": "Clock component",
       "clockSecondShow": "Show seconds",
@@ -71,15 +77,18 @@
       "contentArea": "Content area",
       "customFooter": "Custom footer",
       "customFooterAlert": "This feature requires you to have some front-end knowledge (html, js, css), and it is a dangerous operation. \nPlease do not quote code from unknown sources, as this is very likely to lead to attacks, privacy leaks, project collapse, etc. \nWhen using it, try to create a new window to view the preview effect.",
-      "customImageAddress": "Expand image link input box",
       "detailIcon": "Detail icon",
+      "editImageURL": "Edit image URL (supported API address)",
       "hideDescription": "Hide description information",
       "hideTitle": "Hide title",
-      "iconMigrateDescribe": "Icon styles have been migrated to group settings and support setting styles individually by group",
+      "iconMigrateDescribe": "Icon styles have been migrated to [Group Management] and support setting styles individually by group.",
       "leftRightMargin": "Margins on both sides",
       "mask": "Mask",
       "maxWidth": "Max width",
-      "netModeChangeButtonShow": "Show the network environment switch button",
+      "netModeChangeAuto": "Automatic selection",
+      "netModeChangeAutoMaxPingMs": "Connectivity test delay time",
+      "netModeChangeAutoTip": "When the card is set with an [LAN address], the [LAN address] will be prioritized for connectivity testing. If the [LAN address] fails to test within the set delay time, the [Default address] will be used.",
+      "netModeChangeButtonShow": "Network environment switching component",
       "publicVisitModeShow": "Allow public mode display",
       "resetAllStyleWarnText": "Are you sure you want to reset all styles?",
       "resetWarnText": "Are you sure you want to reset all styles under this item?",
@@ -110,7 +119,7 @@
       "dockerError": "Something went wrong with Docker",
       "exited": "Exited",
       "paused": "Paused",
-      "ports": "port",
+      "ports": "Ports",
       "removing": "Removing",
       "resourceOverview": "Resource overview",
       "restarting": "Restarting",
@@ -138,12 +147,14 @@
       "appName": "Global Setting",
       "clearIcoImage": "Clear image",
       "customDanger": "Danger warning",
-      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code. This may lead to privacy leaks, layout confusion, or attacks.",
-      "customImageAddress": "Custom image address",
+      "customDangerAlert": "This is a dangerous operation. Please do not fill in untrusted code, which may lead to privacy leaks, layout confusion, or attacks. \nIf it does not take effect, please clear your browser cache.",
+      "customImageURL": "Customize image URL (supported API address)",
       "customJSAndCss": "Custom JS and CSS files",
       "customJSAndCssAlert": "If you do not have PRO authorization, you can enter the NAS or server where Sun-Panel is installed, find the \"custom\" path ({path}), modify and save the file directly, and it will still be effective.",
       "favicon": "site icon",
-      "iconChangeClearCache": "After saving, clear the browser cache or restart the browser to see the effect.",
+      "isEnableItemCardCache": "Enable item card data cache",
+      "isEnableItemCardCacheTip": "Whether to enable project card data caching, it can improve grouping and card loading speed after activation",
+      "isEnableLoginCaptcha": "Enable login captcha",
       "loginBackgroundImage": "Login page background image",
       "personalise": "Site settings",
       "resetWarnText": "Are you sure you want to reset these data?",
@@ -155,7 +166,6 @@
       "cardStyle": "Card style",
       "deleteWarnText": "Are you sure you want to delete this group [{name}]? The application icons in this group will be lost after deletion.",
       "groupName": "Group name",
-      "onlyName": "Only Name",
       "onlyNameDescribe": "The only name in English can be used with customized css, js, and footer to achieve richer styles.",
       "publicVisitHide": "Hide in public mode",
       "textAutoColor": "If the color is set to pure white (#FFFFFF), the text color will automatically adjust the black or white with the lightness of the background color of the card"
@@ -192,6 +202,7 @@
       "registerAccount": "No account, please register",
       "serverError": "An error occurred with the authorization server, please try again later.",
       "textDescription": "Since the author needs to make a living, some special features that are only available to Pro authorized users have been added to the project. \nIf you are willing, you can purchase support through the authorization platform. This is not only recognition of the author's hard development, but also a source of motivation to encourage the author to continue exploring and add more exciting features. \nThis support is entirely based on your volition. The author is fully aware of your generosity and trust. Therefore, even if more excellent Pro functions are added in the future, free functions will continue to be introduced, so stay tuned...❤️❤️❤️",
+      "tokenExpired": "The authorized account login has expired, please refresh the page and log in again",
       "username": "Account",
       "usernameWithPasswordIsNotEmpty": "Account and password cannot be empty"
     },
@@ -200,7 +211,7 @@
       "appName": "Upload File Management",
       "copyFailed": "Copy failed",
       "copyLink": "Copy link",
-      "copySuccess": "Link copied successfully. You can paste it in the address bar.",
+      "copySuccess": "The link is copied successfully. You can paste it in any image address bar and use it.",
       "deleteWarningText": "Cannot be recovered after deletion. Are you sure you want to continue?",
       "fileName": "Original file name",
       "infoTitle": "File details",
@@ -211,6 +222,8 @@
     },
     "userInfo": {
       "appName": "My Information",
+      "currentAccount": "Current account",
+      "settingSaveLocal": "This function is only saved locally",
       "theme": "Theme",
       "themeStyle": {
         "auto": "Follow the system ",
@@ -222,12 +235,14 @@
   "common": {
     "action": "Action",
     "add": "Add",
+    "addCardToGroup": "Add to card group",
     "addSuccess": "Added successfully",
     "appName": "Sun-Panel",
     "backgroundColor": "Background color",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "continue": "Continue",
+    "current": "Current",
     "delete": "Delete",
     "deleteConfirm": "Are you sure you want to delete?",
     "deleteConfirmByName": "Are you sure you want to delete {name}?",
@@ -241,6 +256,7 @@
     "export": "Export",
     "exportSuccess": "Exported successfully",
     "failed": "Operation failed",
+    "goToLogin": "Go to login",
     "icon": "Icon",
     "image": "Image",
     "import": "Import",
@@ -249,16 +265,21 @@
     "inputPlaceholderByText": "Please enter {text}",
     "language": "Language",
     "leastOne": "Please keep at least one",
+    "login": "Log in",
+    "logout": "Logout",
     "lookDoc": "View documentation",
     "networkError": "Network error, please try again later",
     "nikeName": "Nickname",
     "no": "No",
     "noData": "No data available",
+    "noHttpsWarning": "When accessed under non-https, this function may be limited",
     "noPorAuth": "This function is a PRO authorized function and requires authorization before it can be used. If it has been authorized, please refresh the page. ",
+    "onlyName": "Only Name",
     "password": "Password",
     "publicModeRestricted": "This feature is restricted in public mode.",
     "refresh": "Refresh",
     "refreshPage": "Please refresh the page",
+    "reload": "Reload",
     "repeatLater": "Please try again later",
     "reset": "Reset",
     "role": {
@@ -270,6 +291,7 @@
     "saveSort": "Save sort",
     "saveSuccess": "Saved successfully",
     "serverError": "Server error",
+    "setting": "Setting",
     "show": "Show",
     "sort": "Sort",
     "style": "Style",
@@ -281,10 +303,27 @@
     "uploadFail": "Upload failed",
     "username": "Username",
     "verify": "Verify",
+    "viewReason": "View Reason",
+    "viewSolution": "View solutions",
     "warning": "Warning",
     "yes": "Yes"
   },
+  "components": {
+    "pwaReloadPrompt": {
+      "promptContent": "The current page is a cached old version. Click \"Reload\" to update to the latest version."
+    }
+  },
   "deskModule": {
+    "accountSwitcher": {
+      "accountExist": "The account already exists, please try to add another account",
+      "accountSwitch": "Account switch",
+      "addAccount": "Add existing accounts",
+      "addAccountQuantityLimit": "Non-RPO authorization, the number of account switching is limited to {number}",
+      "failed": "Invalid",
+      "loggedInAccount": "Already logged in account",
+      "logoutAllConfirmText": "Are you sure you want to safely log out of all accounts?",
+      "logoutConfirmText": "Are you sure you want to exit ({username})"
+    },
     "clock": {
       "fri": "Friday",
       "mon": "Monday",
@@ -304,14 +343,18 @@
       "urlKeywordhint": "If the searched keyword is not at the end, you can use \"%s\" to indicate"
     },
     "systemMonitor": {
+      "cpuCountCoreNum": "Total number of cores",
       "cpuState": "CPU status",
       "customTitle": "Custom title",
       "diskMountPoint": "Mount point",
       "diskState": "Disk status",
+      "free": "Free",
       "memoryState": "Memory status",
       "progressColor": "Main color",
       "progressRailColor": "Secondary color",
-      "systemState": "System status"
+      "systemState": "System status",
+      "total": "Total",
+      "used": "Used"
     }
   },
   "form": {
@@ -319,7 +362,6 @@
   },
   "iconItem": {
     "add": "Add item",
-    "advancedFeatures": "Advanced Features",
     "builtInApp": "Built-in app",
     "builtInAppOpen": "Built-in app",
     "builtinApp": "Built-in app",
@@ -329,13 +371,14 @@
     "containerName": "Container",
     "currentPageLayerOpen": "Open in current page as layer",
     "currentPageOpen": "Open in current page",
+    "defaultUrl": "Default URL",
     "dockerAction": {
       "startContainer": "Start container",
       "stopContainer": "Stop container"
     },
     "dockerContainerError": "Container exception",
     "dockerGetContainerListFailed": "Failed to get container list",
-    "dockerStatusCard": "Docker container status card",
+    "dockerStatusCard": "Container status",
     "edit": "Edit item",
     "getGroupFail": "Failed to get group information",
     "getIcon": "Get icon",
@@ -354,17 +397,19 @@
     "inputIconUrlOrUpload": "Enter icon URL or upload",
     "lanUrl": "LAN URL",
     "lanUrlInputPlaceholder": "http(s):// (Intranet environment, will redirect to this address)",
+    "moreOptions": "More options",
     "newWindowOpen": "Open in new window",
     "onlineIcon": "Online icon",
     "onlineIconLibrary": "Online icon library",
-    "onlyName": "Unique identifier (English identifier, used as OpenAPI, corresponding field: 'onlyName')",
     "onlyNameExisted": "The unique identifier is already occupied",
+    "onlyNameTip": "English only name, Can be used as OpenAPI, corresponding field: \"onlyName\"; it can also beautify cards with custom js, css, and footers",
     "openMethod": "Open method",
     "openPageAndStartContainer": "Start the container before opening the page",
     "ordinaryIcon": "Normal icon",
     "preview": "Effect preview (for reference only)",
     "previewTransparentCanvas": "Canvas transparent",
     "resetBackground": "Reset",
+    "selectOneIcon": "Please select an icon",
     "selectUpload": "Local upload",
     "showBadgeStatus": "Show status badge",
     "showBadgeStatusAll": "All",
@@ -373,10 +418,10 @@
     "showBadgeStatusRestarting": "Restarting",
     "showBadgeStatusRunning": "Running",
     "systemApp": "system applications",
-    "url": "URL",
     "urlNoHttpStartWarn": "Reminder: The link does not start with the standard \"http://\" or \"https://\". If it is correct, please ignore this reminder."
   },
   "login": {
+    "captchaCodePlaceholder": "Please enter the captcha",
     "loginButton": "Login",
     "passwordPlaceholder": "Password",
     "usernamePlaceholder": "Username",

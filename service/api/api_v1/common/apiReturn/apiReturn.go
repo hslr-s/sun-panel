@@ -99,7 +99,7 @@ func Error(ctx *gin.Context, errMsg string) {
 
 // 返回错误 需要个性化定义的错误|带返回数据的错误
 func ErrorNoAccess(ctx *gin.Context) {
-	ErrorCode(ctx, 1005, global.Lang.Get("common.no_access"), nil)
+	ErrorByCode(ctx, ErrCodeNoCurrentPermission)
 }
 
 // 返回错误 参数错误
@@ -118,7 +118,7 @@ func ErrorDatabase(ctx *gin.Context, errMsg string) {
 // 返回错误 数据记录未找到
 func ErrorDataNotFound(ctx *gin.Context) {
 	// ErrorCode(ctx, ERROR_CODE_DATA_RECORD_NOT_FOUND, "未找到数据记录", nil)
-	ErrorByCode(ctx, -1)
+	ErrorByCode(ctx, ErrCodeNoDataRecordFound)
 }
 
 func ErrorByCode(ctx *gin.Context, code int) {

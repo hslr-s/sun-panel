@@ -8,17 +8,34 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   return [
     vue(),
+
     env.VITE_GLOB_APP_PWA === 'true' && VitePWA({
-      injectRegister: 'auto',
-      manifest: {
-        name: 'Sun-Panel',
-        short_name: 'Sun-Panel',
-        icons: [
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+      registerType: 'prompt',
+      manifest: false,
+      injectRegister: false,
+      workbox: {
+        cleanupOutdatedCaches: true,
+        cacheId: env.VITE_APP_VERSION,
+        clientsClaim: true,
+        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg}'],
+        globIgnores: ['**/custom/**'], // 排除 /custom/ 目录
+        navigateFallback: '/index.html', // 回退页面
+        navigateFallbackDenylist: [/^\/custom\//], // 排除 /custom/ 路径
+        runtimeCaching: [
+          {
+            urlPattern: /^\/custom\//, // 匹配 /custom/ 路径
+            handler: 'NetworkFirst', // 优先从网络获取
+            options: {
+              cacheName: 'custom-cache',
+            },
+          },
         ],
       },
+      devOptions: {
+        enabled: false,
+      },
     }),
+
     createSvgIconsPlugin({
       iconDirs: [path.resolve(process.cwd(), 'src/assets/svg-icons')],
       symbolId: '[name]',

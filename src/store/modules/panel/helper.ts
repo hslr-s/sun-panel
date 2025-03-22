@@ -14,8 +14,10 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     iconTextColor: '#ffffff',
     iconTextInfoHideDescription: false,
     iconTextIconHideTitle: false,
+    logoShow: true,
     logoText: 'Sun-Panel',
     logoImageSrc: '',
+    clockShow: true,
     clockShowSecond: false,
     searchBoxShow: false,
     searchBoxSearchIcon: false,
@@ -32,7 +34,8 @@ export function defaultStatePanelConfig(): Panel.panelConfig {
     systemMonitorShowTitle: true,
     systemMonitorPublicVisitModeShow: false,
     netModeChangeButtonShow: true,
-
+    netModeChangeAuto: false,
+    netModeChangeAutoMaxPingMs: 200,
   }
 }
 

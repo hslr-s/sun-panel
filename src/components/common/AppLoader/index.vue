@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { defineAsyncComponent, onMounted, shallowRef, watch } from 'vue'
-import { NSpin } from 'naive-ui'
+import { NButton, NResult, NSpin } from 'naive-ui'
+import { t } from '@/locales'
+import { router } from '@/router'
 
 const props = defineProps<{
   componentName: string | null
@@ -44,7 +46,13 @@ onMounted(() => {
       <div v-else-if="!dynamicComponent">
         <!-- Component not found! -->
         <div class="mt-[10px]">
-          {{ $t('apps.common.notFound') }}
+          <NResult status="404" :description="$t('apps.common.notFound')">
+            <template #footer>
+              <NButton type="success" @click="router.push({ name: 'login' })">
+                {{ t('common.goToLogin') }}
+              </NButton>
+            </template>
+          </NResult>
         </div>
       </div>
     </NSpin>

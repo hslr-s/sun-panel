@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { NButton, NCard, NForm, NFormItem, NInput, NSelect, NSwitch, useMessage, useOsTheme } from 'naive-ui'
+import type { InputInst } from 'naive-ui'
 import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { Captcha, SvgIcon } from '@/components/common'
 import { login } from '@/api'
-import { useAppStore, useAuthStore } from '@/store'
-import { SvgIcon } from '@/components/common'
+import { useAccountManagerStore, useAppStore, useAuthStore, usePanelState } from '@/store'
 import { router } from '@/router'
 import { t } from '@/locales'
 import { languageOptions } from '@/utils/defaultData'
@@ -12,12 +14,17 @@ import { getSiteStting } from '@/api/openness'
 import { apiRespErrMsg, setTitle } from '@/utils/cmn'
 import { defaultSetting } from '@/store/modules/app/helper'
 
+const route = useRoute()
 // const userStore = useUserStore()
 const authStore = useAuthStore()
 const appStore = useAppStore()
+const panelState = usePanelState()
+const accountManagerStore = useAccountManagerStore()
 const osTheme = useOsTheme()
 const ms = useMessage()
 const loading = ref(false)
+const defaultUsername = ref<string>(route.query.username as string || '')
+const inputpasswordRef = ref<InputInst | null>(null)
 const isDark = computed(() => {
   if (appStore.theme === 'auto')
     return osTheme.value === 'dark'
@@ -26,9 +33,10 @@ const isDark = computed(() => {
 })
 const languageValue = ref<Language>(appStore.language)
 const siteSetting = ref<GlobalSetting.SiteSetting>(defaultSetting().siteSetting)
+const captchaRef = ref()
 
 const form = ref<Login.LoginReqest>({
-  username: '',
+  username: defaultUsername.value,
   password: '',
 })
 
@@ -39,6 +47,16 @@ const loginPost = async () => {
     if (res.code === 0) {
       authStore.setToken(res.data.token)
       authStore.setUserInfo(res.data)
+      panelState.reset() // 重置面板配置
+
+      // 添加到账号管理器
+      accountManagerStore.addAccount({
+        username: res.data.username || form.value.username,
+        name: res.data.name || '',
+        id: res.data.id || 0,
+        cToken: res.data.token,
+        loginStatus: true,
+      })
 
       setTimeout(() => {
         ms.success(`Hi ${res.data.name},${t('login.welcomeMessage')}`)
@@ -51,14 +69,22 @@ const loginPost = async () => {
     }
   }
   catch (error) {
+    if (appStore.siteSetting.isEnableLoginCaptcha)
+      captchaRef.value.refresh()
+
     apiRespErrMsg(error)
     loading.value = false
   }
 }
 
-function handleSubmit() {
-  // 点击登录按钮触发
-  loginPost()
+function handleEnterDown(e: any) {
+  // 修复Mac safari浏览器中文输入法回车触发
+  if (e.keyCode === 229)
+    return
+  if (e.key === 'Enter' && !e.isComposing) {
+    // 点击登录按钮触发
+    loginPost()
+  }
 }
 
 function handleChangeLanuage(value: Language) {
@@ -92,6 +118,15 @@ function handleTheme(value: boolean) {
 onMounted(() => {
   setTitle(appStore.siteSetting.title)
   getConfig()
+  if (defaultUsername.value !== '') {
+    form.value.username = defaultUsername.value
+    inputpasswordRef.value?.focus()
+  }
+
+  // 如果已经登录并且不是在添加账号登录页面，跳转到首页
+  if (route.query.type !== 'addLogin' && (authStore.token !== null && authStore.token !== '')) {
+    router.push({ path: '/' })
+  }
 })
 </script>
 
@@ -132,7 +167,7 @@ onMounted(() => {
           {{ appStore.siteSetting.title }}
           <!-- </NGradientText> -->
         </div>
-        <NForm :model="form" label-width="100px" @keydown.enter="handleSubmit">
+        <NForm :model="form" label-width="100px" @keydown.enter="handleEnterDown">
           <NFormItem>
             <NInput v-model:value="form.username" :placeholder="$t('login.usernamePlaceholder')">
               <template #prefix>
@@ -142,15 +177,22 @@ onMounted(() => {
           </NFormItem>
 
           <NFormItem>
-            <NInput v-model:value="form.password" type="password" :placeholder="$t('login.passwordPlaceholder')">
+            <NInput ref="inputpasswordRef" v-model:value="form.password" type="password" :placeholder="$t('login.passwordPlaceholder')">
               <template #prefix>
                 <SvgIcon icon="mdi:password-outline" />
               </template>
             </NInput>
           </NFormItem>
 
+          <NFormItem v-if="appStore.siteSetting.isEnableLoginCaptcha">
+            <div class="w-[130px] h-[40px] mr-[20px] rounded border flex cursor-pointer">
+              <Captcha ref="captchaRef" src="/api/captcha/getImage" />
+            </div>
+            <NInput v-model:value="form.vcode" size="large" type="text" clearable :placeholder="t('login.captchaCodePlaceholder')" />
+          </NFormItem>
+
           <NFormItem style="margin-top: 10px">
-            <NButton :loading="loading" class="login-button" @click="handleSubmit">
+            <NButton :loading="loading" class="login-button" @click="loginPost">
               {{ $t('login.loginButton') }}
             </NButton>
           </NFormItem>

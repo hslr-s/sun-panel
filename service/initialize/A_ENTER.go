@@ -40,6 +40,7 @@ func getDefaultConfig() map[string]map[string]string {
 		"base": {
 			"http_address":     "0.0.0.0",
 			"http_port":        "3002",
+			"https_port":       "3003",
 			"source_path":      "./uploads",      // 存放文件的路径
 			"source_temp_path": "./runtime/temp", // 存放文件的缓存路径
 			"web_path":         "./web",
@@ -71,7 +72,7 @@ func InitApp() error {
 
 	// 配置初始化
 	{
-		if config, err := config.ConfigInit(cmdParams.CfgPath); err != nil {
+		if config, err := config.ConfigInit(cmdParams.CfgPath, false); err != nil {
 			global.Logger.Errorln("Configuration initialization error", err)
 			return err
 		} else {
@@ -173,22 +174,30 @@ func CommandRun(arg CMDParams) {
 	if cmdParams.CfgInit {
 		// 生成配置文件
 		fmt.Println("Generating configuration file")
-		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cmdParams.CfgPath, "conf.example.ini"))
-		cmn.AssetsTakeFileToPath("conf.example.ini", filepath.Join(cmdParams.CfgPath, "conf.ini"))
-		fmt.Println("The configuration file has been created  conf/conf.ini ", "Please modify according to your own needs")
+		_, initError := config.ConfigInit(cmdParams.CfgPath, true)
+		if initError != nil {
+			fmt.Println("ERROR: config init:", initError.Error())
+			os.Exit(1) // 务必退出
+		}
+
+		fmt.Println("The configuration file has been created ", filepath.Join(cmdParams.CfgPath, "conf.ini"), "Please modify according to your own needs")
 		os.Exit(0) // 务必退出
 	} else if cmdParams.PwdReset {
 		// 重置密码
 
 		// 配置初始化
-		config, _ := config.ConfigInit(cmdParams.CfgPath)
+		config, initError := config.ConfigInit(cmdParams.CfgPath, false)
+		if initError != nil {
+			fmt.Println("ERROR: config init:", initError.Error())
+			os.Exit(1) // 务必退出
+		}
 		global.Config = config
 
 		DatabaseConnect()
 		userInfo := models.User{}
 		if err := global.Db.Where("role=?", 1).Order("id").First(&userInfo).Error; err != nil {
 			fmt.Println("ERROR", err.Error())
-			os.Exit(0) // 务必退出
+			os.Exit(1) // 务必退出
 		}
 
 		newPassword := "12345678"
@@ -200,7 +209,7 @@ func CommandRun(arg CMDParams) {
 		// 重置第一个管理员的密码
 		if err := global.Db.Select("Password", "Token").Where("id=?", userInfo.ID).Updates(&updateInfo).Error; err != nil {
 			fmt.Println("ERROR", err.Error())
-			os.Exit(0) // 务必退出
+			os.Exit(1) // 务必退出
 		}
 
 		fmt.Println("The password has been successfully reset. Here is the account information")
@@ -208,8 +217,10 @@ func CommandRun(arg CMDParams) {
 		fmt.Println("Password ", newPassword)
 		os.Exit(0) // 务必退出
 	} else {
+		// 正常运行
 		return
 	}
+	// 无匹配的命令
 	os.Exit(0) // 务必退出
 }
 

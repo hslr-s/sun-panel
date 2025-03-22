@@ -17,7 +17,7 @@ type UserApi struct{}
 func (a *UserApi) GetInfo(c *gin.Context) {
 	userInfo, _ := base.GetCurrentUserInfo(c)
 	apiReturn.SuccessData(c, gin.H{
-		"userId":    userInfo.ID,
+		// "userId":    userInfo.ID,
 		"id":        userInfo.ID,
 		"headImage": userInfo.HeadImage,
 		"name":      userInfo.Name,

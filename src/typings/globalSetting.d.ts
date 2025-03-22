@@ -4,6 +4,8 @@ declare namespace GlobalSetting {
         favicoUrl: string
         title: string
         loginBackgroundUrl: string   
+        isEnableLoginCaptcha:boolean
+        isDisableItemCardCache:boolean
     }
 
     interface GlobalSettingCustomJsAndCss {

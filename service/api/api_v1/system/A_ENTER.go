@@ -9,4 +9,5 @@ type ApiSystem struct {
 	ModuleConfigApi ModuleConfigApi
 	MonitorApi      MonitorApi
 	OpenApiApi      OpenApiApi
+	CaptchaApi      CaptchaApi
 }

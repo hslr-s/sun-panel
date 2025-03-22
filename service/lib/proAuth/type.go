@@ -66,6 +66,16 @@ type PingResp struct {
 	ProExpiration *time.Time // pro授权过期时间
 }
 
+type RefreshInfoReq struct {
+	TokenBase
+}
+
+type RefreshInfoResp struct {
+	UserInfo
+	RespBase
+	ProExpiration *time.Time // pro授权过期时间
+}
+
 type VersionType string
 
 const (

@@ -1,11 +1,8 @@
 import type { AxiosProgressEvent, AxiosResponse, GenericAbortSignal } from 'axios'
 import request from './axios'
-import { message } from './apiMessage'
-import { t } from '@/locales'
 import { useAppStore, useAuthStore } from '@/store'
-import { router } from '@/router'
 
-let loginMessageShow = false
+// const loginMessageShow = false
 export interface HttpOption {
   url: string
   data?: any
@@ -34,51 +31,7 @@ function http<T = any>(
     if (res.data.code === 0)
       return res.data
 
-    if (res.data.code === 1001) {
-      // 避免重复弹窗
-      if (loginMessageShow === false) {
-        loginMessageShow = true
-        message.warning(t('api.loginExpires'), {
-        // message.warning('登录过期', {
-          onLeave() {
-            loginMessageShow = false
-          },
-        })
-      }
-
-      router.push({ path: '/login' })
-      authStore.removeToken()
-      return res.data
-    }
-
-    if (res.data.code === 1000) {
-      router.push({ path: '/login' })
-      authStore.removeToken()
-      return res.data
-    }
-
-    if (res.data.code === 1005) {
-      message.warning(res.data.msg)
-      return res.data
-    }
-
     return Promise.reject(res.data)
-
-    // if (res.data.code === -1) {
-    //   // message.warning(res.data.msg)
-    //   // router.push({ path: '/login' })
-    //   // authStore.removeToken()
-    //   return res.data
-    // }
-
-    // if (!apiRespErrMsg(res.data)) {
-    //   console.log(6666)
-    //   return Promise.reject(res.data)
-    // }
-    // else {
-    //   console.log(7777)
-    //   return res.data
-    // }
   }
 
   const failHandler = (error: Response<Error>) => {
@@ -99,7 +52,7 @@ function http<T = any>(
   if (!headers)
     headers = {}
 
-  headers.token = authStore.token
+  headers.token = headers.token || authStore.token
   headers.lang = appStore.language
   return method === 'GET'
     ? request.get(url, { params, signal, onDownloadProgress }).then(successHandler, failHandler)

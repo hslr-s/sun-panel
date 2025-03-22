@@ -16,11 +16,16 @@ func InitItemIcon(router *gin.RouterGroup) {
 		r.POST("/panel/itemIcon/saveSort", itemIcon.SaveSort)
 		r.POST("/panel/itemIcon/addMultiple", itemIcon.AddMultiple)
 		r.POST("/panel/itemIcon/getSiteFavicon", itemIcon.GetSiteFavicon)
+		r.GET("/panel/itemIcon/imageProxy", itemIcon.ImageProxy)
+		r.POST("/panel/itemIcon/getSiteFaviconList", itemIcon.GetSiteFaviconList)
+		r.POST("/panel/itemIcon/downloadFavicon", itemIcon.DownloadFavicon)
+
 	}
 
 	// 公开模式
 	rPublic := router.Group("", middleware.PublicModeInterceptor)
 	{
+
 		rPublic.POST("/panel/itemIcon/getListByGroupId", itemIcon.GetListByGroupId)
 	}
 }

@@ -3,11 +3,12 @@ package system
 import (
 	"strconv"
 	"strings"
+	"sun-panel/api/api_v1/common/apiData/panelApiStructs"
 	"sun-panel/api/api_v1/common/apiReturn"
 	"sun-panel/api/api_v1/common/base"
+	"sun-panel/biz"
 	"sun-panel/global"
 	"sun-panel/lib/cmn"
-	"sun-panel/lib/cmn/systemSetting"
 	"sun-panel/models"
 
 	"github.com/gin-gonic/gin"
@@ -44,8 +45,16 @@ func (l LoginApi) Login(c *gin.Context) {
 		return
 	}
 
-	settings := systemSetting.ApplicationSetting{}
-	global.SystemSetting.GetValueByInterface("system_application", &settings)
+	settings := panelApiStructs.GlobalSettingSite{}
+	biz.GlobalSetting.GetSiteStting(&settings)
+	// 验证验证码
+	if settings.GlobalSettingSiteSetting.IsEnableLoginCaptcha {
+		if err := biz.Captcha.CaptchaVerifyHandle(c, param.VCode, true); err != nil {
+			global.Logger.Errorln("Login error:", err.Error())
+			apiReturn.ErrorByCode(c, apiReturn.ErrCodeCaptchaError)
+			return
+		}
+	}
 
 	mUser := models.User{}
 	var (

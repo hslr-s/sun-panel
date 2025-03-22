@@ -9,9 +9,11 @@ type GlobalSettingType struct {
 }
 
 type GlobalSettingSiteSetting struct {
-	FaviconUrl         string `json:"favicoUrl"`
-	Title              string `json:"title"`
-	LoginBackgroundUrl string `json:"loginBackgroundUrl"`
+	FaviconUrl             string `json:"favicoUrl"`
+	Title                  string `json:"title"`
+	LoginBackgroundUrl     string `json:"loginBackgroundUrl"`
+	IsEnableLoginCaptcha   bool   `json:"isEnableLoginCaptcha"`
+	IsDisableItemCardCache bool   `json:"isDisableItemCardCache"`
 }
 
 var ErrGlobalSettingTypeNoPROAuthorization = errors.New("no PRO authorization")

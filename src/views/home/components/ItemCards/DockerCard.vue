@@ -1,19 +1,28 @@
 <script setup lang="ts">
+import type { WatchStopHandle } from 'vue'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { DropdownOption } from 'naive-ui'
-import { NDropdown, NEllipsis, NModal, NSkeleton, NSpin, useMessage } from 'naive-ui'
+import { NDropdown, NEllipsis, NFlex, NSpin, useMessage } from 'naive-ui'
 import { useDockerCardStore } from './dockerCard/store'
+import { getItemUrl } from './common'
 import type { PanelPanelConfigStyleEnum } from '@/enums'
-import { ItemCard, ItemIcon } from '@/components/common'
+import { IframeLayer, ItemCard, ItemIcon, STip } from '@/components/common'
 import { t } from '@/locales'
 import { PanelStateNetworkModeEnum } from '@/enums'
 import { DockerContainerInfoState } from '@/enums/docker'
 import { useAuthStore, usePanelState } from '@/store'
-import { execSwitchAction as execSwitchActionApi, getContainerStatus as getContainerStatusApi } from '@/api/docker/container'
+import {
+  execSwitchAction as execSwitchActionApi,
+  getContainerIDByName as getContainerIDByNameApi,
+  getContainerStatus as getContainerStatusApi,
+} from '@/api/docker/container'
+
+import { edit as itemIconEditApi } from '@/api/panel/itemIcon'
 
 import { VisitMode } from '@/enums/auth'
-import { apiRespErrMsg } from '@/utils/request/apiMessage'
+import { apiRespErrMsg } from '@/utils/cmn/apiMessage'
 import { bytesToSize } from '@/utils/cmn'
+import { useDomainLinks } from '@/hooks/useDomainLinks'
 
 interface Prop {
   itemInfo: Panel.ItemInfo
@@ -29,8 +38,10 @@ const emit = defineEmits<{
   (e: 'delete'): void
   (e: 'edit'): void
 }>()
+
 const panelState = usePanelState()
 const authStore = useAuthStore()
+const domainLinks = useDomainLinks()
 // let intervalId: any
 const showBadgeStatus = ref<DockerContainerInfoState[]>([])
 const ms = useMessage()
@@ -38,8 +49,12 @@ const ms = useMessage()
 const windowShow = ref<boolean>(false)
 const windowSrc = ref<string>('')
 const windowTitle = ref<string>('')
-const windowIframeRef = ref(null)
+// const windowIframeRef = ref(null)
 const windowIframeIsLoad = ref<boolean>(false)
+
+const itemCardInfo = ref(props.itemInfo)
+
+const unRegisterListenPool: { [key: string]: WatchStopHandle } = {}
 
 const store = useDockerCardStore()
 
@@ -48,6 +63,7 @@ const dropdownMenuY = ref(0)
 const dropdownShow = ref(false)
 const badgeStatusColor = ref('')
 const loading = ref(false)
+const operationLoading = ref(false) // 操作的loading 启动或者关闭容器
 const badgeMsg = ref('')
 const dockerErrorMsg = ref('')
 const lastTime = ref('')
@@ -77,7 +93,10 @@ const calculateLuminance = (color: string) => {
 function openPage(openMethod: number, url: string, title?: string) {
   switch (openMethod) {
     case 1:
-      window.location.href = url
+      if (window.self !== window.top)
+        window.parent.location.href = url
+      else
+        window.location.href = url
       break
     case 2:
       window.open(url)
@@ -94,9 +113,9 @@ function openPage(openMethod: number, url: string, title?: string) {
   }
 }
 
-function handWindowIframeIdLoad(payload: Event) {
-  windowIframeIsLoad.value = false
-}
+// function handWindowIframeIdLoad(payload: Event) {
+//   windowIframeIsLoad.value = false
+// }
 
 const textColor = computed(() => {
   const luminance = calculateLuminance(props.backgroundColor || defaultBackground)
@@ -104,22 +123,19 @@ const textColor = computed(() => {
 })
 
 // 点击项目
-function handleItemClick() {
+async function handleItemClick() {
   if (props.sortStatus) {
     emit('edit')
     return
   }
 
-  let jumpUrl = ''
+  const jumpUrl = await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs)
 
-  if (props.itemInfo)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo.lanUrl : props.itemInfo.url) as string
+  if (jumpUrl === '') {
+    return
+  }
 
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
-
-  // console.log('项目呗点击', containerState.value.runStatus, props.itemInfo.expandParam.openPageAndStart)
-  if (containerState.value.runStatus === DockerContainerInfoState.exited && props.itemInfo.expandParam.openPageAndStart === true) {
+  if (containerState.value.runStatus === DockerContainerInfoState.exited && itemCardInfo.value.expandParam.openPageAndStart === true) {
     // 判断当前是否为公开模式，公开模式进行拦截
     if (authStore.visitMode === VisitMode.VISIT_MODE_PUBLIC) {
       ms.warning(t('common.publicModeRestricted'))
@@ -127,24 +143,24 @@ function handleItemClick() {
     }
 
     execSwitchAction(true, () => {
-      openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
 
       // 容易被拦截暂时取消延时
-      // const delaySecond = props.itemInfo.expandParam.openPageAndStartDelaySecond
+      // const delaySecond = itemCardInfo.value.expandParam.openPageAndStartDelaySecond
       // if (delaySecond !== 0) {
       //   // console.log('延时打开页面')
       //   setTimeout(() => {
-      //     openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      //     openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
       //   }, delaySecond * 1000)
       // }
       // else {
       //   // console.log('不延时打开页面')
-      //   openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+      //   openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
       // }
     })
   }
   else {
-    openPage(props.itemInfo.openMethod, jumpUrl, props.itemInfo?.title)
+    openPage(itemCardInfo.value.openMethod, jumpUrl, itemCardInfo.value?.title)
   }
 }
 
@@ -164,23 +180,31 @@ function handleContextMenu(e: MouseEvent) {
   })
 }
 
+async function handleMousedowClick(event: MouseEvent) {
+  // 鼠标中间键点击
+  if (event.button === 1 && !props.sortStatus) {
+    event.preventDefault()
+    window.open(await getItemUrl(props.itemInfo, panelState.panelConfig.netModeChangeAutoMaxPingMs))
+  }
+}
+
 function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
   // console.log(currentRightSelectItem, key)
-  let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? props.itemInfo?.lanUrl : props.itemInfo?.url
-  if (props.itemInfo?.lanUrl === '')
-    jumpUrl = props.itemInfo.url
+  let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? itemCardInfo.value?.lanUrl : itemCardInfo.value?.url
+  if (itemCardInfo.value?.lanUrl === '')
+    jumpUrl = itemCardInfo.value.url
   switch (key) {
     case 'newWindows':
       window.open(jumpUrl)
       break
     case 'openWanUrl':
-      if (props.itemInfo)
-        openPage(props.itemInfo?.openMethod, props.itemInfo?.url, props.itemInfo?.title)
+      if (itemCardInfo.value)
+        openPage(itemCardInfo.value?.openMethod, itemCardInfo.value?.url, itemCardInfo.value?.title)
       break
     case 'openLanUrl':
-      if (props.itemInfo && props.itemInfo.lanUrl)
-        openPage(props.itemInfo?.openMethod, props.itemInfo.lanUrl, props.itemInfo?.title)
+      if (itemCardInfo.value && itemCardInfo.value.lanUrl)
+        openPage(itemCardInfo.value?.openMethod, itemCardInfo.value.lanUrl, itemCardInfo.value?.title)
       break
 
     case 'startContainer':
@@ -210,14 +234,14 @@ function getDropdownMenuOptions() {
 
   ]
 
-  if (props.itemInfo?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
+  if (itemCardInfo.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.wan) {
     dropdownMenuOptions.push({
       label: t('panelHome.openLanUrl'),
       key: 'openLanUrl',
     })
   }
 
-  if (props.itemInfo?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
+  if (itemCardInfo.value?.lanUrl && panelState.networkMode === PanelStateNetworkModeEnum.lan) {
     dropdownMenuOptions.push({
       label: t('panelHome.openWanUrl'),
       key: 'openWanUrl',
@@ -257,15 +281,14 @@ function getDropdownMenuOptions() {
 }
 
 function onClickoutside() {
-  // message.info('clickoutside')
   dropdownShow.value = false
 }
 
 async function execSwitchAction(action: boolean, startSuccessCallback?: () => void) {
-  loading.value = true
-  const id = props.itemInfo.expandParam.containerId
+  operationLoading.value = true
+  const containerId = itemCardInfo.value.expandParam.containerId
   await execSwitchActionApi({
-    id, action,
+    id: containerId, action,
   }).then(async () => {
     // 成功
     if (action) {
@@ -277,59 +300,116 @@ async function execSwitchAction(action: boolean, startSuccessCallback?: () => vo
     else {
       containerState.value.runStatus = DockerContainerInfoState.exited
     }
-    await getContainerStatus()
-    loading.value = false
+    await getContainerStatus(itemCardInfo.value)
+    operationLoading.value = false
   }).catch((res) => {
     // 失败
-    loading.value = false
+    operationLoading.value = false
     if (res.code === -1) {
-      dockerErrorMsg.value = res.msg
-      return
+      setContainerStatusError(res.msg)
     }
 
     apiRespErrMsg(res)
   })
 }
 
-async function getContainerStatus(showLoading?: boolean) {
-  const id = props.itemInfo.expandParam.containerId
-  if (!id)
+// 步骤：若容器名存在，将使用容器名查询出容器id，得到容器id后将更新卡片信息
+// 参数：stopCycle：终止循环
+async function fixCardDockerContainerIdByContainerName(info: Panel.ItemInfo) {
+  // const containerId = info.expandParam.containerId as string
+  const containerName = info.expandParam.containerName as string
+  // console.log('容器异常', containerId, containerName)
+  // 登录用户才能操作
+  if (authStore.visitMode === VisitMode.VISIT_MODE_LOGIN) {
+    await getContainerIDByNameApi(containerName).then(({ data }) => {
+      itemCardInfo.value.expandParam.containerId = data.id
+      // 更新卡片信息
+      itemIconEditApi(itemCardInfo.value).then(() => {
+        registAndListenContainerStatsUpdate(itemCardInfo.value)
+        getContainerStatus(info)
+      }).catch(() => {
+        // 更新卡片失败
+        setContainerStatusError(t('iconItem.dockerContainerError'))
+      })
+    }).catch(() => {
+      // 容器不存在
+      setContainerStatusError(t('iconItem.dockerContainerError'))
+    })
+  }
+  else {
+    setContainerStatusError(t('iconItem.dockerContainerError'))
+  }
+}
+
+// 设置为异常状态
+async function setContainerStatusError(errMsg: string) {
+  badgeStatusColor.value = 'red'
+  badgeMsg.value = t('iconItem.dockerContainerError')
+  dockerErrorMsg.value = errMsg
+}
+
+// 获取容器状态
+async function getContainerStatus(info: Panel.ItemInfo, showLoading?: boolean) {
+  const containerId = info.expandParam.containerId as string
+  const containerName = info.expandParam.containerName as string
+  if (!containerId)
     return
 
   if (showLoading)
     loading.value = true
-  await getContainerStatusApi<Docker.Container.Stats>(id).then(({ data }) => {
-    // console.log('请求容器data', data)
+  await getContainerStatusApi<Docker.Container.Stats>(containerId).then(({ data }) => {
     lastTime.value = data.shotTime || ''
-    updateStats(data)
+    updateStats(info, data)
     badgeMsg.value = ''
-    // console.log('注册', id)
-    store.registerContainerQueryStats(id)
-  }).catch((res) => {
-    badgeStatusColor.value = 'red'
-    badgeMsg.value = t('iconItem.dockerContainerError')
-
-    // 【暂时不做了】 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
-    if (res.code === -1) {
-      dockerErrorMsg.value = res.msg
-      return
+    registAndListenContainerStatsUpdate(info)
+  }).catch(async (res) => {
+    // 容器异常（尝试自动修复）例如升级导致容器id变更，此处遍历容器尝试更新
+    if (containerName) {
+      await fixCardDockerContainerIdByContainerName(info)
     }
+    else {
+      if (res.code === -1) {
+        setContainerStatusError(res.msg)
+        return
+      }
 
-    apiRespErrMsg(res)
+      apiRespErrMsg(res)
+    }
   })
   if (showLoading)
     loading.value = false
 }
 
-function updateStats(data: Docker.Container.Stats) {
-  // console.log('数据域', props.itemInfo.title, data)
+function updateStats(info: Panel.ItemInfo, data: Docker.Container.Stats) {
+  if (!data) {
+    return
+  }
+
+  const d1 = new Date(data.shotTime || '')
+  const lt = new Date(lastTime.value || '')
+
+  // 对比当前的项目和全局的项目，不相同不更新
+  if (info.id !== itemCardInfo.value.id) {
+    return
+  }
+
+  // console.log('更新的项目', info.id, '当前全局的ID', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, '状态', data)
+  // console.log(itemCardInfo.value.expandParam.containerName, '数据时间：', data.shotTime, '上次时间', lastTime.value, '不更新', d1 < lt)
+
+  // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
+  if ((data.shotTime !== '' && lastTime.value !== '') && d1 < lt) {
+    // console.log('不更新', itemCardInfo.value.expandParam.containerName)
+    return // 不更新
+  }
+  // console.log('容器状态更新', itemCardInfo.value.expandParam.containerName)
+
+  lastTime.value = data.shotTime || ''
 
   containerState.value = data
   describeText.value = ''
 
   if (data.errorMessage !== '') {
-    badgeMsg.value = t('iconItem.dockerContainerError')
-    dockerErrorMsg.value = data.errorMessage
+    setContainerStatusError(data.errorMessage)
   }
 
   if (containerState.value.runStatus) {
@@ -338,18 +418,24 @@ function updateStats(data: Docker.Container.Stats) {
     switch (containerState.value.runStatus) {
       case DockerContainerInfoState.running:
         badgeStatusColor.value = '#18A058'
+        dockerErrorMsg.value = ''
         break
+
       case DockerContainerInfoState.restarting:
         badgeStatusColor.value = '#F0A020FF'
+        dockerErrorMsg.value = ''
         break
+
       case DockerContainerInfoState.error:
         badgeStatusColor.value = 'red'
         break
 
       default:
         badgeStatusColor.value = '#7B7B7B'
+        dockerErrorMsg.value = ''
         break
     }
+    // console.log(describeText.value, badgeStatusColor.value)
   }
 }
 
@@ -373,34 +459,27 @@ function isShowBadgeStatus(value: DockerContainerInfoState): boolean {
   return inShowBadgeStatus(value) && containerState.value.runStatus === value
 }
 
-onMounted(async () => {
-  if (props.itemInfo.expandParam.containerId) {
-    await getContainerStatus(true)
+function registAndListenContainerStatsUpdate(info: Panel.ItemInfo) {
+  // const containerId = info.expandParam.containerId
+  const containerId = itemCardInfo.value.expandParam.containerId
+  // const containerName = info.expandParam.containerName
+  // const containerName = itemCardInfo.value.expandParam.containerName
+  // const cardId = itemCardInfo.value.id
+  // console.log('watch register', cardId, containerName, containerId)
 
-    // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
-    watch(() => store.containerRuningStats[props.itemInfo.expandParam.containerId], (value) => {
-      // console.log('数据有变化', props.itemInfo.expandParam.containerId)
-      if (value) {
-        const d1 = new Date(value.shotTime || '')
-        const lt = new Date(lastTime.value || '')
-
-        // 如果任意两个时间有一个为空或者数据时间大于上次更新时间，更新！
-        if ((value.shotTime === '' || lastTime.value === '') || d1 < lt)
-          return // 不更新
-
-        lastTime.value = value.shotTime || ''
-        updateStats(value)
+  // 需要保持最新的数据，防止被定时的数据刷掉，可能需要加入一个时间字段来进行时间新旧对比判断是否更新
+  if (!unRegisterListenPool[containerId]) {
+    const unRegisterListen = watch(() => store.containerRuningStats[containerId], (value) => {
+      // console.log('watch', cardId, containerName, containerId)
+      if (value && Object.keys(value).length !== 0 && value.runStatus) {
+        updateStats(info, value)
       }
     })
+
+    unRegisterListenPool[containerId] = unRegisterListen
+    store.registerContainerQueryStats(containerId)
   }
-
-  if (props.itemInfo.expandParam.showBadgeStatus)
-    showBadgeStatus.value = props.itemInfo.expandParam.showBadgeStatus
-
-  // intervalId = setInterval(() => {
-  //   getContainerStatus()
-  // }, 5000) // 5000毫秒，即5秒
-})
+}
 
 function formatMemory(sizeInMB: number): string {
   // 定义单位数组
@@ -433,27 +512,74 @@ function formatMemory(sizeInMB: number): string {
   return `${formattedSize} ${units[unitIndex]}`
 }
 
+function handleDockerErrorMsgClick() {
+  // console.log('异常点击', domainLinks.faqLinkWithLang('docker_card_abnormal'))
+}
+
+function unMounted(info: Panel.ItemInfo) {
+  const containerId = info.expandParam.containerId
+  // const containerName = info.expandParam.containerName
+  // console.log('注销卡片', info.id, containerName, containerId)
+  // 取消监听容器的状态
+  if (unRegisterListenPool[containerId]) {
+    unRegisterListenPool[containerId]()
+    store.cancelContainerQueryStats(containerId)
+    delete unRegisterListenPool[containerId]
+
+    // console.log('成功注销卡片', info.id, containerName, containerId)
+  }
+}
+
+async function mounted(info: Panel.ItemInfo) {
+  if (info.expandParam.containerId) {
+    await getContainerStatus(info, true)
+  }
+
+  if (info.expandParam.showBadgeStatus)
+    showBadgeStatus.value = info.expandParam.showBadgeStatus
+}
+
+// 因为动态缓存卡片所以要监听变化
+watch(() => props.itemInfo, async (newValue) => {
+  // 修复docker卡片更新，但是容器id没有变化，导致重复加载数据 (2024-08-22)
+  if (itemCardInfo.value.expandParam.containerId === props.itemInfo.expandParam.containerId) {
+    itemCardInfo.value = props.itemInfo // 修复编辑卡片之后所有的修改未生效， 2024-10-12
+    return
+  }
+
+  // docker卡片更新并且 containerId 变化了， 注销之前的监听
+  unMounted(itemCardInfo.value)
+  itemCardInfo.value = newValue
+  // console.log('初始化 - 替换', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, itemCardInfo.value.title, itemCardInfo.value.expandParam.containerId)
+  mounted(itemCardInfo.value)
+})
+
+onMounted(() => {
+  // console.log('初始化', itemCardInfo.value.id, itemCardInfo.value.expandParam.containerName, itemCardInfo.value.title, itemCardInfo.value.expandParam.containerId)
+  mounted(itemCardInfo.value)
+})
+
 onUnmounted(() => {
-  // clearInterval(intervalId)
-  store.cancelContainerQueryStats(props.itemInfo.expandParam.containerId)
+  unMounted(itemCardInfo.value)
 })
 </script>
 
 <template>
   <div
-    class="app-icon w-full"
-    :title="describeText"
+    class="app-icon w-full" :title="describeText"
     @click="handleItemClick"
     @contextmenu="(e) => handleContextMenu(e)"
+    @mousedown="handleMousedowClick"
   >
     <ItemCard
       :card-type-style="cardStyle" :background-color="backgroundColor"
-      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor" :icon-text="itemInfo?.title"
+      :icon-text-icon-hide-title="iconTextIconHideTitle" :icon-text-color="iconTextColor"
+      :icon-text="itemCardInfo?.title"
     >
       <template #small>
-        <NSpin :show="loading">
-          <div class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl relative">
-            <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />
+        <NSpin :show="operationLoading">
+          <div class="app-icon-small-icon overflow-hidden w-[70px] h-[70px] mx-auto rounded-2xl relative">
+            <ItemIcon :item-icon="itemCardInfo?.icon" :color="textColor" />
             <div
               v-if="isShowBadgeStatus(containerState.runStatus as DockerContainerInfoState)"
               class="dot dot-small flex items-center justify-center border"
@@ -466,13 +592,13 @@ onUnmounted(() => {
       </template>
 
       <template #info>
-        <NSpin :show="loading" style="width: 100%;">
+        <NSpin :show="operationLoading" style="width: 100%;">
           <div class="flex">
             <!-- 图标 -->
             <div class="app-icon-info-icon w-[70px] h-[70px]">
               <div class="w-[70px] h-full flex items-center justify-center">
                 <ItemIcon
-                  :item-icon="itemInfo?.icon" :size="50" class="overflow-hidden rounded-xl"
+                  :item-icon="itemCardInfo?.icon" :size="50" class="overflow-hidden rounded-xl"
                   :color="textColor"
                 />
               </div>
@@ -495,12 +621,15 @@ onUnmounted(() => {
               <div class="app-icon-info-text-box w-full">
                 <div class="app-icon-info-text-box-title font-semibold w-full">
                   <NEllipsis>
-                    {{ itemInfo?.title }}
+                    {{ itemCardInfo?.title }}
                   </NEllipsis>
                 </div>
                 <div v-if="!iconTextInfoHideDescription" class="app-icon-info-text-box-description">
+                  <NEllipsis v-if="loading" :line-clamp="2" class="text-xs">
+                    loading...
+                  </NEllipsis>
                   <NEllipsis
-                    v-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2"
+                    v-else-if="containerState.runStatus === DockerContainerInfoState.running" :line-clamp="2"
                     class="text-xs"
                   >
                     CPU:{{ roundNumberToOneDecimalPlaces(containerState.cpuPercent) }}%
@@ -515,12 +644,25 @@ onUnmounted(() => {
                       {{ badgeMsg }}
                     </span>
                   </NEllipsis>
-                  <NEllipsis v-else :line-clamp="2" class="text-xs">
+                  <NFlex v-else :line-clamp="2" class="text-xs" align="center">
                     {{ t('iconItem.showBadgeStatusExited') }}
-                    <span class="text-[red]" :title="dockerErrorMsg">
-                      {{ badgeMsg }}
+                    <span
+                      v-if="dockerErrorMsg" class="text-[red]" :title="dockerErrorMsg"
+                      @click.stop="handleDockerErrorMsgClick"
+                    >
+                      <STip>
+                        <div class="max-w-[300px]">
+                          {{ badgeMsg }}: {{ dockerErrorMsg }}
+                          <a
+                            target="_blank" class="text-lime-600"
+                            :href="domainLinks.faqLinkWithLang('docker_card_abnormal')"
+                          >
+                            [{{ t('common.viewSolution') }}]
+                          </a>
+                        </div>
+                      </STip>
                     </span>
-                  </NEllipsis>
+                  </NFlex>
                 </div>
               </div>
             </div>
@@ -537,7 +679,10 @@ onUnmounted(() => {
     />
 
     <!-- 弹窗 -->
-    <NModal
+    <IframeLayer v-model:show="windowShow" :title="windowTitle" :src="windowSrc" move resize />
+
+    <!-- 旧弹窗 -->
+    <!-- <NModal
       v-model:show="windowShow" :mask-closable="false" preset="card"
       style="max-width: 1200px;height: 650px;border-radius: 1rem;" :bordered="true" size="small" role="dialog"
       aria-modal="true"
@@ -562,7 +707,7 @@ onUnmounted(() => {
           class="w-full h-full" frameborder="0" @load="handWindowIframeIdLoad"
         />
       </div>
-    </NModal>
+    </NModal> -->
   </div>
 </template>
 

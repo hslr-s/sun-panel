@@ -54,7 +54,7 @@ onMounted(() => {
     >
       <template #small>
         <div
-          class="app-icon-small-icon overflow-hidden rounded-2xl w-[70px] h-[70px] mx-auto rounded-2xl"
+          class="app-icon-small-icon overflow-hidden  w-[70px] h-[70px] mx-auto rounded-2xl"
           :title="itemInfo?.description"
         >
           <ItemIcon :item-icon="itemInfo?.icon" :color="textColor" />

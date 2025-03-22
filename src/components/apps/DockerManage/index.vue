@@ -32,7 +32,7 @@ const dockerStore = useDockerStore()
 
 <template>
   <div v-if="dockerStore.actionMenuBar === 'container'" class="h-full overflow-auto p-2">
-    <NCard style="border-radius:10px" size="small">
+    <NCard style="border-radius:10px;height: 100%;" size="small" content-style="height: 100%">
       <Container />
     </NCard>
   </div>
