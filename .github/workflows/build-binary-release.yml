@@ -41,7 +41,7 @@ jobs:
       - name: Sync Tag to Target Repo
         run: |
           git clone https://${{ secrets.CROSS_REPO_TOKEN }}@github.com/hslr-s/sun-panel.git
-          cd test
+          cd sun-panel
           git tag -f ${{ github.ref_name }}
           git push origin refs/tags/${{ github.ref_name }}
 
