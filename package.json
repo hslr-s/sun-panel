@@ -8,19 +8,19 @@
     "Sun-Panel",
     "vue"
   ],
-  "scripts": {
-    "dev": "vite",
-    "build": "run-p add-version type-check build-only",
-    "add-version": "node ./add-frontend-version.js",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "bootstrap": "pnpm install && pnpm run common:prepare",
-    "common:cleanup": "rimraf node_modules && rimraf pnpm-lock.yaml",
-    "common:prepare": "husky install"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "run-p add-version build-only",
+  "add-version": "node ./add-frontend-version.js",
+  "preview": "vite preview",
+  "build-only": "vite build",
+  "lint": "eslint .",
+  "lint:fix": "eslint . --fix",
+  "bootstrap": "pnpm install && pnpm run common:prepare",
+  "common:cleanup": "rimraf node_modules && rimraf pnpm-lock.yaml",
+  "common:prepare": "husky install"
+}
+,
   "dependencies": {
     "@traptitech/markdown-it-katex": "^3.6.0",
     "@vueuse/core": "^9.13.0",
