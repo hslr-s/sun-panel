@@ -1,0 +1,7 @@
+# wrangler.toml
+
+name = "sun-panel" # 替换成你的项目名称
+compatibility_date = "2024-01-01" # 使用一个近期的日期
+
+[pages]
+main = "./dist" # <--- 关键！指定你的静态网站目录
