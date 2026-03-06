@@ -39,6 +39,8 @@ export function defaultState(): Panel.State {
     leftSiderCollapsed: false,
     networkMode: PanelStateNetworkModeEnum.wan,
     panelConfig: { ...defaultStatePanelConfig() },
+    domainList: [],
+    currentDomain: '',
   }
 }
 

@@ -37,7 +37,7 @@ const showModal = computed({
     <template #header>
       <slot name="header" />
     </template>
-    <template #eader-extra>
+    <template #header-extra>
       <slot name="header-extra" />
     </template>
     <template #footer>
