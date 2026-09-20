@@ -155,6 +155,7 @@
     "importSuccess": "导入成功",
     "inputPlaceholder": "请输入",
     "inputPlaceholderByText": "请输入{text}",
+    "pleaseInput": "请填写完整信息",
     "language": "语言",
     "leastOne": "请至少保留一项",
     "networkError": "网络错误，请稍后重试",
@@ -246,9 +247,15 @@
     "changeToLanModelSuccess": "已经切换到内网模式（模式状态仅保存在本地）",
     "changeToWanModel": "切换为公网模式",
     "changeToWanModelSuccess": "已经切换到公网模式（模式状态仅保存在本地）",
+    "domainNamePlaceholder": "域名名称",
+    "domainSwitch": "域名切换",
+    "domainValuePlaceholder": "例如: 192.168.1.1:8080",
     "goToLogin": "前往登录",
     "openLanUrl": "打开局域网地址",
-    "openWanUrl": "打开公网地址"
+    "openWanUrl": "打开公网地址",
+    "openWanUrlNoReplace": "打开公网地址(不替换域名)",
+    "tempDomain": "临时域名",
+    "useTempDomain": "使用临时域名"
   },
   "settingUserInfo": {
     "confirmLogoutText": "你确定要退出登录吗？",

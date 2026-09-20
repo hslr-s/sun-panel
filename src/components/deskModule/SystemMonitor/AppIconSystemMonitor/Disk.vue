@@ -16,7 +16,7 @@ interface Prop {
 }
 
 const props = defineProps<Prop>()
-let timer: NodeJS.Timer
+let timer: NodeJS.Timeout
 const diskState = ref<SystemMonitor.DiskInfo | null>(null)
 
 function formatdiskSize(v: number): string {

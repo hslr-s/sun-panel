@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
-import { NBackTop, NButton, NButtonGroup, NDropdown, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NBackTop, NButton, NButtonGroup, NDropdown, NInput, NModal, NSkeleton, NSpin, useDialog, useMessage } from 'naive-ui'
 import { nextTick, onMounted, ref } from 'vue'
 import { AppIcon, AppStarter, EditItem } from './components'
 import { Clock, SearchBox, SystemMonitor } from '@/components/deskModule'
@@ -14,6 +14,11 @@ import { PanelPanelConfigStyleEnum, PanelStateNetworkModeEnum } from '@/enums'
 import { VisitMode } from '@/enums/auth'
 import { router } from '@/router'
 import { t } from '@/locales'
+
+// 生成唯一ID
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2)
+}
 
 interface ItemGroup extends Panel.ItemIconGroup {
   sortStatus?: boolean
@@ -48,6 +53,25 @@ const settingModalShow = ref(false)
 const items = ref<ItemGroup[]>([])
 const filterItems = ref<ItemGroup[]>([])
 
+// 域名切换栏相关
+const domainInputShow = ref(false)
+const domainInputName = ref('')
+const domainInputValue = ref('')
+const editingDomainId = ref<string | null>(null)
+
+// 确保始终有一个临时域名项
+function ensureTempDomain() {
+  const hasTemp = panelState.domainList.some(item => item.isTemp)
+  if (!hasTemp) {
+    const tempDomain: Panel.DomainItem = {
+      id: generateId(),
+      domain: '',
+      isTemp: true,
+    }
+    panelState.addDomainItem(tempDomain)
+  }
+}
+
 function openPage(openMethod: number, url: string, title?: string) {
   switch (openMethod) {
     case 1:
@@ -76,10 +100,18 @@ function handleItemClick(itemGroupIndex: number, item: Panel.ItemInfo) {
 
   let jumpUrl = ''
 
-  if (item)
-    jumpUrl = (panelState.networkMode === PanelStateNetworkModeEnum.lan ? item.lanUrl : item.url) as string
-  if (item.lanUrl === '')
+  // 内网模式下优先使用 lanUrl，如果为空则使用 url
+  if (panelState.networkMode === PanelStateNetworkModeEnum.lan && item.lanUrl)
+    jumpUrl = item.lanUrl
+  else
     jumpUrl = item.url
+
+  // 如果是内网模式且有选中的全局域名，替换域名（无论使用lanUrl还是url都需要替换）
+  if (panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.currentDomain) {
+    const originalUrl = jumpUrl
+    jumpUrl = replaceDomain(jumpUrl)
+    console.log('[handleItemClick] 域名替换:', originalUrl, '->', jumpUrl)
+  }
 
   openPage(item.openMethod, jumpUrl, item.title)
 }
@@ -114,20 +146,39 @@ function updateItemIconGroupByNet(itemIconGroupIndex: number, itemIconGroupId: n
 function handleRightMenuSelect(key: string | number) {
   dropdownShow.value = false
   // console.log(currentRightSelectItem, key)
-  let jumpUrl = panelState.networkMode === PanelStateNetworkModeEnum.lan ? currentRightSelectItem.value?.lanUrl : currentRightSelectItem.value?.url
-  if (currentRightSelectItem.value?.lanUrl === '')
+  let jumpUrl = ''
+
+  // 内网模式下优先使用 lanUrl，如果为空则使用 url
+  if (panelState.networkMode === PanelStateNetworkModeEnum.lan && currentRightSelectItem.value?.lanUrl)
+    jumpUrl = currentRightSelectItem.value.lanUrl
+  else if (currentRightSelectItem.value)
     jumpUrl = currentRightSelectItem.value.url
+
+  console.log('[handleRightMenuSelect] key:', key, '原始URL:', currentRightSelectItem.value?.url, 'lanUrl:', currentRightSelectItem.value?.lanUrl, '网络模式:', panelState.networkMode, '当前域名:', panelState.currentDomain)
+
+  // 如果是内网模式且有选中的全局域名，替换域名
+  if (panelState.networkMode === PanelStateNetworkModeEnum.lan && panelState.currentDomain) {
+    const originalUrl = jumpUrl
+    jumpUrl = replaceDomain(jumpUrl)
+    console.log('[handleRightMenuSelect] 域名替换:', originalUrl, '->', jumpUrl)
+  }
+
   switch (key) {
     case 'newWindows':
+      console.log('[handleRightMenuSelect] newWindows 打开URL:', jumpUrl)
       window.open(jumpUrl)
       break
     case 'openWanUrl':
-      if (currentRightSelectItem.value)
+      if (currentRightSelectItem.value) {
+        console.log('[handleRightMenuSelect] openWanUrl 打开URL:', currentRightSelectItem.value?.url)
         openPage(currentRightSelectItem.value?.openMethod, currentRightSelectItem.value?.url, currentRightSelectItem.value?.title)
+      }
       break
     case 'openLanUrl':
-      if (currentRightSelectItem.value && currentRightSelectItem.value.lanUrl)
+      if (currentRightSelectItem.value && currentRightSelectItem.value.lanUrl) {
+        console.log('[handleRightMenuSelect] openLanUrl 打开URL:', currentRightSelectItem.value.lanUrl)
         openPage(currentRightSelectItem.value?.openMethod, currentRightSelectItem.value.lanUrl, currentRightSelectItem.value?.title)
+      }
       break
     case 'edit':
       // 这里有个奇怪的问题，如果不使用{...}的方式 父组件的值会同步修改 标记一下
@@ -266,6 +317,9 @@ onMounted(() => {
   // 设置标题
   if (panelState.panelConfig.logoText)
     setTitle(panelState.panelConfig.logoText)
+
+  // 确保有临时域名项
+  ensureTempDomain()
 })
 
 // 前端搜索过滤
@@ -319,6 +373,134 @@ function handleAddItem(itemIconGroupId?: number) {
   editItemInfoShow.value = true
   if (itemIconGroupId)
     currentAddItenIconGroupId.value = itemIconGroupId
+}
+
+// 域名切换栏相关函数
+function handleSelectDomain(id: string) {
+  panelState.setCurrentDomain(id)
+}
+
+function handleAddDomain() {
+  if (!domainInputValue.value.trim()) {
+    ms.warning(t('common.pleaseInput'))
+    return
+  }
+
+  if (editingDomainId.value) {
+    // 编辑模式
+    panelState.updateDomainItem(editingDomainId.value, {
+      domain: domainInputValue.value.trim(),
+      name: domainInputName.value.trim() || undefined,
+    })
+    ms.success(t('common.editSuccess'))
+  }
+  else {
+    // 添加模式（从临时项转换）
+    const tempItem = panelState.domainList.find(item => item.isTemp)
+    if (tempItem) {
+      panelState.convertTempDomain(
+        tempItem.id,
+        domainInputValue.value.trim(),
+        domainInputName.value.trim() || undefined,
+      )
+      // 自动选中新添加的域名
+      panelState.setCurrentDomain(tempItem.id)
+    }
+    ms.success(t('common.addSuccess'))
+  }
+
+  domainInputName.value = ''
+  domainInputValue.value = ''
+  domainInputShow.value = false
+  editingDomainId.value = null
+
+  // 确保有临时项
+  ensureTempDomain()
+}
+
+function handleEditDomain(domain: Panel.DomainItem) {
+  editingDomainId.value = domain.id
+  domainInputName.value = domain.name || ''
+  domainInputValue.value = domain.domain
+  domainInputShow.value = true
+}
+
+function handleCancelEdit() {
+  domainInputShow.value = false
+  editingDomainId.value = null
+  domainInputName.value = ''
+  domainInputValue.value = ''
+}
+
+// 保存临时域名
+function handleSaveTempDomain(tempDomain: Panel.DomainItem) {
+  if (!tempDomain.domain.trim()) {
+    ms.warning(t('common.pleaseInput'))
+    return
+  }
+  panelState.convertTempDomain(
+    tempDomain.id,
+    tempDomain.domain.trim(),
+    undefined,
+  )
+  // 自动选中新添加的域名
+  panelState.setCurrentDomain(tempDomain.id)
+  ms.success(t('common.addSuccess'))
+
+  // 确保有临时项
+  ensureTempDomain()
+}
+
+function handleDeleteDomain(id: string) {
+  panelState.removeDomainItem(id)
+  ms.success(t('common.deleteSuccess'))
+  // 确保删除后仍有临时项
+  ensureTempDomain()
+}
+
+// 替换URL中的域名为当前选中的域名
+function replaceDomain(url: string): string {
+  console.log('[replaceDomain] 输入URL:', url, '当前域名ID:', panelState.currentDomain)
+
+  if (!panelState.currentDomain || !url) {
+    console.log('[replaceDomain] 缺少currentDomain或url，直接返回')
+    return url
+  }
+
+  const currentDomainItem = panelState.domainList.find(item => item.id === panelState.currentDomain)
+  console.log('[replaceDomain] 找到的域名项:', currentDomainItem)
+
+  if (!currentDomainItem) {
+    console.log('[replaceDomain] 未找到域名项，直接返回')
+    return url
+  }
+
+  try {
+    const urlObj = new URL(url)
+    // 提取原URL的协议、路径和查询参数
+    const protocol = urlObj.protocol
+    const pathname = urlObj.pathname
+    const search = urlObj.search
+    // 处理域名可能包含协议的情况
+    let domain = currentDomainItem.domain
+    if (domain.startsWith('http://') || domain.startsWith('https://')) {
+      // 如果域名包含协议，提取纯域名部分
+      const domainUrl = new URL(domain)
+      domain = domainUrl.host
+    }
+    // 如果用户输入的域名不包含端口，但原URL有端口，则保留原端口
+    const port = urlObj.port
+    const hostWithPort = (port && !domain.includes(':')) ? `${domain}:${port}` : domain
+    // 使用新域名构建URL
+    const result = `${protocol}//${hostWithPort}${pathname}${search}`
+    console.log('[replaceDomain] 替换结果:', result)
+    return result
+  }
+  catch (e) {
+    // 如果URL解析失败，直接返回原URL
+    console.log('[replaceDomain] URL解析失败:', e)
+    return url
+  }
 }
 </script>
 
@@ -375,6 +557,91 @@ function handleAddItem(itemIconGroupId?: number) {
               :allow-edit="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN"
               :show-title="panelState.panelConfig.systemMonitorShowTitle"
             />
+          </div>
+
+          <!-- 域名切换栏（仅在内网模式下显示） -->
+          <div v-if="panelState.networkMode === PanelStateNetworkModeEnum.lan && (panelState.domainList.length > 0 || domainInputShow || authStore.visitMode === VisitMode.VISIT_MODE_LOGIN)" class="mt-[30px] mb-[20px]">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-white text-shadow text-sm mr-2">{{ t('panelHome.domainSwitch') }}:</span>
+              <!-- 正式域名项 -->
+              <NButton
+                v-for="domain in panelState.domainList.filter(d => !d.isTemp)" :key="domain.id"
+                size="small"
+                :type="panelState.currentDomain === domain.id ? 'primary' : 'default'"
+                :color="panelState.currentDomain === domain.id ? '#2080f0' : '#2a2a2a6b'"
+                @click="handleSelectDomain(domain.id)"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="text-white">{{ domain.name || domain.domain }}</span>
+                  <template v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN">
+                    <div class="flex items-center gap-1">
+                      <SvgIcon
+                        class="text-white cursor-pointer hover:text-blue-400"
+                        icon="basil:edit-solid"
+                        @click.stop="handleEditDomain(domain)"
+                      />
+                      <SvgIcon
+                        class="text-white cursor-pointer hover:text-red-400"
+                        icon="material-symbols:delete"
+                        @click.stop="handleDeleteDomain(domain.id)"
+                      />
+                    </div>
+                  </template>
+                </div>
+              </NButton>
+              <!-- 临时域名项（可被选择，选中后显示输入框） -->
+              <template v-if="authStore.visitMode === VisitMode.VISIT_MODE_LOGIN && !editingDomainId">
+                <NButton
+                  v-for="tempDomain in panelState.domainList.filter(d => d.isTemp)" :key="tempDomain.id"
+                  size="small"
+                  :type="panelState.currentDomain === tempDomain.id ? 'primary' : 'default'"
+                  :color="panelState.currentDomain === tempDomain.id ? '#2080f0' : '#2a2a2a6b'"
+                  @click="handleSelectDomain(tempDomain.id)"
+                >
+                  <template #default>
+                    <!-- 未选中时显示占位文字 -->
+                    <span v-if="panelState.currentDomain !== tempDomain.id" class="text-white text-opacity-60" :title="t('panelHome.useTempDomain')">{{ t('panelHome.tempDomain') }}</span>
+                    <!-- 选中时显示输入框 -->
+                    <div v-else class="flex items-center gap-1">
+                      <NInput
+                        v-model:value="tempDomain.domain"
+                        size="small"
+                        :placeholder="t('panelHome.domainValuePlaceholder')"
+                        style="width: 140px"
+                        @click.stop
+                        @keyup.enter="handleSaveTempDomain(tempDomain)"
+                      />
+                      <SvgIcon
+                        class="text-white cursor-pointer hover:text-green-400"
+                        icon="typcn:plus"
+                        @click.stop="handleSaveTempDomain(tempDomain)"
+                      />
+                    </div>
+                  </template>
+                </NButton>
+              </template>
+            </div>
+            <!-- 编辑域名输入框 -->
+            <div v-if="domainInputShow && editingDomainId && authStore.visitMode === VisitMode.VISIT_MODE_LOGIN" class="flex items-center gap-2 mt-2">
+              <NInput
+                v-model:value="domainInputName"
+                size="small"
+                :placeholder="t('panelHome.domainNamePlaceholder')"
+                style="width: 120px"
+              />
+              <NInput
+                v-model:value="domainInputValue"
+                size="small"
+                :placeholder="t('panelHome.domainValuePlaceholder')"
+                style="width: 200px"
+              />
+              <NButton size="small" type="primary" @click="handleAddDomain">
+                {{ t('common.save') }}
+              </NButton>
+              <NButton size="small" @click="handleCancelEdit">
+                {{ t('common.cancel') }}
+              </NButton>
+            </div>
           </div>
 
           <!-- 组纵向排列 -->

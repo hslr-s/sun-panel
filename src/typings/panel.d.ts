@@ -34,6 +34,8 @@ declare namespace Panel {
         leftSiderCollapsed: boolean
         networkMode:PanelStateNetworkModeEnum | null
         panelConfig:panelConfig
+        domainList: DomainItem[]
+        currentDomain: string
     }
 
     interface panelConfig{
@@ -70,6 +72,13 @@ declare namespace Panel {
     interface ItemIconSortRequest{
         sortItems:Common.SortItemRequest[]
         itemIconGroupId:number
+    }
+
+    interface DomainItem {
+        id: string
+        name?: string
+        domain: string
+        isTemp?: boolean
     }
 }
 

@@ -14,7 +14,7 @@ interface Prop {
 }
 
 const props = defineProps<Prop>()
-let timer: NodeJS.Timer
+let timer: NodeJS.Timeout
 const cpuState = ref<SystemMonitor.CPUInfo | null>(null)
 
 async function getData() {

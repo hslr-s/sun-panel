@@ -155,6 +155,7 @@
     "importSuccess": "Imported successfully",
     "inputPlaceholder": "Please enter",
     "inputPlaceholderByText": "Please enter {text}",
+    "pleaseInput": "Please fill in complete information",
     "language": "Language",
     "leastOne": "Please keep at least one",
     "networkError": "Network error, please try again later",
@@ -246,9 +247,15 @@
     "changeToLanModelSuccess": "Switched to LAN mode (mode status saved locally)",
     "changeToWanModel": "Switch to WAN mode",
     "changeToWanModelSuccess": "Switched to WAN mode (mode status saved locally)",
+    "domainNamePlaceholder": "Domain name",
+    "domainSwitch": "Domain Switch",
+    "domainValuePlaceholder": "e.g. 192.168.1.1:8080",
     "goToLogin": "Go to login",
     "openLanUrl": "Open LAN URL",
-    "openWanUrl": "Open WAN URL"
+    "openWanUrl": "Open WAN URL",
+    "openWanUrlNoReplace": "Open WAN URL (No Replace)",
+    "tempDomain": "Temp Domain",
+    "useTempDomain": "Use temporary domain"
   },
   "settingUserInfo": {
     "confirmLogoutText": "Are you sure you want to logout?",

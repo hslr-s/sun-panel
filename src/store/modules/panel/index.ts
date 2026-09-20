@@ -41,11 +41,55 @@ export const usePanelState = defineStore('panel', {
       this.panelConfig = defaultStatePanelConfig()
     },
 
-    // async refreshSpaceNoteList(spaceId: string) {
-    //   await getListBySpaceNoteId<Common.ListResponse<SNote.InfoTree[]>>(spaceId).then((res) => {
-    //     this.notesList = res.data.list
-    //   })
-    // },
+    // 添加域名
+    addDomainItem(item: Panel.DomainItem) {
+      this.domainList.push(item)
+      this.recordState()
+    },
+
+    // 删除域名
+    removeDomainItem(id: string) {
+      this.domainList = this.domainList.filter(item => item.id !== id)
+      if (this.currentDomain === id)
+        this.currentDomain = ''
+
+      this.recordState()
+    },
+
+    // 设置当前域名
+    setCurrentDomain(id: string) {
+      this.currentDomain = id
+      this.recordState()
+    },
+
+    // 更新域名列表
+    updateDomainList(list: Panel.DomainItem[]) {
+      this.domainList = list
+      this.recordState()
+    },
+
+    // 更新域名
+    updateDomainItem(id: string, updates: Partial<Panel.DomainItem>) {
+      const index = this.domainList.findIndex(item => item.id === id)
+      if (index !== -1) {
+        this.domainList[index] = { ...this.domainList[index], ...updates }
+        this.recordState()
+      }
+    },
+
+    // 将临时域名转为正式域名
+    convertTempDomain(id: string, domain: string, name?: string) {
+      const index = this.domainList.findIndex(item => item.id === id)
+      if (index !== -1) {
+        this.domainList[index] = {
+          ...this.domainList[index],
+          domain,
+          name,
+          isTemp: false,
+        }
+        this.recordState()
+      }
+    },
 
     async reloadRoute(id?: number) {
       // this.recordState()
