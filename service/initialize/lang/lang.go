@@ -28,6 +28,12 @@ func LangInit(lang string) {
 			global.Logger.Errorln("输出语言文件出错:", err.Error())
 			os.Exit(1)
 		}
+		}
+		err = cmn.AssetsTakeFileToPath("lang/es-es.ini", "lang/es-es.ini")
+		if err != nil {
+			global.Logger.Errorln("输出语言文件出错:", err.Error())
+			os.Exit(1)
+		}
 	}
 	exists, err = cmn.PathExists(filename)
 	if err != nil || !exists {
