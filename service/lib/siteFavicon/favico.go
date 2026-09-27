@@ -65,14 +65,10 @@ func GetRemoteFileSize(url string) (int64, error) {
 
 // 下载图片
 func DownloadImage(url, savePath string, maxSize int64) (*os.File, error) {
-	// 获取远程文件大小
+	// 先用 HEAD 探测文件大小；很多服务器不支持 HEAD（返回 501 等），
+	// 此时跳过大小检查，直接用 GET 下载并在响应中再判断。
 	fileSize, err := GetRemoteFileSize(url)
-	if err != nil {
-		return nil, err
-	}
-
-	// 判断文件大小是否在阈值内
-	if fileSize > maxSize {
+	if err == nil && fileSize > maxSize {
 		return nil, fmt.Errorf("文件太大，不下载。大小：%d字节", fileSize)
 	}
 
@@ -86,6 +82,11 @@ func DownloadImage(url, savePath string, maxSize int64) (*os.File, error) {
 	// 检查HTTP响应状态
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("HTTP request failed, status code: %d", response.StatusCode)
+	}
+
+	// HEAD 失败时，用 GET 响应的 Content-Length 做大小检查
+	if err != nil && response.ContentLength > maxSize {
+		return nil, fmt.Errorf("文件太大，不下载。大小：%d字节", response.ContentLength)
 	}
 
 	urlFileName := path.Base(url)
