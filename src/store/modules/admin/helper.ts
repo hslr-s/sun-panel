@@ -4,7 +4,7 @@
 
 export type Theme = 'light' | 'dark' | 'auto'
 
-export type Language = 'zh-CN' | 'zh-TW' | 'en-US' | 'ko-KR'
+export type Language = 'zh-CN' | 'zh-TW' | 'en-US' | 'ko-KR' | 'es-ES'
 
 export interface AdminState {
   siderCollapsed: boolean

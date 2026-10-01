@@ -1,0 +1,263 @@
+{
+  "adminSettingUsers": {
+    "EditpasswordPlaceholder": "Introduzca la nueva contraseña, déjela en blanco para mantener la contraseña actual",
+    "alertText": "Los datos entre cuentas no se comparten",
+    "appName": "Gestión de cuentas",
+    "currentUseUsername": "Nombre de usuario actual",
+    "deletePromptContent": "¿Está seguro de que quiere eliminar {name} ({username})?",
+    "formRules": {
+      "passwordLimit": "6-20 caracteres",
+      "roleRequired": "Seleccione un rol",
+      "usernameRequired": "Introduzca un nombre de usuario de al menos 5 caracteres"
+    },
+    "passwordPlaceholder": "Introduzca la contraseña",
+    "pblicText": "Público",
+    "role": "Rol",
+    "setOrUnsetPublicMode": "Activar/desactivar el acceso público",
+    "userCountText": "Total: {count} usuarios"
+  },
+  "api": {
+    "loginExpires": "El estado de inicio de sesión ha caducado, vuelva a iniciar sesión"
+  },
+  "apiErrorCode": {
+    "1000": "No conectado",
+    "1003": "nombre de usuario o contraseña incorrectos",
+    "1004": "La cuenta ha sido desactivada o inactivada",
+    "1005": "Actualmente no hay permiso para operar",
+    "1006": "La cuenta no existe",
+    "1007": "Error de contraseña antigua",
+    "1200": "error de base de datos",
+    "1201": "Conserve al menos uno",
+    "1202": "Registro de datos no encontrado",
+    "1300": "Error de carga",
+    "1301": "Error de carga, formato de archivo no compatible",
+    "1400": "Error de formato de los parámetros"
+  },
+  "appLauncher": {
+    "title": "Aplicaciones del sistema"
+  },
+  "apps": {
+    "about": {
+      "QQGroup": "Grupo QQ:",
+      "QR": "Código QR (recomendado)",
+      "addQQGroupUrl": "Haga clic para unirse",
+      "appName": "Acerca de",
+      "author": "Autor:",
+      "checkUpdate": "Comprobar nueva versión",
+      "discussions": "Debates:",
+      "donate": "☕Donar",
+      "frontVersionText": "Versión del front-end",
+      "issue": "Comentarios:",
+      "viewUpdateLog": "Haga clic aquí para ver el registro de actualizaciones"
+    },
+    "baseSettings": {
+      "appName": "Ajustes de estilo",
+      "bottomMargin": "Margen inferior",
+      "clock": "Componente de reloj",
+      "clockSecondShow": "Mostrar segundos",
+      "configFailed": "Error al guardar la configuración: {message}",
+      "configSaved": "Configuración guardada",
+      "contentArea": "Área de contenido",
+      "customFooter": "Pie de página personalizado",
+      "customImageAddress": "Ampliar el cuadro de entrada del enlace de la imagen",
+      "detailIcon": "Icono de detalle",
+      "hideDescription": "Ocultar información de la descripción",
+      "hideTitle": "Ocultar título",
+      "leftRightMargin": "Margen izquierdo-derecho",
+      "mask": "Máscara",
+      "maxWidth": "Anchura máxima",
+      "netModeChangeButtonShow": "Mostrar el botón de cambio de modo de red",
+      "publicVisitModeShow": "Permitir la visualización en modo público",
+      "resetWarnText": "¿Está seguro de que quiere restablecer estos estilos?",
+      "searchBar": "Componente de la barra de búsqueda",
+      "searchBarSearchItem": "Permitir que la barra de búsqueda busque elementos",
+      "searchBarShow": "Configuración guardada",
+      "show": "Mostrar",
+      "showTitle": "Mostrar título",
+      "smallIcon": "Icono pequeño",
+      "systemMonitorStatus": "Componente de estado del sistema",
+      "textContent": "Contenido del texto",
+      "topMargin": "Margen superior",
+      "uploadOrDragText": "Haga clic para subir la imagen o arrástrela y suéltela en el cuadro para sustituirla",
+      "vague": "Desenfoque",
+      "wallpaper": "Fondo de pantalla"
+    },
+    "exportImport": {
+      "appName": "Exportación/Importación",
+      "errorConfigFileFormat": "El formato del archivo de configuración es incorrecto y no se puede importar",
+      "errorConfigFileLow": "La versión del archivo de configuración es demasiado baja y no puede ser compatible",
+      "export": "Exportar configuración",
+      "fileModified": "El archivo ha sido modificado, importe con precaución",
+      "import": "Importar configuración",
+      "moduleIcon": "Configuración de iconos",
+      "moduleStyle": "Configuración de estilo",
+      "selectExportData": "Seleccione los datos de configuración que desea exportar",
+      "selectImportData": "Seleccione los datos de configuración que desea importar",
+      "softwareVersionLow": "Es posible que la versión actual del software sea demasiado antigua y no sea compatible con este archivo de configuración. Se recomienda actualizar el software a la última versión antes de volver a importar.",
+      "tip": "La importación de datos de configuración de iconos no borra los datos de iconos existentes.",
+      "transmuteStandard": "Convertir al estándar",
+      "warnConfigFileLow": "La versión del archivo de configuración es demasiado baja pero compatible"
+    },
+    "itemGroupManage": {
+      "appName": "Gestión de grupos",
+      "deleteWarnText": "¿Está seguro de que quiere eliminar este grupo [{name}]? Los iconos de aplicaciones de este grupo se perderán tras eliminarlo.",
+      "groupName": "Nombre del grupo"
+    },
+    "uploadsFileManager": {
+      "alertText": "Aquí puede gestionar los fondos de pantalla y los iconos que ha subido.",
+      "appName": "Gestión de archivos de carga",
+      "copyFailed": "Error de copia",
+      "copyLink": "Copiar enlace",
+      "copySuccess": "Enlace copiado correctamente. Puede pegarlo en la barra de direcciones.",
+      "deleteWarningText": "No se puede recuperar después de eliminarlo. ¿Está seguro de que quiere continuar?",
+      "fileName": "Nombre del archivo original",
+      "infoTitle": "Detalles del archivo",
+      "nothingText": "Aún no ha subido ninguna imagen.",
+      "path": "Ruta del archivo",
+      "setWallpaper": "Establecer como fondo de pantalla",
+      "uploadTime": "Fecha de subida"
+    },
+    "userInfo": {
+      "appName": "Mi información",
+      "theme": "Tema",
+      "themeStyle": {
+        "auto": "Seguir el sistema",
+        "dark": "Oscuro",
+        "light": "Claro"
+      }
+    }
+  },
+  "common": {
+    "action": "Acción",
+    "add": "Añadir",
+    "addSuccess": "Añadido con éxito",
+    "appName": "Sun-Panel",
+    "backgroundColor": "Color de fondo",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "continue": "Continuar",
+    "delete": "Borrar",
+    "deleteConfirm": "¿Está seguro de que quiere eliminarlo?",
+    "deleteConfirmByName": "¿Está seguro de que quiere eliminar {name}?",
+    "deleteFail": "Eliminación fallida",
+    "deleteSuccess": "Eliminado con éxito",
+    "description": "Descripción",
+    "download": "Descargar",
+    "edit": "Editar",
+    "editFail": "Edición fallida",
+    "editSuccess": "Editado con éxito",
+    "export": "Exportar",
+    "exportSuccess": "Exportado con éxito",
+    "failed": "Operación fallida",
+    "icon": "Icono",
+    "image": "Imagen",
+    "import": "Importar",
+    "importSuccess": "Importado con éxito",
+    "inputPlaceholder": "Introduzca el texto",
+    "inputPlaceholderByText": "Introduzca {text}",
+    "language": "Idioma",
+    "leastOne": "Conserve al menos uno",
+    "networkError": "Error de red, inténtelo de nuevo más tarde",
+    "nikeName": "Apodo",
+    "no": "No",
+    "noData": "No hay datos disponibles",
+    "password": "Contraseña",
+    "refreshPage": "Actualice la página",
+    "repeatLater": "Vuelva a intentarlo más tarde",
+    "reset": "Restablecer",
+    "role": {
+      "admin": "Administrador",
+      "regularUser": "Usuario normal"
+    },
+    "save": "Guardar",
+    "saveFail": "Guardado fallido",
+    "saveSort": "Guardar orden",
+    "saveSuccess": "Guardado correctamente",
+    "serverError": "Error del servidor",
+    "show": "Mostrar",
+    "sort": "Ordenar",
+    "style": "Estilo",
+    "success": "Operación realizada con éxito",
+    "text": "Texto",
+    "textColor": "Color del texto",
+    "title": "Título",
+    "unknownError": "Error desconocido",
+    "uploadFail": "Error de carga",
+    "username": "Nombre de usuario",
+    "verify": "Verificar",
+    "warning": "Advertencia",
+    "yes": "Sí"
+  },
+  "deskModule": {
+    "clock": {
+      "fri": "Viernes",
+      "mon": "Lunes",
+      "sat": "Sábado",
+      "sun": "Domingo",
+      "thu": "Jueves",
+      "tue": "Martes",
+      "wed": "Miércoles"
+    },
+    "searchBox": {
+      "inputPlaceholder": "Introduzca el texto que quiere buscar",
+      "openWithNewOpen": "Abrir en una ventana nueva"
+    },
+    "systemMonitor": {
+      "cpuState": "Estado de la CPU",
+      "diskMountPoint": "Punto de montaje",
+      "diskState": "Estado del disco",
+      "memoryState": "Estado de la memoria",
+      "progressColor": "Color principal",
+      "progressRailColor": "Color secundario",
+      "systemState": "Estado del sistema"
+    }
+  },
+  "form": {
+    "required": "Campo obligatorio"
+  },
+  "iconItem": {
+    "add": "Añadir elemento",
+    "currentPageLayerOpen": "Abrir en la página actual como capa",
+    "currentPageOpen": "Abrir en la página actual",
+    "edit": "Editar elemento",
+    "getGroupFail": "Error al obtener la información del grupo",
+    "getIcon": "Obtener icono",
+    "geticonFail": "No se pudo obtener el icono",
+    "iconGroup": "Grupo",
+    "inputIconName": "Introduzca el nombre del icono",
+    "inputIconUrlOrUpload": "Introduzca la URL del icono o cárguelo",
+    "lanUrl": "URL LAN",
+    "lanUrlInputPlaceholder": "http(s):// (modo LAN, redirigirá a esta dirección)",
+    "newWindowOpen": "Abrir en una ventana nueva",
+    "onlineIcon": "Icono en línea",
+    "onlineIconLibrary": "Biblioteca de iconos en línea",
+    "openMethod": "Forma de abrir",
+    "selectUpload": "Carga local",
+    "url": "URL"
+  },
+  "login": {
+    "loginButton": "Iniciar sesión",
+    "passwordPlaceholder": "Contraseña",
+    "usernamePlaceholder": "Nombre de usuario",
+    "welcomeMessage": "¡Bienvenido de nuevo!"
+  },
+  "panelHome": {
+    "changeToLanModel": "Cambiar al modo LAN",
+    "changeToLanModelSuccess": "Ha cambiado al modo LAN (el estado se guarda localmente)",
+    "changeToWanModel": "Cambiar al modo WAN",
+    "changeToWanModelSuccess": "Ha cambiado al modo WAN (el estado se guarda localmente)",
+    "goToLogin": "Ir al inicio de sesión",
+    "openLanUrl": "Abrir URL de LAN",
+    "openWanUrl": "Abrir URL WAN"
+  },
+  "settingUserInfo": {
+    "confirmLogoutText": "¿Está seguro de que quiere cerrar la sesión?",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "confirmPasswordInconsistentMsg": "Las contraseñas no coinciden",
+    "logout": "Cerrar sesión",
+    "logoutSuccess": "Ha cerrado la sesión. Esperamos verle de nuevo.",
+    "newPassword": "Nueva contraseña",
+    "oldPassword": "Contraseña antigua",
+    "updatePassword": "Cambiar contraseña"
+  }
+}
