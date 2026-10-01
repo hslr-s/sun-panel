@@ -4,7 +4,7 @@ const LOCAL_NAME = 'appSetting'
 
 export type Theme = 'light' | 'dark' | 'auto'
 
-export type Language = 'zh-CN' | 'en-US'
+export type Language = 'zh-CN' | 'en-US' | 'es-ES'
 
 export interface AppState {
   siderCollapsed: boolean
@@ -17,6 +17,8 @@ export function defaultSetting(): AppState {
   let language: Language = 'en-US'
   if (lan.includes('zh'))
     language = 'zh-CN'
+  else if (lan.includes('es'))
+    language = 'es-ES'
 
   return { siderCollapsed: false, theme: 'auto', language }
 }

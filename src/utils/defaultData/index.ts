@@ -13,5 +13,6 @@ export const defautSwatchesBackground = [
 
 export const languageOptions: { label: string; key: Language; value: Language }[] = [
   { label: 'English', key: 'en-US', value: 'en-US' },
+  { label: 'Español', key: 'es-ES', value: 'es-ES' },
   { label: '简体中文', key: 'zh-CN', value: 'zh-CN' },
 ]
