@@ -1,0 +1,173 @@
+{
+  "folders": [
+    {
+      "name": "root",
+      "path": ".",
+    },
+    {
+      "name": "frontend",
+      "path": "src"
+    },
+    {
+      "name": "backend",
+      "path": "service"
+    },
+    {
+      "name": "Sun-Panel-doc",
+      "path": "/Users/sunjingliang/my_code/sun-panel_group/sun-panel-doc"
+    },
+    // {
+    //   "name": "app-store",
+    //   "path": "/Users/sunjingliang/my_code/sun-panel_group/sun-panel-micro-store"
+    // },
+    // {
+    //   "name": "sun-panel-auth",
+    //   "path": "/Users/sunjingliang/my_code/sun-panel_group/sun-panel-auth"
+    // },
+    {
+      "name": "sdk-micro-app",
+      "path": "/Users/sunjingliang/my_code/sun-panel-app/sun-panel-micro-app"
+    },
+  ],
+  "settings": {
+    "eslint.workingDirectories": [
+      "./",
+      "./src",
+      "/Users/sunjingliang/my_code/sun-panel-app/sun-panel-micro-app"
+    ],
+    "cSpell.words": [
+      "axios",
+      "bumpp",
+      "commitlint",
+      "davinci",
+      "dockerhub",
+      "esno",
+      "highlightjs",
+      "hljs",
+      "iconify",
+      "katex",
+      "katexmath",
+      "linkify",
+      "logprobs",
+      "mdhljs",
+      "mila",
+      "nodata",
+      "pinia",
+      "Popconfirm",
+      "rushstack",
+      "Sider",
+      "tailwindcss",
+      "traptitech",
+      "tsup",
+      "Typecheck",
+      "unplugin",
+      "VITE",
+      "vueuse"
+    ],
+    "i18n-ally.sortKeys": true,
+    "i18n-ally.enabledParsers": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "i18n-ally.enabledFrameworks": [
+      "vue"
+    ],
+    "i18n-ally.dirStructure": "auto",
+    "i18n-ally.localesPaths": [
+      "locales"
+    ],
+    "i18n-ally.sourceLanguage": "zh-CN",
+    "i18n-ally.keystyle": "nested",
+    "vue.codeActions.enabled": false,
+    // Disable the default formatter, use eslint instead
+    "prettier.enable": false,
+    "editor.formatOnSave": false,
+    // Auto fix
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "never"
+    },
+    // Silent the stylistic rules in you IDE, but still auto fix them
+    "eslint.rules.customizations": [
+      {
+        "rule": "style/*",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "format/*",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*-indent",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*-spacing",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*-spaces",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*-order",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*-dangle",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*-newline",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*quotes",
+        "severity": "off",
+        "fixable": true
+      },
+      {
+        "rule": "*semi",
+        "severity": "off",
+        "fixable": true
+      }
+    ],
+    // Enable eslint for all supported languages
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "vue",
+      "html",
+      "markdown",
+      "json",
+      "json5",
+      "jsonc",
+      "yaml",
+      "toml",
+      "xml",
+      "gql",
+      "graphql",
+      "astro",
+      "svelte",
+      "css",
+      "less",
+      "scss",
+      "pcss",
+      "postcss"
+    ],
+    "editor.fontSize": 14,
+    "trae.tab.enableRename": false,
+    "trae.tab.enableAutoImport": false
+  },
+}

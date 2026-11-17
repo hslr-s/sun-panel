@@ -28,8 +28,8 @@ chmod +x ./build && ./build -r
 ```
 
 
-[[ 简体中文 ]](https://sun-panel-doc.enianteam.com/zh_cn/introduce/project.html) |
-[[ English ]](https://sun-panel-doc.enianteam.com/introduce/project.html)
+[[ 简体中文 ]](https://doc.sun-panel.top/zh_cn/) |
+[[ English ]](https://doc.sun-panel.top/)
 
 <div align=center>
 
