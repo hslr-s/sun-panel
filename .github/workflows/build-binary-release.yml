@@ -5,6 +5,7 @@ on:
   push:
     tags:
       - 'v*'
+      - '!v*dev*'
 
 jobs:
   build-and-release:

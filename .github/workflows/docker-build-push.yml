@@ -6,7 +6,8 @@ on:
     tags:
       - 'v*'
       - '!v*beta*'
-    
+      - '!v*dev*'
+
 
 jobs:
   build:
